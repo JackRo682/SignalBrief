@@ -1,0 +1,7 @@
+{
+  "check": "typescript_syntax_only",
+  "checked": 42,
+  "failures": [],
+  "full_typecheck_executed": false,
+  "next_build_executed": false
+}

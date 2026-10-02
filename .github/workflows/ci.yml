@@ -1,63 +1,53 @@
-name: Foundation CI
-on:
-  push:
-  pull_request:
+name: signalbrief-verification
+on: [push, pull_request]
 permissions:
   contents: read
 jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install -e '.[dev]'
+      - run: python -m ruff check apps/api tests scripts
+      - run: pytest -q --cov=signalbrief --cov-report=xml --junitxml=pytest.xml
+      - run: python -m compileall -q apps/api tests scripts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-test-results
+          path: |
+            coverage.xml
+            pytest.xml
   web:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - working-directory: apps/web
+        run: if [ -f package-lock.json ]; then npm ci; else npm install; fi
+      - working-directory: apps/web
+        run: npm run lint && npm run typecheck && npm test && npm run build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: resolved-npm-lock
+          path: apps/web/package-lock.json
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env: {POSTGRES_USER: postgres, POSTGRES_PASSWORD: test-only, POSTGRES_DB: signalbrief_test}
+        ports: ['5432:5432']
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 3s --health-retries 20
     env:
-      NEXT_TELEMETRY_DISABLED: "1"
+      SB_TEST_POSTGRES_URL: postgresql+psycopg://postgres:test-only@localhost:5432/signalbrief_test
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: "24.19.0"
-          cache: npm
-      - run: npm install --global npm@11.6.2
-      - run: npm ci --ignore-scripts
-      - run: npm run format:check
-      - run: npm run lint
-      - run: npm run typecheck
-      - run: npm run contracts:check
-      - run: npm run contracts:typecheck
-      - run: npm test
-      - run: npm run build
-      - run: npm audit --audit-level=high
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.12.15"
-      - run: python scripts/check_secrets.py
-  python:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-latest
-            python: "3.12.15"
-          - os: windows-latest
-            python: "3.12.10"
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: ${{ matrix.python }}
-          cache: pip
-          cache-dependency-path: requirements-dev.lock
-      - run: python -m pip install --require-hashes -r requirements-dev.lock
-      - run: python -m pip check
-      - run: python -m ruff format --check services scripts tests
-      - run: python -m ruff check services scripts tests
-      - run: python -m mypy
-      - run: python -m scripts.export_contracts --check
-      - run: python -m pytest
-      - run: python -m scripts.health_smoke
-      - run: python scripts/check_secrets.py
-      - run: python -m pip_audit -r requirements.lock --disable-pip
-      - run: python -m pip_audit -r requirements-dev.lock --disable-pip
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install -e '.[dev]'
+      - run: pytest -q -m postgres

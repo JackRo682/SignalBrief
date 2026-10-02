@@ -1,63 +1,83 @@
-# SignalBrief Product Specification and Development Handoff — V1.1
+> New local execution results: [LOCAL_VERIFICATION_2026-10-02.md](docs/LOCAL_VERIFICATION_2026-10-02.md). Supplier results below are historical.
 
-Prepared 2 October 2026. This package specifies a deployable evidence-first company/portfolio intelligence service. It contains **no application code**, no fabricated beta results and no completed gold dataset. It is the product/architecture baseline to hand to a developer.
+# SignalBrief
 
-## Start here
+**근거 우선 포트폴리오 변화 브리핑.** Next.js/TypeScript + FastAPI/Python + PostgreSQL/Supabase.
+새로 작성한 애플리케이션 소스이며, 코드 생성 프롬프트만 담은 패키지가 아닙니다.
 
-Current checkout includes a T01 local web/API/idle-worker foundation. See [Local development](docs/LOCAL_DEVELOPMENT.md) for setup and [T01 execution plan](.agent/plans/T01-foundation.md) for evidence. No financial product, live integration or deployed release is claimed. The document-only handoff record describes the original specification baseline.
+> 먼저 `START_HERE_KO.md`를 읽으세요. 외부 계정 연결과 실제 운영 배포는 수행하지 않았습니다.
+> 검증 기록은 `docs/VERIFICATION.md`와 `verification/`에 있습니다. 미실행 항목은 완료가 아닙니다.
 
-1. Read [Product Vision](docs/PRODUCT_VISION.md), [User Research and Source Audit](docs/USER_RESEARCH.md) and [PRD](docs/PRD.md).
-2. Review [MVP Scope](docs/MVP_SCOPE.md) and [Acceptance Criteria](docs/ACCEPTANCE_CRITERIA.md).
-3. For development, read [AGENTS.md](AGENTS.md) and [.agent/PLANS.md](.agent/PLANS.md), then [Build Plan](docs/BUILD_PLAN.md) and the separate [First 10 Tasks](docs/FIRST_10_TASKS.md).
-4. Review the bounded [V1.1 corrections](REVIEW_CORRECTIONS.md) before implementing the affected schemas and publication paths.
+## 로컬 데모
 
-All prose is English. Korean source filenames and original issuer/source content are preserved where necessary. A/B/C/D labels distinguish documentary requirements, survey observations, inferences and unvalidated assumptions/design defaults. Product thresholds and architecture choices are decisions to test, not established empirical truths.
+Python 3.12 이상, Node.js 22 및 인터넷 패키지 설치가 가능한 환경에서 저장소 루트에서 실행합니다.
 
-## Document index and requested-phase coverage
+```bash
+python -m venv .venv
+# Windows PowerShell: .venv\Scripts\Activate.ps1
+# macOS/Linux: source .venv/bin/activate
+python -m pip install -e '.[dev]'
+cd apps/web
+npm install
+cd ../..
+python scripts/dev.py
+```
 
-| File | Purpose | Phase |
-|---|---|---|
-| [PRODUCT_VISION.md](docs/PRODUCT_VISION.md) | Mission, promise, principles, target and exclusions | 1, 3 |
-| [USER_RESEARCH.md](docs/USER_RESEARCH.md) | Complete source audit, survey interpretation, segments/limits and follow-up research | 1, 2 |
-| [PRD.md](docs/PRD.md) | Product definition, assumptions, requirements, dependencies, risks and success | 3 |
-| [MVP_SCOPE.md](docs/MVP_SCOPE.md) | P0/P1/P2/Not Now with per-feature dependencies and acceptance | 4 |
-| [USER_FLOWS.md](docs/USER_FLOWS.md) | User and operator journeys, navigation and cross-flow behavior | 3, 5 |
-| [UX_SPEC.md](docs/UX_SPEC.md) | All 13 screens and their state/mobile contracts | 5 |
-| [AI_SYSTEM.md](docs/AI_SYSTEM.md) | Typed stages, matching, scoring, evidence, validation and fallbacks | 6 |
-| [DATA_MODEL.md](docs/DATA_MODEL.md) | Entities, keys, ownership, provenance, transactions and retention | 7 |
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Runtime boundaries, jobs, integrations, deployment, env and references | 7 |
-| [API_SPEC.md](docs/API_SPEC.md) | Authenticated REST contracts, errors, pagination and idempotency | 7 |
-| [ANALYTICS.md](docs/ANALYTICS.md) | PostHog taxonomy, qualification and exact metric denominators | 9 |
-| [AI_EVAL.md](docs/AI_EVAL.md) | 120-case plan, ten formulas, independent review and release gates | 8 |
-| [SECURITY.md](docs/SECURITY.md) | Threat controls, privacy, financial-content policy and incidents | 7, 8 |
-| [BUILD_PLAN.md](docs/BUILD_PLAN.md) | Epics/features/tasks/acceptance in dependency order | 10 |
-| [ACCEPTANCE_CRITERIA.md](docs/ACCEPTANCE_CRITERIA.md) | Shared testable P0 and full-beta gates | All |
-| [FIRST_10_TASKS.md](docs/FIRST_10_TASKS.md) | Separate first-ten-task handoff and first-task prompt | Final handoff |
+`http://localhost:3000` → 로그인 → **데모로 시작하기** → 합성 기업 3개 선택 → 오늘의 변화.
+`.env`와 `apps/web/.env.local`이 없으면 예제에서 로컬용으로 생성됩니다.
+데모는 실제 주식 정보가 아니며, API 키 없이 UI와 전체 데이터 흐름을 시험하는 용도입니다.
+운영자 데모가 필요한 경우 로컬 `.env`의 `SB_DEMO_ADMIN=true`로 변경 후 재시작합니다.
 
-## Decisions that matter
+Docker가 설치된 경우 대안: `docker compose up --build`.
+Docker 구성도 합성 데모용입니다. 최초 이미지 빌드에는 인터넷이 필요합니다.
+이 납품 환경에서 Docker 실행은 확인하지 못했습니다.
 
-- Activate from one supported company; portfolio entry is optional. Survey median was four followed names.
-- P0 tests the actual source→change→evidence loop. P0 includes persistent accuracy notices for exposed viewers. P1 retains portfolio, follow-up, calendar and normal opt-in in-app alerts for full beta.
-- Original-source evidence, plain language and fact/interpretation separation are early requirements. Calendar dates and comparisons must be real and sourced.
-- Price-linked timeline demand is recognized but not equated with the simpler sourced-event timeline. Licensed price context is a separate future hypothesis; no causal price explanation is promised.
-- Survey concept ratings indicate moderate stated usefulness. Adoption, willingness to pay, retention, segment differences and PMF are not established.
-- Aggregate-only data cannot support experience/market/search-time cross-tabs. The n=49 recent-move recall branch is distinct from n=105 questions.
-- Shared company briefs and deterministic personal ranking avoid repeating model work or transmitting portfolio details.
+## 주요 코드
 
-## Pending implementation prerequisites
+| 경로 | 구현 |
+|---|---|
+| apps/web/src | 로그인, 온보딩, 관심/보유종목, 브리핑, 근거, 타임라인, 질문, 캘린더, 알림, 설정, Ops |
+| apps/api/signalbrief/providers | OpenDART / SEC 공급자와 공식 기업 목록 동기화 |
+| apps/api/signalbrief/ingestion.py | 메타데이터·원본·원문 URL 보존 및 transactional outbox |
+| apps/api/signalbrief/ai | 엄격한 출력 스키마, 근거/숫자 검사, OpenAI 연결, 합성 추출기 |
+| apps/api/signalbrief/pipeline.py | 추출 → 검증 → 비교 → 브리핑 → 승인/발행 |
+| apps/api/signalbrief/changes.py | 비교 가능한 기간·단위·범위에 대한 Decimal 연산 |
+| apps/api/signalbrief/worker.py | DB 작업 큐, 재시도, 임대 갱신, 실패 작업 |
+| supabase/migrations | 29개 테이블의 고정 DDL 및 RLS 마이그레이션 |
+| evals | 120개 합성 회귀 사례, 평가 실행기, 실제 생성 결과 |
+| tests | 백엔드 단위·통합·인증·마이그레이션 회귀 테스트 |
+| packages/shared/openapi.json | 실제 FastAPI 애플리케이션에서 추출한 API 계약 |
+| docs | 아키텍처, 보안, 배포, 제품 범위, 남은 검증 |
 
-The specification is complete without resolving live-account credentials. Before the corresponding build/release gates, the owner/developer must configure Google/Supabase, approve the issuer roster and source rights, obtain DART access, declare compliant SEC automated access, select/evaluate an available model and price table, label/review gold cases, verify vendor retention/backup settings and recruit consenting testers. These are explicit execution gates, not reasons to invent integration or research results.
+## 검증 명령
 
-## Consistency authority
+```bash
+python -m pytest -q
+python scripts/verify.py --full
+python -m signalbrief.cli eval
+cd apps/web
+npm run lint
+npm run typecheck
+npm test
+npm run build
+# 별도 터미널에서 데모 서버를 실행한 후:
+npx playwright install chromium
+npm run test:e2e
+```
 
-AI_SYSTEM owns stage/status/scoring contracts; API_SPEC owns endpoint/error contracts; DATA_MODEL owns persistence/retention; ANALYTICS owns event/metric definitions; AI_EVAL owns evaluation formulas; MVP_SCOPE owns priorities; ACCEPTANCE_CRITERIA owns release gates. If implementation finds a genuine conflict, amend the relevant canonical contracts and record the change before expanding behavior.
+`verify.py --full`은 도구가 없거나 검사에 실패하면 0이 아닌 종료 코드를 반환합니다.
+실행하지 않은 테스트, 합성 데이터 정확도, 네트워크 모의 테스트를 실서비스 성공으로 표현하지 않습니다.
 
-## Specification review record
+## 실제 데이터 연결
 
-The final packaged version is checked for requested file presence, phase/screen/stage coverage, source denominator/arithmetic correctness, original/copy identity, relative links, task ordering/references, acceptance links, and absence of application files. Technical integration details were checked against official references listed in ARCHITECTURE. No build/test/deployment result for the future application is claimed by this document review.
+운영 모드에서는 Supabase Google OAuth와 비공개 Storage 버킷, 서버 DB 연결,
+DART 키, SEC 실명 연락처 User-Agent, 사용 가능한 OpenAI 모델과 키가 필요합니다.
+안전한 기본값은 **자동 발행 비활성화**입니다. 검증된 실제 분석도 운영자 검토 후 발행합니다.
+자세한 단계는 `docs/DEPLOYMENT.md`와 `docs/OPERATIONS.md`를 사용하세요.
 
-V1.1 document checks: 20 Markdown files (15 requested documents, one separate first-ten-task handoff, README, AGENTS.md, .agent/PLANS.md and review corrections); 13 screen contracts with all eight requested fields; all 12 requested AI stages and 10 evaluation metrics; all eight analytics categories; 50 unique tasks in acyclic dependency order; 24 defined acceptance IDs; no broken relative links, malformed table rows, unresolved placeholder markers or application files.
+## 의도적으로 제외한 것
 
-Review resolved two implementation gaps: explicit product-session persistence/capture and history-only treatment for unchanged filings. It also preserved the unresolved research limits: aggregate-only segmentation, the price-context hypothesis, unproven adoption/retention, and the fractional Q5 total. No added specification requirement is presented as a new survey fact.
-
-V1.1 closes the parser-version and canonical-duplicate persistence gaps, makes accuracy notices a P0 safety requirement, and maps all ten evaluation metrics to versioned authoritative records/exports. The engineering contract and execution-plan format guide subsequent implementation. All original research evidence remains unchanged. Document validation does not establish that application code, migrations, CI, model evaluations or live integrations have run.
+뉴스 통합, 실시간 시세/차트, 증권사 주문, 매매 추천, 목표가, 자동매매, 결제,
+이메일/모바일 푸시는 구현하지 않았습니다. 알림은 앱 내부입니다.
+PDF/OCR와 입력 예산을 넘는 장문 공시는 자동 처리하지 않고 검토/실패 상태로 남깁니다.
+수치·원문 검사만으로 모든 금융 해석의 진실을 자동 증명할 수 있다고 주장하지 않습니다.

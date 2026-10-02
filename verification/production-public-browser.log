@@ -1,0 +1,23 @@
+{
+  "check": "production missing-setup fails closed",
+  "results": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "status": "PASS",
+      "demoControls": 0,
+      "apiRequests": 0
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "PASS",
+      "demoControls": 0,
+      "apiRequests": 0
+    }
+  ]
+}

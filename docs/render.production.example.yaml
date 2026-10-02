@@ -1,0 +1,54 @@
+# Production blueprint. Review service plans/prices and configure secrets before applying.
+# No automatic account creation or deployment was performed for this delivery.
+services:
+  - type: web
+    name: signalbrief-api
+    runtime: python
+    buildCommand: pip install .
+    preDeployCommand: alembic upgrade head
+    startCommand: uvicorn signalbrief.app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health/ready
+    envVars:
+      - fromGroup: signalbrief-production
+      - key: PYTHON_VERSION
+        value: 3.12.11
+  - type: worker
+    name: signalbrief-worker
+    runtime: python
+    buildCommand: pip install .
+    startCommand: python -m signalbrief.cli worker
+    envVars:
+      - fromGroup: signalbrief-production
+      - key: PYTHON_VERSION
+        value: 3.12.11
+  - type: cron
+    name: signalbrief-ingestion-scheduler
+    runtime: python
+    schedule: '17 * * * *'
+    buildCommand: pip install .
+    startCommand: python -m signalbrief.cli schedule
+    envVars:
+      - fromGroup: signalbrief-production
+      - key: PYTHON_VERSION
+        value: 3.12.11
+
+envVarGroups:
+  - name: signalbrief-production
+    envVars:
+      - {key: SB_ENVIRONMENT, value: production}
+      - {key: SB_DEMO_MODE, value: 'false'}
+      - {key: SB_DEMO_ADMIN, value: 'false'}
+      - {key: SB_DEMO_SEED_ON_START, value: 'false'}
+      - {key: SB_AUTH_MODE, value: supabase}
+      - {key: SB_STORAGE_MODE, value: supabase}
+      - {key: SB_AUTO_PUBLISH_VALIDATED, value: 'false'}
+      - {key: SB_DATABASE_URL, sync: false}
+      - {key: SB_SUPABASE_URL, sync: false}
+      - {key: SB_SUPABASE_SERVICE_KEY, sync: false}
+      - {key: SB_ALLOWED_HOSTS, sync: false}
+      - {key: SB_ALLOWED_ORIGINS, sync: false}
+      - {key: SB_ADMIN_USER_IDS, sync: false}
+      - {key: SB_DART_API_KEY, sync: false}
+      - {key: SB_SEC_USER_AGENT, sync: false}
+      - {key: SB_OPENAI_API_KEY, sync: false}
+      - {key: SB_OPENAI_MODEL, sync: false}

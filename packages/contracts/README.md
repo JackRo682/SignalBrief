@@ -1,9 +1,0 @@
-# Contracts boundary
-
-The sole version-1 authority is `services/contracts`. Python validates strict domain/API components, all thirteen named stage inputs/results and cross-envelope/provenance references in StageExchange. All nullable keys are required. Decimal values stay strings; unknown values stay null. Read the executable clarifications in AI_SYSTEM/API_SPEC and the T02 plan.
-
-Generate with `python -m scripts.export_contracts` then `npm run contracts:generate`. Verify `python -m scripts.export_contracts --check`, `npm run contracts:check` and `npm run contracts:typecheck`. Generated JSON/TypeScript files are never edited manually. `openapi.json` is OpenAPI 3.1 components only with empty paths: no product endpoints or authenticated runtime are advertised. Import frontend types from `generated.ts`; runtime callers must still validate with the Python authority.
-
-JSON Schema/TypeScript express shape constraints; Python additionally checks relationships, timestamps, exact span length/hash, references and structural hard-gate/commit-receipt consistency. None proves actual source truth, semantic entailment, authorization, approved rights, persisted upstream result or fenced atomic publication. Model-output exports are standard JSON Schema structures for extraction/generation/citation proposals, excluding private relevance and publication mutation. Provider-specific structured-output compatibility/integration is later work.
-
-`fixtures/v1` contains explicitly synthetic compatibility cases for all stages and transport components. They are not real company results, approved gold data or measured evaluation. Every stage has ok/retryable/blocked/skipped tests; negative fixtures cover missing/extra fields, enums, context/provenance and publication dependencies. Version changes require dependent docs, regeneration and fixture updates. No database migration exists.

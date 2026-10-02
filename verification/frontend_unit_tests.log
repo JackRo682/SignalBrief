@@ -1,0 +1,13 @@
+
+> signalbrief-web@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 C:/Users/nosug/Documents/Codex/2026-10-02/task-3/signalbrief-independent-20261002/github-publication/apps/web
+
+
+ Test Files  3 passed (3)
+      Tests  27 passed (27)
+   Start at  21:48:53
+   Duration  12.12s (transform 230ms, setup 0ms, import 644ms, tests 124ms, environment 32.75s)
+
