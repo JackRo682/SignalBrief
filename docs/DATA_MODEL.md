@@ -12,6 +12,8 @@ Core enums are canonical in [AI_SYSTEM.md](AI_SYSTEM.md). `publication_state = c
 
 ## 2. Core relations
 
+T02 external contract mapping: Event.event_status maps to content.events.event_state (discovered/normalized/needs_review/published/withdrawn/duplicate/rejected), independent of content.briefs.publication_state. These enum/nullable DTO clarifications live in AI_SYSTEM/API_SPEC. T02 introduces no migration, unique-key enforcement or commit/lease authority; its receipt/reference validation is structural only and cannot replace T03/T14/T22 transactional constraints.
+
 ```mermaid
 erDiagram
   COMPANIES ||--o{ DOCUMENTS : has

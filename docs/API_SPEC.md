@@ -16,6 +16,12 @@ Default authenticated limits: read 60/min/user, ordinary writes 20/min/user; que
 
 ## 2. Resource shapes
 
+T02 encodes these as strict version-1 DTOs/components, without implementing routes. Nullable keys must be present; unknown fields are rejected. Coverage state is current/coverage_pending/source_delayed/unsupported; read state unread/read; correction state none/corrected/withdrawn; duplicate state canonical/alias; source availability available/unavailable; review state pending/approved/rejected/not_required. These are explicit executable design defaults. Error codes are invalid_request/unauthenticated/forbidden/not_found/version_conflict/idempotency_conflict/validation_error/quota_exceeded/service_unavailable/precondition_required. Field error codes remain bounded snake_case reason identifiers.
+
+Publication fields expand to publication_date/publication_at/precision/source_timezone. Ranking is total/reason_codes/version. Source refs use SourceDocument provenance metadata; factual title/summary arrays reference Claim objects. Ops model-call metadata excludes prompts and secret configuration; nullable usage/cost stays unknown. T02 schema components/types are generated from the Python authority; no route/runtime/Auth readiness is implied. Do not expose internal PublicationDecision or commit receipt in user-safe DTOs.
+
+The error enum additionally includes outdated_revision for the existing question route contract. Additional version-1 design defaults: account_state active/disabled/deletion_pending/deleted; feed change_status new/changed/unchanged/not_comparable; calendar kind results/meeting/dividend/other and date_status confirmed/estimated/unknown/canceled (precision may also be unknown). These do not classify real issuer data. Portfolio manual weights are fractions in [0,1], the known sum must agree without normalization, and weights_complete describes whether all nonempty positions have entered weights; freshness eligibility remains a later server rule. Calendar/profile/source names stay bounded strings until their approved registries exist. Ops ModelCall includes identifiers/snapshots, version/hash metadata, timestamp, nullable token usage/latency/cost; no raw prompt, provider response, chain of thought or private inputs. Cost complete=false requires null rather than an invented zero.
+
 | Name | Shape |
 |---|---|
 | Profile | id, timezone, locale, onboarding_completed_at?, analytics_consent, consent_version?, account_state, row_version |

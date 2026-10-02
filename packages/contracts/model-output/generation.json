@@ -1,0 +1,264 @@
+{
+  "$defs": {
+    "Analysis": {
+      "additionalProperties": false,
+      "properties": {
+        "brief_id": {
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Brief Id",
+          "type": "string"
+        },
+        "claims": {
+          "items": {
+            "$ref": "#/$defs/Claim"
+          },
+          "title": "Claims",
+          "type": "array"
+        },
+        "event_id": {
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "evidence_status": {
+          "enum": [
+            "adequate",
+            "limited",
+            "conflicting_evidence",
+            "unavailable"
+          ],
+          "title": "Evidence Status",
+          "type": "string"
+        },
+        "interpretation_claim_ids": {
+          "items": {
+            "format": "uuid",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "type": "string"
+          },
+          "title": "Interpretation Claim Ids",
+          "type": "array",
+          "uniqueItems": true
+        },
+        "language": {
+          "maxLength": 16000,
+          "minLength": 1,
+          "title": "Language",
+          "type": "string"
+        },
+        "limitations": {
+          "items": {
+            "maxLength": 16000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "next_check_claim_ids": {
+          "items": {
+            "format": "uuid",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "type": "string"
+          },
+          "title": "Next Check Claim Ids",
+          "type": "array",
+          "uniqueItems": true
+        },
+        "publication_state": {
+          "enum": [
+            "candidate",
+            "published",
+            "superseded",
+            "withdrawn",
+            "rejected"
+          ],
+          "title": "Publication State",
+          "type": "string"
+        },
+        "revision": {
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "run_id": {
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 16000,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "summary_claim_ids": {
+          "items": {
+            "format": "uuid",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "type": "string"
+          },
+          "title": "Summary Claim Ids",
+          "type": "array",
+          "uniqueItems": true
+        },
+        "supersedes_brief_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Supersedes Brief Id"
+        },
+        "title": {
+          "maxLength": 16000,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "title_claim_ids": {
+          "items": {
+            "format": "uuid",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "type": "string"
+          },
+          "title": "Title Claim Ids",
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "brief_id",
+        "revision",
+        "event_id",
+        "run_id",
+        "title",
+        "summary",
+        "claims",
+        "title_claim_ids",
+        "summary_claim_ids",
+        "interpretation_claim_ids",
+        "next_check_claim_ids",
+        "evidence_status",
+        "limitations",
+        "language",
+        "publication_state",
+        "supersedes_brief_id"
+      ],
+      "title": "Analysis",
+      "type": "object"
+    },
+    "Claim": {
+      "additionalProperties": false,
+      "properties": {
+        "change_ids": {
+          "items": {
+            "format": "uuid",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "type": "string"
+          },
+          "title": "Change Ids",
+          "type": "array",
+          "uniqueItems": true
+        },
+        "citation_span_ids": {
+          "items": {
+            "format": "uuid",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "type": "string"
+          },
+          "title": "Citation Span Ids",
+          "type": "array",
+          "uniqueItems": true
+        },
+        "claim_id": {
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "fact_ids": {
+          "items": {
+            "format": "uuid",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "type": "string"
+          },
+          "title": "Fact Ids",
+          "type": "array",
+          "uniqueItems": true
+        },
+        "kind": {
+          "enum": [
+            "fact",
+            "comparison",
+            "interpretation",
+            "next_check"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "material": {
+          "title": "Material",
+          "type": "boolean"
+        },
+        "text": {
+          "maxLength": 16000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "uncertainty_codes": {
+          "items": {
+            "pattern": "^[a-z][a-z0-9_]{0,79}$",
+            "type": "string"
+          },
+          "title": "Uncertainty Codes",
+          "type": "array"
+        },
+        "validation_status": {
+          "enum": [
+            "pass",
+            "fail",
+            "uncertain",
+            "not_applicable"
+          ],
+          "title": "Validation Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "claim_id",
+        "kind",
+        "text",
+        "fact_ids",
+        "change_ids",
+        "citation_span_ids",
+        "material",
+        "uncertainty_codes",
+        "validation_status"
+      ],
+      "title": "Claim",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "analysis": {
+      "$ref": "#/$defs/Analysis"
+    }
+  },
+  "required": [
+    "analysis"
+  ],
+  "title": "GenerationOutput",
+  "type": "object"
+}

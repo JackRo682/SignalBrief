@@ -83,3 +83,7 @@ python -m piptools compile --generate-hashes --strip-extras --index-url https://
 ```
 
 Verify clean install and affected checks. No migrations exist. T02 owns authoritative domain/stage schemas and generated types; T03 SQL; T07 queue. Product/browser/accessibility journeys, live auth/providers, source rights, gold evaluation and staging/deployment are later gates. Full AC-20 release acceptance is not claimed. Rollback reverts only scaffold changes and retains specs; no persistent data changes exist.
+
+## T02 contract checks
+
+After the locked installs, run `python -m scripts.export_contracts --check`, `npm run contracts:check` and `npm run contracts:typecheck` in addition to the baseline commands. Update artifacts with `python -m scripts.export_contracts` then `npm run contracts:generate`; never hand-edit generated files. Python pytest includes synthetic domain/API and all thirteen stage compatibility cases. JSON Schema/TypeScript shape checks require Python runtime relational validation at use boundaries. See [contracts boundary](../packages/contracts/README.md). No live route, DB, model or source validation is implied.

@@ -6,10 +6,10 @@ build-backend = "setuptools.build_meta"
 name = "signalbrief-services"
 version = "0.1.0"
 requires-python = ">=3.12,<3.13"
-dependencies = ["fastapi==0.142.2", "uvicorn==0.54.0"]
+dependencies = ["fastapi==0.142.2", "uvicorn==0.54.0", "pydantic==2.13.5"]
 
 [project.optional-dependencies]
-dev = ["httpx2==2.13.1", "pytest==9.1.1", "ruff==0.16.10", "mypy==2.4.0", "pip-tools==7.6.1", "pip-audit==2.10.0"]
+dev = ["httpx2==2.13.1", "pytest==9.1.1", "ruff==0.16.10", "mypy==2.4.0", "pip-tools==7.6.1", "pip-audit==2.10.0", "jsonschema==4.26.0", "types-jsonschema==4.26.0.20260518"]
 
 [tool.setuptools.packages.find]
 include = ["services*"]
