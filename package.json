@@ -13,13 +13,17 @@
   "scripts": {
     "dev": "npm run dev --workspace @signalbrief/web",
     "lint": "npm run lint --workspace @signalbrief/web",
-    "format": "prettier --write apps/web package.json .github/workflows/ci.yml",
-    "format:check": "prettier --check apps/web package.json .github/workflows/ci.yml",
+    "format": "prettier --write apps/web package.json .github/workflows/ci.yml scripts/check_contract_types.mjs packages/contracts/compatibility.ts packages/contracts/tsconfig.json",
+    "format:check": "prettier --check apps/web package.json .github/workflows/ci.yml scripts/check_contract_types.mjs packages/contracts/compatibility.ts packages/contracts/tsconfig.json",
     "typecheck": "npm run typecheck --workspace @signalbrief/web",
     "test": "npm run test --workspace @signalbrief/web",
-    "build": "npm run build --workspace @signalbrief/web"
+    "build": "npm run build --workspace @signalbrief/web",
+    "contracts:generate": "openapi-typescript packages/contracts/openapi.json -o packages/contracts/generated.ts",
+    "contracts:check": "node scripts/check_contract_types.mjs",
+    "contracts:typecheck": "tsc -p packages/contracts/tsconfig.json --noEmit"
   },
   "devDependencies": {
+    "openapi-typescript": "7.13.0",
     "prettier": "3.9.9"
   }
 }

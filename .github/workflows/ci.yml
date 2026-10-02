@@ -22,6 +22,8 @@ jobs:
       - run: npm run format:check
       - run: npm run lint
       - run: npm run typecheck
+      - run: npm run contracts:check
+      - run: npm run contracts:typecheck
       - run: npm test
       - run: npm run build
       - run: npm audit --audit-level=high
@@ -53,6 +55,7 @@ jobs:
       - run: python -m ruff format --check services scripts tests
       - run: python -m ruff check services scripts tests
       - run: python -m mypy
+      - run: python -m scripts.export_contracts --check
       - run: python -m pytest
       - run: python -m scripts.health_smoke
       - run: python scripts/check_secrets.py
