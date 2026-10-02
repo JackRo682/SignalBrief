@@ -4,6 +4,8 @@ Prepared 2 October 2026. This package specifies a deployable evidence-first comp
 
 ## Start here
 
+Current checkout includes a T01 local web/API/idle-worker foundation. See [Local development](docs/LOCAL_DEVELOPMENT.md) for setup and [T01 execution plan](.agent/plans/T01-foundation.md) for evidence. No financial product, live integration or deployed release is claimed. The document-only handoff record describes the original specification baseline.
+
 1. Read [Product Vision](docs/PRODUCT_VISION.md), [User Research and Source Audit](docs/USER_RESEARCH.md) and [PRD](docs/PRD.md).
 2. Review [MVP Scope](docs/MVP_SCOPE.md) and [Acceptance Criteria](docs/ACCEPTANCE_CRITERIA.md).
 3. For development, read [AGENTS.md](AGENTS.md) and [.agent/PLANS.md](.agent/PLANS.md), then [Build Plan](docs/BUILD_PLAN.md) and the separate [First 10 Tasks](docs/FIRST_10_TASKS.md).
