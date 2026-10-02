@@ -60,7 +60,13 @@ Resolved failures: npm's extracted Windows launch scripts assumed a global insta
 
 CI actions are pinned to SHA values verified from official action tags; contents read only, checkout credentials not persisted, web job and Linux/Windows Python jobs. Remote CI, Linux execution, migration/RLS, live auth/source/AI, gold evaluation, product browser/mobile/keyboard/zoom journeys, staging and deployment are **not run**. The static scaffold HTTP/SSR check is not product UX acceptance. Dependency audits and credential patterns are bounded checks, not a security certification.
 
+## Remote integration follow-up
+
+Authorized to publish T01 branch and draft PR, not merge. Main remained at the baseline with no intervening user changes. Connector-created initial code commit 4478a0cee0dad7a050fd435f70f11e5ed7d71931 on codex/t01-foundation, draft PR #1. All 34 remote files matched the frozen local manifest by SHA-256 and original specification blobs were retained. First PR Actions run 36976624494: web passed; Windows setup-python failed because 3.12.14 x64 is not distributed for Windows; Linux canceled by matrix fail-fast before checks. No code-test failure was established by that run.
+
+Official Actions manifest inspection found latest supported 3.12 distribution: Linux 3.12.15, Windows 3.12.10. Workflow now tests these explicit versions independently with fail-fast disabled; local runtime remains 3.12.14. Windows is a compatibility job, not the eventual production patch policy. Latest official checkout/setup-node/setup-python releases were verified to use Node24 and pinned by their exact tag SHAs. README mixed CRLF was normalized to LF to retain a concise additive diff. Final follow-up CI is pending at commit preparation; live accounts/deployment remain outside T01.
 ## Rollback
+
 Remove or revert only T01 files against the recorded document commit. README additions retain the original specification. No persistent data or schema state is changed.
 
 ## Acceptance criteria
