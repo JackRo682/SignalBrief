@@ -1,0 +1,113 @@
+# SignalBrief AI System
+
+Version 1.1 • Normative pipeline contract • All tuning values are D defaults
+
+## 1. Execution model
+
+Explicit Python stage functions orchestrated by durable job/run state in PostgreSQL. LangGraph is optional and must not introduce a separate state authority. One company-level analysis is reused across users. User eligibility and ranking run without an LLM. No general browsing, trading, shell, account, or arbitrary-URL tool is available to a generation step.
+
+Use an OpenAI model supporting strict structured output, selected by evaluation and account availability at implementation. Record requested model, returned model identifier, any available snapshot/version, prompt hash/version, schema version, price-table version, timestamp, input hashes, latency, usage, cost and validation results. Do not invent a model snapshot when the provider returns only an alias. Pin a supported snapshot when available. Source T4 in [ARCHITECTURE.md](ARCHITECTURE.md) supports schema/refusal handling, not factual correctness.
+
+Record optional confidence as `{kind:uncalibrated_model|rule_status|calibrated_empirical, value?:decimal, reason_codes:[], calibration_version?:string}`. Missing confidence stays null. A model self-rating is diagnostic only; a calibrated value requires a measured calibration procedure/version. User-facing evidence states derive from validators, never raw model confidence.
+
+Stage result envelope: `schema_version:string`, `run_id:uuid`, `stage:string`, `status:ok|retryable|blocked|skipped`, `input_hash:sha256`, `output:typed object|null`, `reason_codes:string[]`, `started_at/finished_at:UTC`, `validator_version:string`. Unknown enums/extra fields rejected. All nullable fields must distinguish missing from zero/false.
+
+## 2. Shared schemas (descriptive contracts; not application code)
+
+| Object | Required fields / types | Constraints |
+|---|---|---|
+| SourceDocument | document_id, source_id, provider_external_id, version_hash, issuer_id, original_url, tier(1..4), language, content_type, publication_date, publication_at?, time_precision(date/minute/second), source_timezone?, first_seen_at, retrieved_at, supersedes_document_id? | Immutable raw bytes/version; parser identity belongs to ParsedArtifact; canonical URL from provider, never model-generated; preserve original date precision |
+| ParsedArtifact | parsed_artifact_id, document_id, document_version_hash, parser_name, parser_version, parser_config_hash, output_schema_version, canonical_text_hash, canonical_text_object_key, language, parse_state(parsed/quarantined), diagnostics:ParserDiagnostics | Unique declared parser identity per document; immutable canonical UTF-8 text; same-byte reprocessing with new declared parser identity produces new artifact, never new raw document |
+| SourceSpan | span_id, parsed_artifact_id, document_id, document_version_hash, canonical_text_hash, locator:{page?,section?,table?,row?,column?,start_offset,end_offset}, exact_text, text_hash | Offset basis is the named artifact’s normalized Unicode text, measured in Unicode code points with start inclusive/end exclusive; at least a usable page/section/table locator plus offsets; boundaries must match stored text |
+| Fact | fact_id, event_id, metric_key, value_type(number/range/text/date), value_decimal?, low?, high?, text_value?, date_value?, unit, currency?, scale_decimal, period_start?, period_end?, fiscal_label?, duration_kind(instant/quarter/YTD/year/forward/none), accounting_basis, consolidation_scope, segment?, forward_looking:boolean, evidence_span_ids[] | Decimal strings, original literal retained; one value representation; range low≤high; mandatory context may be unknown but then comparison blocked |
+| Event | event_id, issuer_id, event_type, effective_date?, target_period?, source_document_ids[], fact_ids[], first_published_at?, publication_date, canonical_key, amendment_of_event_id?, canonical_event_id?, event_status | Classification enum from PRD; multiple distinct events may come from one filing; duplicate pointer is same-issuer, acyclic and root-only under DATA_MODEL §7.5, separate from amendments |
+| PriorMatch | event_id, candidate_ids[], selected_id?, match_status(matched/missing/ambiguous/incompatible), compared_context, rationale_codes[], retrieval_as_of | Earlier information available at comparison cutoff; no similarity-only final decision |
+| Change | change_id, event_id, current_fact_id, previous_fact_id?, kind(new/increased/decreased/unchanged/revised/withdrawn/not_comparable), absolute_delta?, percent_delta?, percentage_point_delta?, comparison_status, reason_codes[], calculation_version | Derived values reference both fact IDs and deterministic calculation; absence never becomes zero |
+| Claim | claim_id, kind(fact/comparison/interpretation/next_check), text, fact_ids[], change_ids[], citation_span_ids[], material:boolean, uncertainty_codes[], validation_status | All externally checkable assertions and comparisons are material; breaking a sentence into clauses must not evade citation coverage |
+| Analysis | brief_id, revision:int, event_id, run_id, title, summary, claims[], interpretation_claim_ids[], next_check_claim_ids[], evidence_status(adequate/limited/conflicting_evidence/unavailable), limitations[], language, publication_state, supersedes_brief_id? | Title/summary factual clauses use Claim objects too; no uncited free-text factual slots |
+| Validation | validation_id, run_id, subject_id, check_type, result(pass/fail/uncertain/not_applicable), severity(info/blocking), reason_code, evidence_ids[], checker_version, checked_at | All required checks present; fail or uncertain on a material claim blocks that claim and any dependent conclusion |
+| ScoreBreakdown | event_id, materiality, relevance, novelty, recency, total, scoring_version, reason_codes[] | Each component 0..1; personalization stays server-side; no probability of return |
+
+Additional stage support objects are normative for T02. These remain descriptive schemas rather than application implementation. Every property is required unless marked `?`; arrays may be empty only where the stage outcome permits it; unknown fields/enums fail validation.
+
+| Object | Required fields / types | Constraints |
+|---|---|---|
+| FetchReceipt | receipt_id UUID, source_id UUID, provider_external_id string, requested_at/finished_at UTC, outcome(fetched/not_modified/retryable/quarantined/blocked), http_status int?, document_id UUID?, content_hash SHA256?, bytes_received nonnegative int, attempt positive int, reason_codes string[], validator_version string | fetched requires document/hash; not_modified must resolve an existing document; no auth headers/query secrets; failure never advances a complete-poll cursor |
+| ParserDiagnostics | parser_name/version strings, parser_config_hash SHA256, output_schema_version string, source_hash SHA256, parsed_artifact_id UUID?, canonical_text_hash SHA256?, status(parsed/quarantined/failed), text_codepoint_count nonnegative int, page_count nonnegative int?, table_count nonnegative int, reason_codes string[], validation_ids UUID[] | parsed requires artifact/text hash, exact span-boundary checks and usable text; quarantined/failed cannot generate publishable spans; no guessed OCR or issuer identity |
+| PublicationDecision | decision_id UUID, run_id UUID, event_id UUID, candidate_brief_id UUID?, expected_current_brief_id UUID?, decision(publish/needs_review/reject/withhold), gate_policy_version string, validation_ids UUID[], reviewer_action_id UUID?, reason_codes string[], decided_at UTC, publication_outbox_id UUID? | publish requires all hard gates and required review; outbox ID populated only after atomic commit; no operator override; stale revision/lease cannot commit |
+| FinalDisposition | run_id UUID, outcome(published/fact_only/needs_review/abstained/refused/rejected/failed/blocked), evidence_status(adequate/limited/conflicting_evidence/unavailable), limitations string[], reason_codes string[], validation_ids UUID[], publication_decision_id UUID?, finished_at UTC? | published/fact_only require a committed publish decision; needs_review is nonterminal and has null finished_at; abstention/refusal/failure are distinct and never imply publication |
+
+Every stage input uses `schema_version, run_id, stage, input_hash, pipeline_config_version, schema_contract_version, source_document_ids[], parsed_artifact_ids[], upstream_result_ids[], retrieval_cutoff?` plus its typed stage-specific payload named below. Inputs pin the exact artifacts and validated upstream outputs; reusing a document ID cannot select “latest parser output” implicitly. A stage before parsing uses an empty artifact list. Stage result output validates its named object(s); fetch/parser/policy/final-disposition objects above close the otherwise implicit envelope fields.
+
+Source spans, facts, claims, and citations are separate IDs. A citation is not just a URL. Translation preserves the original span and is labeled; translation cannot serve as independent corroboration.
+
+## 3. Stage contracts
+
+| Stage | Input | Output schema | Rules | LLM | Deterministic logic | Failure mode | Fallback |
+|---|---|---|---|---|---|---|---|
+| Document ingestion | Provider cursor, roster, approved source config | SourceDocument + FetchReceipt | Allowlist hosts, rights, provider limits; hash/version, amendments, complete pagination | No | Fetch, checksum, dedup, cursor, retry | 403/429, missing exhibit, broken XML/PDF | Backoff, mark source delayed, retry; never blank-success |
+| Parsing / company resolution | Immutable source + directory | ParsedArtifact + SourceSpan[] + resolved issuer + ParserDiagnostics | Provider issuer ID authoritative; ticker exchange/date mapping; preserve tables and locations | No for identity; OCR optional later | Format parsers, size/safety checks | Wrong issuer, scanned/garbled tables, encoding ambiguity | Quarantine; metadata only; no generated analysis |
+| Event extraction | Issuer, parsed spans, supported taxonomy | Event candidates + Fact[] | Extract only present values; separate actual vs forecast; typed source-linked facts | Yes for prose | Structured financial fields preferred; schema and literal verification | Fabricated fact, missing qualifier, multi-event conflation | One constrained retry; then review/block; validated deterministic facts retained |
+| Event normalization | Candidates, metric dictionary | Normalized Event/Fact + canonical key | Unit/scale/currency, period, basis, metric aliases, explicit missing fields | No arithmetic; optional alias proposal | Dictionary maps and decimal conversion; manual approval for new aliases | GAAP/non-GAAP or YTD/quarter confusion | Unmapped metric/incomparable status; retain original value |
+| Previous-event matching | Normalized event + as-of history | PriorMatch | Hard issuer/metric/period/basis filters; documented comparison relation; prior availability | Optional semantic tie assistance, never sole approval | Context filtering, fiscal calendar and amendment chain | Wrong quarter/company, lookahead, multiple candidates | Ambiguous/missing baseline; no delta |
+| Change detection | Current/prior facts + valid PriorMatch | Change[] | Exact decimal math; separate new claim from changed fact; qualitative changes need paired excerpts | Optional qualitative comparison | Numeric changes, tolerance, percent/pp handling | False change, sign/scale error, omission read as withdrawal | Not comparable or supported facts only; review material ambiguity |
+| Materiality scoring | Event class, changes, explicit flags | Materiality + reason codes | Fixed versioned rubric; not stock-impact prediction | No | Class/magnitude/critical flags | No comparable magnitude or noisy type | Neutral magnitude, visible limited basis; high-risk flag queues review |
+| Portfolio relevance | User subscriptions, optional current weights, event | Relevance + eligibility | Exact issuer subscription; weight bonus only for fresh entered weights | No | RLS-scoped rules | Stale holdings, absent weight, deleted account | Watchlist/held baseline; no inferred wealth/weight |
+| Evidence retrieval | Claims-to-support plan, event/prior IDs | Bounded SourceSpan[] with retrieval metadata | Restrict issuer/context/time; retrieve contradictions too; tier policy; no arbitrary sources | No initially | IDs/full-text search; pgvector candidate aid only later | Correct URL wrong passage; excessive context | Broaden only within approved docs or abstain |
+| Analysis generation | Valid facts/changes/evidence, glossary | Analysis candidate + Claim[] | Fact/evidence/comparison before interpretation; label conditions; source IDs only | Yes | Strict schema, length and references | Hallucination, causal leap, prompt injection, refusal, truncation | One repair for schema only; valid fact template; otherwise blocked |
+| Citation validation | Claim[] + immutable evidence + facts | Validation[] | Resolve every ID/locator; verify quote/context/entailment, numbers, contradiction | Yes as one semantic check | Existence, exact span/hash, numeric equality, arithmetic lineage | Citation exists but does not support claim; judge self-agreement | Fail/uncertain → remove dependent claim, regenerate once or human review |
+| Uncertainty handling | All stage states/validators | FinalDisposition (including evidence status and limitations) | No model self-confidence used as publication probability; granular reason codes | No final status decision | Policy mapping from check outcomes | Unsupported “high confidence,” hidden conflict | Limited fact view or abstention; conflict notice with both supported source assertions |
+| Policy validation / publish | Fully validated candidate + review policy | PublicationDecision + outbox event | Block advice, target prices, certain predictions, unsupported causation, leakage; transactional publish | Semantic policy classifier plus deterministic hard checks | Gates, version checks, role permissions, publish dedup | Euphemistic trade advice or incomplete checks | Reject/quarantine; operator cannot override hard failures |
+
+## 4. Comparison policy
+
+Comparison is an explicit relation: same target-period forecast revision; same metric actual versus prior fiscal quarter/year; or corrected disclosure for the same period. Every displayed comparison names the relation. A quarterly actual versus a full-year forecast is not a valid delta. Consolidated vs separate, adjusted vs GAAP, segment vs company, currency or unit mismatch blocks comparison unless a documented deterministic equivalence applies. No automatic FX conversion.
+
+For numeric comparable values: absolute delta = current − previous. Percent delta = 100 × (current − previous) / previous only when previous >0 and current ≥0 and the measure is not already a percentage/rate; sign-crossing cases use absolute delta and explicit wording. Previous 0, negative prior or incompatible periods → percent delta null with reason. Rates stored as fractions use `(current − previous) × 100` percentage points. Range endpoints compare separately; a midpoint comparison is disabled in V1 unless explicitly requested and labeled in a future contract. Text absence is not withdrawal; withdrawal requires explicit source evidence.
+
+Rounding tolerance: compare exact normalized values at source precision; permit only documented presentation rounding, at most half the last displayed unit. No arbitrary 1% tolerance on source numbers. Detect change on source precision before UI rounding; a nonzero small delta may be rendered “less than 0.1%,” with underlying values inspectable. A restatement is a revision, not new operating performance.
+
+Prior selection has two clocks: effective/reporting time and publication/availability time. Backtests and gold cases use only evidence available at their cutoff. For live new events, later-arriving backfills cannot secretly change old comparison results; they produce a new run/revision if relevant.
+
+## 5. Initial scoring rubric
+
+Eligibility: issuer in watchlist OR held positions, active account, supported published revision, no withdrawn/blocked material claim. The Changes feed additionally requires at least one validated substantive change (new explicit announcement, increase/decrease, revision or withdrawal). An unchanged event may appear in the company timeline but is history-only and triggers no normal alert. Missing comparison history does not by itself establish novelty: a new announcement must be independently evident in the source. Materiality and relevance do not override validation.
+
+`M = 0.50 × class_base + 0.30 × magnitude + 0.20 × critical_flag`.
+
+Class bases: financial_results .60; guidance .80; capital_allocation .65; shareholder_return .60; governance .60; material_risk .90; other 0 (not auto-published). `critical_flag` is 1 only for validated explicit items such as going-concern warning, default, withdrawal of guidance or executive departure; maintain a versioned list. This is product prioritization, not a legal materiality assessment.
+
+When a validated critical flag is 1, apply `M = max(M,.90)` after the weighted calculation so a critical qualitative warning is not suppressed by absence of numeric magnitude. It still cannot bypass evidence or review gates.
+
+Magnitude is 0 for unchanged; .25 for a new/qualitative item without comparable numbers; otherwise min(1, abs(percent_delta)/20) for supported metrics, or min(1, abs(pp_delta)/5) for rate metrics. Absolute-only numeric changes use .25 rather than a fabricated scaled significance. Use the maximum validated magnitude across changes in the event. Industry-specific calibration is deferred and the limitations are logged.
+
+`R = .70` for watch-only; `.85` for held with no fresh known weight; `.85 + .15 × min(weight/.20,1)` for held with manual weight confirmed within 30 days. If both held and watched use the held rule. Weights never infer market value. `N = 1` for a new event, `.75` for a substantive correction, `0` for an exact duplicate (suppressed). `T = 2^(−age_hours/72)` from original publication time; for date-only sources use elapsed whole source-local dates ×24 and mark coarse precision. Negative ages clamp to zero pending timezone validation.
+
+`Total = .40M + .25R + .20N + .15T`. Sort descending, then source publication date/time descending, then event UUID ascending. Source authority is an eligibility/evidence rule, not a boost that can compensate for a false claim. Top three are a display limit, not a promise of three events. Normal alerts require M≥.75 and explicit opt-in. Scores and limits are D policies to evaluate, not learned survey weights.
+
+## 6. Evidence and publication gates
+
+1. Source identity/rights/parser/issuer checks pass.
+2. Material fact and comparison assertions each have verified source spans; comparison cites both sides plus arithmetic lineage.
+3. Semantic citation verdict is pass, not merely a well-formed URL. High-risk cases need human review even when an LLM judge passes.
+4. No contradictory unresolved conclusion, numeric inconsistency, policy violation or missing validation record.
+5. During first 100 candidate reviews, all publications require human approval. Thereafter automatic publication may be enabled per event class only after the evaluation gate passes and the operator enables it. Conflicts, material amendments, uncertain extraction and new parsers always require review in beta.
+6. Conflict-only/fact-only publication is possible if each displayed source assertion is supported, disputed values are explicitly attributed, no reconciled conclusion is invented, and a human approves. `unavailable` evidence never produces an analysis; show coverage metadata outside the event feed.
+
+Fallback hierarchy: validated generated brief → deterministic template from fully validated facts → safe source-metadata coverage notice → no content plus explicit failure state. The same factual/citation gates apply to fallback; “deterministic” does not cure a wrongly extracted fact.
+
+## 7. Prompt and injection boundaries
+
+Prompts contain role/policy, schema, authorized evidence objects, and a narrow task. Documents/questions are labeled untrusted data. Text such as “ignore instructions,” hidden HTML or forged source IDs is not executable. Strip active content; forbid source-originated tools/URLs, credentials and network calls. Generation may cite only IDs in supplied context. Retrieval sees public-company evidence, not other users' content. No private chain-of-thought storage or exposure; retain concise decision reason codes and evidence links.
+
+## 8. Follow-up contract
+
+Input: user ID for authorization/quota only, published event revision, question ≤1,000 characters, locale. Retrieve current event and selected comparable prior evidence, at most 12 spans / 12,000 input tokens by default; truncate by whole span and declare insufficient context rather than clipping a qualifier. Only the question and public evidence go to the model. Redact obvious secrets/account identifiers and warn inline before resubmission when necessary.
+
+Output: `question_id`, `answer_status:answered|abstained|refused|failed`, `claims[]`, `limitations[]`, `brief_revision`, `run_id`, `completed_at`. Answered requires the same citation/numeric/policy checks. Out-of-scope price prediction or buy/sell prompt is refused; unavailable context is abstained; provider failure is failed. These outcomes have different metrics. No open web expansion or silent change of event scope. Job deadline 60 seconds; if exceeded return terminal failure and cancel further attempts. No partial unvalidated answer is displayed.
+
+## 9. Run controls and failure accounting
+
+Per-call timeout 30 seconds; at most two LLM attempts per stage including initial attempt; one complete repair cycle maximum. Retries count toward cost and job deadline. Transient provider 429/5xx uses bounded jittered backoff and Retry-After; invalid facts do not trigger infinite retries. Analysis job total deadline 180 seconds excluding queue wait; queue age and execution latency are separate.
+
+Reserve estimated maximum call cost before sending; enforce configured daily budget, per-user Q&A limits, and worker concurrency (initial 2 model calls). At budget exhaustion continue ingestion and validated fact handling, stop new model work, and display a processing-delay state. Unknown usage/cost is marked incomplete and investigated, never logged as zero. See [AI_EVAL.md](AI_EVAL.md) for formulas and [ARCHITECTURE.md](ARCHITECTURE.md) for jobs and operations.
