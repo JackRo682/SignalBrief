@@ -20,7 +20,8 @@ jobs:
         working-directory: apps/web
         run: npm ci
       - name: Download isolated Python verification wheels
-        run: python -m pip download --dest wheelhouse --only-binary=:all: ruff 'psycopg[binary]>=3.2,<4'
+        run: |
+          python -m pip download --dest wheelhouse --only-binary=:all: ruff 'psycopg[binary]>=3.2,<4'
       - name: Package toolchain without credentials or application data
         run: tar -czf toolchain.tar.gz apps/web/node_modules wheelhouse
       - uses: actions/upload-artifact@v4
