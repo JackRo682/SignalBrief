@@ -1,0 +1,20 @@
+name: Source snapshot
+on:
+  push:
+    branches:
+      - codex/product-refresh-20261002
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package the exact tracked source for review
+        run: git archive --format=zip --output=signalbrief-source.zip HEAD
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signalbrief-source
+          path: signalbrief-source.zip
+          retention-days: 7
