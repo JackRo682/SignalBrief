@@ -397,7 +397,8 @@ def test_comparison_period_and_issuer_boundaries() -> None:
 
 
 def test_public_document_query_preserved_without_granting_fetch_rights() -> None:
-    url = "https://example.invalid/document?document_id=synthetic"
+    # All-zero receipt is synthetic shape data, never fetched or claimed to exist.
+    url = "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=00000000000000"
     assert TypeAdapter(Url).validate_python(url) == url
 
 
@@ -414,3 +415,127 @@ def test_public_document_query_preserved_without_granting_fetch_rights() -> None
 def test_privileged_or_insecure_source_url_rejected(url: str) -> None:
     with pytest.raises(ValidationError):
         TypeAdapter(Url).validate_python(url)
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://example.invalid/document?document_id=synthetic",
+        "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=00000000000000&extra=synthetic",
+        "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=00000000000000&rcpNo=00000000000000",
+        "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=invalid",
+        "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=00000000000000&crtfc_key=synthetic",
+        "https://dart.fss.or.kr/other?rcpNo=00000000000000",
+        "https://dart.fss.or.kr:8443/dsaf001/main.do?rcpNo=00000000000000",
+        "https://dart.fss.or.kr.evil.invalid/dsaf001/main.do?rcpNo=00000000000000",
+        "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=%30%30%30%30%30%30%30%30%30%30%30%30%30%30",
+    ],
+)
+def test_source_query_policy_rejects_unknown_or_noncanonical_identifiers(url: str) -> None:
+    with pytest.raises(ValidationError):
+        TypeAdapter(Url).validate_python(url)
+
+
+@pytest.mark.parametrize(
+    "mutation", ["raw_hash", "span_text", "artifact_id", "span_id", "artifact_version"]
+)
+def test_retrieval_rejects_self_consistent_output_outside_input_pins(mutation: str) -> None:
+    import hashlib
+
+    case = copy.deepcopy(BY_STAGE["evidence_retrieval"])
+    output = case["result"]["output"]
+    if mutation == "raw_hash":
+        digest = "b" * 64
+        output["documents"][0]["version_hash"] = digest
+        output["artifacts"][0]["document_version_hash"] = digest
+        output["artifacts"][0]["diagnostics"]["source_hash"] = digest
+        output["spans"][0]["document_version_hash"] = digest
+    elif mutation == "span_text":
+        text = output["spans"][0]["exact_text"].replace("Synthetic", "Invented!")
+        output["spans"][0]["exact_text"] = text
+        output["spans"][0]["text_hash"] = hashlib.sha256(text.encode()).hexdigest()
+    elif mutation == "artifact_id":
+        new_id = "00000000-0000-4000-8000-000000000999"
+        output["artifacts"][0]["parsed_artifact_id"] = new_id
+        output["artifacts"][0]["diagnostics"]["parsed_artifact_id"] = new_id
+        output["spans"][0]["parsed_artifact_id"] = new_id
+    elif mutation == "span_id":
+        output["spans"][0]["span_id"] = "00000000-0000-4000-8000-000000000999"
+    else:
+        output["artifacts"][0]["parser_version"] = "2"
+        output["artifacts"][0]["diagnostics"]["parser_version"] = "2"
+    # The attack is internally consistent; only cross-envelope pinning can reject it.
+    from services.contracts.stages import RetrievalOutput
+
+    RetrievalOutput.model_validate(output)
+    with pytest.raises(ValidationError, match="retrieval changed"):
+        StageExchange.model_validate(case)
+
+
+def test_retrieval_can_select_exact_subset_of_pinned_evidence() -> None:
+    case = copy.deepcopy(BY_STAGE["evidence_retrieval"])
+    for key in ("documents", "artifacts", "spans"):
+        case["result"]["output"][key] = case["result"]["output"][key][:1]
+    StageExchange.model_validate(case)
+
+
+@pytest.mark.parametrize(
+    "mutation", ["run", "fact", "citation", "event", "changed_text", "unavailable", "uncertain"]
+)
+def test_policy_rejects_unpinned_or_unvalidated_analysis_despite_passing_gates(
+    mutation: str,
+) -> None:
+    case = copy.deepcopy(BY_STAGE["policy_validation_publish"])
+    decision = publish_decision()
+    case["input"]["payload"]["validations"] = decision["validations"]
+    case["input"]["payload"]["reviewer_action_id"] = decision["reviewer_action_id"]
+    case["result"]["output"]["publication_decision"] = decision
+    StageExchange.model_validate(case)
+    analysis = case["input"]["payload"]["analysis"]
+    unknown = "00000000-0000-4000-8000-000000000999"
+    if mutation == "run":
+        analysis["run_id"] = unknown
+    elif mutation == "fact":
+        analysis["claims"][0]["fact_ids"] = [unknown]
+    elif mutation == "citation":
+        analysis["claims"][0]["citation_span_ids"] = [unknown]
+    elif mutation == "event":
+        analysis["event_id"] = unknown
+        decision["event_id"] = unknown
+    elif mutation == "changed_text":
+        analysis["claims"][0]["text"] = "Altered synthetic statement."
+    elif mutation == "unavailable":
+        analysis["evidence_status"] = "unavailable"
+    else:
+        analysis["claims"][0]["validation_status"] = "uncertain"
+        case["input"]["payload"]["claims"][0]["validation_status"] = "uncertain"
+    with pytest.raises(ValidationError):
+        StageExchange.model_validate(case)
+
+
+@pytest.mark.parametrize("precision", [1, 28, 100])
+def test_portfolio_sum_exact_independent_of_ambient_precision(precision: int) -> None:
+    from decimal import getcontext, localcontext
+
+    fixture = json.loads(
+        (ROOT / "packages/contracts/fixtures/v1/api.json").read_text(encoding="utf-8")
+    )["objects"]["Portfolio"]
+    positions = []
+    for n, weight in enumerate(["0." + "9" * 30, "0." + "0" * 29 + "2"]):
+        positions.append(
+            dict(
+                fixture["positions"][0],
+                id=f"00000000-0000-4000-8000-{900 + n:012d}",
+                company_id=f"00000000-0000-4000-8000-{700 + n:012d}",
+                manual_weight=weight,
+            )
+        )
+    bad = dict(fixture, positions=positions, known_weight_total="1", weights_complete=True)
+    with localcontext() as ambient:
+        ambient.prec = precision
+        with pytest.raises(ValidationError):
+            Portfolio.model_validate(bad)
+        positions[1]["manual_weight"] = "0." + "0" * 29 + "1"
+        result = Portfolio.model_validate(dict(bad, positions=positions))
+        assert result.known_weight_total == "1"
+        assert getcontext().prec == precision

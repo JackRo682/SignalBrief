@@ -1,6 +1,6 @@
 """User-safe transport components; no routes or authorization implementation."""
 
-from decimal import Decimal
+from decimal import Decimal, localcontext
 from typing import Literal, Self, TypeVar
 
 from pydantic import Field, model_validator
@@ -149,7 +149,7 @@ class Position(Contract):
 class Portfolio(Contract):
     id: Id
     name: Name
-    positions: list[Position]
+    positions: list[Position] = Field(max_length=30)
     known_weight_total: DecimalString
     weights_complete: bool
     row_version: Positive
@@ -161,10 +161,12 @@ class Portfolio(Contract):
             len({p.company_id for p in self.positions}) == len(self.positions),
             "duplicate companies",
         )
-        known = sum(
-            (Decimal(p.manual_weight) for p in self.positions if p.manual_weight is not None),
-            Decimal(0),
-        )
+        weights = [p.manual_weight for p in self.positions if p.manual_weight is not None]
+        # DecimalString is bounded to 100 characters; retain all fractional digits plus
+        # carry digits for the bounded 30-position sum, independently of ambient context.
+        with localcontext() as context:
+            context.prec = max((len(w) for w in weights), default=1) + len(str(len(weights))) + 2
+            known = sum((Decimal(w) for w in weights), Decimal(0))
         require(known == Decimal(self.known_weight_total) and known <= 1, "weight total mismatch")
         require(
             self.weights_complete

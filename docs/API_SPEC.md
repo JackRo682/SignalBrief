@@ -132,3 +132,5 @@ Telemetry contract (P0): `POST /telemetry/sessions` creates/reuses a server sess
 `GET /health/live` returns process alive, no dependency secrets. `GET /health/ready` checks DB/connectivity/config sanity; internal or authenticated monitoring only. Provider unavailability does not necessarily make the read API unready, but appears in `/coverage` and Ops. No public generic job execution endpoint.
 
 Safe retries: GET/PUT and idempotent DELETE; POST only with retained idempotency key. Browser retries 503 at most twice with jitter; no retry on 401 beyond one refresh, 403, 409 or 422. Unstable connectivity must not duplicate questions, reports, portfolio replacement or publications. API version changes require schema version and migration/deprecation plan; tests compare generated OpenAPI and frontend types.
+
+T02 portfolio transport validation bounds positions to 30 and sums the bounded decimal strings under sufficient local precision, independent of ambient Decimal precision. Over-100% totals cannot be rounded down into acceptance; unknown weights remain null, and no normalization occurs.

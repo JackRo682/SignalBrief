@@ -193,6 +193,21 @@ class StageExchange(Contract):
                 i.source_document_ids,
                 "retrieved document",
             )
+            documents = {d.document_id: d for d in i.evidence.documents}
+            artifacts = {a.parsed_artifact_id: a for a in i.evidence.artifacts}
+            spans = {s.span_id: s for s in i.evidence.spans}
+            require(
+                all(documents.get(d.document_id) == d for d in r.output.documents),
+                "retrieval changed pinned raw document",
+            )
+            require(
+                all(artifacts.get(a.parsed_artifact_id) == a for a in r.output.artifacts),
+                "retrieval changed/unpinned parsed artifact",
+            )
+            require(
+                all(spans.get(s.span_id) == s for s in r.output.spans),
+                "retrieval changed/unpinned source span",
+            )
             require(r.output.retrieval_as_of == i.retrieval_cutoff, "retrieval cutoff changed")
             for doc in r.output.documents:
                 require(
@@ -278,6 +293,16 @@ class StageExchange(Contract):
                 "policy decision input mismatch",
             )
             require(d.validations == i.payload.validations, "policy validation records changed")
+            if d.decision == "publish":
+                require(
+                    i.payload.analysis.evidence_status != "unavailable"
+                    and bool(i.payload.analysis.claims)
+                    and all(
+                        not c.material or c.validation_status == "pass"
+                        for c in i.payload.analysis.claims
+                    ),
+                    "policy cannot publish unvalidated analysis",
+                )
         if (
             isinstance(i, UncertaintyStageInput)
             and isinstance(r, UncertaintyStageResult)

@@ -390,6 +390,18 @@ class PolicyInput(ClaimBundle):
     reviewer_action_id: Id | None
     expected_current_brief_id: Id | None
 
+    @model_validator(mode="after")
+    def analysis_premises(self) -> Self:
+        require(self.analysis.claims == self.claims, "policy analysis differs from pinned claims")
+        require(
+            self.analysis.event_id in {e.event_id for e in self.events},
+            "policy analysis event unresolved",
+        )
+        require(
+            self.analysis.publication_state == "candidate", "policy requires candidate analysis"
+        )
+        return self
+
 
 class PolicyOutput(Contract):
     publication_decision: PublicationDecision
@@ -421,6 +433,8 @@ class InputEnvelope[P: Contract](Contract):
 
     @model_validator(mode="after")
     def pins(self) -> Self:
+        if isinstance(self.payload, PolicyInput):
+            require(self.payload.analysis.run_id == self.run_id, "policy analysis run mismatch")
         require(
             set(self.upstream_result_ids) == {r.result_id for r in self.upstream_results}
             and len(self.upstream_result_ids) == len(self.upstream_results),

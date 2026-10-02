@@ -7527,6 +7527,7 @@
           "items": {
             "$ref": "#/$defs/Position"
           },
+          "maxItems": 30,
           "title": "Positions",
           "type": "array"
         },

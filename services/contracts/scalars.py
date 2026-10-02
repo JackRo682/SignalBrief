@@ -116,30 +116,20 @@ class Period(Contract):
 
 
 def safe_url(value: str) -> str:
-    from urllib.parse import parse_qsl, urlsplit
+    from urllib.parse import urlsplit
 
     parts = urlsplit(value)
     require(parts.scheme == "https" and bool(parts.hostname), "HTTPS URL required")
     require(parts.username is None and parts.password is None, "URL credentials prohibited")
     require(not parts.fragment, "canonical URL cannot contain fragment")
-    secret_names = {
-        "key",
-        "apikey",
-        "token",
-        "accesstoken",
-        "refreshtoken",
-        "authorization",
-        "password",
-        "secret",
-        "signature",
-        "credential",
-        "auth",
-    }
-    for key, _ in parse_qsl(parts.query, keep_blank_values=True):
-        normalized = re.sub(r"[-_]", "", key).lower()
+    if parts.query:
+        # Version-1 public-link policy: exactly the documented DART viewer receipt ID.
+        # No generic query keys, API credential queries, duplicate keys or signed URLs.
         require(
-            normalized not in secret_names and not normalized.startswith(("xamz", "xgoog")),
-            "privileged URL query prohibited",
+            parts.netloc == "dart.fss.or.kr"
+            and parts.path == "/dsaf001/main.do"
+            and re.fullmatch(r"rcpNo=[0-9]{14}", parts.query) is not None,
+            "unregistered source URL query",
         )
     require(not re.search(r"\s", value), "URL whitespace prohibited")
     # Fetch-time approved-host/DNS/redirect validation is T10, not a schema-level SSRF claim.
