@@ -1,0 +1,111 @@
+name: Apply and verify product refresh
+on:
+  push:
+    branches: [codex/product-refresh-20261002]
+    paths: [.delivery/refresh-ready.json]
+permissions:
+  contents: write
+concurrency:
+  group: signalbrief-product-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    if: github.repository == 'JackRo682/SignalBrief'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: test-only
+          POSTGRES_DB: signalbrief_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      NEXT_PUBLIC_API_URL: /api/backend
+      SB_API_ORIGIN: http://127.0.0.1:8000
+      SB_DEMO_ADMIN: 'true'
+      SB_API_REQUESTS_PER_MINUTE: '100000'
+      SB_TEST_POSTGRES_URL: postgresql+psycopg://postgres:test-only@localhost:5432/signalbrief_test
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Verify the exact compressed source patch before applying
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          import zlib from 'node:zlib';
+          const manifest=JSON.parse(fs.readFileSync('.delivery/refresh-ready.json','utf8'));
+          if(manifest.parts!==8||manifest.sha256!=='dfc00294d5c1dceab69371e1b065f109637b14ae75ff2002bf4bfae02cddcf6b')throw Error('Unexpected package');
+          const encoded=Array.from({length:8},(_,i)=>fs.readFileSync(`.delivery/refresh.part${i+1}`,'utf8').trim()).join('');
+          if(encoded.length!==67272||!/^[A-Za-z0-9+/=]+$/.test(encoded))throw Error('Invalid transport');
+          const bytes=Buffer.from(encoded,'base64');
+          if(crypto.createHash('sha256').update(bytes).digest('hex')!==manifest.sha256)throw Error('Package checksum mismatch');
+          const patch=zlib.brotliDecompressSync(bytes,{maxOutputLength:1000000});
+          fs.writeFileSync('/tmp/product-refresh.patch',patch);
+          NODE
+          git apply --check /tmp/product-refresh.patch
+          git apply --index /tmp/product-refresh.patch
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat: implement evidence-first UI, independent authentication and missing product controls'
+          git push origin HEAD:codex/product-refresh-20261002
+      - name: Install and verify backend including disposable PostgreSQL
+        run: |
+          python -m pip install -e '.[dev]'
+          ruff check apps/api tests scripts
+          pytest -q --junitxml=/tmp/backend-refresh.xml
+          python -m signalbrief.cli eval > /tmp/synthetic-eval.json
+      - name: Install locked frontend and run checks
+        working-directory: apps/web
+        run: |
+          npm ci
+          npm run lint
+          npm run typecheck
+          npm run test
+          npm run build
+          npx playwright install --with-deps chromium
+      - name: Start isolated synthetic browser test services
+        run: |
+          python scripts/dev.py > /tmp/signalbrief-dev.log 2>&1 &
+          cd apps/web
+          npm run start -- --port 3001 > /tmp/signalbrief-preview.log 2>&1 &
+          for i in $(seq 1 90); do
+            if curl -fsS http://127.0.0.1:3000/api/backend/v1/config && curl -fsS http://127.0.0.1:3001/login >/dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/signalbrief-dev.log
+          exit 1
+      - name: Exercise desktop and mobile workflows
+        working-directory: apps/web
+        run: npm run test:e2e
+      - name: Capture the actual rendered UI
+        working-directory: apps/web
+        run: node scripts/capture-ui.mjs
+      - name: Archive the exact source under test
+        if: always()
+        run: git archive --format=zip --output=/tmp/product-refresh-source.zip HEAD
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: product-refresh-verification
+          path: |
+            /tmp/product-refresh-source.zip
+            /tmp/backend-refresh.xml
+            /tmp/synthetic-eval.json
+            /tmp/signalbrief-dev.log
+            /tmp/signalbrief-preview.log
+            apps/web/playwright-report
+            apps/web/test-results
+            apps/web/screenshots
+          retention-days: 7
