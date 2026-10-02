@@ -1,5 +1,7 @@
 # SignalBrief Product Specification and Development Handoff — V1.1
 
+The separate synthetic UI preview is documented in [UI_PREVIEW.md](docs/UI_PREVIEW.md), including 13 routes, local commands, browser evidence and existing Vercel project handoff. Actual services and backend task gates remain disconnected.
+
 Prepared 2 October 2026. This package specifies a deployable evidence-first company/portfolio intelligence service. It contains **no application code**, no fabricated beta results and no completed gold dataset. It is the product/architecture baseline to hand to a developer.
 
 ## Start here
