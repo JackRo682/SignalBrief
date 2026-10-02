@@ -20,7 +20,7 @@ from services.contracts.domain import (
     SourceSpan,
 )
 from services.contracts.exchange import StageExchange
-from services.contracts.scalars import Date, DecimalString, Id, Period, Utc
+from services.contracts.scalars import Date, DecimalString, Id, Period, Url, Utc
 from services.contracts.stages import INPUT_ADAPTER, RESULT_ADAPTER, ClaimBundle
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -387,9 +387,30 @@ def test_comparison_period_and_issuer_boundaries() -> None:
     payload["facts"][1]["period_start"] = None
     with pytest.raises(ValidationError):
         ClaimBundle.model_validate(payload)
+
     payload["facts"][1]["period_start"] = "2025-10-01"
     other_issuer = "00000000-0000-4000-8000-000000000999"
     payload["events"][1]["issuer_id"] = other_issuer
     payload["documents"][1]["issuer_id"] = other_issuer
     with pytest.raises(ValidationError):
         ClaimBundle.model_validate(payload)
+
+
+def test_public_document_query_preserved_without_granting_fetch_rights() -> None:
+    url = "https://example.invalid/document?document_id=synthetic"
+    assert TypeAdapter(Url).validate_python(url) == url
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://example.invalid/document?api_key=synthetic",
+        "https://example.invalid/document?access_token=synthetic",
+        "https://example.invalid/document?X-Amz-Signature=synthetic",
+        "https://synthetic:synthetic@example.invalid/document",
+        "http://example.invalid/document",
+    ],
+)
+def test_privileged_or_insecure_source_url_rejected(url: str) -> None:
+    with pytest.raises(ValidationError):
+        TypeAdapter(Url).validate_python(url)

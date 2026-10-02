@@ -116,12 +116,31 @@ class Period(Contract):
 
 
 def safe_url(value: str) -> str:
-    from urllib.parse import urlsplit
+    from urllib.parse import parse_qsl, urlsplit
 
     parts = urlsplit(value)
     require(parts.scheme == "https" and bool(parts.hostname), "HTTPS URL required")
     require(parts.username is None and parts.password is None, "URL credentials prohibited")
-    require(not parts.query and not parts.fragment, "canonical URL cannot contain query/fragment")
+    require(not parts.fragment, "canonical URL cannot contain fragment")
+    secret_names = {
+        "key",
+        "apikey",
+        "token",
+        "accesstoken",
+        "refreshtoken",
+        "authorization",
+        "password",
+        "secret",
+        "signature",
+        "credential",
+        "auth",
+    }
+    for key, _ in parse_qsl(parts.query, keep_blank_values=True):
+        normalized = re.sub(r"[-_]", "", key).lower()
+        require(
+            normalized not in secret_names and not normalized.startswith(("xamz", "xgoog")),
+            "privileged URL query prohibited",
+        )
     require(not re.search(r"\s", value), "URL whitespace prohibited")
     # Fetch-time approved-host/DNS/redirect validation is T10, not a schema-level SSRF claim.
     return value

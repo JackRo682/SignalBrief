@@ -31,7 +31,7 @@ AC-07 schema: raw versus parsed hashes, diagnostic identity, Unicode codepoint s
 AC-20 schema/execution: every stage ok/retryable/blocked/skipped, missing/extra/unknown discriminators, API fixtures, deterministic exports, TS negative assertions and baseline clean-install/build/health.
 
 ## Verification
-Executed dedicated hash-locked dev install and npm ci --ignore-scripts. Passed npm format:check/lint/typecheck/contracts:check/contracts:typecheck/test/build; one existing web test; npm audit reported zero known vulnerabilities. Python passed ruff format/check, strict mypy (18 files), export --check, pytest (151 tests), pip check, API/worker real loopback health smoke (live200/ready503/graceful shutdown/closed listener), source/static secret-pattern/env-hygiene scan and runtime/dev pip-audit. git diff --check passed. Audits are time-specific, pattern scans limited. Final generated/client/doc consistency and secret checks were rechecked before remote publication. CI preserves Ubuntu Python3.12.15/Windows3.12.10 compatibility matrix from T01.
+Executed dedicated hash-locked dev install and npm ci --ignore-scripts. Passed npm format:check/lint/typecheck/contracts:check/contracts:typecheck/test/build; one existing web test; npm audit reported zero known vulnerabilities. Python passed ruff format/check, strict mypy (18 files), export --check, pytest (157 tests), pip check, API/worker real loopback health smoke (live200/ready503/graceful shutdown/closed listener), source/static secret-pattern/env-hygiene scan and runtime/dev pip-audit. git diff --check passed. Audits are time-specific, pattern scans limited. Final generated/client/doc consistency and secret checks were rechecked before remote publication. CI preserves Ubuntu Python3.12.15/Windows3.12.10 compatibility matrix from T01.
 Not run: real auth/provider/model/DB/RLS, persisted artifact resolution, arithmetic/semantic/gold evaluation, product browser/accessibility, staging/deployment or production security. Fixtures are synthetic schema cases, not real events or evaluation gold.
 
 ## Rollback
@@ -39,3 +39,5 @@ Revert T02 only to merged T01, regenerate artifacts; no persisted state/evidence
 
 ## Acceptance criteria
 Close bounded T02 after final checks and exact draft PR head/CI verification. Full AC-06/07/20 release gates stay open. PR main merge requires separate approval. After completion propose UI-preview from existing UX_SPEC's thirteen screens without modifying the original remaining plan.
+
+Final review corrected overly broad rejection of all URL queries: public document identifiers are retained, userinfo/common credential and signed-query keys are rejected. No fetch permission or exhaustive secret safety is inferred. Six synthetic URL cases were added. Initial head f0625a36ab17a0c88a745a831e23e02af6ac7e22 passed all three CI jobs in run 36982301281; final follow-up head must also pass and is reported in PR/handoff.
