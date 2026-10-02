@@ -1,0 +1,11 @@
+# Development dependency advisory and remediation
+
+The original audit counted two moderate package entries for one vulnerability: CVE-2026-84373 / [GHSA-82fw-gwwq-j7x9](https://github.com/advisories/GHSA-82fw-gwwq-j7x9). Both `vitest` and transitive `@vitest/mocker` were installed at 3.2.7. Affected ranges are `>=2.1.0 <4.1.11` and `>=5.0.0-beta.1 <5.0.0-rc.2`; patched releases are 4.1.11 and 5.0.0-rc.2 (stable 5.0.0 also contains the fix).
+
+An attacker reaching a development server that exposes the public mocker/interceptor plugin WebSocket can register an out-of-bounds redirect mock and disclose files readable by that process. Vitest browser mode uses token-authenticated RPC. Network exposure or a proxy makes the unauthenticated plugin path relevant; the default localhost bind reduces reachability. This project uses `vitest run` with jsdom and contains no public mocker/interceptor plugin or Vitest browser integration. Its production app uses Next, not the affected Vite plugin. These facts reduce the observed exposure, but were not a reason to retain vulnerable dependencies.
+
+Remediation explicitly pins `vitest` 4.1.11 and `vite` 7.3.6. The existing `@vitejs/plugin-react` 4.7.0 supports Vite 7, and Node 22.22.0 satisfies the patched test toolchain. Transitive `@vitest/mocker` resolves to 4.1.11. `package-lock.json` was genuinely updated by npm; no `audit fix --force`, override, removed assertion or weakened check was used.
+
+npm 10.9.4 initially crashed with `Cannot read properties of null (reading 'edgesOut')`. Installing an isolated official npm 11.21.0 CLI and retrying the explicit install succeeded. The new actual audit reports zero vulnerabilities. The original audit is preserved in `verification/npm-audit-before-upgrade.json`; new audit and resolved tree are in `verification/npm-audit.json` and `verification/npm-resolved-test-toolchain.log`.
+
+The frontend lint/type/unit/build rerun is recorded in `verification/frontend-upgrade-checks.json`. Desktop/mobile reruns are recorded in the corresponding browser logs. No application test assertions or configuration thresholds changed for this upgrade. Zero audit findings are a point-in-time registry result, not a general security guarantee. External production release gates remain unchanged.

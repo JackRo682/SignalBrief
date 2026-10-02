@@ -1,0 +1,14 @@
+
+> signalbrief-web@0.1.0 test:e2e
+> playwright test --project=desktop
+
+
+Running 3 tests using 1 worker
+
+(node:113548) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [desktop] ??e2e\demo.spec.ts:2:5 ??demo login, important changes, evidence, and settings (8.3s)
+  ok 2 [desktop] ??e2e\demo.spec.ts:44:5 ??a signed-out visitor cannot see operations (983ms)
+  ok 3 [desktop] ??e2e\isolation.spec.ts:5:5 ??local admin separation and cross-user positions remain private (2.3s)
+
+  3 passed (13.3s)

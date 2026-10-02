@@ -1,0 +1,18 @@
+{
+  "python_tests": {
+    "passed": 210,
+    "skipped": 1,
+    "failed": 0
+  },
+  "typescript_syntax": {
+    "files": 42,
+    "errors": 0
+  },
+  "backend_statement_coverage": 79.84215718513647,
+  "synthetic_eval_cases": 120,
+  "production_build": "BLOCKED",
+  "browser_e2e": "NOT_RUN",
+  "live_integrations": "NOT_RUN",
+  "deployed": false,
+  "source_basis": "docs/SOURCE_REQUEST.md"
+}

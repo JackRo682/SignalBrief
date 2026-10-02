@@ -1,0 +1,20 @@
+{
+  "checked_at": "2026-10-02T12:21:23.357130+00:00",
+  "python_tests": {
+    "passed": 238,
+    "skipped": 0,
+    "failed": 0
+  },
+  "frontend_unit_tests": 19,
+  "desktop_e2e": 3,
+  "mobile_e2e": 3,
+  "synthetic_eval_cases": 120,
+  "statement_coverage_percent": 79.11709455228554,
+  "statements": 3194,
+  "covered_statements": 2527,
+  "production_build": "PASS",
+  "postgres_migrations_rls": "PASS",
+  "npm_audit": "PASS: zero vulnerabilities",
+  "external_integration": "BLOCKED",
+  "deployed": false
+}

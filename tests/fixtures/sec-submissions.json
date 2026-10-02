@@ -1,0 +1,29 @@
+{
+  "cik": 42,
+  "filings": {
+    "recent": {
+      "accessionNumber": [
+        "0000000042-26-000001"
+      ],
+      "filingDate": [
+        "2026-10-01"
+      ],
+      "acceptanceDateTime": [
+        "2026-10-01T18:04:00Z"
+      ],
+      "form": [
+        "10-Q"
+      ],
+      "primaryDocument": [
+        "fixture-10q.htm"
+      ]
+    },
+    "files": [
+      {
+        "name": "CIK0000000042-submissions-001.json",
+        "filingFrom": "2025-01-01",
+        "filingTo": "2025-12-31"
+      }
+    ]
+  }
+}

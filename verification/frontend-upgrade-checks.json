@@ -1,0 +1,45 @@
+{
+  "checked_at": "2026-10-02T11:45:25.492559+00:00",
+  "results": [
+    {
+      "check": "frontend_lint",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "C:\\Users\\nosug\\Documents\\Codex\\2026-10-02\\task-3\\signalbrief-independent-20261002\\runtime\\node22\\node-v22.22.0-win-x64\\npm.cmd",
+        "run",
+        "lint"
+      ]
+    },
+    {
+      "check": "frontend_typecheck",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "C:\\Users\\nosug\\Documents\\Codex\\2026-10-02\\task-3\\signalbrief-independent-20261002\\runtime\\node22\\node-v22.22.0-win-x64\\npm.cmd",
+        "run",
+        "typecheck"
+      ]
+    },
+    {
+      "check": "frontend_unit_tests",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "C:\\Users\\nosug\\Documents\\Codex\\2026-10-02\\task-3\\signalbrief-independent-20261002\\runtime\\node22\\node-v22.22.0-win-x64\\npm.cmd",
+        "run",
+        "test"
+      ]
+    },
+    {
+      "check": "frontend_build",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "C:\\Users\\nosug\\Documents\\Codex\\2026-10-02\\task-3\\signalbrief-independent-20261002\\runtime\\node22\\node-v22.22.0-win-x64\\npm.cmd",
+        "run",
+        "build"
+      ]
+    }
+  ]
+}

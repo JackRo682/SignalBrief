@@ -1,0 +1,12 @@
+........                                                                 [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:45
+  C:\Users\nosug\Documents\Codex\2026-10-02\task-3\signalbrief-independent-20261002\source\.venv\Lib\site-packages\starlette\testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+.venv\Lib\site-packages\_pytest\cacheprovider.py:469
+  C:\Users\nosug\Documents\Codex\2026-10-02\task-3\signalbrief-independent-20261002\source\.venv\Lib\site-packages\_pytest\cacheprovider.py:469: PytestCacheWarning: cache could not write path C:\Users\nosug\Documents\Codex\2026-10-02\task-3\signalbrief-independent-20261002\source\.pytest_cache\v\cache\nodeids: [Errno 13] Permission denied: 'C:\\Users\\nosug\\Documents\\Codex\\2026-10-02\\task-3\\signalbrief-independent-20261002\\source\\.pytest_cache\\v\\cache\\nodeids'
+    config.cache.set("cache/nodeids", sorted(self.cached_nodeids))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+8 passed, 2 warnings in 4.62s

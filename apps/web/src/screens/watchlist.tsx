@@ -1,0 +1,11 @@
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import { useAuth } from "@/components/auth";
+import { useResource,useAction,ActionNotice,Loading,ErrorState,Empty,PageHeading } from "@/components/ui";
+import { watchlistSchema,companiesSchema } from "@/lib/contracts";
+import { body,request,emptySchema } from "@/lib/api";
+export default function Watchlist(){const {token}=useAuth(),action=useAction(),[query,setQuery]=useState("");
+ const list=useResource("/v1/watchlist",watchlistSchema),catalog=useResource(`/v1/companies?q=${encodeURIComponent(query)}&limit=30`,companiesSchema),ids=new Set(list.data?.items.map(x=>x.id));
+ return <><PageHeading title="관심종목" description="내가 직접 고른 기업의 공시와 변화만 모아봅니다."/><ActionNotice action={action}/><div className="two-column"><section className="panel"><h2>모니터링 중 <span className="count">{ids.size}</span></h2>{list.loading?<Loading/>:list.error?<ErrorState message={list.error} retry={list.reload}/>:list.data?.items.length?list.data.items.map(c=><div className="list-row" key={c.id}><div className="grow"><Link className="company-name" href={`/companies/${c.id}`}>{c.name}</Link><p className="small muted">{c.ticker} · {c.market}</p></div><button className="button subtle" disabled={action.busy} aria-label={`${c.name} 관심종목 삭제`} onClick={()=>action.run(async()=>{await request(`/v1/watchlist/${c.id}`,token,emptySchema,body("DELETE"));list.reload();},"관심종목에서 제외했습니다.")}>제외</button></div>):<Empty title="관심종목이 없습니다."><p>기업을 검색하고 추가해 주세요.</p></Empty>}</section><section className="panel"><h2>기업 추가</h2><label className="field"><span>이름 또는 코드 검색</span><input value={query} onChange={e=>setQuery(e.target.value)} maxLength={100} placeholder="기업명 또는 종목코드"/></label>{catalog.loading?<Loading/>:catalog.error?<ErrorState message={catalog.error} retry={catalog.reload}/>:catalog.data?.length?catalog.data.map(c=><div className="list-row" key={c.id}><div className="grow"><strong>{c.name}</strong><p className="small muted">{c.ticker} · {c.market}</p></div><button className="button secondary" disabled={action.busy||ids.has(c.id)} onClick={()=>action.run(async()=>{await request(`/v1/watchlist/${c.id}`,token,emptySchema,body("PUT"));list.reload();},"관심종목에 추가했습니다.")}>{ids.has(c.id)?"추가됨":"+ 추가"}</button></div>):<p className="muted">검색 결과가 없습니다.</p>}</section></div></>;
+}

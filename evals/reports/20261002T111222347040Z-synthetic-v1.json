@@ -1,0 +1,2811 @@
+{
+  "metrics": {
+    "event_classification_macro_f1": 1.0,
+    "fact_extraction_accuracy": 1.0,
+    "change_detection_accuracy": 1.0,
+    "citation_coverage": 1.0,
+    "citation_correctness": 1.0,
+    "numeric_consistency": 1.0,
+    "hallucination_rate": 0.0,
+    "synthetic_false_acceptance_rate": 0.0,
+    "abstention_accuracy": 1.0,
+    "latency_ms_mean": 0.2583333332343803,
+    "cost_usd": 0
+  },
+  "denominators": {
+    "fact_correct": 120,
+    "fact_slots": 120,
+    "claims": 120,
+    "cited": 120,
+    "numeric": 120,
+    "numeric_ok": 120,
+    "change_cases": 120,
+    "change_correct": 120,
+    "validator_cases": 120,
+    "validator_correct": 120,
+    "published_candidate_cases": 45,
+    "false_accepted_cases": 0,
+    "adversarial_cases": 75,
+    "abstention_cases": 120,
+    "abstention_correct": 120
+  },
+  "cases": [
+    {
+      "case_id": "synthetic-000",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "insufficient_history",
+          "percentage_change": null
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-001",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "decreased",
+          "percentage_change": "-9.901"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-002",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-003",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "increased",
+          "percentage_change": "9.7087"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "numeric_mismatch",
+          "reason": "Reported value is not present as a numeric token in the quote",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-004",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "increased",
+          "percentage_change": "19.2308"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "missing_source",
+          "reason": "Referenced chunk does not belong to this document",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-005",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "decreased",
+          "percentage_change": "-19.0476"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "unsupported",
+          "reason": "Quotation is not an exact contiguous substring of the cited chunk",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-006",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "decreased",
+          "percentage_change": "-9.434"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Currency/unit is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-007",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Reporting period is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-008",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "increased",
+          "percentage_change": "9.2593"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-009",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "increased",
+          "percentage_change": "18.3486"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-010",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "decreased",
+          "percentage_change": "-18.1818"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 15.0
+    },
+    {
+      "case_id": "synthetic-011",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "insufficient_history",
+          "percentage_change": null
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "numeric_mismatch",
+          "reason": "Reported value is not present as a numeric token in the quote",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-012",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "missing_source",
+          "reason": "Referenced chunk does not belong to this document",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-013",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "increased",
+          "percentage_change": "8.8496"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "unsupported",
+          "reason": "Quotation is not an exact contiguous substring of the cited chunk",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-014",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "increased",
+          "percentage_change": "17.5439"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Currency/unit is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-015",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "decreased",
+          "percentage_change": "-17.3913"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Reporting period is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-016",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "decreased",
+          "percentage_change": "-8.6207"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-017",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-018",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "increased",
+          "percentage_change": "8.4746"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-019",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "increased",
+          "percentage_change": "16.8067"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "numeric_mismatch",
+          "reason": "Reported value is not present as a numeric token in the quote",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-020",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "decreased",
+          "percentage_change": "-16.6667"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "missing_source",
+          "reason": "Referenced chunk does not belong to this document",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-021",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "decreased",
+          "percentage_change": "-8.2645"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "unsupported",
+          "reason": "Quotation is not an exact contiguous substring of the cited chunk",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-022",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "insufficient_history",
+          "percentage_change": null
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Currency/unit is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-023",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "increased",
+          "percentage_change": "8.1301"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Reporting period is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-024",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "increased",
+          "percentage_change": "16.129"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-025",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "decreased",
+          "percentage_change": "-16"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-026",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "decreased",
+          "percentage_change": "-7.9365"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-027",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "numeric_mismatch",
+          "reason": "Reported value is not present as a numeric token in the quote",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-028",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "increased",
+          "percentage_change": "7.8125"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "missing_source",
+          "reason": "Referenced chunk does not belong to this document",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-029",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "increased",
+          "percentage_change": "15.5039"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "unsupported",
+          "reason": "Quotation is not an exact contiguous substring of the cited chunk",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-030",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "decreased",
+          "percentage_change": "-15.3846"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Currency/unit is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-031",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "decreased",
+          "percentage_change": "-7.6336"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Reporting period is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-032",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-033",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "insufficient_history",
+          "percentage_change": null
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-034",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "increased",
+          "percentage_change": "14.9254"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-035",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "decreased",
+          "percentage_change": "-14.8148"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "numeric_mismatch",
+          "reason": "Reported value is not present as a numeric token in the quote",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-036",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "decreased",
+          "percentage_change": "-7.3529"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "missing_source",
+          "reason": "Referenced chunk does not belong to this document",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-037",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "unsupported",
+          "reason": "Quotation is not an exact contiguous substring of the cited chunk",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-038",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "increased",
+          "percentage_change": "7.2464"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Currency/unit is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-039",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "increased",
+          "percentage_change": "14.3885"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Reporting period is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-040",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "decreased",
+          "percentage_change": "-14.2857"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-041",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "decreased",
+          "percentage_change": "-7.0922"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-042",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-043",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "increased",
+          "percentage_change": "6.993"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "numeric_mismatch",
+          "reason": "Reported value is not present as a numeric token in the quote",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-044",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "insufficient_history",
+          "percentage_change": null
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "missing_source",
+          "reason": "Referenced chunk does not belong to this document",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-045",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "decreased",
+          "percentage_change": "-13.7931"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "unsupported",
+          "reason": "Quotation is not an exact contiguous substring of the cited chunk",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-046",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "decreased",
+          "percentage_change": "-6.8493"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Currency/unit is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-047",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Reporting period is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-048",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "increased",
+          "percentage_change": "6.7568"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-049",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "increased",
+          "percentage_change": "13.4228"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-050",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "decreased",
+          "percentage_change": "-13.3333"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-051",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "decreased",
+          "percentage_change": "-6.6225"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "numeric_mismatch",
+          "reason": "Reported value is not present as a numeric token in the quote",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-052",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "missing_source",
+          "reason": "Referenced chunk does not belong to this document",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-053",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "increased",
+          "percentage_change": "6.5359"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "unsupported",
+          "reason": "Quotation is not an exact contiguous substring of the cited chunk",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-054",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "increased",
+          "percentage_change": "12.987"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Currency/unit is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-055",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "insufficient_history",
+          "percentage_change": null
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Reporting period is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-056",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "decreased",
+          "percentage_change": "-6.4103"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-057",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-058",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "increased",
+          "percentage_change": "6.3291"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-059",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "increased",
+          "percentage_change": "12.5786"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "numeric_mismatch",
+          "reason": "Reported value is not present as a numeric token in the quote",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-060",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "decreased",
+          "percentage_change": "-12.5"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "missing_source",
+          "reason": "Referenced chunk does not belong to this document",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-061",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "decreased",
+          "percentage_change": "-6.2112"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "unsupported",
+          "reason": "Quotation is not an exact contiguous substring of the cited chunk",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-062",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Currency/unit is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-063",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "increased",
+          "percentage_change": "6.135"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Reporting period is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-064",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "increased",
+          "percentage_change": "12.1951"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-065",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "decreased",
+          "percentage_change": "-12.1212"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-066",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "insufficient_history",
+          "percentage_change": null
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-067",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "numeric_mismatch",
+          "reason": "Reported value is not present as a numeric token in the quote",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-068",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "increased",
+          "percentage_change": "5.9524"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "missing_source",
+          "reason": "Referenced chunk does not belong to this document",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-069",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "increased",
+          "percentage_change": "11.8343"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "unsupported",
+          "reason": "Quotation is not an exact contiguous substring of the cited chunk",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-070",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "decreased",
+          "percentage_change": "-11.7647"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Currency/unit is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-071",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "decreased",
+          "percentage_change": "-5.848"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Reporting period is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-072",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-073",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "increased",
+          "percentage_change": "5.7803"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-074",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "increased",
+          "percentage_change": "11.4943"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-075",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "decreased",
+          "percentage_change": "-11.4286"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "numeric_mismatch",
+          "reason": "Reported value is not present as a numeric token in the quote",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-076",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "decreased",
+          "percentage_change": "-5.6818"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "missing_source",
+          "reason": "Referenced chunk does not belong to this document",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-077",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "insufficient_history",
+          "percentage_change": null
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "unsupported",
+          "reason": "Quotation is not an exact contiguous substring of the cited chunk",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-078",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "increased",
+          "percentage_change": "5.618"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Currency/unit is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-079",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "increased",
+          "percentage_change": "11.1732"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Reporting period is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-080",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "decreased",
+          "percentage_change": "-11.1111"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-081",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "decreased",
+          "percentage_change": "-5.5249"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-082",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-083",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "increased",
+          "percentage_change": "5.4645"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "numeric_mismatch",
+          "reason": "Reported value is not present as a numeric token in the quote",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-084",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "increased",
+          "percentage_change": "10.8696"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "missing_source",
+          "reason": "Referenced chunk does not belong to this document",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-085",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "decreased",
+          "percentage_change": "-10.8108"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "unsupported",
+          "reason": "Quotation is not an exact contiguous substring of the cited chunk",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-086",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "decreased",
+          "percentage_change": "-5.3763"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Currency/unit is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-087",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Reporting period is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-088",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "insufficient_history",
+          "percentage_change": null
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-089",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "increased",
+          "percentage_change": "10.582"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-090",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "decreased",
+          "percentage_change": "-10.5263"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-091",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "decreased",
+          "percentage_change": "-5.2356"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "numeric_mismatch",
+          "reason": "Reported value is not present as a numeric token in the quote",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-092",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "missing_source",
+          "reason": "Referenced chunk does not belong to this document",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-093",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "increased",
+          "percentage_change": "5.1813"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "unsupported",
+          "reason": "Quotation is not an exact contiguous substring of the cited chunk",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-094",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "increased",
+          "percentage_change": "10.3093"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Currency/unit is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-095",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "decreased",
+          "percentage_change": "-10.2564"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Reporting period is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-096",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "decreased",
+          "percentage_change": "-5.102"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-097",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-098",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "increased",
+          "percentage_change": "5.0505"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 16.0
+    },
+    {
+      "case_id": "synthetic-099",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "insufficient_history",
+          "percentage_change": null
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "numeric_mismatch",
+          "reason": "Reported value is not present as a numeric token in the quote",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-100",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "decreased",
+          "percentage_change": "-10"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "missing_source",
+          "reason": "Referenced chunk does not belong to this document",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-101",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "decreased",
+          "percentage_change": "-4.9751"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "unsupported",
+          "reason": "Quotation is not an exact contiguous substring of the cited chunk",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-102",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Currency/unit is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-103",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "increased",
+          "percentage_change": "4.9261"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Reporting period is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-104",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "increased",
+          "percentage_change": "9.8039"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-105",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "decreased",
+          "percentage_change": "-9.7561"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-106",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "decreased",
+          "percentage_change": "-4.8544"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-107",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "numeric_mismatch",
+          "reason": "Reported value is not present as a numeric token in the quote",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-108",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "increased",
+          "percentage_change": "4.8077"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "missing_source",
+          "reason": "Referenced chunk does not belong to this document",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-109",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "increased",
+          "percentage_change": "9.5694"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "unsupported",
+          "reason": "Quotation is not an exact contiguous substring of the cited chunk",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-110",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "insufficient_history",
+          "percentage_change": null
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Currency/unit is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-111",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "decreased",
+          "percentage_change": "-4.7393"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Reporting period is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-112",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-113",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "increased",
+          "percentage_change": "4.6948"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-114",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "increased",
+          "percentage_change": "9.3458"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "supported",
+          "reason": "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies",
+          "claim_key": "0"
+        }
+      ],
+      "publish": true,
+      "expected_publish": true,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-115",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "decreased",
+          "percentage_change": "-9.3023"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "numeric_mismatch",
+          "reason": "Reported value is not present as a numeric token in the quote",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-116",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "decreased",
+          "percentage_change": "-4.6296"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "missing_source",
+          "reason": "Referenced chunk does not belong to this document",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-117",
+      "predicted_type": "guidance",
+      "expected_type": "guidance",
+      "changes": [
+        {
+          "field": "operating_income",
+          "change_type": "unchanged",
+          "percentage_change": "0"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "unsupported",
+          "reason": "Quotation is not an exact contiguous substring of the cited chunk",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": true,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-118",
+      "predicted_type": "capex",
+      "expected_type": "capex",
+      "changes": [
+        {
+          "field": "capex",
+          "change_type": "increased",
+          "percentage_change": "4.5872"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Currency/unit is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    },
+    {
+      "case_id": "synthetic-119",
+      "predicted_type": "dividend",
+      "expected_type": "dividend",
+      "changes": [
+        {
+          "field": "dividend",
+          "change_type": "increased",
+          "percentage_change": "9.1324"
+        }
+      ],
+      "verdicts": [
+        {
+          "status": "partially_supported",
+          "reason": "Reporting period is not explicit in the same quotation",
+          "claim_key": "0"
+        }
+      ],
+      "publish": false,
+      "expected_publish": false,
+      "answer_abstains": false,
+      "latency_ms": 0.0
+    }
+  ],
+  "case_count": 120,
+  "dataset": "synthetic-v1.jsonl",
+  "dataset_sha256": "91960d07c1d2b23ebc6b2f98b43421b5a4cb41045afd23f657ba7f63913abbf5",
+  "dataset_kind": [
+    "synthetic_regression"
+  ],
+  "evaluated_at": "2026-10-02T11:12:22.345035+00:00",
+  "model": "deterministic-fixture-parser",
+  "model_version": "fixture-parser-v1",
+  "prompt_version": "extract-v1",
+  "methodology_version": "eval-v1",
+  "limitations": [
+    "Synthetic regression cases are not independently labeled real filings.",
+    "Citation correctness tests exact quotation/number/context guards, not unrestricted semantic entailment.",
+    "Hallucination rate is unsupported candidate acceptance in this test set, NOT real-world hallucination prevalence.",
+    "Abstention accuracy evaluates the extractive quote gate; sampling confidence intervals are not meaningful for generated cases."
+  ]
+}

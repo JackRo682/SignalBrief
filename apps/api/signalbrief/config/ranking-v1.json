@@ -1,0 +1,16 @@
+{
+  "version": "ranking-v1",
+  "weights": {
+    "P": 0.3,
+    "M": 0.2,
+    "N": 0.15,
+    "S": 0.15,
+    "A": 0.1,
+    "T": 0.1
+  },
+  "half_life_hours": 48,
+  "holding_relevance": 1.0,
+  "watchlist_relevance": 0.6,
+  "unavailable_component_policy": "exclude_and_renormalize",
+  "description": "Uncalibrated product hypothesis. A is unavailable without licensed market data."
+}

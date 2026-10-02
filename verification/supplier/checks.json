@@ -1,0 +1,76 @@
+{
+  "checked_at": "2026-10-02T10:34:04.134253+00:00",
+  "full_release_suite": true,
+  "results": [
+    {
+      "check": "python_compile",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "compileall",
+        "-q",
+        "apps/api",
+        "tests",
+        "scripts"
+      ],
+      "log": "verification/python_compile.log"
+    },
+    {
+      "check": "backend_tests",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "--junitxml=/mnt/data/signalbrief/verification/pytest.xml"
+      ],
+      "log": "verification/backend_tests.log"
+    },
+    {
+      "check": "openapi_export",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "scripts/export_openapi.py"
+      ],
+      "log": "verification/openapi_export.log"
+    },
+    {
+      "check": "backend_lint",
+      "status": "BLOCKED",
+      "reason": "Required local dependencies are not installed"
+    },
+    {
+      "check": "frontend_lint",
+      "status": "BLOCKED",
+      "reason": "Required local dependencies are not installed"
+    },
+    {
+      "check": "frontend_typecheck",
+      "status": "BLOCKED",
+      "reason": "Required local dependencies are not installed"
+    },
+    {
+      "check": "frontend_unit_tests",
+      "status": "BLOCKED",
+      "reason": "Required local dependencies are not installed"
+    },
+    {
+      "check": "frontend_build",
+      "status": "BLOCKED",
+      "reason": "Required local dependencies are not installed"
+    }
+  ],
+  "not_in_this_script": [
+    "Real provider credentials",
+    "Google OAuth redirects",
+    "Hosted deployment",
+    "Human-labeled financial Gold Dataset",
+    "Browser E2E (run Playwright separately)"
+  ]
+}
