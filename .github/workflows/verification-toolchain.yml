@@ -1,0 +1,31 @@
+name: Verification toolchain
+on:
+  push:
+    branches: [codex/product-refresh-20261002]
+    paths: [.github/workflows/verification-toolchain.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  toolchain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Install exact locked frontend dependencies
+        working-directory: apps/web
+        run: npm ci
+      - name: Download isolated Python verification wheels
+        run: python -m pip download --dest wheelhouse --only-binary=:all: ruff 'psycopg[binary]>=3.2,<4'
+      - name: Package toolchain without credentials or application data
+        run: tar -czf toolchain.tar.gz apps/web/node_modules wheelhouse
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verification-toolchain-linux
+          path: toolchain.tar.gz
+          compression-level: 0
+          retention-days: 1
