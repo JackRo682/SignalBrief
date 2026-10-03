@@ -68,6 +68,7 @@ jobs:
           python -m playwright install --with-deps chromium
           node tests/reference/build_harness.mjs
           export CHROMIUM_PATH="$(python -c 'from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()')"
+          mkdir -p us-results/reference
           REFERENCE_RESULTS=us-results/reference python tests/reference/browser_checks.py
       - name: Actual Google authorization initiation only - no personal credentials
         run: python tests/us/google_browser_probe.py
