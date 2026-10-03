@@ -59,7 +59,8 @@ jobs:
         run: python -m ruff check --select I --fix tests/reference/browser_checks.py
       - name: Backend source and regression tests
         run: |
-          python -m ruff check .
+          # Same scope as ci.yml. Frozen historical migration text is replay-tested separately.
+          python -m ruff check apps/api tests scripts
           python -m pytest -q --junitxml=reference-backend.xml
       - name: Install locked frontend dependencies
         working-directory: apps/web
