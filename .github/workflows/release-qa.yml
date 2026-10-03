@@ -1,0 +1,88 @@
+name: Release QA
+on:
+  push:
+    branches: [main, codex/functional-ui-20261003]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - working-directory: apps/web
+        run: npm ci --ignore-scripts
+      - name: Current dependency advisories
+        working-directory: apps/web
+        run: |
+          npm audit --json > audit.json || true
+          node -e 'const r=require("./audit.json"); console.log(JSON.stringify(r,null,2)); if(!r.metadata)process.exit(2); process.exit(r.metadata.vulnerabilities.high+r.metadata.vulnerabilities.critical>0?1:0);'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-audit
+          path: apps/web/audit.json
+          retention-days: 1
+  edge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with: {deno-version: v2.x}
+      - run: deno check --config supabase/functions/signalbrief-api/deno.json supabase/functions/signalbrief-api/index.ts
+      - name: Live public API and authentication rejection
+        run: python scripts/check_hosted_api.py
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SB_DEMO_ADMIN: 'true'
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: pip install -e '.[dev]'
+      - working-directory: apps/web
+        run: npm ci && npx playwright install --with-deps chromium
+      - name: Start isolated local demo and wait for readiness
+        run: |
+          python scripts/dev.py > /tmp/signalbrief-demo.log 2>&1 &
+          python - <<'PY'
+          import time, urllib.request
+          for _ in range(90):
+              try:
+                  with urllib.request.urlopen('http://127.0.0.1:8000/v1/config',timeout=2) as r:
+                      assert r.status==200
+                  with urllib.request.urlopen('http://127.0.0.1:3000/login',timeout=3) as r:
+                      assert r.status==200
+                  break
+              except Exception:
+                  time.sleep(2)
+          else:
+              raise SystemExit('Local demo failed to become ready')
+          PY
+      - working-directory: apps/web
+        run: npm run test:e2e
+      - name: Package the exact committed source
+        if: always()
+        run: |
+          mkdir -p release
+          git archive --format=zip --prefix=signalbrief/ -o release/SignalBrief_Source.zip HEAD
+          git rev-parse HEAD > release/COMMIT.txt
+          cp /tmp/signalbrief-demo.log release/demo.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-source-and-browser-results
+          path: |
+            release/
+            apps/web/playwright-report/
+            apps/web/test-results/
+          retention-days: 1

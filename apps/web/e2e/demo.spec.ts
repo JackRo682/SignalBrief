@@ -4,11 +4,12 @@ test("demo login, important changes, evidence, and settings",async({page})=>{
  await page.getByRole("button",{name:"데모로 시작하기"}).click();
  await page.waitForURL(/\/(onboarding|today)/);
  if(page.url().includes("/onboarding")){
-   // Select the three synthetic firms; no real financial facts are used.
+   await page.getByRole("button",{name:"관심종목 선택"}).click();
    for(const name of ["한빛 데이터", "Signal Devices", "Orbit Industrial"]){
       await page.getByRole("checkbox",{name:new RegExp(name)}).check();
    }
-   await page.getByRole("button",{name:/브리핑|시작|완료/}).last().click();
+   await page.getByRole("button",{name:"설정 확인"}).click();
+   await page.getByRole("button",{name:"설정 완료 · 브리핑 시작"}).click();
  }
  await expect(page).toHaveURL(/\/today/);
  await expect(page.locator('main a[href^="/events/"]').first()).toBeVisible();
