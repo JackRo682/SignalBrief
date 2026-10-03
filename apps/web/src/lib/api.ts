@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { SETUP_REQUIRED } from "./auth-policy";
-export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? (process.env.NODE_ENV === "production" ? "" : "http://localhost:8000")).replace(/\/$/, "");
+export const API_URL = (process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === "production" ? "/api" : "http://localhost:8000")).replace(/\/$/, "");
 export class APIError extends Error {
   constructor(public status:number, public code:string, public requestId:string|null = null) { super(code); this.name="APIError"; }
 }
 export function errorMessage(error:unknown):string {
+  if(error instanceof Error && /[가-힣]/.test(error.message)) return error.message;
   if (error instanceof APIError) {
     if (error.status===401) return "로그인이 만료되었습니다. 다시 로그인해 주세요.";
     if (error.status===403) return "이 작업에 접근할 권한이 없습니다.";
@@ -16,7 +16,6 @@ export function errorMessage(error:unknown):string {
   return "서버에 연결하지 못했습니다. API 서버 주소와 실행 상태를 확인해 주세요.";
 }
 export async function request<T>(path:string, token:string|null, schema:z.ZodType<T>, init:RequestInit = {}, timeout=45000):Promise<T> {
-  if (!API_URL) throw new Error(SETUP_REQUIRED);
   if (!path.startsWith("/") || path.startsWith("//")) throw new Error("relative_api_path_required");
   const controller = new AbortController();
   const onAbort = () => controller.abort();

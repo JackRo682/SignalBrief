@@ -1,0 +1,52 @@
+[
+  {
+    "file": "01_ops_console(1).txt",
+    "sha256": "87a4f73bac9e69f07f7c8f70a238dbdeeacc7c61d1bdf85395087c5008e2cc2b",
+    "screen": "ops"
+  },
+  {
+    "file": "02_alert_center(1).txt",
+    "sha256": "9d3972131c781e5c4eb9d22f00985ff2ccfe2f83de278a8d0d70e789bf9f781f",
+    "screen": "alerts"
+  },
+  {
+    "file": "03_event_calendar(1).txt",
+    "sha256": "9b4804380ff0460676eadfca9573490ad61f2e6d39776f31c2fdc8422b84669e",
+    "screen": "calendar"
+  },
+  {
+    "file": "04_ai_event_chat(1).txt",
+    "sha256": "497fc012f82a11e63a63b99b7c8ddf9c0f6f40f5e9d849eb445cc8215f2f08f4",
+    "screen": "chat"
+  },
+  {
+    "file": "05_company_timeline(1).txt",
+    "sha256": "97553e85c6f1b7b35daa5960bde78cf0c97424ddf112461ce987f2d62e80f802",
+    "screen": "timeline"
+  },
+  {
+    "file": "06_event_detail_evidence(1).txt",
+    "sha256": "e9b67423f64ef0edc3271e229fb66b4d15b5fd71cfca8d8b06bfc7e8bd0b24b1",
+    "screen": "detail"
+  },
+  {
+    "file": "07_today_portfolio_changes(1).txt",
+    "sha256": "e10c2c3dbf487d92168ba261bf813bf940796fe4beecca2b3721468a787a966c",
+    "screen": "today"
+  },
+  {
+    "file": "08_watchlist_portfolio_setup(1).txt",
+    "sha256": "b490edabbb40bf0ad08bb14cebb5c4a6f453ba3775b68969a15d932e4c2e3739",
+    "screen": "setup"
+  },
+  {
+    "file": "09_onboarding(1).txt",
+    "sha256": "3d6620985952c1ba3d539f5604be9717c665b3d2d330f421a8968981503bb138",
+    "screen": "onboarding"
+  },
+  {
+    "file": "10_landing_auth(1).txt",
+    "sha256": "bd65a87c85dec12ca5d9762b500d8743e8cc54c2179f0a68fa2b16f5beb44528",
+    "screen": "landing"
+  }
+]

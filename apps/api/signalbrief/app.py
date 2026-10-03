@@ -73,21 +73,13 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
             timeout=10,
         )
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.hosts)
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=settings.origins,
-        allow_credentials=False,
-        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-        allow_headers=["Authorization", "Content-Type"],
-        expose_headers=["X-Request-ID", "Retry-After"],
-    )
 
     @app.middleware("http")
     async def request_context(request: Request, call_next):
         request.state.request_id = str(uuid4())
         started = time.monotonic()
         if request.method != "OPTIONS" and request.url.path.startswith("/v1/"):
-            # Do not trust forwarded IP headers from arbitrary clients. Configure trusted proxies at deployment.
+            # Never trust forwarded IP headers from arbitrary clients.
             peer = request.client.host if request.client else "unknown"
             permitted = await run_in_threadpool(
                 consume_budget, factory, "api-peer:" + peer, settings.api_requests_per_minute
@@ -185,6 +177,16 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
     app.add_middleware(BodyLimitMiddleware)
     app.include_router(router)
     app.include_router(ops_router)
+    # CORS must wrap rate/body-limit responses as well as normal route responses.
+    # Otherwise browsers conceal legitimate 429/413 JSON errors as generic network errors.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.origins,
+        allow_credentials=False,
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allow_headers=["Authorization", "Content-Type"],
+        expose_headers=["X-Request-ID", "Retry-After"],
+    )
     return app
 
 

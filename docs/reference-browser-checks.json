@@ -1,0 +1,327 @@
+{
+  "layer": "isolated-rendered-dom-with-fixture-adapters",
+  "passed": 64,
+  "real_google_session_tested": false,
+  "checks": [
+    {
+      "viewport": "desktop",
+      "check": "landing_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "email_login_control_uses_auth_adapter",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "google_login_control_uses_auth_adapter",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "onboarding_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "onboarding_selections_persist_and_navigate",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "setup_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "watchlist_add_updates_count_and_chips",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "holding_modal_inputs_and_save_hit_target_work",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "invalid_holding_is_rejected_before_write",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "csv_resolves_company_and_preserves_decimal_strings",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "holding_delete_is_scoped_to_saved_draft",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "today_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "today_cards_link_to_actual_event_ids",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "detail_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "six_analysis_panels_and_evidence_filters",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "evidence_panel_can_close_and_reopen",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "timeline_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "timeline_type_and_period_controls_query_correct_data",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "chat_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "question_send_renders_returned_answer_and_citation",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "question_history_is_interactive",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "calendar_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "calendar_month_navigation_and_today",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "personal_calendar_form_saves",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "calendar_interest_switch_persists",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "alerts_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "mark_all_read_refreshes_unread_count",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "alert_rule_create_roundtrip",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "alert_threshold_persisted",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "ops_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "ops_range_controls_query_admin_metrics",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "check": "ops_table_filters_apply",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "landing_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "email_login_control_uses_auth_adapter",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "google_login_control_uses_auth_adapter",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "onboarding_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "onboarding_selections_persist_and_navigate",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "setup_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "watchlist_add_updates_count_and_chips",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "holding_modal_inputs_and_save_hit_target_work",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "invalid_holding_is_rejected_before_write",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "csv_resolves_company_and_preserves_decimal_strings",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "holding_delete_is_scoped_to_saved_draft",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "today_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "today_cards_link_to_actual_event_ids",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "detail_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "six_analysis_panels_and_evidence_filters",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "evidence_panel_can_close_and_reopen",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "timeline_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "timeline_type_and_period_controls_query_correct_data",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "chat_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "question_send_renders_returned_answer_and_citation",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "question_history_is_interactive",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "calendar_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "calendar_month_navigation_and_today",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "personal_calendar_form_saves",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "calendar_interest_switch_persists",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "alerts_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "mark_all_read_refreshes_unread_count",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "alert_rule_create_roundtrip",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "alert_threshold_persisted",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "ops_renders_without_js_errors_or_horizontal_overflow",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "ops_range_controls_query_admin_metrics",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "check": "ops_table_filters_apply",
+      "status": "passed"
+    }
+  ]
+}

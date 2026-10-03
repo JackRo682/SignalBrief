@@ -1,0 +1,93 @@
+name: US integration verification
+on:
+  push:
+    branches: [codex/reference-publish-20261003]
+    paths: [.us-release/part0, .github/workflows/us-integration.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: signalbrief-us-source
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: denoland/setup-deno@v2
+        with: {deno-version: v2.x}
+      - name: Apply checksum-verified source changes against the exact base files
+        run: |
+          python - <<'PY'
+          import hashlib,json,lzma,pathlib
+          root=pathlib.Path.cwd();directory=root/'.us-release'
+          if not (directory/'part0').exists():
+              raise SystemExit('Source already materialized; do not replay')
+          packed=b''.join((directory/f'part{i}').read_bytes() for i in range(6))
+          assert len(packed)==24916
+          assert hashlib.sha256(packed).hexdigest()=='a894e7c8f3957ca2446a6adb07a31b0533af44504f57bc3603901207936b5c08'
+          raw=lzma.decompress(packed);assert len(raw)==83945
+          changes=json.loads(raw);assert len(changes)==25
+          staged=[];seen=set()
+          for c in changes:
+              name=c['path'];path=pathlib.PurePosixPath(name)
+              assert name not in seen and not path.is_absolute() and '..' not in path.parts
+              assert name.startswith(('apps/web/src/','apps/web/tests/','supabase/functions/','supabase/us-migrations/','tests/us/','docs/US_'))
+              seen.add(name);target=root/name;assert not target.is_symlink()
+              if c['old_sha256'] is None:
+                  assert not target.exists();content=c['content']
+              else:
+                  old=target.read_bytes();assert hashlib.sha256(old).hexdigest()==c['old_sha256'],name
+                  content=old.decode('utf-8')
+                  for start,end,value in reversed(c['edits']):
+                      assert 0<=start<=end<=len(content)
+                      content=content[:start]+value+content[end:]
+              encoded=content.encode('utf-8');assert hashlib.sha256(encoded).hexdigest()==c['sha256'],name
+              staged.append((target,encoded))
+          for target,encoded in staged:
+              target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(encoded)
+          print('Applied 25 verified application source files; no credentials included')
+          PY
+      - run: pip install -e '.[dev]' playwright
+      - name: Backend regressions and source validation
+        run: |
+          python -m ruff check --select I --fix tests/us/google_browser_probe.py
+          python -m ruff check apps/api tests scripts
+          python -m pytest -q --junitxml=us-backend.xml
+      - working-directory: apps/web
+        run: npm ci && npm run lint && npm run typecheck && npm test && npm run build
+      - name: Real Edge runtime typecheck
+        run: deno check --no-lock supabase/functions/signalbrief-us/index.ts
+      - name: Browser installation and reference controls
+        run: |
+          python -m playwright install --with-deps chromium
+          node tests/reference/build_harness.mjs
+          export CHROMIUM_PATH="$(python -c 'from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()')"
+          mkdir -p us-results/reference
+          REFERENCE_RESULTS=us-results/reference python tests/reference/browser_checks.py
+      - name: Actual Google authorization initiation only - no personal credentials
+        run: python tests/us/google_browser_probe.py
+      - name: Commit tested readable implementation preserving history
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/web/src apps/web/tests supabase/functions supabase/us-migrations tests/us docs/US_PROVIDER_RELEASE.md
+          git rm .us-release/part*
+          git commit -m 'feat: connect US provider adapters and harden Google OAuth with explicit deployment gates'
+          git push origin HEAD:codex/reference-publish-20261003
+          mkdir -p us-results
+          git rev-parse HEAD > us-results/COMMIT.txt
+          git archive --format=zip --prefix=signalbrief/ -o us-results/SignalBrief_US_Source.zip HEAD
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: signalbrief-us-verification
+          path: |
+            us-results/
+            us-backend.xml
+          retention-days: 1

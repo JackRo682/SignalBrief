@@ -1,0 +1,112 @@
+name: Release QA
+on:
+  push:
+    branches: [main, codex/functional-ui-20261003, codex/reference-publish-20261003]
+  workflow_dispatch:
+    inputs:
+      legacy_browser:
+        description: Run the archived pre-reference UI demo journeys (not the current screen contract)
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - working-directory: apps/web
+        run: npm ci --ignore-scripts
+      - name: Full dependency audit - advisories are not suppressed
+        working-directory: apps/web
+        run: |
+          npm audit --json > audit.json || true
+          node -e 'const r=require("./audit.json"); console.log(JSON.stringify(r,null,2)); if(!r.metadata)process.exit(2); process.exit(r.metadata.vulnerabilities.high+r.metadata.vulnerabilities.critical>0?1:0);'
+      - name: Separately check production dependency exposure
+        if: always()
+        working-directory: apps/web
+        run: |
+          npm audit --omit=dev --json > audit-production.json || true
+          node -e 'const r=require("./audit-production.json"); console.log(JSON.stringify(r,null,2)); if(!r.metadata)process.exit(2); process.exit(r.metadata.vulnerabilities.high+r.metadata.vulnerabilities.critical>0?1:0);'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-audit
+          path: |
+            apps/web/audit.json
+            apps/web/audit-production.json
+          retention-days: 1
+  edge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with: {deno-version: v2.x}
+      - run: deno check --config supabase/functions/signalbrief-api/deno.json supabase/functions/signalbrief-api/index.ts
+      - run: python scripts/check_hosted_api.py
+  reference-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect current reference source
+        id: reference
+        run: |
+          if test -f tests/reference/browser_checks.py; then echo 'available=true' >> "$GITHUB_OUTPUT"; else echo 'available=false' >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/setup-node@v4
+        if: steps.reference.outputs.available == 'true'
+        with: {node-version: '22'}
+      - uses: actions/setup-python@v5
+        if: steps.reference.outputs.available == 'true'
+        with: {python-version: '3.12'}
+      - if: steps.reference.outputs.available == 'true'
+        working-directory: apps/web
+        run: npm ci --ignore-scripts
+      - if: steps.reference.outputs.available == 'true'
+        run: pip install playwright && python -m playwright install --with-deps chromium
+      - name: Real desktop/mobile DOM interactions with explicit fixture adapters
+        if: steps.reference.outputs.available == 'true'
+        run: |
+          node tests/reference/build_harness.mjs
+          export CHROMIUM_PATH="$(python -c 'from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()')"
+          REFERENCE_RESULTS=reference-results python tests/reference/browser_checks.py
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.reference.outputs.available == 'true'
+        with:
+          name: current-reference-browser-results
+          path: reference-results/
+          retention-days: 1
+  legacy-browser:
+    if: github.event_name == 'workflow_dispatch' && inputs.legacy_browser
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SB_DEMO_ADMIN: 'true'
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: pip install -e '.[dev]'
+      - working-directory: apps/web
+        run: npm ci && npx playwright install --with-deps chromium
+      - name: Archived interface compatibility diagnostic
+        run: |
+          python scripts/dev.py > /tmp/signalbrief-demo.log 2>&1 &
+          sleep 25
+          cd apps/web
+          npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: archived-interface-browser-results
+          path: |
+            apps/web/playwright-report/
+            apps/web/test-results/
+          retention-days: 1

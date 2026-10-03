@@ -1,16 +1,17 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 import { createHmac, randomUUID } from "node:crypto";
-
 const api = "http://127.0.0.1:8000";
 test("local admin separation and cross-user positions remain private", async ({ page, request }) => {
   await page.goto("/login");
   await page.getByRole("button", { name: "개발용 운영자 데모" }).click();
   await page.waitForURL(/\/(today|onboarding)/);
   if(page.url().includes("/onboarding")){
+    await page.getByRole("button",{name:"관심종목 선택"}).click();
     for(const name of ["HBD","Signal Devices","Orbit Industrial"]){
       await page.getByRole("checkbox",{name:new RegExp(name)}).check();
     }
-    await page.locator("main .panel > button.primary").click();
+    await page.getByRole("button",{name:"설정 확인"}).click();
+    await page.getByRole("button",{name:"설정 완료 · 브리핑 시작"}).click();
     await page.waitForURL(/\/today/);
   }
   await page.goto("/ops");
