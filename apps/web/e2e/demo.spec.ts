@@ -1,4 +1,4 @@
-import { test,expect } from "@playwright/test";
+import { test,expect } from "./fixtures";
 test("demo login, important changes, evidence, and settings",async({page})=>{
  await page.goto("/login");
  await page.getByRole("button",{name:"데모로 시작하기"}).click();

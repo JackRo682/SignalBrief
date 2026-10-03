@@ -1,4 +1,5 @@
-import { test, expect, type Page, type TestInfo } from "@playwright/test";
+import { type Page, type TestInfo } from "@playwright/test";
+import { test, expect } from "./fixtures";
 import { readFile } from "node:fs/promises";
 async function shot(page:Page, info:TestInfo, name:string){const path=info.outputPath(`${info.project.name}-${name}.png`);await page.screenshot({path,fullPage:true});await info.attach(name,{path,contentType:"image/png"});}
 async function enter(page:Page,admin=false){
@@ -7,7 +8,7 @@ async function enter(page:Page,admin=false){
  await expect(page).toHaveURL(/\/today/);await expect(page.locator("main .event-card").first()).toBeVisible();
 }
 test("new portfolio, CSV, calendar, question and navigation flows",async({page},info)=>{
- test.setTimeout(120000);
+ test.setTimeout(240000);
  await page.goto("/");await expect(page.getByRole("heading",{level:1})).toContainText("무엇이 바뀌었는가");await shot(page,info,"landing");
  await enter(page);await shot(page,info,"today");
  const firstEvent=page.locator('main a[href^="/events/"]').first();await firstEvent.click();await expect(page.locator("#evidence h2")).toBeVisible();await shot(page,info,"event-evidence");

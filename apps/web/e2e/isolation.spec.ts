@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 import { createHmac, randomUUID } from "node:crypto";
 const api = "http://127.0.0.1:8000";
 test("local admin separation and cross-user positions remain private", async ({ page, request }) => {
