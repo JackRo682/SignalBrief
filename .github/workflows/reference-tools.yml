@@ -1,0 +1,24 @@
+name: Reference build tools
+on:
+  push:
+    branches: [codex/reference-publish-20261003]
+    paths: [.github/workflows/reference-tools.yml]
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - working-directory: apps/web
+        run: npm ci --ignore-scripts
+      - name: Package dependencies for the isolated validation environment
+        run: tar -czf reference-node-tools.tar.gz -C apps/web node_modules
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reference-node-tools
+          path: reference-node-tools.tar.gz
+          retention-days: 1
