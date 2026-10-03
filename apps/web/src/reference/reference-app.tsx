@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth";
 import { API_URL } from "@/lib/api";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabase, initializeSupabase } from "@/lib/supabase";
 import { templates } from "./templates";
 import { polishReference } from "./publication";
 import { mountReference, type Row, type ReferenceContext } from "./controller";
@@ -30,6 +30,7 @@ export default function ReferenceApp({screen,id}:{screen:Screen;id?:string}){
    if(response.status===204)return null;
    const data=await response.json().catch(()=>null);
    if(!response.ok){const code=data?.error?.code??data?.error??`HTTP ${response.status}`;if(response.status===401&&!publicPage)router.replace("/login");throw new Error(typeof code==="string"?code:"요청을 완료하지 못했습니다.");}
+   if(endpoint.startsWith("/v1/companies?")&&Array.isArray(data))return data.filter(c=>c.provider==="sec");
    return data;
   };
   const context: ReferenceContext = {
@@ -45,7 +46,7 @@ export default function ReferenceApp({screen,id}:{screen:Screen;id?:string}){
     const selected=latest.current;if(kind==="logout"){await selected.logout();return {};}
     if(kind==="google"){await selected.googleLogin();return {};}
     if(kind==="demo"||kind==="demo-admin"){await selected.demoLogin(kind==="demo-admin");return {};}
-    const db=getSupabase(),email=String(fields.email??""),password=String(fields.password??"");
+    const db=await initializeSupabase(),email=String(fields.email??""),password=String(fields.password??"");
     if(kind==="login"){const {error}=await db.auth.signInWithPassword({email,password});if(error)throw new Error("이메일 또는 비밀번호를 확인해 주세요.");location.assign("/today");return {};}
     if(kind==="signup"){const result=await db.auth.signUp({email,password,options:{emailRedirectTo:`${location.origin}/auth/callback`}});if(result.error)throw new Error("가입을 완료하지 못했습니다. 이메일 형식과 비밀번호를 확인하거나 Google 로그인을 이용하세요.");if(result.data.session)location.assign("/onboarding");return {session:!!result.data.session};}
     if(kind==="reset"){const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:`${location.origin}/auth/callback?next=reset-password`});if(error)throw new Error("메일 요청이 제한되었습니다. 잠시 후 다시 시도해 주세요.");return {};}
@@ -54,6 +55,10 @@ export default function ReferenceApp({screen,id}:{screen:Screen;id?:string}){
   };
   const unmount = mountReference(target,screen,context);
   const unpolish = polishReference(target,screen,context);
+  if(screen!=="landing"){
+    const banner=document.createElement("div");banner.className="usLaunchNotice";banner.innerHTML='<strong>US 주식 초기 버전</strong> · OpenDART·KRX는 보류되어 한국 공시·시세는 제공하지 않습니다. <a href="/us">미국 공시·연결 상태 보기 →</a>';
+    (target.querySelector(".main")??target).prepend(banner);
+  }
   return ()=>{unpolish();unmount();};
  },[screen,id,path,publicPage,signedIn,auth.config?.demo_mode,router]);
  if(!publicPage&&!signedIn)return <main className="referenceGate"><Link href="/">SignalBrief</Link><h1>{auth.error?"연결을 확인해 주세요":"계정을 확인하고 있습니다"}</h1><p role={auth.error?"alert":"status"}>{auth.error??"잠시만 기다려 주세요."}</p>{auth.error&&<><button onClick={()=>location.reload()}>다시 시도</button><Link href="/login">로그인</Link></>}</main>;
