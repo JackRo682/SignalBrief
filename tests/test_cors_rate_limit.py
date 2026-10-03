@@ -1,5 +1,4 @@
 from fastapi.testclient import TestClient
-
 from signalbrief.app import create_app
 from signalbrief.settings import Settings
 

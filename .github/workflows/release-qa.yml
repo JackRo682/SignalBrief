@@ -15,16 +15,24 @@ jobs:
         with: {node-version: '22'}
       - working-directory: apps/web
         run: npm ci --ignore-scripts
-      - name: Current dependency advisories
+      - name: Current dependency advisories - full tree remains a strict gate
         working-directory: apps/web
         run: |
           npm audit --json > audit.json || true
           node -e 'const r=require("./audit.json"); console.log(JSON.stringify(r,null,2)); if(!r.metadata)process.exit(2); process.exit(r.metadata.vulnerabilities.high+r.metadata.vulnerabilities.critical>0?1:0);'
+      - name: Separate production dependency exposure report
+        if: always()
+        working-directory: apps/web
+        run: |
+          npm audit --omit=dev --json > audit-production.json || true
+          node -e 'const r=require("./audit-production.json"); console.log(JSON.stringify(r,null,2)); if(!r.metadata)process.exit(2); process.exit(r.metadata.vulnerabilities.high+r.metadata.vulnerabilities.critical>0?1:0);'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: dependency-audit
-          path: apps/web/audit.json
+          path: |
+            apps/web/audit.json
+            apps/web/audit-production.json
           retention-days: 1
   edge:
     runs-on: ubuntu-latest
