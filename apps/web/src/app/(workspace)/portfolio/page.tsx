@@ -1,2 +1,2 @@
-import Screen from "@/screens/portfolio";
-export default function Page(){return <Screen/>;}
+import ReferenceApp from "@/reference/reference-app";
+export default function Page(){return <ReferenceApp screen="setup"/>;}

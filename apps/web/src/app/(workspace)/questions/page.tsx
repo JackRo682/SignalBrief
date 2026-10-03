@@ -1,2 +1,2 @@
-import Questions from "@/screens/questions";
-export default function Page(){return <Questions/>;}
+import ReferenceApp from "@/reference/reference-app";
+export default function Page(){return <ReferenceApp screen="chat"/>;}

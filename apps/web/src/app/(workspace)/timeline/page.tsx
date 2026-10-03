@@ -1,2 +1,2 @@
-import Explore from "@/screens/explore";
-export default function Page(){return <Explore/>;}
+import ReferenceApp from "@/reference/reference-app";
+export default function Page(){return <ReferenceApp screen="timeline"/>;}

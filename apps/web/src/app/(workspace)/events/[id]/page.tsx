@@ -1,2 +1,2 @@
-import Screen from "@/screens/detail";
-export default async function Page({params}:{params:Promise<{id:string}>}){const {id}=await params;return <Screen id={id}/>;}
+import ReferenceApp from "@/reference/reference-app";
+export default async function Page({params}:{params:Promise<{id:string}>}){const {id}=await params;return <ReferenceApp screen="detail" id={id}/>;}
