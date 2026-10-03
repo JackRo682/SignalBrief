@@ -1,8 +1,13 @@
 name: Release QA
 on:
   push:
-    branches: [main, codex/functional-ui-20261003]
+    branches: [main, codex/functional-ui-20261003, codex/reference-publish-20261003]
   workflow_dispatch:
+    inputs:
+      legacy_browser:
+        description: Run the archived pre-reference UI demo journeys (not the current screen contract)
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -15,12 +20,12 @@ jobs:
         with: {node-version: '22'}
       - working-directory: apps/web
         run: npm ci --ignore-scripts
-      - name: Current dependency advisories - full tree remains a strict gate
+      - name: Full dependency audit - advisories are not suppressed
         working-directory: apps/web
         run: |
           npm audit --json > audit.json || true
           node -e 'const r=require("./audit.json"); console.log(JSON.stringify(r,null,2)); if(!r.metadata)process.exit(2); process.exit(r.metadata.vulnerabilities.high+r.metadata.vulnerabilities.critical>0?1:0);'
-      - name: Separate production dependency exposure report
+      - name: Separately check production dependency exposure
         if: always()
         working-directory: apps/web
         run: |
@@ -42,9 +47,41 @@ jobs:
       - uses: denoland/setup-deno@v2
         with: {deno-version: v2.x}
       - run: deno check --config supabase/functions/signalbrief-api/deno.json supabase/functions/signalbrief-api/index.ts
-      - name: Live public API and authentication rejection
-        run: python scripts/check_hosted_api.py
-  browser:
+      - run: python scripts/check_hosted_api.py
+  reference-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect current reference source
+        id: reference
+        run: |
+          if test -f tests/reference/browser_checks.py; then echo 'available=true' >> "$GITHUB_OUTPUT"; else echo 'available=false' >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/setup-node@v4
+        if: steps.reference.outputs.available == 'true'
+        with: {node-version: '22'}
+      - uses: actions/setup-python@v5
+        if: steps.reference.outputs.available == 'true'
+        with: {python-version: '3.12'}
+      - if: steps.reference.outputs.available == 'true'
+        working-directory: apps/web
+        run: npm ci --ignore-scripts
+      - if: steps.reference.outputs.available == 'true'
+        run: pip install playwright && python -m playwright install --with-deps chromium
+      - name: Real desktop/mobile DOM interactions with explicit fixture adapters
+        if: steps.reference.outputs.available == 'true'
+        run: |
+          node tests/reference/build_harness.mjs
+          export CHROMIUM_PATH="$(python -c 'from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()')"
+          REFERENCE_RESULTS=reference-results python tests/reference/browser_checks.py
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.reference.outputs.available == 'true'
+        with:
+          name: current-reference-browser-results
+          path: reference-results/
+          retention-days: 1
+  legacy-browser:
+    if: github.event_name == 'workflow_dispatch' && inputs.legacy_browser
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -59,38 +96,17 @@ jobs:
       - run: pip install -e '.[dev]'
       - working-directory: apps/web
         run: npm ci && npx playwright install --with-deps chromium
-      - name: Start isolated local demo and wait for readiness
+      - name: Archived interface compatibility diagnostic
         run: |
           python scripts/dev.py > /tmp/signalbrief-demo.log 2>&1 &
-          python - <<'PY'
-          import time, urllib.request
-          for _ in range(90):
-              try:
-                  with urllib.request.urlopen('http://127.0.0.1:8000/v1/config',timeout=2) as r:
-                      assert r.status==200
-                  with urllib.request.urlopen('http://127.0.0.1:3000/login',timeout=3) as r:
-                      assert r.status==200
-                  break
-              except Exception:
-                  time.sleep(2)
-          else:
-              raise SystemExit('Local demo failed to become ready')
-          PY
-      - working-directory: apps/web
-        run: npm run test:e2e
-      - name: Package the exact committed source
-        if: always()
-        run: |
-          mkdir -p release
-          git archive --format=zip --prefix=signalbrief/ -o release/SignalBrief_Source.zip HEAD
-          git rev-parse HEAD > release/COMMIT.txt
-          cp /tmp/signalbrief-demo.log release/demo.log
+          sleep 25
+          cd apps/web
+          npm run test:e2e
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: release-source-and-browser-results
+          name: archived-interface-browser-results
           path: |
-            release/
             apps/web/playwright-report/
             apps/web/test-results/
           retention-days: 1

@@ -1,0 +1,1 @@
+{"sha256":"3aa43b62fd452442cb7cd93787dbcd1d7c83a398fda06501375a9507ff406030","size":74124,"parts":17,"decompressed_size":327680,"files":44,"description":"Checksum-verified source patch implementing the user's ten uploaded reference screens. Contains source, cropped non-person assets, tests and SQL; no provider secrets, fonts or node_modules."}

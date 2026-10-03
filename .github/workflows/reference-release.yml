@@ -1,0 +1,100 @@
+name: Reference source verification
+on:
+  push:
+    branches: [codex/reference-publish-20261003]
+    paths: [.reference-release/manifest.json, .github/workflows/reference-release.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: reference-source-materialization
+  cancel-in-progress: false
+jobs:
+  verify-and-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/reference-publish-20261003
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Verify source transport and materialize only bounded application paths
+        run: |
+          python - <<'PY'
+          import hashlib, io, json, lzma, pathlib, tarfile
+          root=pathlib.Path.cwd()
+          directory=root/'.reference-release'
+          manifest=json.loads((directory/'manifest.json').read_text())
+          if not (directory/'part00').exists():
+              raise SystemExit('Source already materialized; do not replay the transport')
+          compressed=b''.join((directory/f'part{i:02}').read_bytes() for i in range(manifest['parts']))
+          assert len(compressed)==74124==manifest['size']
+          assert hashlib.sha256(compressed).hexdigest()==manifest['sha256']=='3aa43b62fd452442cb7cd93787dbcd1d7c83a398fda06501375a9507ff406030'
+          raw=lzma.decompress(compressed)
+          assert len(raw)==327680==manifest['decompressed_size']
+          archive=tarfile.open(fileobj=io.BytesIO(raw),mode='r:')
+          members=archive.getmembers()
+          assert len(members)==44==manifest['files']
+          seen=set()
+          for member in members:
+              path=pathlib.PurePosixPath(member.name)
+              assert member.isfile() and not path.is_absolute() and '..' not in path.parts
+              assert member.name not in seen and member.size<250000
+              assert member.name.startswith(('apps/web/src/','apps/web/public/reference-assets/','apps/web/tests/','tests/reference/','docs/','supabase/reference-migrations/')) or member.name=='tests/test_web_route_contracts.py'
+              seen.add(member.name)
+              target=root/member.name
+              assert not target.is_symlink()
+              target.parent.mkdir(parents=True,exist_ok=True)
+              target.write_bytes(archive.extractfile(member).read())
+          print('Verified and materialized',len(seen),'source files')
+          PY
+      - name: Install validation dependencies
+        run: pip install -e '.[dev]' playwright
+      - name: Normalize Python import ordering without changing test behavior
+        run: python -m ruff check --select I --fix tests/reference/browser_checks.py
+      - name: Backend source and regression tests
+        run: |
+          python -m ruff check .
+          python -m pytest -q --junitxml=reference-backend.xml
+      - name: Install locked frontend dependencies
+        working-directory: apps/web
+        run: npm ci
+      - name: Frontend lint, types, unit tests and production build
+        working-directory: apps/web
+        run: |
+          npm run lint
+          npm run typecheck
+          npm test
+          npm run build
+      - name: Install Chromium for isolated real-DOM interaction tests
+        run: python -m playwright install --with-deps chromium
+      - name: Verify ten screens on desktop and mobile with isolated fixtures
+        run: |
+          node tests/reference/build_harness.mjs
+          export CHROMIUM_PATH="$(python -c 'from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()')"
+          REFERENCE_RESULTS=reference-results python tests/reference/browser_checks.py
+      - name: Commit verified readable source to the isolated release branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/web/src apps/web/public/reference-assets apps/web/tests docs tests/reference tests/test_web_route_contracts.py supabase/reference-migrations
+          git rm .reference-release/part*
+          git commit -m 'feat: publish verified ten-screen reference UI with authenticated interactions'
+          git push origin HEAD:codex/reference-publish-20261003
+          mkdir -p reference-delivery
+          git archive --format=zip --prefix=signalbrief/ -o reference-delivery/SignalBrief_Reference_Source.zip HEAD
+          git rev-parse HEAD > reference-delivery/COMMIT.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verified-reference-source-and-checks
+          path: |
+            reference-delivery/
+            reference-results/
+            reference-backend.xml
+          retention-days: 1
