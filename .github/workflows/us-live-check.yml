@@ -1,0 +1,65 @@
+name: US deployed smoke checks
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/us-live-check.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deployed-read-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Actual HTTP checks against the production website
+        run: |
+          python - <<'PY'
+          import json, pathlib, urllib.request, urllib.error
+          SITE='https://signalbrief-beta.vercel.app'
+          def read(path):
+              try:
+                  response=urllib.request.urlopen(SITE+path,timeout=30)
+              except urllib.error.HTTPError as error:
+                  response=error
+              with response:
+                  return response.status,json.loads(response.read().decode('utf-8'))
+          result={}
+          status,release=read('/api/release')
+          assert status==200 and release['release']=='us-providers-v1'
+          result['release']=release
+          status,config=read('/api/us/status')
+          assert status==200 and config['market']=='US' and config['korea']['available'] is False
+          result['provider_status']=config
+          status,public_config=read('/api/auth-config')
+          assert status==200
+          serialized=json.dumps(public_config)
+          assert 'sb_secret_' not in serialized and 'service_role' not in serialized
+          result['public_auth_configuration']='available; values intentionally not logged'
+          status,fx=read('/api/us/reference-rate')
+          assert status==200 and fx['source']=='Frankfurter' and fx['kind']=='daily_reference' and fx['rate']>0
+          result['frankfurter']=fx
+          status,diagnostic=read('/api/us/auth-diagnostic')
+          assert status==200
+          result['oauth_initiation_configuration']=diagnostic
+          for path in ['/api/us/filings','/api/us/quotes?symbols=AAPL','/api/us/analysis?filing_id=00000000-0000-4000-8000-000000000000']:
+              status,_=read(path)
+              assert status==401,(path,status)
+          result['unauthenticated_private_endpoints']='3 rejected with HTTP 401'
+          result['paid_provider_calls']='not made: server credentials and approvals remain absent'
+          result['full_google_signin']='not completed by this read-only test'
+          pathlib.Path('us-results').mkdir(exist_ok=True)
+          pathlib.Path('us-results/deployed.json').write_text(json.dumps(result,indent=2))
+          print(json.dumps(result,indent=2))
+          PY
+      - run: pip install playwright && python -m playwright install --with-deps chromium
+      - name: Google browser initiation only; no login credentials or consent
+        run: python tests/us/google_browser_probe.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: signalbrief-us-live-results
+          path: us-results/
+          retention-days: 1
