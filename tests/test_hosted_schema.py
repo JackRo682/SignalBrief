@@ -54,7 +54,10 @@ def test_hosted_migrations_replay_and_owner_rpc():
         migrations = sorted((ROOT / "supabase/hosted").glob("*.sql"))
         assert len(migrations) >= 7
         for migration in migrations:
-            connection.exec_driver_sql(migration.read_text(encoding="utf-8"))
+            # Execute without a parameter collection so PL/pgSQL format('%I', ...)
+            # is not misinterpreted as a psycopg binding placeholder.
+            with connection.connection.driver_connection.cursor() as cursor:
+                cursor.execute(migration.read_text(encoding="utf-8"), prepare=False)
         connection.exec_driver_sql("""
             INSERT INTO auth.users VALUES
             ('10000000-0000-4000-8000-000000000071','a@example.invalid','{"name":"User A"}'),
