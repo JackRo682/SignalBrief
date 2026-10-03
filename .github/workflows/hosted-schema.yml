@@ -1,0 +1,35 @@
+name: Hosted schema replay
+on:
+  push:
+    branches: [main, codex/functional-ui-20261003]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  hosted-postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env: {POSTGRES_USER: postgres, POSTGRES_PASSWORD: test-only, POSTGRES_DB: hosted_test}
+        ports: ['5432:5432']
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      SB_TEST_HOSTED_POSTGRES_URL: postgresql+psycopg://postgres:test-only@localhost:5432/hosted_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install -e '.[dev]'
+      - run: python -m ruff check scripts/hosted_baseline.py tests/test_hosted_schema.py
+      - run: python -m pytest tests/test_hosted_schema.py -q --junitxml=hosted-replay.xml
+      - run: python scripts/hosted_baseline.py > supabase/hosted/BASELINE_GENERATED.sql
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hosted-schema-replay
+          path: |
+            hosted-replay.xml
+            supabase/hosted/
+          retention-days: 1
