@@ -13,15 +13,18 @@ ROOT = Path(__file__).resolve().parents[2]
 ASSET = ROOT / '.reference-test'
 OUT = Path(os.environ.get('REFERENCE_RESULTS', str(ROOT / 'reference-results')))
 OUT.mkdir(exist_ok=True)
-script = (ASSET / 'controller.js').read_text().replace('export ', '') + '\n' + (ASSET / 'templates.js').read_text().replace('export ', '') + '\n' + re.sub('^import .*$', '', (ASSET / 'fixture.js').read_text(), flags=re.M)
+script = (ASSET / 'controller.js').read_text().replace('export ', '') + '\n' + (ASSET / 'templates.js').read_text().replace('export ', '') + '\n' + (ASSET / 'publication.js').read_text().replace('export ', '') + '\n' + re.sub('^import .*$', '', (ASSET / 'fixture.js').read_text(), flags=re.M)
 image = 'data:image/webp;base64,' + base64.b64encode((ASSET / 'reference-assets/onboarding-guide.webp').read_bytes()).decode()
 script = script.replace('/reference-assets/onboarding-guide.webp', image)
-css = '\n'.join(((ROOT / f'apps/web/src/{name}').read_text() for name in ['app/globals.css', 'app/release-layout.css', 'reference/reference.css', 'reference/overrides.css']))
+css = '\n'.join(((ROOT / f'apps/web/src/{name}').read_text() for name in ['app/globals.css', 'app/release-layout.css', 'reference/reference.css', 'reference/overrides.css', 'reference/publication.css']))
 HTML = '<html lang="ko"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0}' + css + '</style></head><body><div id="root"></div><script>' + script + '</script></body></html>'
 results = []
 
+
 def record(mode, name):
     results.append({'viewport': mode, 'check': name, 'status': 'passed'})
+
+
 with sync_playwright() as pw:
     browser = pw.chromium.launch(executable_path=os.environ.get('CHROMIUM_PATH', '/usr/bin/chromium'), headless=True, args=['--no-sandbox'])
     for mode, width, height in [('desktop', 1534, 960), ('mobile', 412, 915)]:
@@ -42,8 +45,27 @@ with sync_playwright() as pw:
             record(mode, name + '_renders_without_js_errors_or_horizontal_overflow')
             return page
         page = screen('landing')
+        expect(page.locator('[data-ui-release="reference-screen-r2"]')).to_have_count(1)
+        expect(page.locator('.publicationPreview nav a')).to_have_count(6)
+        assert page.locator('.publicationPreview').get_attribute('aria-label').endswith('실시간 데이터 아님')
+        record(mode, 'reference_preview_has_real_navigation_and_no_fake_quotes')
+        if page.locator('.landNav span').first.is_visible():
+            page.locator('.landNav span').first.focus()
+            page.keyboard.press('Space')
+            expect(page.get_by_role('dialog')).to_be_visible()
+            page.keyboard.press('Escape')
+        else:
+            page.locator('.landTop .brand').focus()
+            page.keyboard.press('Space')
+            page.wait_for_function("lastNavigation==='/'")
+        record(mode, 'space_key_activates_visible_template_navigation')
         page.locator('#email').fill('test@example.invalid')
         page.locator('#password').fill('TestPasswordNotUsed123')
+        page.get_by_role('button', name='비밀번호 보기', exact=True).click()
+        expect(page.locator('#password')).to_have_attribute('type', 'text')
+        page.get_by_role('button', name='비밀번호 숨기기', exact=True).click()
+        expect(page.locator('#password')).to_have_attribute('type', 'password')
+        record(mode, 'password_visibility_toggle_preserves_value')
         page.locator('#emailLogin').click()
         page.wait_for_function("fixture.calls.some(c=>c.path==='login'&&c.method==='AUTH')")
         record(mode, 'email_login_control_uses_auth_adapter')
@@ -60,6 +82,10 @@ with sync_playwright() as pw:
         assert page.evaluate('fixture.prefs.experience') == 'professional'
         assert 'US' in page.evaluate('fixture.prefs.markets')
         record(mode, 'onboarding_selections_persist_and_navigate')
+        page.on('dialog', lambda dialog: dialog.accept())
+        page.get_by_role('button', name='취소하기', exact=True).click()
+        page.wait_for_function("fixture.calls.some(c=>c.path==='logout'&&c.method==='AUTH')&&lastNavigation==='/login'")
+        record(mode, 'onboarding_cancel_exits_instead_of_redirect_loop')
         page.close()
         page = screen('setup')
         page.locator('#searchResults [data-add-watch]').nth(1).click()

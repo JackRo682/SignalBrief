@@ -1,5 +1,6 @@
 import {templates} from './templates.js';
 import {mountReference} from './controller.js';
+import {polishReference} from './publication.js';
 const clone=x=>JSON.parse(JSON.stringify(x));
 const id=n=>`${String(n).padStart(8,'0')}-0000-4000-8000-000000000001`;
 const companies=[{id:id(1),name:'예시 반도체',ticker:'TEST1',market:'KOSPI',provider:'dart',is_demo:false},{id:id(2),name:'Example Cloud',ticker:'TEST2',market:'NASDAQ',provider:'sec',is_demo:false},{id:id(3),name:'Example Mobility',ticker:'TEST3',market:'NASDAQ',provider:'sec',is_demo:false}];
@@ -45,5 +46,5 @@ const rpc=async(name,args={})=>{mutateCall(name,'RPC',args);const s=window.fixtu
  if(name==='sb_reference_ops'){const metrics=Object.fromEntries(['documents','events','ai_runs','ai_failures','low_confidence','citation_failures','number_mismatch','duplicates','pipeline_latency','ai_cost'].map(k=>[k,{value:0,delta:null,note:'격리 테스트',spark:[]} ]));return {metrics,review:[{id:events[0].id,document_id:id(41),title:'검토 테스트 이벤트',symbol:'TEST1',state:'needs_review',created_at:now}],failures:[],citations:[],duplicates:[],reports:[]};}
  throw new Error('Unmocked RPC: '+name);
 };
-let dispose;window.renderScreen=(screen,empty=false)=>{dispose?.();if(empty){window.fixture.notifications=[];window.fixture.calendar=[];window.fixture.watch=[];}const root=document.querySelector('#root');root.className='reference-ui screen-'+screen;root.innerHTML=templates[screen];dispose=mountReference(root,screen,{user:screen==='landing'?null:window.fixture.user,id:screen==='detail'||screen==='chat'?events[0].id:screen==='timeline'?companies[0].id:undefined,api,rpc,go:url=>{window.lastNavigation=url},auth:async(kind,fields)=>{mutateCall(kind,'AUTH',fields);return {};},download:async(path,name)=>mutateCall(path,'DOWNLOAD',{name}),demo:false});};
+let dispose;window.renderScreen=(screen,empty=false)=>{dispose?.();if(empty){window.fixture.notifications=[];window.fixture.calendar=[];window.fixture.watch=[];}const root=document.querySelector('#root');root.className='reference-ui screen-'+screen;root.innerHTML=templates[screen];const ctx={user:screen==='landing'?null:window.fixture.user,id:screen==='detail'||screen==='chat'?events[0].id:screen==='timeline'?companies[0].id:undefined,api,rpc,go:url=>{window.lastNavigation=url},auth:async(kind,fields)=>{mutateCall(kind,'AUTH',fields);return {};},download:async(path,name)=>mutateCall(path,'DOWNLOAD',{name}),demo:false};const unmount=mountReference(root,screen,ctx),unpolish=polishReference(root,screen,ctx);dispose=()=>{unpolish();unmount();};};
 window.renderScreen(new URLSearchParams(location.search).get('screen')??'landing');

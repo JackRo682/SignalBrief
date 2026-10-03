@@ -1,0 +1,37 @@
+/* Final reference-image refinements; no downloaded fonts or decorative price data. */
+.reference-ui #googleLogin{display:flex;align-items:center;justify-content:center;gap:10px}
+.reference-ui #googleLogin>svg{background:#fff;border-radius:50%;padding:2px;flex-shrink:0}
+.reference-ui .landActions>span[role=button]{display:inline-flex;align-items:center;justify-content:center;min-height:36px;min-width:32px;cursor:pointer}
+.reference-ui .publicationHeadingIcon{display:inline-flex;vertical-align:middle;color:#0967ff;margin-right:10px}
+.reference-ui .productShot.publicationPreview{padding:0;display:grid;grid-template-columns:158px minmax(0,1fr);height:332px;overflow:hidden;border-radius:17px;background:#fff}
+.reference-ui .previewSidebar{background:linear-gradient(150deg,#f5faff,#fafdff);padding:19px 12px;border-right:1px solid #ecf2fb;min-width:0}
+.reference-ui .previewBrand{display:flex;gap:7px;align-items:center;font-size:14px;font-weight:800;line-height:1.2;letter-spacing:-.5px;color:#082453;margin-bottom:27px}
+.reference-ui .previewBrand .brandMark{transform:scale(.62);transform-origin:left center;width:21px;margin-right:-4px;flex-shrink:0}
+.reference-ui .previewBrand small{display:block;font-size:6px;font-weight:500;color:#7b8cb0;margin-top:4px;letter-spacing:0}
+.reference-ui .previewSidebar nav{display:flex;flex-direction:column;gap:6px}
+.reference-ui .previewSidebar nav a{display:flex;align-items:center;gap:9px;padding:8px 7px;font-size:10px;font-weight:650;color:#647ca5;border-radius:6px;text-decoration:none;white-space:nowrap}
+.reference-ui .previewSidebar nav a.active{color:#0866ff;background:#e9f2ff}
+.reference-ui .previewMain{padding:14px 16px 16px;min-width:0}
+.reference-ui .previewSearch{display:flex;gap:8px;align-items:center;background:#f5f8fc;border:1px solid #e5edf8;border-radius:8px;padding:8px 10px;color:#8b9cb8;font-size:9px;min-width:0}
+.reference-ui .previewSearch span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.reference-ui .previewSearch small{font-size:8px;white-space:nowrap;margin-left:auto}
+.reference-ui .previewMain>h3{font-size:19px;line-height:1.35;letter-spacing:-.7px;margin:22px 0 7px}
+.reference-ui .previewCaption{font-size:10px;line-height:1.6;color:#7a8fb3;margin:0 0 13px}
+.reference-ui .previewBrief{display:grid;grid-template-columns:112px minmax(0,1fr);border:1px solid #e1ebf8;border-radius:9px;padding:13px;gap:14px;background:#fff;min-height:166px}
+.reference-ui .previewCompany{display:flex;flex-direction:column;align-items:flex-start;border-right:1px solid #edf2f8;padding-right:10px;gap:4px}
+.reference-ui .previewCompanyIcon{color:#0866ff;background:#ecf4ff;border-radius:8px;padding:5px;display:inline-flex}
+.reference-ui .previewCompany strong{font-size:12px}
+.reference-ui .previewCompany small{font-size:8px;color:#8a9abc}
+.reference-ui .previewCompany>b{font-size:17px;margin:3px 0}
+.reference-ui .previewAnalysis{min-width:0}
+.reference-ui .previewAnalysis>strong{font-size:13px;line-height:1.45;display:block}
+.reference-ui .previewAnalysis>p{font-size:9px;color:#8598b6;margin:5px 0 8px}
+.reference-ui .previewThree{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.reference-ui .previewThree>div{border-radius:7px;padding:7px;background:#f5f8fd}
+.reference-ui .previewThree b{font-size:7px;color:#1767d8;display:block;margin-bottom:4px;white-space:nowrap}
+.reference-ui .previewThree>div:last-child b{color:#d99726}
+.reference-ui .previewThree span{font-size:8px;color:#7689aa;line-height:1.5;display:block}
+.reference-ui .previewStart{display:table;margin:10px 0 0 auto;padding:6px 10px;border-radius:6px;color:#fff;background:#0866ff;font-size:9px;font-weight:700;text-decoration:none}
+.reference-ui [role=button]:focus-visible,.reference-ui [role=link]:focus-visible{outline:3px solid #85b3ff;outline-offset:4px}
+@media(max-width:1150px){.reference-ui .productShot.publicationPreview{grid-template-columns:125px minmax(0,1fr)}.reference-ui .previewBrand{font-size:12px}.reference-ui .previewMain{padding:12px}.reference-ui .previewMain>h3{font-size:16px}.reference-ui .previewBrief{grid-template-columns:80px minmax(0,1fr);padding:10px;gap:9px}.reference-ui .previewThree{grid-template-columns:1fr}.reference-ui .previewThree>div:not(:first-child){display:none}}
+@media(max-width:760px){.reference-ui .productShot.publicationPreview{display:grid;grid-template-columns:105px minmax(0,1fr);height:auto;min-height:285px}.reference-ui .previewSidebar{padding:17px 8px}.reference-ui .previewBrand{font-size:10px;gap:3px}.reference-ui .previewBrand small{font-size:5px}.reference-ui .previewSidebar nav a{font-size:8px;gap:6px;padding:7px 4px}.reference-ui .previewMain>h3{font-size:14px;margin-top:18px}.reference-ui .previewBrief{display:block}.reference-ui .previewCompany{display:none}.reference-ui .previewThree{grid-template-columns:1fr}.reference-ui .previewThree>div:not(:first-child){display:none}.reference-ui .previewCaption{font-size:9px}.reference-ui .previewSearch{padding:7px;font-size:8px}.reference-ui .previewSearch small{display:none}.reference-ui .previewAnalysis>strong{font-size:12px}}

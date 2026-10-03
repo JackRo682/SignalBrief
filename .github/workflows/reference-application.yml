@@ -1,0 +1,32 @@
+name: Reference application checks
+on:
+  push:
+    branches: [main, codex/reference-publish-20261003]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  rendered-controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - working-directory: apps/web
+        run: npm ci --ignore-scripts
+      - run: pip install playwright && python -m playwright install --with-deps chromium
+      - run: node tests/reference/build_harness.mjs
+      - name: Desktop and mobile native controls with isolated adapters
+        run: |
+          export CHROMIUM_PATH="$(python -c 'from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()')"
+          REFERENCE_RESULTS=reference-results python tests/reference/browser_checks.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reference-r2-rendered-checks
+          path: reference-results/
+          retention-days: 1

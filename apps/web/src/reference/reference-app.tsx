@@ -6,9 +6,11 @@ import { useAuth } from "@/components/auth";
 import { API_URL } from "@/lib/api";
 import { getSupabase } from "@/lib/supabase";
 import { templates } from "./templates";
-import { mountReference, type Row } from "./controller";
+import { polishReference } from "./publication";
+import { mountReference, type Row, type ReferenceContext } from "./controller";
 import "./reference.css";
 import "./overrides.css";
+import "./publication.css";
 
 type Screen=keyof typeof templates;
 export default function ReferenceApp({screen,id}:{screen:Screen;id?:string}){
@@ -30,7 +32,7 @@ export default function ReferenceApp({screen,id}:{screen:Screen;id?:string}){
    if(!response.ok){const code=data?.error?.code??data?.error??`HTTP ${response.status}`;if(response.status===401&&!publicPage)router.replace("/login");throw new Error(typeof code==="string"?code:"요청을 완료하지 못했습니다.");}
    return data;
   };
-  return mountReference(target,screen,{
+  const context: ReferenceContext = {
    id,user:latest.current.me as unknown as Row|null,demo:!!latest.current.config?.demo_mode,
    go:(url)=>router.push(url),api,
    rpc:async(name,args={})=>{
@@ -49,8 +51,11 @@ export default function ReferenceApp({screen,id}:{screen:Screen;id?:string}){
     if(kind==="reset"){const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:`${location.origin}/auth/callback?next=reset-password`});if(error)throw new Error("메일 요청이 제한되었습니다. 잠시 후 다시 시도해 주세요.");return {};}
     throw new Error("지원하지 않는 로그인 방식입니다.");
    }
-  });
+  };
+  const unmount = mountReference(target,screen,context);
+  const unpolish = polishReference(target,screen,context);
+  return ()=>{unpolish();unmount();};
  },[screen,id,path,publicPage,signedIn,auth.config?.demo_mode,router]);
  if(!publicPage&&!signedIn)return <main className="referenceGate"><Link href="/">SignalBrief</Link><h1>{auth.error?"연결을 확인해 주세요":"계정을 확인하고 있습니다"}</h1><p role={auth.error?"alert":"status"}>{auth.error??"잠시만 기다려 주세요."}</p>{auth.error&&<><button onClick={()=>location.reload()}>다시 시도</button><Link href="/login">로그인</Link></>}</main>;
- return <div ref={root} className={`reference-ui screen-${screen}`} data-screen={screen} />;
+ return <div ref={root} className={`reference-ui screen-${screen}`} data-screen={screen} dangerouslySetInnerHTML={{__html:templates[screen]}} />;
 }
