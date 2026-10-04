@@ -21,7 +21,8 @@ async function proxy(req: NextRequest, context: { params: Promise<{ path: string
   upstream.search = req.nextUrl.search;
   const headers = new Headers({ apikey: key });
   const authorization = req.headers.get("authorization");
-  if (authorization) headers.set("Authorization", authorization);
+  const publicConfig = req.method === "GET" && route === "v1/config";
+  if (authorization && !publicConfig) headers.set("Authorization", authorization);
   let payload: Uint8Array | undefined;
   if (!["GET", "HEAD"].includes(req.method)) {
     if (Number(req.headers.get("content-length") ?? 0) > MAX_BODY) return error(413, "body_too_large");
@@ -32,8 +33,9 @@ async function proxy(req: NextRequest, context: { params: Promise<{ path: string
     headers.set("Content-Type", "application/json");
   }
   try {
-    const response = await fetch(upstream, { method: req.method, headers, body: payload as BodyInit | undefined, redirect: "error", cache: "no-store", signal: AbortSignal.timeout(25000) });
+    const response = await fetch(upstream, { method: req.method, headers, body: payload as BodyInit | undefined, redirect: "error", cache: publicConfig ? "force-cache" : "no-store", ...(publicConfig ? { next: { revalidate: 300 } } : {}), signal: AbortSignal.timeout(25000) });
     const output = new Headers({ "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer" });
+    if (publicConfig && response.ok) output.set("Cache-Control", "public, max-age=300");
     for (const name of ["content-type", "content-disposition", "x-request-id", "retry-after"]) { const value = response.headers.get(name); if (value) output.set(name, value); }
     return new Response(response.body, { status: response.status, headers: output });
   } catch { return error(502, "api_unreachable"); }

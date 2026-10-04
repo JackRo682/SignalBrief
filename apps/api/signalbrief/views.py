@@ -30,32 +30,74 @@ def require_event(session, event_id, principal, demo_mode):
     return event
 
 
-def event_card(session, event, user_id, membership=None):
-    company = session.get(m.Company, event.company_id)
-    document = session.get(m.Document, event.document_id)
-    brief = session.execute(select(m.Brief).where(m.Brief.event_id == event.id)).scalar_one()
-    changes = session.execute(select(m.Change).where(m.Change.event_id == event.id)).scalars().all()
-    watched, held = membership or memberships(session, user_id)
-    changed = len([c for c in changes if c.change_type in ("increased", "decreased", "wording_changed")])
-    ranking = rank(event, company.id in watched, company.id in held, document.provider, bool(changed))
-    return {
-        "id": event.id,
-        "company": company_dict(company),
-        "event_type": event.event_type,
-        "state": event.state,
-        "headline": brief.headline,
-        "what_happened": brief.what_happened,
-        "confidence": event.confidence,
-        "materiality": event.materiality,
-        "published_at": aware(event.published_at),
-        "publication_precision": document.publication_precision,
-        "is_demo": document.is_demo,
-        "source_tier": None if document.is_demo else 1,
-        "source_provider": document.provider,
-        "source_url": document.source_url,
-        "ranking": ranking,
-        "change_count": changed,
+def event_cards(session, events, user_id, membership=None):
+    if not events:
+        return []
+    event_ids = [event.id for event in events]
+    companies = {
+        c.id: c
+        for c in session.scalars(select(m.Company).where(m.Company.id.in_({e.company_id for e in events})))
     }
+    documents = {
+        d.id: d
+        for d in session.scalars(select(m.Document).where(m.Document.id.in_({e.document_id for e in events})))
+    }
+    briefs = {b.event_id: b for b in session.scalars(select(m.Brief).where(m.Brief.event_id.in_(event_ids)))}
+    grouped_changes = {}
+    for change in session.scalars(
+        select(m.Change).where(m.Change.event_id.in_(event_ids)).order_by(m.Change.id)
+    ):
+        grouped_changes.setdefault(change.event_id, []).append(change)
+    first_facts = {}
+    for fact in session.scalars(select(m.Fact).where(m.Fact.event_id.in_(event_ids)).order_by(m.Fact.id)):
+        if fact.validation_status == "supported":
+            first_facts.setdefault(fact.event_id, fact)
+    watched, held = membership or memberships(session, user_id)
+    result = []
+    for event in events:
+        company, document, brief = companies[event.company_id], documents[event.document_id], briefs[event.id]
+        changes = grouped_changes.get(event.id, [])
+        changed = sum(c.change_type in ("increased", "decreased", "wording_changed") for c in changes)
+        ranking = rank(event, company.id in watched, company.id in held, document.provider, bool(changed))
+        fact = first_facts.get(event.id)
+        result.append(
+            {
+                "id": event.id,
+                "company": company_dict(company),
+                "event_type": event.event_type,
+                "state": event.state,
+                "headline": brief.headline,
+                "what_happened": brief.what_happened,
+                "confidence": event.confidence,
+                "materiality": event.materiality,
+                "published_at": aware(event.published_at),
+                "publication_precision": document.publication_precision,
+                "is_demo": document.is_demo,
+                "source_tier": None if document.is_demo else 1,
+                "source_provider": document.provider,
+                "source_url": document.source_url,
+                "ranking": ranking,
+                "change_count": changed,
+                "fact_summary": fact.quote if fact else None,
+                "change_summary": [
+                    {"field": c.field, "previous_value": c.previous_value, "current_value": c.current_value}
+                    for c in changes[:2]
+                ],
+                "interpretation": brief.interpretation,
+                "source_document": {
+                    "id": document.id,
+                    "title": document.title,
+                    "provider": document.provider,
+                    "source_url": document.source_url,
+                    "published_at": aware(document.published_at),
+                },
+            }
+        )
+    return result
+
+
+def event_card(session, event, user_id, membership=None):
+    return event_cards(session, [event], user_id, membership)[0]
 
 
 def event_evidence(session, event_id):

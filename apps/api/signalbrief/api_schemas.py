@@ -87,6 +87,20 @@ class RankingOut(APIModel):
     market_reaction: str
 
 
+class ChangeSummary(APIModel):
+    field: str
+    previous_value: str | None
+    current_value: str | None
+
+
+class SourceDocumentSummary(APIModel):
+    id: str
+    title: str
+    provider: str
+    source_url: str
+    published_at: datetime
+
+
 class EventCard(APIModel):
     id: str
     company: CompanyOut
@@ -104,6 +118,10 @@ class EventCard(APIModel):
     source_url: str
     ranking: RankingOut
     change_count: int
+    fact_summary: str | None
+    change_summary: list[ChangeSummary]
+    interpretation: str | None
+    source_document: SourceDocumentSummary
 
 
 class FeedOut(APIModel):

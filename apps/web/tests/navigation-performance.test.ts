@@ -1,0 +1,62 @@
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { internalNavigation } from '../src/lib/internal-navigation';
+import { siteOrigin, startGoogleLogin } from '../src/lib/site-url';
+import { PageDataCache } from '../src/lib/page-data-cache';
+
+afterEach(() => vi.useRealTimers());
+describe('OAuth origin', () => {
+  it('moves aliases before starting PKCE', async () => {
+    const navigate = vi.fn(), login = vi.fn();
+    await startGoogleLogin('https://alias.vercel.app/login', siteOrigin('https://alias.vercel.app', undefined, true), navigate, login);
+    expect(navigate).toHaveBeenCalledWith('https://signalbrief-beta.vercel.app/login');
+    expect(login).not.toHaveBeenCalled();
+  });
+  it('uses the canonical callback once already on its origin', async () => {
+    const login = vi.fn();
+    await startGoogleLogin('https://signalbrief-beta.vercel.app/login', 'https://signalbrief-beta.vercel.app', vi.fn(), login);
+    expect(login).toHaveBeenCalledWith('https://signalbrief-beta.vercel.app/auth/callback');
+    expect(siteOrigin('http://localhost:3000', undefined, false)).toBe('http://localhost:3000');
+    expect(() => siteOrigin('https://app.test', 'https://app.test/other', true)).toThrow();
+  });
+});
+describe('template links', () => {
+  function click(href: string, init: MouseEventInit = {}, attrs = '') {
+    const anchor = document.createElement('a'); anchor.href = href; anchor.innerHTML = '<span>open</span>';
+    if (attrs) anchor.setAttribute(attrs, attrs === 'target' ? '_blank' : '');
+    const event = new MouseEvent('click', { bubbles: true, cancelable: true, ...init });
+    let result: string | null = null;
+    anchor.addEventListener('click', e => { result = internalNavigation(e, 'https://app.test/today'); e.preventDefault(); });
+    anchor.firstElementChild!.dispatchEvent(event); return result;
+  }
+  it('routes nested internal links with their query and hash', () => expect(click('https://app.test/calendar?month=10#day')).toBe('/calendar?month=10#day'));
+  it('preserves external, modified, download, new-tab and evidence clicks', () => {
+    expect(click('https://outside.test')).toBeNull();
+    expect(click('https://app.test/portfolio', { ctrlKey: true })).toBeNull();
+    expect(click('https://app.test/portfolio', {}, 'download')).toBeNull();
+    expect(click('https://app.test/portfolio', {}, 'target')).toBeNull();
+    expect(click('https://app.test/today#evidence')).toBeNull();
+  });
+});
+describe('page data cache', () => {
+  it('deduplicates loads and discards data on account changes and mutations', async () => {
+    const cache = new PageDataCache(), load = vi.fn().mockResolvedValue({ items: [1] });
+    await Promise.all([cache.request('alice', '/v1/watchlist', 'GET', load), cache.request('alice', '/v1/watchlist', 'GET', load)]);
+    expect(load).toHaveBeenCalledTimes(1);
+    await cache.request('bob', '/v1/watchlist', 'GET', load);
+    expect(load).toHaveBeenCalledTimes(2);
+    await cache.request('bob', '/v1/watchlist/1', 'PUT', async () => null);
+    await cache.request('bob', '/v1/watchlist', 'GET', load);
+    expect(load).toHaveBeenCalledTimes(3);
+  });
+  it('expires stale responses and never retains errors', async () => {
+    vi.useFakeTimers(); const cache = new PageDataCache(), load = vi.fn().mockResolvedValue(1);
+    await cache.request('a', '/v1/portfolio', 'GET', load);
+    vi.advanceTimersByTime(15_001);
+    await cache.request('a', '/v1/portfolio', 'GET', load);
+    expect(load).toHaveBeenCalledTimes(2);
+    const fail = vi.fn().mockRejectedValue(new Error('failed'));
+    await expect(cache.request('a', '/v1/feed', 'GET', fail)).rejects.toThrow();
+    await expect(cache.request('a', '/v1/feed', 'GET', fail)).rejects.toThrow();
+    expect(fail).toHaveBeenCalledTimes(2);
+  });
+});

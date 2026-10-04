@@ -11,7 +11,7 @@ from .jobs import enqueue
 from .limits import aware, consume_budget, dialect_insert
 from .questions import answer_question
 from .ranking import memberships
-from .views import company_dict, event_card, event_evidence, require_company, require_event
+from .views import company_dict, event_card, event_cards, event_evidence, require_company, require_event
 
 router = APIRouter(prefix="/v1")
 P = Annotated[Principal, Depends(authenticate)]
@@ -287,7 +287,7 @@ def feed(
         else []
     )
     truncated = len(events) > 1000
-    cards = [event_card(db, event, principal.id, (watched, held)) for event in events[:1000]]
+    cards = event_cards(db, events[:1000], principal.id, (watched, held))
     cards.sort(key=lambda c: (c["ranking"]["score"], c["published_at"], c["id"]), reverse=True)
     page = cards[offset : offset + limit]
     for card in page:
@@ -366,7 +366,7 @@ def timeline(
         .scalars()
         .all()
     )
-    return [event_card(db, event, principal.id) for event in events]
+    return event_cards(db, events, principal.id)
 
 
 @router.post("/events/{event_id}/questions", response_model=a.AnswerOut)

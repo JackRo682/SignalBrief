@@ -2302,6 +2302,44 @@
         ],
         "title": "ChangeOut"
       },
+      "ChangeSummary": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "previous_value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Value"
+          },
+          "current_value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Value"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "field",
+          "previous_value",
+          "current_value"
+        ],
+        "title": "ChangeSummary"
+      },
       "CompanyOut": {
         "properties": {
           "id": {
@@ -2497,6 +2535,38 @@
           "change_count": {
             "type": "integer",
             "title": "Change Count"
+          },
+          "fact_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fact Summary"
+          },
+          "change_summary": {
+            "items": {
+              "$ref": "#/components/schemas/ChangeSummary"
+            },
+            "type": "array",
+            "title": "Change Summary"
+          },
+          "interpretation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interpretation"
+          },
+          "source_document": {
+            "$ref": "#/components/schemas/SourceDocumentSummary"
           }
         },
         "additionalProperties": false,
@@ -2517,7 +2587,11 @@
           "source_provider",
           "source_url",
           "ranking",
-          "change_count"
+          "change_count",
+          "fact_summary",
+          "change_summary",
+          "interpretation",
+          "source_document"
         ],
         "title": "EventCard"
       },
@@ -3326,6 +3400,41 @@
           "validation_result"
         ],
         "title": "RunOut"
+      },
+      "SourceDocumentSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Published At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "provider",
+          "source_url",
+          "published_at"
+        ],
+        "title": "SourceDocumentSummary"
       },
       "ValidationError": {
         "properties": {

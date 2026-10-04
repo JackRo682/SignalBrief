@@ -44,11 +44,11 @@ async function memberships(db:SupabaseClient){
 }
 async function cards(db:SupabaseClient,events:Row[],member?:Awaited<ReturnType<typeof memberships>>){
   if(!events.length)return [];
-  const [companies,documents,briefs,changes,m]=await Promise.all([getRows(db,"companies","id",events.map(e=>s(e.company_id)),COMPANY_FIELDS),getRows(db,"documents","id",events.map(e=>s(e.document_id)),DOC_FIELDS),getRows(db,"briefs","event_id",events.map(e=>s(e.id))),getRows(db,"changes","event_id",events.map(e=>s(e.id))),member??memberships(db)]);
+  const [companies,documents,briefs,changes,facts,m]=await Promise.all([getRows(db,"companies","id",events.map(e=>s(e.company_id)),COMPANY_FIELDS),getRows(db,"documents","id",events.map(e=>s(e.document_id)),DOC_FIELDS),getRows(db,"briefs","event_id",events.map(e=>s(e.id))),getRows(db,"changes","event_id",events.map(e=>s(e.id))),getRows(db,"facts","event_id",events.map(e=>s(e.id)),"id,event_id,quote,validation_status"),member??memberships(db)]);
   const cm=index(companies),dm=index(documents),bm=new Map(briefs.map(b=>[s(b.event_id),b]));
   return events.flatMap(e=>{const c=cm.get(s(e.company_id)),d=dm.get(s(e.document_id)),b=bm.get(s(e.id));if(!c||!d||!b||d.is_demo)return [];
     const changed=changes.filter(x=>x.event_id===e.id&&["increased","decreased","wording_changed"].includes(s(x.change_type))).length;
-    return [{id:e.id,company:c,event_type:e.event_type,state:e.state,headline:b.headline,what_happened:b.what_happened,confidence:number(e.confidence),materiality:number(e.materiality),published_at:e.published_at,publication_precision:d.publication_precision,is_demo:false,source_tier:1,source_provider:d.provider,source_url:d.source_url,ranking:ranking(e,m.watched.has(s(c.id)),m.held.has(s(c.id)),s(d.provider),changed>0),change_count:changed}];});
+    return [{id:e.id,company:c,event_type:e.event_type,state:e.state,headline:b.headline,what_happened:b.what_happened,confidence:number(e.confidence),materiality:number(e.materiality),published_at:e.published_at,publication_precision:d.publication_precision,is_demo:false,source_tier:1,source_provider:d.provider,source_url:d.source_url,ranking:ranking(e,m.watched.has(s(c.id)),m.held.has(s(c.id)),s(d.provider),changed>0),change_count:changed,fact_summary:facts.filter(f=>f.event_id===e.id&&f.validation_status==="supported").sort((a,b)=>s(a.id).localeCompare(s(b.id)))[0]?.quote??null,change_summary:changes.filter(x=>x.event_id===e.id).sort((a,b)=>s(a.id).localeCompare(s(b.id))).slice(0,2).map(x=>({field:x.field,previous_value:x.previous_value??null,current_value:x.current_value??null})),interpretation:b.interpretation??null,source_document:{id:d.id,title:d.title,provider:d.provider,source_url:d.source_url,published_at:d.published_at}}];});
 }
 async function detail(db:SupabaseClient,id:string){
   const e=rows(await unwrap(db.from("events").select("*").eq("id",identity(id)).limit(1)))[0];check(e,404,"event_not_found");
@@ -87,9 +87,12 @@ Deno.serve(async(req:Request)=>{
     const origin=req.headers.get("origin");check(!origin||ALLOWED_ORIGINS.has(origin),403,"origin_not_allowed");
     if(req.method==="OPTIONS")return new Response(null,{status:204,headers:{"Access-Control-Allow-Origin":origin??SITE,"Access-Control-Allow-Headers":"authorization,apikey,content-type,x-client-info","Access-Control-Allow-Methods":"GET,POST,PUT,PATCH,DELETE,OPTIONS","Vary":"Origin"}});
     check(SUPABASE_URL&&PUBLIC_KEY,503,"server_configuration_missing");
-    if(req.method==="GET"&&["/","/health","/health/ready","/v1/config"].includes(path)){
+    if(req.method==="GET"&&path==="/v1/config"){
+      response=json({demo_mode:false,demo_admin_enabled:false,auth_mode:"supabase",release:"hosted-v1",capabilities:{accounts:true,portfolio:true,calendar:true,questions:"evidence_search",live_ingestion:false,generative_ai:false,email_delivery:false,background_push:false},setup_note:"Financial ingestion and paid AI remain inactive until server credentials and budgets are approved."});
+      response.headers.set("Cache-Control","public, max-age=300");
+    }else if(req.method==="GET"&&["/","/health","/health/ready"].includes(path)){
       const health=row(await rpc(client(),"sb_health"));
-      response=json(path==="/v1/config"?{demo_mode:false,demo_admin_enabled:false,auth_mode:"supabase",...health,release:"hosted-v1",capabilities:{accounts:true,portfolio:true,calendar:true,questions:"evidence_search",live_ingestion:false,generative_ai:false,email_delivery:false,background_push:false},setup_note:"Financial ingestion and paid AI remain inactive until server credentials and budgets are approved."}:{status:health.database_ready?"ready":"not_ready",...health});
+      response=json({status:health.database_ready?"ready":"not_ready",...health});
     }else if(req.method==="GET"&&path.startsWith("/v1/calendar/feed/")){
       const token=path.split("/").pop()?.replace(/\.ics$/,"")??"";check(/^[a-f0-9]{64}$/.test(token),404,"subscription_not_found");
       const feed=await rpc(client(),"sb_calendar_subscription_feed",{token});check(feed!==null,404,"subscription_not_found");response=calendarResponse(rows(feed));
