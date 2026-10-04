@@ -128,7 +128,7 @@ export function mountReference(root:HTMLElement,screen:string,ctx:ReferenceConte
 
  async function initLanding(){
   $$('.landActions [data-auth-cta]').forEach(a=>a.setAttribute('href',ctx.user?'/today':a.dataset.authCta==='signup'?'/signup':'/login'));
-  const paths=['/about','/features','/sources','/pricing','/customers'];
+  const paths=['/about','/features','/sources','/pricing','/customers','/privacy'];
   $$('.landNav span').forEach((x,i)=>{const a=document.createElement('a');a.href=paths[i];a.textContent=x.textContent;a.className=x.className;x.replaceWith(a);});
   const searchAction=root.querySelector('.landActions>span');if(searchAction){const a=document.createElement('a');a.href=ctx.user?'/today':'/login';a.setAttribute('aria-label','기업 검색');a.innerHTML=icon('search');searchAction.replaceWith(a);}
   $$('.landActions button').forEach((b,i)=>{const a=document.createElement('a');a.className=b.className;a.textContent=b.textContent;a.href=ctx.user?'/today':i===0?'/login':'/signup';b.replaceWith(a);});

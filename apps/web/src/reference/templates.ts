@@ -19,7 +19,7 @@ templates.landing=templates.landing
  .replace('<span>주요 기능</span>','<a href="/features">주요 기능</a>')
  .replace('<span>데이터 출처</span>','<a href="/sources">데이터 출처</a>')
  .replace('<span>요금제</span>','<a href="/pricing">요금제</a>')
- .replace('<span>고객 사례</span>','<a href="/customers">고객 사례</a>')
+ .replace('<span>고객 사례</span>','<a href="/customers">고객 사례</a><a href="/privacy">개인정보</a>')
  .replace('<span>⌕</span>','<a href="/login" aria-label="기업 검색">⌕</a>')
  .replace('<button class="btn">로그인</button>','<a class="btn" href="/login" data-auth-cta="login">로그인</a>')
  .replace('<button class="btn primary">무료로 시작하기</button>','<a class="btn primary" href="/signup" data-auth-cta="signup">무료로 시작하기</a>');

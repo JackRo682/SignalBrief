@@ -1,0 +1,66 @@
+{
+  "uploaded_designs": [
+    {
+      "source": "03_sources_signalbrief_html.txt",
+      "html_sha256": "535e986ce071dea606ddc6e331857f56cc9550a609e63502f82c5e9637cbf996",
+      "image_sha256": "e46ee15b86880deccd740f723ff05c602bf04d13b7c1173d56dbee90299f17be",
+      "bytes": 2327341
+    },
+    {
+      "source": "05_customers_signalbrief_html.txt",
+      "html_sha256": "b595d81a4f47b41f3e1f2249cf5b10b6b4728cc3a4eee4642feb9ab9e73e5f1c",
+      "image_sha256": "7530f64fc4e1f4b44fae4173f038059fdedc76a79e56ab9e1356209b0652ad22",
+      "bytes": 2350446
+    },
+    {
+      "source": "04_pricing_signalbrief_html.txt",
+      "html_sha256": "81aee380e62a140e5ae3e23ccc7be2b0a228d7b2f74f90d256cd41082b3a4fe5",
+      "image_sha256": "7d0e79ea5b0354b038e84378d4511c9359bc2284e58de4f8c8d15ffb6a1d53a9",
+      "bytes": 2321839
+    },
+    {
+      "source": "02_features_signalbrief_html.txt",
+      "html_sha256": "bb54521398307d06f55b3339a31a41d5f33b45748f7c2dbaedf6337cc8da7aae",
+      "image_sha256": "bf3ed7261716791659689c9d72ea1ef35b716eae0883dd7922c4ad0f914234ce",
+      "bytes": 2181899
+    },
+    {
+      "source": "01_about_signalbrief_html.txt",
+      "html_sha256": "f7bbccf9e581bfdb0d2da21448f156a37e763b08115d7f4ed2be12f51f24570e",
+      "image_sha256": "d458f7e59c55c77816e8d6e858f590f1698f653ea10b159b3074e2cbd85a4253",
+      "bytes": 2128835
+    },
+    {
+      "source": "06_privacy_signalbrief_html.txt",
+      "html_sha256": "6d70e79ca84eea6e099fd7b1b6c983a8197ab690dc9607b9e6fe2ab1fcb7d868",
+      "image_sha256": "368c4d3a965240b517d6efe2bfb00ebeb42e648027ef0ff629ddf9673fb1f898",
+      "bytes": 2161946
+    }
+  ],
+  "assets": [
+    {
+      "path": "apps/web/public/marketing/mountain.webp",
+      "source": "01_about_signalbrief_html.txt",
+      "crop": {
+        "left": 475,
+        "top": 1200,
+        "width": 537,
+        "height": 190
+      },
+      "sha256": "ee5c0b31f29c1d0c1e31a0bbb9068fea24bf57cb25731109abbc0e4977e83552",
+      "bytes": 18500
+    },
+    {
+      "path": "apps/web/public/marketing/privacy-shield.webp",
+      "source": "06_privacy_signalbrief_html.txt",
+      "crop": {
+        "left": 680,
+        "top": 180,
+        "width": 205,
+        "height": 220
+      },
+      "sha256": "2606a1cb6bde8ce1470855381a50544cba55ab5afa0bf3cce74c458f04a96220",
+      "bytes": 5334
+    }
+  ]
+}

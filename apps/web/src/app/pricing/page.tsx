@@ -1,28 +1,5 @@
-import MarketingInfoPage from "@/components/marketing-info-page";
-
-export const metadata = { title: "요금제" };
-
-export default function PricingPage() {
-  return (
-    <MarketingInfoPage
-      current="/pricing"
-      eyebrow="PRICING"
-      title="무료로 시작하는 관심종목 브리핑."
-      description="현재 제공되는 기능을 무료로 이용하세요. 가입할 때 결제 정보를 등록할 필요가 없습니다."
-      sections={[
-        {
-          title: "현재 이용",
-          body: "계정을 만들어 현재 제공되는 기능을 사용할 수 있습니다. 실제 제공 범위는 서비스 연결 상태와 계정 권한에 따라 달라질 수 있습니다.",
-        },
-        {
-          title: "결제 정보",
-          body: "현재 프로덕션 서비스에는 구독 결제나 카드 청구 흐름이 연결되어 있지 않습니다.",
-        },
-        {
-          title: "향후 변경",
-          body: "유료 요금제를 도입하게 되면 가격, 제공 기능과 적용 시점을 이 페이지에 안내합니다.",
-        },
-      ]}
-    />
-  );
-}
+import MarketingLayout,{Hero,SectionTitle,Card,ClosingBanner,Glyph} from '@/components/marketing/layout';
+import {AccountLink} from '@/components/marketing/actions';
+import {Icon} from '@/components/icons';
+export const metadata={title:'요금제',description:'현재 공개 베타에서 무료로 이용할 수 있는 SignalBrief의 요금 안내입니다.'};
+export default function Pricing(){return <MarketingLayout current="/pricing"><Hero eyebrow="PRICING" title={<>지금은 더 많은 분들이<br/>경험할 수 있도록,<br/><em>현재 기능을 무료로 제공합니다.</em></>} description={<>SignalBrief는 현재 공개 베타 단계로,<br/>아직 결제 기능이 활성화되어 있지 않습니다.<br/>부담 없이 서비스를 경험하고,<br/>더 나은 서비스를 함께 만들어주세요.</>}/><div className="public-info-container public-info-content"><SectionTitle eyebrow="OUR PRICING" title="지금은 공개 베타, 더 나은 서비스를 만드는 시간입니다.">더 정확하고 신뢰할 수 있는 투자 정보를 제공하기 위해<br/>현재 공개 베타 단계로 운영되며, 결제 정보를 등록할 필요가 없습니다.</SectionTitle><div className="public-info-pricing-grid"><article className="public-info-free-plan"><div className="free-plan-top"><span className="public-info-icon tone-blue"><Glyph name="infinity" size={34}/></span><span className="public-beta">PUBLIC BETA</span></div><h2>지금은<br/><em>무료로</em> 이용하실 수 있습니다.</h2><p>현재 제공되는 기능을 별도의 결제 없이 자유롭게 이용하실 수 있습니다.</p><p>AI 기반 투자 정보를 경험하고 의견을 주실 수 있도록 공개 베타로 운영 중입니다.</p><AccountLink className="public-info-button primary">지금 바로 시작하기 <Icon name="arrow" size={16}/></AccountLink><small>별도 회원가입 비용 없이, 지금 바로 경험해보세요.</small></article><div className="public-info-grid cols-2"><Card icon="credit-off" title="결제 기능은 아직 비활성화 상태입니다." tone="purple">현재 신용카드, 계좌이체 등 결제 기능은 연결되어 있지 않습니다. 별도 결제 요청이나 청구 없이 이용할 수 있습니다.</Card><Card icon="shield" title="자동 결제는 없습니다." tone="green">공개 베타 기간에는 자동 결제가 이루어지지 않습니다. 향후 유료 요금제를 도입하면 가격과 제공 기능을 먼저 안내합니다.</Card><Card icon="bars" title="향후 요금제는 투명하게 공개할 예정입니다.">요금제 구조, 가격, 제공 기능과 적용 시점을 이 페이지에서 안내하고 공식적인 신청 절차를 제공합니다.</Card><Card icon="database" title="데이터 제공 범위에 따라 기능 차이가 있을 수 있습니다." tone="purple">일부 데이터의 제공 범위는 공급자 연결과 자료 검토 상태에 따라 달라질 수 있습니다. 실제 연결 범위를 확인해 주세요.</Card></div></div><ClosingBanner title="더 많은 가능성을 함께 만들어갑니다." secondary={{href:'/privacy#contact',label:'문의하기'}}>지금은 무료로, 더 나은 투자 경험을 만들어가는 여정에 함께해 주세요.<br/>여러분의 의견이 SignalBrief를 성장시킵니다.</ClosingBanner></div></MarketingLayout>;}

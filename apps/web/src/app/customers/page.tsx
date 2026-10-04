@@ -1,28 +1,3 @@
-import MarketingInfoPage from "@/components/marketing-info-page";
-
-export const metadata = { title: "고객 사례" };
-
-export default function CustomersPage() {
-  return (
-    <MarketingInfoPage
-      current="/customers"
-      eyebrow="CUSTOMER STORIES"
-      title="내 종목을 확인하는 새로운 흐름을 만나보세요."
-      description="공개 고객 사례는 준비 중입니다. 먼저 SignalBrief에서 활용할 수 있는 흐름을 살펴보세요."
-      sections={[
-        {
-          title: "관심종목의 변화 확인",
-          body: "관심 기업을 저장하고 새 공시의 변화와 원문 근거를 함께 확인합니다.",
-        },
-        {
-          title: "보유종목 중심으로 탐색",
-          body: "등록한 보유종목에 관련된 이벤트를 찾고, 기업별 타임라인에서 이전 자료와 이어서 읽을 수 있습니다.",
-        },
-        {
-          title: "직접 확인하기",
-          body: "제품의 실제 기능은 계정을 만든 뒤 관심종목, 타임라인, 포트폴리오, 질문과 알림 흐름에서 직접 확인할 수 있습니다.",
-        },
-      ]}
-    />
-  );
-}
+import MarketingLayout,{Hero,SectionTitle,Card,ClosingBanner} from '@/components/marketing/layout';
+export const metadata={title:'고객 사례',description:'검증된 고객 사례를 준비하는 SignalBrief의 약속과 서비스 활용 흐름을 살펴보세요.'};
+export default function Customers(){return <MarketingLayout current="/customers"><Hero eyebrow="CUSTOMERS" title={<>투자자의 이야기로<br/><em>더 나은 투자의 기준</em>을 만듭니다.</>} description={<>SignalBrief는 투자자들의 실제 경험을 소중히 생각합니다.<br/>검증된 공식 고객 사례를 준비하고 있습니다.</>} art="customers" secondary={{href:'/about',label:'서비스 소개 보기'}}/><div className="public-info-container public-info-content"><SectionTitle eyebrow="OUR APPROACH" title="신뢰할 수 있는 고객 사례를 만들기 위한 약속" id="approach">사실에 기반한 고객 사례를 소개하기 위해,<br/>더 의미 있는 이야기를 전하기 위한 원칙을 지킵니다.</SectionTitle><div className="public-info-grid cols-4"><Card icon="file" title="게시 기준">실제 서비스를 이용한 경험 중, 투자 정보 탐색과 의사결정에 도움이 된 내용을 중심으로 소개합니다.</Card><Card icon="user" title="실제 사용자 동의">고객 사례는 고객 본인의 사전 동의를 받아 작성하며, 개인정보와 공개 범위를 함께 확인합니다.</Card><Card icon="shield" title="검증 원칙" tone="purple">사실에 기반하지 않은 내용이나 과장된 표현을 게시하지 않습니다. 확인 가능한 경험과 정보만 전달합니다.</Card><Card icon="megaphone" title="과장 없는 사례 공개" tone="purple">특정 수익률이나 성과를 보장하지 않습니다. 고객의 실제 경험을 근거와 함께 균형 있게 소개합니다.</Card></div><section className="public-info-customer-resources"><p className="public-info-eyebrow">IN THE MEANTIME</p><h2>지금은 이런 내용을 살펴보세요.</h2><p>고객 사례를 준비하는 동안, SignalBrief를 더 잘 이해할 수 있는<br/>다음의 콘텐츠를 확인해보세요.</p><div className="public-info-grid cols-4"><Card icon="bars" title="서비스 소개" href="/about" label="서비스 소개 보기">SignalBrief가 어떤 서비스인지 자세히 알아보세요.</Card><Card icon="grid" title="주요 기능" href="/features" label="주요 기능 보기">투자에 필요한 핵심 기능들을 확인해보세요.</Card><Card icon="book" title="데이터 출처" href="/sources" label="데이터 출처 보기">확인 가능한 원문과 데이터 출처를 소개합니다.</Card><Card icon="file" title="요금제" href="/pricing" label="요금제 보기" tone="purple">현재 공개 베타의 무료 이용 범위를 확인하세요.</Card></div></section><ClosingBanner title="더 많은 투자자의 이야기, 곧 찾아옵니다.">공식 고객 사례를 준비하고 있습니다.<br/>지금 SignalBrief와 함께, 더 나은 투자 정보 탐색을 시작해보세요.</ClosingBanner></div></MarketingLayout>;}

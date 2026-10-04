@@ -1,28 +1,8 @@
-import MarketingInfoPage from "@/components/marketing-info-page";
-
-export const metadata = { title: "데이터 출처" };
-
-export default function SourcesPage() {
-  return (
-    <MarketingInfoPage
-      current="/sources"
-      eyebrow="DATA SOURCES"
-      title="원문에서 시작하는 믿을 수 있는 정보."
-      description="현재 초기 버전은 미국 주식 데이터 연결을 우선하며, 공식 원문과 실제 연결 상태를 기준으로 화면을 구성합니다."
-      sections={[
-        {
-          title: "공식 공시",
-          body: "미국 기업 공시는 SEC 원문을 우선합니다. 문서 제목, 게시 시점과 원문 링크를 함께 확인할 수 있도록 구성합니다.",
-        },
-        {
-          title: "기업 IR 및 공식 자료",
-          body: "기업이 직접 공개한 IR 자료 등 검증 가능한 공식 출처를 연결할 수 있도록 설계되어 있습니다.",
-        },
-        {
-          title: "현재 연결 범위",
-          body: "한국 DART·KRX 데이터는 초기 미국 주식 버전에서 보류된 상태입니다. 수집 또는 검토가 완료되지 않은 데이터는 실제 데이터처럼 표시하지 않습니다.",
-        },
-      ]}
-    />
-  );
-}
+import MarketingLayout,{Hero,SectionTitle,Card,ClosingBanner,Glyph} from '@/components/marketing/layout';
+export const metadata={title:'데이터 출처',description:'SignalBrief의 원문 출처와 자료 검증 흐름, 현재 제공 범위를 확인하세요.'};
+export default function Sources(){return <MarketingLayout current="/sources"><Hero eyebrow="DATA SOURCES" title={<>검증된 출처에 기반한<br/>정보만을 <em>보여드립니다.</em></>} description={<>SignalBrief는 신뢰할 수 있는 공식 원문을 바탕으로<br/>투자에 필요한 정보를 수집하고,<br/>중요한 변화와 근거를 함께 정리합니다.</>} art="sources" secondary={{href:'/about',label:'서비스 소개 보기'}} stats={[{value:'SEC',label:'미국 기업 공식 공시'},{value:'원문',label:'출처 링크와 근거 연결'},{value:'US',label:'미국 주식 중심 제공'}]}/><div className="public-info-container public-info-content"><SectionTitle eyebrow="OUR SOURCES" title="신뢰할 수 있는 데이터 출처">투자 정보의 출처를 직접 확인할 수 있도록,<br/>원문과 자료의 실제 연결 범위를 함께 안내합니다.</SectionTitle><div className="public-info-grid cols-4 source-cards">
+<Card icon="shield" title="SEC 공식 공시" href="https://www.sec.gov/edgar/search/" label="SEC 자료 예시 보기" external>미국 증권거래위원회(SEC)의 10-K, 10-Q, 8-K 등 기업 공시를 공식 원문에서 확인합니다.</Card>
+<Card icon="file" title="기업 원문 자료" href="https://www.sec.gov/edgar/search/" label="기업 자료 예시 보기" external>기업이 공개한 공시와 공식 자료를 원문 링크와 함께 살펴봅니다. 연결·검토된 자료를 기준으로 제공합니다.</Card>
+<Card icon="bars" title="시장 데이터" href="/status" label="시장 데이터 연결 보기">시장 정보는 공급자 연결과 표시 라이선스가 확인된 범위에서 제공합니다. 현재 연결 상태를 확인하세요.</Card>
+<Card icon="file" title="글로벌 뉴스 및 리서치" href="/status" label="뉴스 출처 연결 보기">뉴스 및 외부 자료는 공급자 사용 조건과 실제 연결 상태를 확인한 범위에서 제공합니다.</Card>
+</div><section className="public-info-process" id="process"><p className="public-info-eyebrow">OUR PROCESS</p><h2>데이터는 이렇게 검증됩니다.</h2><p>정보를 수집하는 것을 넘어,<br/>원문에서 확인한 사실과 비교 근거를 연결합니다.</p><ol>{[['search','출처 수집','기업의 공식 공시와 확인 가능한 원문 자료를 수집'],['check','원문 검증','출처, 게시 시점과 원문 내용의 일치 여부 확인'],['file','요약 및 연결','주요 변화와 인용 근거를 연결해 확인할 정보 정리'],['user','지속적 업데이트','수집 및 검토가 완료된 새 자료를 이어서 반영']].map(([icon,title,body],i)=><li key={title}><span className="public-info-icon tone-blue"><Glyph name={icon as 'search'|'check'|'file'|'user'}/></span><div><h3><em>0{i+1}</em> {title}</h3><p>{body}</p></div></li>)}</ol></section><div className="public-info-grid cols-2 source-scope" id="scope"><Card icon="bars" title="지금은 미국 주식 중심으로 제공됩니다." href="/status" label="제공 범위 및 연결 상태 보기">현재 미국 기업의 공시를 우선 연결합니다. 한국 DART·KRX 데이터는 보류 중이며, 제공 범위가 바뀌면 안내합니다.</Card><Card icon="globe" title="더 다양한 데이터 출처로 확장합니다." href="/about#story" label="서비스의 방향 보기">새로운 출처는 사용 조건과 검증 흐름을 확인하며 확장합니다. 실제로 연결된 자료의 범위는 서비스 상태에서 확인하세요.</Card></div><ClosingBanner title="신뢰할 수 있는 정보가 더 나은 투자를 만듭니다.">검증된 원문과 근거에 기반한 더 현명한 투자 정보 탐색을 시작하세요.</ClosingBanner><p className="public-info-source-note">상단 출처 도식은 자료의 연결 방식을 설명하는 예시입니다. 표시된 기관과의 제휴를 의미하지 않습니다.</p></div></MarketingLayout>;}

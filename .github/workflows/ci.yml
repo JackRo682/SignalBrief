@@ -32,7 +32,7 @@ jobs:
         run: npm run lint && npm run typecheck && npm test && npm run build
       - working-directory: apps/web
         run: npx playwright install --with-deps chromium
-      - name: Auth persistence and progressive rendering on desktop and mobile
+      - name: Auth, public pages and progressive rendering on desktop and mobile
         working-directory: apps/web
         run: |
           NEXT_PUBLIC_API_URL=/api NEXT_PUBLIC_SUPABASE_URL=https://test-project.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_isolated_fixture setsid npm run dev -- --hostname 127.0.0.1 > /tmp/signalbrief-web.log 2>&1 &
@@ -43,7 +43,7 @@ jobs:
             sleep 1
           done
           curl -fsS http://127.0.0.1:3000/login > /dev/null
-          npm run test:e2e -- performance.spec.ts auth-navigation.spec.ts
+          npm run test:e2e -- performance.spec.ts auth-navigation.spec.ts marketing-pages.spec.ts
       - uses: actions/upload-artifact@v4
         if: always()
         with:
