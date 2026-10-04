@@ -41,7 +41,7 @@ export function AuthProvider({children}:{children:ReactNode}) {
   useEffect(()=>{let alive=true;if(!token){setMe(null);return;}setProfileLoading(true);setError(null);
     request("/v1/me",token,meSchema).then(user=>{if(alive)setMe(user);}).catch(e=>{if(alive)setError(errorMessage(e));}).finally(()=>{if(alive)setProfileLoading(false);});return ()=>{alive=false;};
   },[token]);
-  useEffect(()=>{const clear=()=>{pageDataCache.reset();setToken(null);setMe(null);sessionStorage.removeItem(DEMO_KEY);};window.addEventListener("signalbrief:unauthorized",clear);return ()=>window.removeEventListener("signalbrief:unauthorized",clear);},[]);
+  useEffect(()=>{const clear=()=>{pageDataCache.reset();setToken(null);setMe(null);setError(null);sessionStorage.removeItem(DEMO_KEY);};window.addEventListener("signalbrief:unauthorized",clear);return ()=>window.removeEventListener("signalbrief:unauthorized",clear);},[]);
   const demoLogin=useCallback(async(admin=false)=>{
     if(!localDemoAllowed(location.hostname,process.env.NODE_ENV === "production") || !config?.demo_mode)throw new Error("demo_disabled");
     const result=await request(`/v1/auth/demo?admin=${admin}`,null,tokenSchema,body("POST"));sessionStorage.setItem(DEMO_KEY,result.access_token);setToken(result.access_token);

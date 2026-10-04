@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
-import Link from "next/link";
+import WorkspaceLoading from "@/components/workspace-loading";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth";
 import { internalNavigation } from "@/lib/internal-navigation";
@@ -20,7 +20,7 @@ export default function ReferenceApp({screen,id}:{screen:Screen;id?:string}){
  const auth=useAuth(), router=useRouter(),path=usePathname(),root=useRef<HTMLDivElement>(null);
  const latest=useRef(auth);useEffect(()=>{latest.current=auth;},[auth]);
  const publicPage=screen==="landing",signedIn=!!auth.me;
- useEffect(()=>{if(!publicPage&&!auth.loading&&!auth.error&&!auth.token)router.replace("/login");},[publicPage,auth.loading,auth.error,auth.token,router]);
+ useEffect(()=>{if(!publicPage&&!auth.loading&&!auth.token)router.replace("/login");},[publicPage,auth.loading,auth.token,router]);
  useEffect(()=>{if(!publicPage&&auth.me&&!auth.me.onboarding_completed&&screen!=="onboarding"&&screen!=="setup")router.replace("/onboarding");},[publicPage,auth.me,screen,router]);
  useEffect(()=>{
   if(!root.current||(!publicPage&&!signedIn))return;
@@ -33,7 +33,7 @@ export default function ReferenceApp({screen,id}:{screen:Screen;id?:string}){
    const response=await fetch(url,{method,cache:"no-store",headers:{...(selected.token?{Authorization:`Bearer ${selected.token}`} : {}),...(payload!==undefined?{"Content-Type":"application/json"}:{})},...(payload!==undefined?{body:JSON.stringify(payload)}:{}),signal:AbortSignal.timeout(30000)});
    if(response.status===204)return null;
    const data=await response.json().catch(()=>null);
-   if(!response.ok){const code=data?.error?.code??data?.error??`HTTP ${response.status}`;if(response.status===401&&!publicPage)router.replace("/login");throw new Error(typeof code==="string"?code:"요청을 완료하지 못했습니다.");}
+   if(!response.ok){if(response.status===401){window.dispatchEvent(new Event("signalbrief:unauthorized"));router.replace("/login");throw new Error("auth_redirect");}throw new Error(response.status===403?"이 작업에 접근할 권한이 없습니다.":"요청을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요.");}
    if(endpoint.startsWith("/v1/companies?")&&Array.isArray(data))return data.filter(c=>c.provider==="sec");
    return data;
    });
@@ -77,6 +77,6 @@ export default function ReferenceApp({screen,id}:{screen:Screen;id?:string}){
   }
   return ()=>{target.removeEventListener("click",navigate);unpolish();unmount();};
  },[screen,id,path,publicPage,signedIn,auth.config?.demo_mode,router]);
- if(!publicPage&&!signedIn)return <main className="referenceGate"><Link href="/">SignalBrief</Link><h1>{auth.error?"연결을 확인해 주세요":"계정을 확인하고 있습니다"}</h1><p role={auth.error?"alert":"status"}>{auth.error??"잠시만 기다려 주세요."}</p>{auth.error&&<><button onClick={()=>location.reload()}>다시 시도</button><Link href="/login">로그인</Link></>}</main>;
+ if(!publicPage&&!signedIn)return <WorkspaceLoading error={auth.loading?null:auth.error} />;
  return <div ref={root} className={`reference-ui screen-${screen}`} data-screen={screen} dangerouslySetInnerHTML={{__html:templates[screen]}} />;
 }

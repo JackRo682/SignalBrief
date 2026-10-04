@@ -5,16 +5,20 @@ import { PageDataCache } from '../src/lib/page-data-cache';
 
 afterEach(() => vi.useRealTimers());
 describe('OAuth origin', () => {
+  it('uses the local origin from a nested account page while rejecting configured paths',()=>{
+    expect(siteOrigin('http://localhost:3000/signup',undefined,false)).toBe('http://localhost:3000');
+    expect(()=>siteOrigin('http://localhost:3000/signup','https://signalbrief.online/signup',true)).toThrow('invalid_site_url');
+  });
   it('moves aliases before starting PKCE', async () => {
     const navigate = vi.fn(), login = vi.fn();
     await startGoogleLogin('https://alias.vercel.app/login', siteOrigin('https://alias.vercel.app', undefined, true), navigate, login);
-    expect(navigate).toHaveBeenCalledWith('https://signalbrief-beta.vercel.app/login');
+    expect(navigate).toHaveBeenCalledWith('https://signalbrief.online/login');
     expect(login).not.toHaveBeenCalled();
   });
   it('uses the canonical callback once already on its origin', async () => {
     const login = vi.fn();
-    await startGoogleLogin('https://signalbrief-beta.vercel.app/login', 'https://signalbrief-beta.vercel.app', vi.fn(), login);
-    expect(login).toHaveBeenCalledWith('https://signalbrief-beta.vercel.app/auth/callback');
+    await startGoogleLogin('https://signalbrief.online/login', 'https://signalbrief.online', vi.fn(), login);
+    expect(login).toHaveBeenCalledWith('https://signalbrief.online/auth/callback');
     expect(siteOrigin('http://localhost:3000', undefined, false)).toBe('http://localhost:3000');
     expect(() => siteOrigin('https://app.test', 'https://app.test/other', true)).toThrow();
   });

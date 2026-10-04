@@ -1,7 +1,7 @@
-export const PRODUCTION_SITE = 'https://signalbrief-beta.vercel.app';
+export const PRODUCTION_SITE = 'https://signalbrief.online';
 
 export function siteOrigin(current: string, configured: string | undefined, production: boolean): string {
-  const url = new URL(configured || (production ? PRODUCTION_SITE : current));
+  const url = new URL(configured || (production ? PRODUCTION_SITE : new URL(current).origin));
   if (url.username || url.password || url.search || url.hash || url.pathname !== '/' ||
       (url.protocol !== 'https:' && !(url.protocol === 'http:' && !production))) {
     throw new Error('invalid_site_url');

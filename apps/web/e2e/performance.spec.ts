@@ -15,8 +15,8 @@ test(`menu transitions retain auth and progressively render ${legacy ? 'legacy' 
   page.on('request', request => { if (request.isNavigationRequest() && request.frame() === page.mainFrame()) documents.push(request.url()); });
   await page.addInitScript(() => sessionStorage.setItem('signalbrief.demo.token', 'isolated-synthetic-token'));
   await page.route('**/v1/**', async route => {
-    const path = new URL(route.request().url()).pathname; calls.push(route.request().method()+" "+path);
-    const endpoint = path.replace(/^\/api/, '');
+    const path = new URL(route.request().url()).pathname;
+    const endpoint = path.replace(/^\/api/, ''); calls.push(route.request().method()+" "+endpoint);
     let data: unknown = [];
     if (endpoint === '/v1/config') data = { demo_mode: true, demo_admin_enabled: false, auth_mode: 'demo' };
     else if (endpoint === '/v1/me') data = { id: 'synthetic-user', display_name: 'Test', density: 'advanced', onboarding_completed: true, analytics_consent: false, is_admin: false, demo_mode: true };

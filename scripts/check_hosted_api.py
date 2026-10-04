@@ -48,7 +48,7 @@ def main():
     assert status == 200 and json.loads(text).get("external", {}).get("google") is True
     passed.append("google_provider_enabled")
     status, headers, _ = read(
-        BASE + "/auth/v1/authorize?provider=google&redirect_to=https%3A%2F%2Fsignalbrief-beta.vercel.app%2Fauth%2Fcallback",
+        BASE + "/auth/v1/authorize?provider=google&redirect_to=https%3A%2F%2Fsignalbrief.online%2Fauth%2Fcallback",
         {"apikey": KEY},
     )
     location = urlsplit(headers.get("Location", ""))

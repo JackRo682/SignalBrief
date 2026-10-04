@@ -1,16 +1,16 @@
 import Link from "next/link";
 import LoginForm from "@/components/login-form";
 
-export const metadata = { title: "로그인" };
+export const metadata = { title: "비밀번호 찾기" };
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
   return (
     <main className="auth-page">
       <Link href="/" className="auth-brand" aria-label="SignalBrief 홈">
         <span className="auth-brand-mark" aria-hidden="true" />
         SignalBrief
       </Link>
-      <LoginForm mode="login" />
+      <LoginForm mode="reset" />
     </main>
   );
 }

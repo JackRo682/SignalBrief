@@ -5,11 +5,11 @@ import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.1
 type Row = Record<string, unknown>;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const PUBLIC_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
-const SITE = "https://signalbrief-beta.vercel.app";
+const SITE = "https://signalbrief.online";
 const DOC_FIELDS = "id,company_id,provider,external_id,title,form_type,source_url,published_at,publication_date,publication_precision,publication_timezone,ingested_at,raw_sha256,state,is_demo,created_at";
 const COMPANY_FIELDS = "id,name,ticker,market,provider,is_demo,last_ingested_at";
 const RUN_FIELDS = "id,stage,model,model_version,prompt_version,pipeline_version,status,latency_ms,input_tokens,output_tokens,cost_usd,error_code,created_at,finished_at,validation_result";
-const ALLOWED_ORIGINS = new Set([SITE,"https://signalbrief-acme-c4f4.vercel.app","http://localhost:3000","http://127.0.0.1:3000"]);
+const ALLOWED_ORIGINS = new Set([SITE,"https://www.signalbrief.online","https://signalbrief-beta.vercel.app","https://signalbrief-acme-c4f4.vercel.app","http://localhost:3000","http://127.0.0.1:3000"]);
 const s = (x: unknown): string => typeof x === "string" ? x : "";
 const row = (x: unknown): Row => x && typeof x === "object" && !Array.isArray(x) ? x as Row : {};
 const rows = (x: unknown): Row[] => Array.isArray(x) ? x.map(row) : [];

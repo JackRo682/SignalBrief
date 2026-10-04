@@ -4,12 +4,13 @@ This checks initiation only, not consent, token exchange or signed-in pages.
 """
 import asyncio
 import json
+import re
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
 from playwright.async_api import async_playwright
 
-SITE = 'https://signalbrief-beta.vercel.app'
+SITE = 'https://signalbrief.online'
 CALLBACK = 'https://xabzzhtdmqsaqdauthbu.supabase.co/auth/v1/callback'
 
 
@@ -27,7 +28,7 @@ async def run():
         page.on('request', request_seen)
         try:
             await page.goto(SITE + '/login', wait_until='networkidle', timeout=40000)
-            await page.locator('#googleLogin').click(timeout=15000)
+            await page.get_by_role('button', name=re.compile('Google로 로그인')).click(timeout=15000)
             await page.wait_for_timeout(6000)
             result['google_page_reached'] = urlsplit(page.url).hostname == 'accounts.google.com'
             text = await page.locator('body').inner_text(timeout=10000)

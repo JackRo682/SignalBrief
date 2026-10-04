@@ -35,7 +35,7 @@ jobs:
       - name: Auth persistence and progressive rendering on desktop and mobile
         working-directory: apps/web
         run: |
-          setsid npm run dev -- --hostname 127.0.0.1 > /tmp/signalbrief-web.log 2>&1 &
+          NEXT_PUBLIC_API_URL=/api NEXT_PUBLIC_SUPABASE_URL=https://test-project.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_isolated_fixture setsid npm run dev -- --hostname 127.0.0.1 > /tmp/signalbrief-web.log 2>&1 &
           web_pid=$!
           trap 'kill -- -"$web_pid" 2>/dev/null || true' EXIT
           for attempt in $(seq 1 60); do
@@ -43,7 +43,7 @@ jobs:
             sleep 1
           done
           curl -fsS http://127.0.0.1:3000/login > /dev/null
-          npm run test:e2e -- performance.spec.ts
+          npm run test:e2e -- performance.spec.ts auth-navigation.spec.ts
       - uses: actions/upload-artifact@v4
         if: always()
         with:

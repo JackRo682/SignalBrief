@@ -7,6 +7,7 @@ import { request,errorMessage,externalUrl,body } from "@/lib/api";
 import { meSchema, companiesSchema, type EventCard } from "@/lib/contracts";
 import { dateText,score,typeLabels } from "@/lib/format";
 import { useAuth } from "./auth";
+import WorkspaceLoading from "./workspace-loading";
 import { BrandMark, Icon, type IconName } from "./icons";
 export function useResource<T>(path:string|null,schema:z.ZodType<T>) {
   const {token}=useAuth();const [data,setData]=useState<T|null>(null),[loading,setLoading]=useState(true),[error,setError]=useState<string|null>(null),[revision,setRevision]=useState(0);
@@ -37,9 +38,9 @@ function GlobalSearch(){const modal=useRef<HTMLDialogElement>(null),input=useRef
 export function AppShell({children}:{children:ReactNode}) {
  const auth=useAuth(),router=useRouter(),path=usePathname(),action=useAction(),[menu,setMenu]=useState(false);
  useEffect(()=>{if(!auth.loading&&!auth.token&&!auth.error)router.replace("/login");else if(!auth.loading&&auth.me&&!auth.me.onboarding_completed&&path!=="/onboarding")router.replace("/onboarding");},[auth.loading,auth.token,auth.me,auth.error,path,router]);
- if(auth.loading)return <main className="auth-wrap"><Loading label="세션을 확인하고 있습니다."/></main>;
- if(auth.error)return <main className="auth-wrap"><ErrorState message={auth.error} retry={()=>location.reload()}/><Link className="button secondary" href="/login">로그인으로 이동</Link></main>;
- if(!auth.me)return <main className="auth-wrap"><Loading/></main>;
+ if(auth.loading)return <WorkspaceLoading/>;
+ if(auth.error)return <WorkspaceLoading error={auth.error}/>;
+ if(!auth.me)return <WorkspaceLoading/>;
  const me=auth.me;
  return <div className={`workspace ${menu?"menu-open":""}`}><a className="skip-link" href="#main">본문으로 건너뛰기</a>{menu&&<button className="menu-scrim" onClick={()=>setMenu(false)} aria-label="메뉴 닫기"/>}<aside className="sidebar"><Link className="brand" href="/today" onClick={()=>setMenu(false)}><BrandMark/><span>SignalBrief<small>근거 있는 투자, 더 나은 판단</small></span></Link><nav aria-label="주 메뉴">{links.map(([href,label,icon])=>{const active=path===href||(href==="/timeline"&&path.startsWith("/companies/"))||(href==="/today"&&path.startsWith("/events/"));return <Link key={href} className={`nav-item ${active?"active":""}`} href={href} aria-current={active?"page":undefined} onClick={()=>setMenu(false)}><Icon name={icon}/>{label}</Link>;})}{me.is_admin&&<><p className="nav-caption">운영 도구 · ADMIN</p><Link href="/ops" onClick={()=>setMenu(false)} className={`nav-item ${path.startsWith("/ops")?"active":""}`}><Icon name="settings"/>Ops 콘솔</Link></>}</nav><div className="sidebar-bottom"><BrandMark/><p>더 좋은 판단을 위해,<br/>확인할 수 있는 정보.</p><strong>SignalBrief</strong><small>Evidence first.<br/>A clearer perspective.</small></div></aside><div className="workspace-body"><header className="topbar"><button className="icon-button mobile-menu" aria-label="주 메뉴 열기" aria-expanded={menu} onClick={()=>setMenu(!menu)}><Icon name="menu"/></button><GlobalSearch/><div className="top-actions"><div className="density-control" aria-label="정보 밀도">{[["beginner","초보자 모드"],["advanced","고급 모드"]].map(([density,label])=><button key={density} aria-pressed={me.density===density} className={me.density===density?"selected":""} disabled={action.busy} onClick={()=>action.run(async()=>{await request("/v1/me",auth.token,meSchema,body("PATCH",{density}));await auth.refresh();})}>{label}</button>)}</div><span className="avatar" aria-hidden="true">{me.display_name.slice(0,1)}</span><span className="user-name"><strong>{me.display_name}</strong><small>{me.is_admin?"관리자":"나의 브리핑"}</small></span><button className="icon-button" aria-label="로그아웃" title="로그아웃" disabled={action.busy} onClick={()=>action.run(async()=>{await auth.logout();router.replace("/login");})}><Icon name="logout"/></button></div></header>{me.demo_mode&&<div className="demo-banner">로컬 데모 · 기업·수치·공시는 합성 예시입니다. 실제 투자 판단에 사용하지 마세요.</div>}<main id="main" className="main-content"><ActionNotice action={action}/>{children}</main><footer className="footer"><Icon name="shield" size={14}/> 공개 근거에 기반한 정보 탐색 · 매매 추천 및 주가 예측을 제공하지 않습니다.</footer></div></div>;
 }
