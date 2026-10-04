@@ -30,7 +30,7 @@ test('email signup and recovery call Auth and display the returned outcome',asyn
     await route.fulfill({json:url.pathname.endsWith('/signup')?{id:'00000001-0000-4000-8000-000000000001',email:'fixture@example.com'}:{},headers:{'Access-Control-Allow-Origin':'*'}});
   });
   await page.goto('/signup');await page.getByLabel('이메일',{exact:true}).fill('fixture@example.com');await page.getByLabel('비밀번호',{exact:true}).fill('fixture-password-123');
-  await page.getByRole('button',{name:'계정 만들기'}).click();await expect(page.getByRole('status')).toContainText('가입 요청을 접수');
+  await page.getByRole('checkbox').check();await page.getByRole('button',{name:'계정 만들기'}).click();await expect(page.getByRole('status')).toContainText('가입 요청을 접수');
   expect(requests.find(r=>r.path.endsWith('/signup'))?.redirect).toBe(new URL(page.url()).origin+'/auth/callback');
   await page.getByRole('link',{name:'비밀번호 찾기'}).click();await expect(page).toHaveURL(/\/forgot-password$/);await page.getByLabel('이메일',{exact:true}).fill('fixture@example.com');
   await page.getByRole('button',{name:'복구 메일 요청'}).click();await expect(page.getByRole('status')).toContainText('복구 가능한 계정');

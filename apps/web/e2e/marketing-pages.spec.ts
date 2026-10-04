@@ -14,7 +14,7 @@ test('all six designs have readable content, navigation and responsive artwork',
   await expect(page.locator('.public-info-nav a')).toHaveCount(6);await expect(page.locator('.public-info-nav [aria-current="page"]')).toHaveText(label);
   await expect(page.locator('.public-info-closing')).toBeVisible();await expect(page.locator('.public-info-card').first()).toBeVisible();
   await page.evaluate(()=>document.fonts.ready);expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+2)).toBe(false);
-  const image=page.locator('.public-info-mountain');await image.scrollIntoViewIfNeeded();await expect.poll(()=>image.evaluate((e:HTMLImageElement)=>e.complete&&e.naturalWidth>0)).toBe(true);
+  const art=page.locator('.public-info-mountain');await art.scrollIntoViewIfNeeded();await expect(art).toBeVisible();await expect(art.locator('i')).toHaveCount(3);expect(await art.locator('i').first().evaluate(el=>getComputedStyle(el).clipPath)).toContain('polygon');
   if(test.info().project.name==='desktop'){
    const copy=await page.locator('.public-info-hero-copy').boundingBox(),art=await page.locator('.public-info-hero-art').boundingBox();expect(art!.x).toBeGreaterThan(copy!.x+copy!.width-1);
   }
@@ -46,10 +46,10 @@ test('feature and beta CTAs send anonymous visitors to the correct account pages
 });
 test('privacy details expand with keyboard and consent settings link to login',async({page})=>{
  await anonymous(page);await page.goto('/privacy');
- const summary=page.locator('#collection summary');await summary.focus();await summary.press('Enter');await expect(page.locator('#collection details')).toHaveAttribute('open','');
+ const summary=page.locator('#collection summary');if(await page.locator('#collection details').evaluate(el=>el.hasAttribute('open')))await summary.click();await summary.focus();await summary.press('Enter');await expect(page.locator('#collection details')).toHaveAttribute('open','');
  await expect(page.locator('#collection .privacy-policy-detail')).toContainText('보유 수량과 평균 취득가');
  await summary.press('Enter');await expect(page.locator('#collection details')).not.toHaveAttribute('open','');
- await page.locator('#rights summary').click();await page.locator('#rights').getByRole('link',{name:'동의 설정 관리'}).click();await expect(page).toHaveURL(/\/login$/);
+ if(!await page.locator('#rights details').evaluate(el=>el.hasAttribute('open')))await page.locator('#rights summary').click();await page.locator('#rights').getByRole('link',{name:'동의 설정 관리'}).click();await expect(page).toHaveURL(/\/login$/);
  await page.goto('/sources');await expect(page.getByRole('link',{name:'SEC 공식 공시 SEC 자료 예시 보기'})).toHaveAttribute('href','https://www.sec.gov/edgar/search/');
  await expect(page.getByRole('link',{name:'SEC 공식 공시 SEC 자료 예시 보기'})).toHaveAttribute('rel','noopener noreferrer');
 });

@@ -1,18 +1,30 @@
 import Link from 'next/link';
-import MarketingLayout,{Card,ClosingBanner,Glyph} from '@/components/marketing/layout';
-import {AccountLink,DashboardPreview} from '@/components/marketing/actions';
-import {Icon} from '@/components/icons';
+import MarketingLayout, {ClosingBanner} from '@/components/marketing/layout';
+import {AccountLink, DashboardPreview} from '@/components/marketing/actions';
+import {DesignCard, DesignFaq, DesignHeading, DesignHero, DesignSteps, SourceCards} from '@/components/marketing/design';
+import {PricingPlans} from '@/components/marketing/interactive';
 
-const steps=[
- {number:'01',icon:'star',title:'내 종목을 모으세요',copy:'관심종목과 보유종목을 등록해 확인할 기업을 정리합니다.'},
- {number:'02',icon:'timeline',title:'달라진 점을 읽으세요',copy:'새 공시의 사실과 이전 자료의 차이를 함께 확인합니다.'},
- {number:'03',icon:'file',title:'근거에서 판단하세요',copy:'브리핑에 연결된 출처를 열고 맥락과 원문을 읽습니다.'},
+const features = [
+  ['home','오늘의 변화','중요한 새 공시와 변화를 먼저 확인합니다.','/today'],
+  ['pie','내 포트폴리오','보유종목과 관련된 근거를 한곳에서 읽습니다.','/portfolio'],
+  ['spark','AI 브리핑','사실과 해석을 구분해 변화의 맥락을 살펴봅니다.','/today'],
+  ['file','원문 근거','확인 가능한 인용과 원문 링크를 연결합니다.','/today'],
+  ['timeline','기업 타임라인','이전 자료부터 지금까지의 흐름을 이어 봅니다.','/timeline'],
+  ['search','근거 질문','선택한 공시의 인용 근거에 질문합니다.','/questions'],
 ] as const;
-export default function Home(){return <MarketingLayout current="/">
- <section className="landing-hero"><div className="public-info-container landing-hero-grid"><div className="landing-copy"><p className="landing-beta"><span/>공개 베타 · 근거로 읽는 변화</p><h1>시장은 복잡해도,<br/>내 종목의 변화는<br/><em>선명하게.</em></h1><p className="landing-lead">무엇이 바뀌었는지, 왜 중요한지.<br/>기업의 공시와 이전 자료를 연결해<br/>확인 가능한 근거를 한곳에서 읽으세요.</p><div className="public-info-actions"><AccountLink className="public-info-button primary">내 관심종목으로 시작 <Icon name="arrow" size={18}/></AccountLink><Link href="#demo" className="public-info-button secondary">화면 먼저 둘러보기 <Icon name="arrow" size={16}/></Link></div><p className="landing-cta-note"><Icon name="check" size={15}/>공개 베타 무료 이용 <span>·</span> 결제 정보 없이 시작</p><div className="landing-principles"><span><Glyph name="file" size={17}/>공식 공시</span><span><Glyph name="timeline" size={17}/>이전과의 비교</span><span><Glyph name="shield" size={17}/>원문 근거</span></div></div><div className="landing-preview"><div className="landing-preview-label"><span><i/>SIGNALBRIEF WORKSPACE</span><span>직접 눌러보세요 <Icon name="arrow" size={14}/></span></div><DashboardPreview/><div className="landing-preview-note"><Icon name="shield" size={16}/><span>핵심은 먼저 읽고, 근거는 바로 확인하세요.</span><AccountLink className="previewStart">무료로 시작하기 <Icon name="arrow" size={15}/></AccountLink></div></div></div></section>
- <section className="landing-source-strip" aria-label="정보 확인 원칙"><div className="public-info-container"><p>헤드라인 너머의<br/><strong>확인할 수 있는 정보.</strong></p><div><span>SEC EDGAR<small>미국 기업 공시</small></span><span>공식 IR<small>기업의 원문 자료</small></span><span>원문 인용<small>확인 가능한 출처</small></span><Link href="/sources">연결 범위 확인 <Icon name="arrow" size={16}/></Link></div></div></section>
- <div className="public-info-container landing-content"><section className="landing-feature-section" id="overview"><div className="landing-section-heading"><div><p className="public-info-eyebrow">LESS NOISE. MORE CONTEXT.</p><h2>정보를 더 모으기보다,<br/><em>중요한 변화를 더 잘 읽기.</em></h2></div><p>관심 기업의 공시부터 내 포트폴리오까지.<br/>사실·변화·근거를 한 흐름으로 연결합니다.</p></div><div className="public-info-grid cols-3"><Card icon="star" title="내 종목에 집중" href="/watchlist" protectedPage label="관심종목 열기">저장한 기업의 새로운 공시와 이벤트를 모아, 다음으로 확인할 내용을 찾으세요.</Card><Card icon="timeline" title="변화의 맥락까지" href="/timeline" protectedPage label="타임라인 열기" tone="purple">단편적인 소식에서 멈추지 않고, 이전 자료와 현재 자료를 시간 순서로 살펴보세요.</Card><Card icon="file" title="언제나 원문으로" href="/sources" label="데이터 출처 보기" tone="green">요약과 해석을 구분해 읽고, 연결된 출처에서 실제 내용을 직접 확인하세요.</Card></div></section>
- <section className="landing-how"><div><p className="public-info-eyebrow">A SIMPLE DAILY ROUTINE</p><h2>내 브리핑을 만드는<br/>세 가지 작은 단계.</h2><AccountLink className="public-info-card-link">나만의 브리핑 시작 <Icon name="arrow" size={16}/></AccountLink></div><ol>{steps.map(step=><li key={step.number}><span className="landing-step-number">{step.number}</span><div><h3>{step.title}</h3><p>{step.copy}</p></div><Glyph name={step.icon} size={25}/></li>)}</ol></section>
- <section className="landing-faq" aria-labelledby="faq-heading"><div className="landing-section-heading"><div><p className="public-info-eyebrow">BEFORE YOU START</p><h2 id="faq-heading">시작하기 전에<br/>궁금한 점.</h2></div><Link href="/about" className="public-info-card-link">SignalBrief 더 알아보기 <Icon name="arrow" size={16}/></Link></div><div>{[['어떤 정보를 확인할 수 있나요?',<>현재 연결된 기업의 공시, 확인된 이벤트와 원문 근거를 볼 수 있습니다. 출처마다 연결 범위와 수집 상태가 다릅니다. <Link href="/sources">현재 데이터 출처 보기</Link></>],['무료로 이용할 수 있나요?',<>현재 공개 베타는 무료로 이용할 수 있고 결제 정보를 요구하지 않습니다. 향후 요금이나 제공 범위가 달라지면 별도로 안내합니다. <Link href="/pricing">요금제 확인</Link></>],['종목 매수·매도를 추천하나요?',<>매매 추천이나 목표 주가를 제공하지 않습니다. 사실과 이전 대비 변화, 원문 근거를 읽고 스스로 판단하도록 돕습니다.</>],['내 보유종목 정보는 어떻게 처리하나요?',<>계정별 접근 권한을 적용하며, 분석 도구에 개인 보유종목과 질문 내용을 보내지 않습니다. 자세한 처리 범위는 <Link href="/privacy">개인정보처리방침</Link>에서 확인하세요.</>]].map(([question,answer])=><details key={String(question)}><summary>{question}<Icon name="plus" size={20}/></summary><div>{answer}</div></details>)}</div></section>
- <ClosingBanner title="다음 변화는, 근거와 함께 읽으세요." secondary={{href:'/features',label:'주요 기능 살펴보기'}}>내 관심종목을 정리하고 중요한 변화를 차근차근 확인해 보세요.</ClosingBanner></div>
- </MarketingLayout>;}
+export default function Home() {
+  return <MarketingLayout current="/">
+    <DesignHero eyebrow="LESS NOISE. MORE CONTEXT." title={<>시장은 복잡해도,<br/>내 종목의 변화는<br/><em>선명하게.</em></>} art={<div className="d-phone-preview"><DashboardPreview/><div className="d-preview-footer"><AccountLink className="previewStart">내 관심종목으로 시작 <span aria-hidden="true">→</span></AccountLink><span>화면 예시 · 공개 베타 무료</span></div></div>} secondary={{href:'/login',label:'로그인'}}>
+      무엇이 바뀌었는지, 왜 중요한지. 기업의 공시와 이전 자료를 연결해 확인 가능한 근거를 한곳에서 읽으세요.
+    </DesignHero>
+    <section className="d-band"><div className="public-info-container"><DesignHeading eyebrow="A CLEARER PERSPECTIVE" title="정보는 넘치는데, 내 종목의 변화는 찾기 어렵나요?">흩어진 소식부터 읽기보다, 확인할 변화와 원문 근거를 먼저 살펴보세요.</DesignHeading><div className="d-problems">{['중요한 변화가 소음에 묻혀요','내 종목에 미치는 맥락이 궁금해요','요약의 근거를 직접 확인하고 싶어요'].map((text,i)=><p key={text}><span>{i+1}</span>{text}</p>)}</div></div></section>
+    <div className="public-info-container d-content">
+      <section><DesignHeading eyebrow="OUR FEATURES" title="투자 정보를 읽는 여섯 가지 방법">종목을 모으고, 변화를 읽고, 원문에서 확인하세요.</DesignHeading><div className="d-card-grid">{features.map(([icon,title,copy,href])=><DesignCard key={title} icon={icon} title={title} href={href} protectedPage>{copy}</DesignCard>)}</div></section>
+      <section><DesignHeading eyebrow="OUR SOURCES" title="출처부터 확인하는 정보">수집 상태와 제공 범위는 출처마다 다릅니다.</DesignHeading><SourceCards compact/><div className="d-center-link"><Link href="/sources">데이터 출처와 제공 범위 보기 →</Link></div></section>
+      <section><DesignHeading eyebrow="HOW IT WORKS" title="나만의 브리핑, 네 단계로 시작하세요"/><DesignSteps/></section>
+      <div className="d-home-bottom"><section><DesignHeading eyebrow="PRICING" title="부담 없이 시작하세요"/><PricingPlans compact/></section><section><DesignHeading eyebrow="EVERYDAY USE" title="이렇게 활용할 수 있어요"/>{[['매일의 확인','관심종목의 새 공시에서 중요한 사실부터 읽습니다.'],['내 종목의 맥락','포트폴리오와 관련된 변화를 타임라인에 연결합니다.'],['원문에서 확인','궁금한 내용을 질문하고 연결된 인용 근거를 읽습니다.']].map(([title,text])=><article className="d-use-quote public-info-card" key={title}><span className="d-avatar">{title.slice(0,1)}</span><div><h3>{title}</h3><p>{text}</p><small>서비스 활용 예시 · 실제 고객 후기가 아닙니다</small></div></article>)}<Link className="d-card-link" href="/customers">활용 흐름 더 보기 →</Link></section></div>
+      <div className="landing-faq"><DesignFaq items={[{question:'무료로 이용할 수 있나요?',answer:<>현재 공개 베타는 무료이고 결제 정보를 요구하지 않습니다. <Link href="/pricing">요금제 확인</Link></>},{question:'종목 매수·매도를 추천하나요?',answer:'매매 추천이나 목표 주가를 제공하지 않습니다. 사실과 이전 대비 변화, 원문 근거를 읽고 스스로 판단하도록 돕습니다.'},{question:'내 보유종목 정보는 어떻게 처리하나요?',answer:<>계정별 접근 권한을 적용하며, 개인 보유 수량과 질문을 이용 통계로 보내지 않습니다. <Link href="/privacy">개인정보 안내</Link></>} ]}/></div>
+      <ClosingBanner title="다음 변화는, 근거와 함께 읽으세요." secondary={{href:'/features',label:'주요 기능 살펴보기'}}>내 관심종목을 정리하고 중요한 변화를 차근차근 확인해 보세요.</ClosingBanner>
+    </div>
+  </MarketingLayout>;
+}

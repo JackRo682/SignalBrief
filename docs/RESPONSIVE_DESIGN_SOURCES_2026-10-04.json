@@ -1,0 +1,125 @@
+{
+  "purpose": "Visual references only. No uploaded image bytes or Base64 are shipped in the UI.",
+  "sources": [
+    {
+      "name": "signup",
+      "file": "07_signup.txt",
+      "source_sha256": "3e0abab1a90c4259c47dcfdd85a82fc437a3420ced9663d75849f47b6b960773",
+      "image_sha256": "3c0d61d8a8d018493e67dd9048a5baf93745e9727f235ee543a26f50de3cef8b"
+    },
+    {
+      "name": "forgot",
+      "file": "08_forgot-password.txt",
+      "source_sha256": "783aacb2a5daf380aa11f29b6f37943831d6345cc9eb7e0bb4b31e230442e2ae",
+      "image_sha256": "023e830795cc5ad78db39b502bbabc0971abd92302db1435bedde9ecbc9e08a3"
+    },
+    {
+      "name": "login",
+      "file": "06_login.txt",
+      "source_sha256": "2b0f24429142012bc8ef96485cbcb4295114ef5ff40861bdd3686a7dec814f56",
+      "image_sha256": "259f8ebcd3a1d75cf179bb233dfbd3787e2ef34bdfeae59b1fbbd5c520635e46"
+    },
+    {
+      "name": "sources",
+      "file": "03_data-sources.txt",
+      "source_sha256": "dfbe437dfb2afd5f234b3a555ca089653e97b35f1f423f5b723fbebed9172dff",
+      "image_sha256": "f379f43bb943075bbc704719339e0b3faa394c598dd54ebe8b262189e2208ed6"
+    },
+    {
+      "name": "pricing",
+      "file": "04_pricing.txt",
+      "source_sha256": "c58c6b76f87f9470b6e10a196e554fc7c48cbcbaf88c0846936b309acfa31a3f",
+      "image_sha256": "ffdf91b29ad701c209a66f94a511d35e16485e5d2c5238e42fe52ce0e729b3c0"
+    },
+    {
+      "name": "customers",
+      "file": "05_customers.txt",
+      "source_sha256": "ab8381bc437883083bccb6394427dbedd84eb26aab6f615ad72c97879561fed6",
+      "image_sha256": "1381b04580ade8f76d5cc487dbe10c0dd43eb3fb4b7e8b5b2d822e1d97d0188e"
+    },
+    {
+      "name": "features",
+      "file": "02_features.txt",
+      "source_sha256": "f9d17fd9c3c11594d91a8bd7a64edd24c749981696807922facc4f945d19a77e",
+      "image_sha256": "58fa418382ae2c3e32629dc3675f9f1e21675aeda378b69a6a1948fed598e09f"
+    },
+    {
+      "name": "landing",
+      "file": "01_landing.txt",
+      "source_sha256": "3bdcba54ab4e1ee47e950d35e9d37d2de1ec308a83851d81743b121a658f4c03",
+      "image_sha256": "4309d80f4a61392ed24356ec9d5e4a8f8eec735cbcc76e47fc5c81a38f324c63"
+    },
+    {
+      "name": "privacy",
+      "file": "10_privacy.txt",
+      "source_sha256": "65a41626fb7f407773c26b9c3a582962d39a1e13cfc4e24053ae142b6b67564a",
+      "image_sha256": "d109e66930ebc99570b644853e3cc35fce69aa8f31d91c091675252503b9ac52"
+    },
+    {
+      "name": "mobile_features",
+      "file": "02_mobile_features.txt",
+      "source_sha256": "6c9d269af238cd03e4409cd67b47892989a1b0f2d9fd4f25a6b600b48c7ddf16",
+      "image_sha256": "23fec3a562caa9997fa32889f068b364f5869ef83c81747081aa4516b09f4dea"
+    },
+    {
+      "name": "mobile_landing",
+      "file": "01_mobile_landing.txt",
+      "source_sha256": "dd728893edcf812b2ff12b2c914f5582bb2a5ec67feb9e1b80d6be45da71ef88",
+      "image_sha256": "dc203e09fc8b00118b1c734112633e76a869b2c713f7c107b94f72a967413118"
+    },
+    {
+      "name": "terms",
+      "file": "09_terms.txt",
+      "source_sha256": "24d3d46fbfc4a65057723702cd50d6cf9545184b32774e05e5221acc6642622c",
+      "image_sha256": "fbcc889b6870ba7b5d83e5e467f01036ce1e94519adb84bc062a08e9455dd4be"
+    },
+    {
+      "name": "mobile_terms",
+      "file": "09_mobile_terms.txt",
+      "source_sha256": "1a2106f9cad667a587c8b2eff3600f2ae8c671f08e26cab4eb7a577db50a437b",
+      "image_sha256": "787dbf20252eecd5bc7021cd543fb3d288bd4774800b48903346ed2ed0efb19c"
+    },
+    {
+      "name": "mobile_forgot",
+      "file": "08_mobile_forgot-password.txt",
+      "source_sha256": "00e20832315d7de94253f7c3f3d6b5bf1ab1581d3c98ae5f9eb798d05b461cbd",
+      "image_sha256": "f3401f2588942ff7c2c5250b3e4e70f53cda37e9eba163dd8ad12394ae14bc4f"
+    },
+    {
+      "name": "mobile_signup",
+      "file": "07_mobile_signup.txt",
+      "source_sha256": "378c8b72fdf4698575e5990206ad8bf97c739172f02873f7ac69f0ace77e7ec1",
+      "image_sha256": "f5e65c432d94520850d850606956976d90d666ddd2cd9c4a847eb12a920b4126"
+    },
+    {
+      "name": "mobile_customers",
+      "file": "05_mobile_customers.txt",
+      "source_sha256": "cafdafd7fb5f7d5ba559eacbae48d2372b33724ccf3726e69577f35756a1e64e",
+      "image_sha256": "0eb48c8b925b1a4491aa110fd123bc2fb6d9c0308be532ebb1fc2fb92e25e6ae"
+    },
+    {
+      "name": "mobile_privacy",
+      "file": "10_mobile_privacy.txt",
+      "source_sha256": "0848d9202b5afb83d3ea6e1403ef8a8e5aa1642ee7f0f98976f2095d97837a8c",
+      "image_sha256": "63f8ec5d929ea593ff70cd7cb4338aa353656487d780fdd4738588d6f1936474"
+    },
+    {
+      "name": "mobile_pricing",
+      "file": "04_mobile_pricing.txt",
+      "source_sha256": "2a6fc364f77389c1f0276b87c788dd7dc2fef321d7458783311313ad5e044e18",
+      "image_sha256": "87136eb441ba048b98fe72b21cd9a3bb29f10be12a6b651b2ed088bdaa845456"
+    },
+    {
+      "name": "mobile_sources",
+      "file": "03_mobile_data-sources.txt",
+      "source_sha256": "a6dddd826a5bb7b9b731c2563fd6020e8c4820e8a31aeba1f88df14283e6dbce",
+      "image_sha256": "75f2e7d8ac8f3a472e6ce3dbda5128460255c8e5afec7f875b48f755b66b1e68"
+    },
+    {
+      "name": "mobile_login",
+      "file": "06_mobile_login.txt",
+      "source_sha256": "6711e54021a1307f27d72f35ff5332f15fe951d83dee72cb674163c1bf302a1e",
+      "image_sha256": "7575a13b998c9ea6864a418a5372e1198284508897fc7787bf6d836713f6c2e8"
+    }
+  ]
+}

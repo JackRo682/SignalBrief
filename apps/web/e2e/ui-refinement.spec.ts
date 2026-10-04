@@ -35,7 +35,7 @@ test('signup gives password feedback and sends only one pending request',async({
  await page.route('https://test-project.supabase.co/auth/v1/signup**',async route=>{calls++;await pending;await route.fulfill({json:{id:'00000001-0000-4000-8000-000000000001',email:'fixture@example.com'},headers:{'Access-Control-Allow-Origin':'*'}});});
  await page.goto('/signup');await page.getByLabel('이메일',{exact:true}).fill('fixture@example.com');const password=page.getByLabel('비밀번호',{exact:true});await password.fill('fixture-password-123');
  await expect(page.locator('#password-requirement')).toContainText('12자 이상 입력했습니다');await page.getByRole('button',{name:'비밀번호 보기'}).click();await expect(password).toHaveAttribute('type','text');await page.getByRole('button',{name:'비밀번호 숨기기'}).click();await expect(password).toHaveAttribute('type','password');
- await page.getByRole('button',{name:'계정 만들기'}).click();await expect(page.getByRole('button',{name:'처리 중…'})).toBeDisabled();await expect(password).toBeDisabled();
+ await page.getByRole('checkbox').check();await page.getByRole('button',{name:'계정 만들기'}).click();await expect(page.getByRole('button',{name:'처리 중…'})).toBeDisabled();await expect(password).toBeDisabled();
  await expect.poll(()=>calls).toBe(1);await page.locator('.login-box form').dispatchEvent('submit');expect(calls).toBe(1);
  release();await expect(page.getByRole('status')).toContainText('가입 요청을 접수');await expect(password).toBeEnabled();
 });

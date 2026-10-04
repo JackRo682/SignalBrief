@@ -6,4 +6,4 @@ export const marketingNav = [
   {href:'/customers',label:'고객 사례'},
   {href:'/privacy',label:'개인정보'},
 ] as const;
-export type MarketingRoute = '/' | typeof marketingNav[number]['href'];
+export type MarketingRoute = '/' | '/terms' | typeof marketingNav[number]['href'];

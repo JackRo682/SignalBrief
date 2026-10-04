@@ -33,6 +33,8 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [acknowledged, setAcknowledged] = useState(false);
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -68,6 +70,10 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
 
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (mode === "signup" && !acknowledged) {
+      setError("서비스 이용 안내와 개인정보 처리 안내를 먼저 확인해 주세요.");
+      return;
+    }
 
     await run(async () => {
       const canonical = siteOrigin(
@@ -93,7 +99,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
         const result = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: callback },
+          options: { emailRedirectTo: callback, ...(name.trim() ? {data: {full_name: name.trim()}} : {}) },
         });
         if (result.error) throw result.error;
 
@@ -121,28 +127,11 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
         {mode === "login" ? "WELCOME BACK" : mode === "signup" ? "GET STARTED" : "ACCOUNT RECOVERY"}
       </span>
 
-      <h2>{text.title}</h2>
+      {mode === "reset" ? <h1>{text.title}</h1> : <h2>{text.title}</h2>}
       <p className="muted">{text.description}</p>
 
-      {mode !== "reset" && (
-        <>
-          <button
-            type="button"
-            className="button google full"
-            disabled={busy}
-            onClick={() => run(() => auth.googleLogin())}
-          >
-            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24"><path fill="#4285f4" d="M22 12.2c0-.7-.1-1.4-.2-2.1H12v4h5.6a4.8 4.8 0 0 1-2.1 3.1v2.6h3.4c2-1.8 3.1-4.5 3.1-7.6Z"/><path fill="#34a853" d="M12 22c2.8 0 5.2-.9 6.9-2.4l-3.4-2.6c-.9.6-2.1 1-3.5 1a6 6 0 0 1-5.6-4.1H2.9v2.7A10 10 0 0 0 12 22Z"/><path fill="#fbbc05" d="M6.4 13.9a6 6 0 0 1 0-3.8V7.4H2.9a10 10 0 0 0 0 9.2Z"/><path fill="#ea4335" d="M12 6c1.6 0 3 .5 4.1 1.6l3.1-3.1A10 10 0 0 0 2.9 7.4l3.5 2.7A6 6 0 0 1 12 6Z"/></svg>
-            {mode === "signup" ? "Google로 회원가입" : "Google로 로그인"}
-          </button>
-
-          <div className="divider">
-            <span>또는 이메일로</span>
-          </div>
-        </>
-      )}
-
       <form className="form-stack" onSubmit={submit}>
+        {mode === "signup" && <label className="field"><span>이름 (선택)</span><input autoComplete="name" value={name} onChange={event=>setName(event.target.value)} placeholder="표시 이름" maxLength={80} disabled={busy}/></label>}
         <label className="field">
           <span>이메일</span>
           <input
@@ -188,11 +177,33 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
           </div>
         )}
 
+        {mode === "login" && <Link className="d-forgot-link" href="/forgot-password">비밀번호 찾기</Link>}
+        {mode === "signup" && <div className="d-signup-ack"><label><input type="checkbox" checked={acknowledged} onChange={event=>setAcknowledged(event.target.checked)} required disabled={busy}/>서비스 이용 안내와 개인정보 처리 안내를 확인했습니다.</label><p><Link href="/terms" target="_blank" rel="noopener noreferrer">서비스 이용 안내</Link><span> · </span><Link href="/privacy" target="_blank" rel="noopener noreferrer">개인정보 처리 안내</Link></p></div>}
         <button className="button primary full" disabled={busy}>
           {busy ? "처리 중…" : text.submit}
           <Icon name="arrow" size={17} />
         </button>
       </form>
+
+      {mode !== "reset" && <>
+        <div className="divider"><span>또는</span></div>
+          <button
+            type="button"
+            className="button google full"
+            disabled={busy}
+            onClick={() => {
+              if (mode === "signup" && !acknowledged) {
+                setError("서비스 이용 안내와 개인정보 처리 안내를 먼저 확인해 주세요.");
+                return;
+              }
+              void run(() => auth.googleLogin());
+            }}
+          >
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24"><path fill="#4285f4" d="M22 12.2c0-.7-.1-1.4-.2-2.1H12v4h5.6a4.8 4.8 0 0 1-2.1 3.1v2.6h3.4c2-1.8 3.1-4.5 3.1-7.6Z"/><path fill="#34a853" d="M12 22c2.8 0 5.2-.9 6.9-2.4l-3.4-2.6c-.9.6-2.1 1-3.5 1a6 6 0 0 1-5.6-4.1H2.9v2.7A10 10 0 0 0 12 22Z"/><path fill="#fbbc05" d="M6.4 13.9a6 6 0 0 1 0-3.8V7.4H2.9a10 10 0 0 0 0 9.2Z"/><path fill="#ea4335" d="M12 6c1.6 0 3 .5 4.1 1.6l3.1-3.1A10 10 0 0 0 2.9 7.4l3.5 2.7A6 6 0 0 1 12 6Z"/></svg>
+            {mode === "signup" ? "Google로 회원가입" : "Google로 로그인"}
+          </button>
+      </>}
+
 
       {auth.error && (
         <p className="notice danger" role="alert">
@@ -216,7 +227,6 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
         <div className="auth-links">
           <span>계정이 없으신가요?</span>
           <Link href="/signup">회원가입하기</Link>
-          <Link href="/forgot-password">비밀번호 찾기</Link>
         </div>
       )}
 
