@@ -13,7 +13,10 @@ ROOT = Path(__file__).resolve().parents[2]
 ASSET = ROOT / '.reference-test'
 OUT = Path(os.environ.get('REFERENCE_RESULTS', str(ROOT / 'reference-results')))
 OUT.mkdir(exist_ok=True)
-script = (ASSET / 'controller.js').read_text().replace('export ', '') + '\n' + (ASSET / 'templates.js').read_text().replace('export ', '') + '\n' + (ASSET / 'publication.js').read_text().replace('export ', '') + '\n' + re.sub('^import .*$', '', (ASSET / 'fixture.js').read_text(), flags=re.M)
+script = '\n'.join(
+    re.sub(r'^import .*$', '', (ASSET / name).read_text().replace('export ', ''), flags=re.M)
+    for name in ['legacy-summaries.js', 'controller.js', 'templates.js', 'publication.js', 'fixture.js']
+)
 image = 'data:image/webp;base64,' + base64.b64encode((ASSET / 'reference-assets/onboarding-guide.webp').read_bytes()).decode()
 script = script.replace('/reference-assets/onboarding-guide.webp', image)
 css = '\n'.join(((ROOT / f'apps/web/src/{name}').read_text() for name in ['app/globals.css', 'app/release-layout.css', 'reference/reference.css', 'reference/overrides.css', 'reference/publication.css']))

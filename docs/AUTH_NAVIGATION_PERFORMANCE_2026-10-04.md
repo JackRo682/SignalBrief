@@ -20,6 +20,7 @@ Today는 feed/calendar/portfolio를 함께 요청하고 각각 완료되는 대�
 - `e2e/performance.spec.ts`: 데스크톱·모바일에서 compact/legacy 응답 4개 통과. 실제 Next 앱과 격리 API fixture를 사용했다. 느린 시세/calendar/portfolio 응답 전에 본문 표시, 메뉴 이동 시 문서 재로드 0회, 초기 config/me 조회 각 1회, 메뉴 클릭의 profile PATCH 0회, 재방문 watchlist 캐시를 확인했다.
 - 기존 `tests/reference/browser_checks.py`: 데스크톱·모바일 10개 화면에서 fixture 기반 브라우저 검사 72개 통과.
 - 새 브라우저 성능 회귀 테스트를 GitHub Actions web job에도 추가했다. Workflow YAML을 검증했고 원격 GitHub CI도 통과했다.
+- 기존 main에서도 실패한 전체 의존성 감사는 개발 도구의 `braces <=3.0.3` 취약점(GHSA-vfj7-8cjw-p6xm)으로 남아 있다. 확인 시점의 최신 버전도 3.0.3이며 npm은 수정 버전이 없다고 보고한다. 운영 의존성 감사는 통과했다. 감사 기준이나 결과를 완화하지 않았다.
 - 기존 `apps/web/e2e`의 이전 화면용 테스트는 새 UI와 선택자가 달라 전체 통과를 주장하지 않는다. 새 성능 회귀 테스트는 그 테스트를 제거하거나 완화하지 않고 추가했다.
 
 운영 API를 먼저 갱신하는 것이 권장 순서다. 다만 배포 인증이 없을 때도 프론트를 안전하게 먼저 배포할 수 있도록 이전 응답 형식과 호환된다. compact 필드가 없는 목록만 본문을 먼저 렌더링한 후 최대 4개 동시 상세 요청으로 보강한다(Today 최대 12개, Timeline 최대 30개). 새 API 응답은 상세 요청을 하지 않는다. API 배포 전에는 N+1 요청 자체가 완전히 제거됐다고 주장하지 않는다. 수동 운영 배포 워크플로는 GitHub Production 환경의 `SUPABASE_ACCESS_TOKEN`을 사용하며 기존 gateway 정책 확인 후 함수만 배포한다. Vercel의 `NEXT_PUBLIC_SITE_URL`, Supabase Auth Site URL을 `https://signalbrief-beta.vercel.app`로 맞추고 `/auth/callback`을 redirect allowlist에 등록한다. 이 작업에서 운영 설정을 변경하거나 비밀값을 요청하지 않았다. 실제 Google 계정의 동의·callback·로그아웃 후 재로그인과 모바일 체감 속도는 배포 후 확인해야 하며, 로컬 fixture 결과로 실제 OAuth 성공이나 모바일망 지연 시간을 보장하지 않는다.

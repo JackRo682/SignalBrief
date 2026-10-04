@@ -3,7 +3,7 @@ import ts from '../../apps/web/node_modules/typescript/lib/typescript.js';
 import fs from 'node:fs';
 import path from 'node:path';
 const root=path.resolve(import.meta.dirname,'../..'),target=path.join(root,'.reference-test');fs.mkdirSync(target,{recursive:true});
-for(const name of ['controller','templates','publication']){const source=fs.readFileSync(path.join(root,'apps/web/src/reference/'+name+'.ts'),'utf8');fs.writeFileSync(path.join(target,name+'.js'),ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText);}
+for(const name of ['controller','templates','publication','legacy-summaries']){const source=fs.readFileSync(path.join(root,'apps/web/src/reference/'+name+'.ts'),'utf8');const output=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText.replace(/from (['"])(\.\/[^'"]+)\1/g,(_match,quote,specifier)=>`from ${quote}${specifier.endsWith('.js')?specifier:specifier+'.js'}${quote}`);fs.writeFileSync(path.join(target,name+'.js'),output);}
 for(const name of ['reference.css','overrides.css','publication.css'])fs.copyFileSync(path.join(root,'apps/web/src/reference/'+name),path.join(target,name));
 fs.cpSync(path.join(root,'apps/web/public/reference-assets'),path.join(target,'reference-assets'),{recursive:true});
 fs.copyFileSync(path.join(root,'tests/reference/fixture.js'),path.join(target,'fixture.js'));
