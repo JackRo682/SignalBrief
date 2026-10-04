@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import {useState,type ReactNode} from 'react';
+import {useState,useSyncExternalStore,type ReactNode} from 'react';
 import {useAuth} from '@/components/auth';
 import {Icon} from '@/components/icons';
 
@@ -17,10 +17,15 @@ const copy={
  calendar:['캘린더','확인된 발표 일정과 내가 등록한 일정을 관리하세요.'],
  alerts:['알림','관심종목과 관련된 새 이벤트를 확인하세요.'],
 } as const;
+const compactQuery='(max-width: 900px)';
+function subscribeCompact(notify:()=>void){const media=window.matchMedia(compactQuery);media.addEventListener('change',notify);return()=>media.removeEventListener('change',notify);}
+const compactSnapshot=()=>window.matchMedia(compactQuery).matches;
+const serverSnapshot=()=>false;
 export function DashboardPreview(){
  const [tab,setTab]=useState<keyof typeof copy>('today');
+ const horizontal=useSyncExternalStore(subscribeCompact,compactSnapshot,serverSnapshot);
  return <div className="public-info-demo" id="demo" aria-label="기능별 화면 예시">
-  <div className="demo-side"><div className="demo-logo"><span className="public-info-mark"/>SignalBrief</div><div role="tablist" aria-label="화면 예시 선택" aria-orientation="vertical">{tabs.map(([key,label,icon],i)=><button key={key} type="button" id={'demo-tab-'+key} role="tab" aria-selected={tab===key} aria-controls="demo-panel" tabIndex={tab===key?0:-1} onClick={()=>setTab(key)} onKeyDown={event=>{if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(i+(event.key==='ArrowDown'?1:tabs.length-1))%tabs.length;setTab(tabs[next][0]);document.getElementById('demo-tab-'+tabs[next][0])?.focus();}}}><Icon name={icon} size={13}/>{label}</button>)}</div></div>
+  <div className="demo-side"><div className="demo-logo"><span className="public-info-mark"/>SignalBrief</div><div role="tablist" aria-label="화면 예시 선택" aria-orientation={horizontal?'horizontal':'vertical'}>{tabs.map(([key,label,icon],i)=><button key={key} type="button" id={'demo-tab-'+key} role="tab" aria-selected={tab===key} aria-controls="demo-panel" tabIndex={tab===key?0:-1} onClick={()=>setTab(key)} onKeyDown={event=>{if(['ArrowDown','ArrowUp','ArrowRight','ArrowLeft','Home','End'].includes(event.key)){event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(i+(['ArrowDown','ArrowRight'].includes(event.key)?1:tabs.length-1))%tabs.length;setTab(tabs[next][0]);document.getElementById('demo-tab-'+tabs[next][0])?.focus();}}}><Icon name={icon} size={13}/>{label}</button>)}</div></div>
   <div className="demo-body" id="demo-panel" role="tabpanel" aria-labelledby={'demo-tab-'+tab}>
    <div className="demo-heading"><h2>{copy[tab][0]}</h2><AccountLink href="/login" destination="/watchlist" className="demo-search" ariaLabel="내 관심종목 검색"><Icon name="search" size={12}/><span>종목 검색</span></AccountLink></div>
    <p className="demo-caption">{copy[tab][1]}</p><span className="demo-disclaimer">화면 예시 · 실제 기업·시세 데이터가 아닙니다</span>

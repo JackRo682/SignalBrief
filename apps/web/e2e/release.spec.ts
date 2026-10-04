@@ -9,7 +9,7 @@ async function enter(page:Page,admin=false){
 }
 test("new portfolio, CSV, calendar, question and navigation flows",async({page},info)=>{
  test.setTimeout(240000);
- await page.goto("/");await expect(page.getByRole("heading",{level:1})).toContainText("무엇이 바뀌었는가");await shot(page,info,"landing");
+ await page.goto("/");await expect(page.getByRole("heading",{level:1})).toContainText("내 종목의 변화는");await shot(page,info,"landing");
  await enter(page);await shot(page,info,"today");
  const firstEvent=page.locator('main a[href^="/events/"]').first();await firstEvent.click();await expect(page.locator("#evidence h2")).toBeVisible();await shot(page,info,"event-evidence");
  await page.goto("/portfolio");const companySelect=page.getByRole("combobox",{name:"기업",exact:true});const companyId=await companySelect.locator("option").filter({hasText:"HBD"}).getAttribute("value");expect(companyId).toBeTruthy();await companySelect.selectOption(companyId!);await page.getByRole("textbox",{name:"보유 수량"}).fill("10.25");await page.getByRole("textbox",{name:"평균 취득가"}).fill("100.50");await page.getByRole("button",{name:"보유 정보 저장"}).click();await expect(page.getByText("취득원가 1,030.125 USD")).toBeVisible();

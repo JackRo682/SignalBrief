@@ -1,3 +1,4 @@
+import {openPublicMenu} from './public-navigation';
 import {test,expect,type Page} from '@playwright/test';
 
 test.setTimeout(60000);
@@ -15,7 +16,7 @@ test('public CTAs and all six information pages have real destinations',async({p
   await expect(page).toHaveURL(/\/login$/);await page.getByRole('link',{name:'비밀번호 찾기'}).click();
   await expect(page).toHaveURL(/\/forgot-password$/);await expect(page.getByRole('button',{name:'복구 메일 요청'})).toBeVisible();
   for(const [label,path] of [['서비스 소개','about'],['주요 기능','features'],['데이터 출처','sources'],['요금제','pricing'],['고객 사례','customers'],['개인정보','privacy']]){
-    await page.goto('/');await page.locator('.landNav').getByRole('link',{name:label}).click();
+    await page.goto('/');await openPublicMenu(page);await page.locator('.landNav').getByRole('link',{name:label}).click();
     await expect(page).toHaveURL(new RegExp('/'+path+'$'));await expect(page.locator('h1')).toBeVisible();
     await expect(page.locator('.info-nav [aria-current="page"]')).toHaveText(label);
   }

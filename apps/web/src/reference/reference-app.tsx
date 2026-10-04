@@ -14,6 +14,7 @@ import { mountReference, type Row, type ReferenceContext } from "./controller";
 import "./reference.css";
 import "./overrides.css";
 import "./publication.css";
+import "./usability.css";
 
 type Screen=keyof typeof templates;
 export default function ReferenceApp({screen,id}:{screen:Screen;id?:string}){

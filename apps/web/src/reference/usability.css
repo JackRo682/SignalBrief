@@ -1,0 +1,32 @@
+/* Keep the workspace's data contracts while improving reading and touch targets. */
+.reference-ui{--text:#172b43;--muted:#64748b;--line:#e3eaf2;font-family:var(--font-sans),-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+.reference-ui .sidebar{background:#fcfdff;border-right-color:#e4ebf3}
+.reference-ui .nav a{font-size:14px;min-height:46px;font-weight:550;border-radius:9px}
+.reference-ui .nav a.active{background:#eaf2ff;color:#1764e8;box-shadow:inset 3px 0 #1764e8}
+.reference-ui .card{border-color:#e3eaf2;border-radius:14px;box-shadow:0 2px 8px #243e6203}
+.reference-ui .cardTitle{font-size:18px;font-weight:650}
+.reference-ui .todayItem{border-color:#e3eaf2;border-radius:12px;padding:20px;gap:20px}
+.reference-ui .briefTitle{font-size:18px;line-height:1.55;font-weight:650;letter-spacing:-.4px}
+.reference-ui .briefLead{font-size:14px;line-height:1.8;color:#617083}
+.reference-ui .btn{font-size:13px;min-height:40px;line-height:1.5;border-radius:8px;transition:background .15s,border-color .15s}
+.reference-ui .btn.primary{background:#1764e8;border-color:#1764e8}.reference-ui .btn.primary:hover{background:#1057d0}
+.reference-ui .empty{padding:36px 22px;line-height:1.8;font-size:14px;background:#f9fbfe;border-color:#dfe7f1}
+.reference-ui .empty strong{font-size:16px;font-weight:650}.reference-ui .empty p{font-size:14px;line-height:1.8;margin-top:9px}
+.reference-ui .referenceDialog{border-radius:16px;padding:26px;box-shadow:0 25px 75px #152f5633}
+.reference-ui .referenceDialog::backdrop{background:#15273d66;backdrop-filter:blur(3px)}
+.reference-ui .dialogField{font-size:14px}.reference-ui .dialogField input,.reference-ui .dialogField select,.reference-ui .dialogField textarea{font-size:16px;min-height:46px}
+.reference-ui .dialogHead h2{font-size:22px;font-weight:650}.reference-ui .referenceDialog .iconButton{min-width:44px;min-height:44px}
+.reference-ui button:focus-visible,.reference-ui a:focus-visible,.reference-ui summary:focus-visible{outline:3px solid #7eabf3;outline-offset:3px}
+.reference-ui #toast{font-size:14px;line-height:1.7;max-width:min(480px,calc(100vw - 32px));padding:14px 18px;border-radius:12px;overflow-wrap:anywhere}
+@media(max-width:760px){
+ .reference-ui .nav a{font-size:15px;min-height:48px}
+ .reference-ui .btn{min-height:44px;font-size:13px;padding:10px 12px}
+ .reference-ui .seg button,.reference-ui #alertTabs button,.reference-ui .filterBar button{min-height:44px;font-size:12px}
+ .reference-ui .briefTitle{font-size:17px;line-height:1.6}.reference-ui .briefLead{font-size:14px;line-height:1.8}
+ .reference-ui .todayItem{padding:17px;gap:14px}.reference-ui .cardTitle{font-size:18px}
+ .reference-ui .search input{font-size:16px}.reference-ui .iconButton,.reference-ui .mobileMenuButton{min-width:44px;min-height:44px}
+ .reference-ui .referenceDialog{padding:22px;width:calc(100vw - 32px);max-height:calc(100dvh - 40px)}
+ .reference-ui .tableScroll{overscroll-behavior-x:contain}.reference-ui .table td,.reference-ui .table th{font-size:12px;line-height:1.6}
+ .reference-ui .dialogActions{flex-wrap:wrap;gap:10px}.reference-ui .dialogActions .btn{min-height:46px}
+}
+@media(prefers-reduced-motion:reduce){.reference-ui *{animation:none!important;transition:none!important}}

@@ -19,7 +19,7 @@ script = '\n'.join(
 )
 image = 'data:image/webp;base64,' + base64.b64encode((ASSET / 'reference-assets/onboarding-guide.webp').read_bytes()).decode()
 script = script.replace('/reference-assets/onboarding-guide.webp', image)
-css = '\n'.join(((ROOT / f'apps/web/src/{name}').read_text() for name in ['app/globals.css', 'app/release-layout.css', 'reference/reference.css', 'reference/overrides.css', 'reference/publication.css']))
+css = '\n'.join(((ROOT / f'apps/web/src/{name}').read_text() for name in ['app/globals.css', 'app/release-layout.css', 'reference/reference.css', 'reference/overrides.css', 'reference/publication.css', 'reference/usability.css']))
 HTML = '<html lang="ko"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0}' + css + '</style></head><body><div id="root"></div><script>' + script + '</script></body></html>'
 results = []
 

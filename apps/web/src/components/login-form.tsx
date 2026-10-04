@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./auth";
@@ -38,6 +38,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const inFlight = useRef(false);
 
   useEffect(() => {
     if (auth.me) {
@@ -46,6 +47,8 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
   }, [auth.me, router]);
 
   async function run(action: () => Promise<void>) {
+    if (inFlight.current) return;
+    inFlight.current = true;
     setBusy(true);
     setMessage("");
     setError("");
@@ -58,6 +61,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
           : "요청을 완료하지 못했습니다. 이메일, 비밀번호 또는 이메일 인증 상태를 확인해 주세요.",
       );
     } finally {
+      inFlight.current = false;
       setBusy(false);
     }
   }
@@ -112,7 +116,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
   const text = copy[mode];
 
   return (
-    <section className="login-box" aria-label={text.title}>
+    <section className="login-box" aria-label={text.title} aria-busy={busy}>
       <span className="eyebrow">
         {mode === "login" ? "WELCOME BACK" : mode === "signup" ? "GET STARTED" : "ACCOUNT RECOVERY"}
       </span>
@@ -128,7 +132,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
             disabled={busy}
             onClick={() => run(() => auth.googleLogin())}
           >
-            <span className="google-g">G</span>
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24"><path fill="#4285f4" d="M22 12.2c0-.7-.1-1.4-.2-2.1H12v4h5.6a4.8 4.8 0 0 1-2.1 3.1v2.6h3.4c2-1.8 3.1-4.5 3.1-7.6Z"/><path fill="#34a853" d="M12 22c2.8 0 5.2-.9 6.9-2.4l-3.4-2.6c-.9.6-2.1 1-3.5 1a6 6 0 0 1-5.6-4.1H2.9v2.7A10 10 0 0 0 12 22Z"/><path fill="#fbbc05" d="M6.4 13.9a6 6 0 0 1 0-3.8V7.4H2.9a10 10 0 0 0 0 9.2Z"/><path fill="#ea4335" d="M12 6c1.6 0 3 .5 4.1 1.6l3.1-3.1A10 10 0 0 0 2.9 7.4l3.5 2.7A6 6 0 0 1 12 6Z"/></svg>
             {mode === "signup" ? "Google로 회원가입" : "Google로 로그인"}
           </button>
 
@@ -149,6 +153,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
             placeholder="name@example.com"
             required
             maxLength={254}
+            disabled={busy}
           />
         </label>
 
@@ -166,15 +171,20 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
                 maxLength={128}
                 placeholder={mode === "signup" ? "12자 이상 입력" : "비밀번호 입력"}
                 required
+                disabled={busy}
+                aria-describedby={mode === "signup" ? "password-requirement" : undefined}
               />
               <button
                 type="button"
                 onClick={() => setShow((value) => !value)}
                 aria-label={show ? "비밀번호 숨기기" : "비밀번호 보기"}
+                aria-pressed={show}
+                disabled={busy}
               >
                 {show ? "숨김" : "보기"}
               </button>
             </div>
+            {mode === "signup" && <p id="password-requirement" className={'password-requirement'+(password.length >= 12 ? ' is-met' : '')}><Icon name={password.length >= 12 ? 'check' : 'shield'} size={14}/>{password.length >= 12 ? '12자 이상 입력했습니다.' : '비밀번호는 12자 이상으로 입력해 주세요.'}</p>}
           </div>
         )}
 

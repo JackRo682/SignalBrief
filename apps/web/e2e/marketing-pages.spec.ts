@@ -1,3 +1,4 @@
+import {openPublicMenu} from './public-navigation';
 import {test,expect,type Page} from '@playwright/test';
 test.setTimeout(60000);
 const pages=[['about','서비스 소개'],['features','주요 기능'],['sources','데이터 출처'],['pricing','요금제'],['customers','고객 사례'],['privacy','개인정보']] as const;
@@ -21,9 +22,9 @@ test('all six designs have readable content, navigation and responsive artwork',
  expect(errors).toEqual([]);
 });
 test('header, footer and landing links navigate without recreating the document',async({page})=>{
- await anonymous(page);await page.goto('/');await page.locator('.landNav').getByRole('link',{name:'개인정보',exact:true}).click();await expect(page).toHaveURL(/\/privacy$/);
+ await anonymous(page);await page.goto('/');await openPublicMenu(page);await page.locator('.landNav').getByRole('link',{name:'개인정보',exact:true}).click();await expect(page).toHaveURL(/\/privacy$/);
  await page.evaluate(()=>{(window as Window&{__publicMarker?:string}).__publicMarker='retained';});
- for(const [path,label] of pages){await page.locator('.public-info-nav').getByRole('link',{name:label,exact:true}).click();await expect(page).toHaveURL(new RegExp('/'+path+'$'));}
+ for(const [path,label] of pages){await openPublicMenu(page);await page.locator('.public-info-nav').getByRole('link',{name:label,exact:true}).click();await expect(page).toHaveURL(new RegExp('/'+path+'$'));}
  expect(await page.evaluate(()=>(window as Window&{__publicMarker?:string}).__publicMarker)).toBe('retained');
  await page.locator('.public-info-footer').getByRole('link',{name:'개인정보처리방침',exact:true}).click();await expect(page).toHaveURL(/\/privacy$/);
  await page.locator('.public-info-closing').getByRole('link',{name:'무료로 시작하기'}).click();await expect(page).toHaveURL(/\/signup$/);
