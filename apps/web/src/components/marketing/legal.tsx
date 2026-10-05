@@ -12,7 +12,7 @@ export function LegalToc({items}:{items:readonly LegalItem[]}){
   items.forEach(item=>{const section=document.getElementById(item.id);if(section)observer.observe(section);});
   return()=>{observer.disconnect();window.removeEventListener('hashchange',openHash);};
  },[items]);
- return <aside className="d-legal-toc"><details open><summary>이 페이지의 목차<Icon name="menu" size={19}/></summary><nav aria-label="안내 목차">{items.map((item,i)=><Link href={'#'+item.id} aria-current={active===item.id?'location':undefined} key={item.id} onClick={()=>{setActive(item.id);document.getElementById(item.id)?.querySelector('details')?.setAttribute('open','');}}><span>{String(i+1).padStart(2,'0')}</span>{item.title}</Link>)}</nav></details></aside>;
+ return <aside className="d-legal-toc"><details open><summary>목차<Icon name="menu" size={19}/></summary><nav aria-label="안내 목차">{items.map((item,i)=><Link href={'#'+item.id} aria-current={active===item.id?'location':undefined} key={item.id} onClick={()=>{setActive(item.id);document.getElementById(item.id)?.querySelector('details')?.setAttribute('open','');}}><span>{String(i+1).padStart(2,'0')}</span>{item.title}</Link>)}</nav></details><div className="v-toc-help"><Icon name="bell" size={23}/><h3>더 궁금한 점이 있으신가요?</h3><p>문의 채널의 준비 상태와 운영 안내를 확인해주세요.</p><Link href="/privacy#contact">문의 안내 →</Link></div></aside>;
 }
 export function LegalSection({id,number,title,summary,children}:{id:string;number:number;title:string;summary:string;children:ReactNode}){
  const [open,setOpen]=useState(false);

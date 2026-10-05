@@ -8,19 +8,19 @@ async function publicAuth(page:Page){
   await page.route('**/api/auth-config',r=>r.fulfill({json:{url:'https://test-project.supabase.co',publishableKey:'sb_publishable_isolated_fixture'}}));
   await page.route('**/api/public-stats',r=>r.fulfill({json:{}}));
 }
-test('public CTAs and all six information pages have real destinations',async({page})=>{
+test('public CTAs and all five header information pages have real destinations',async({page})=>{
   await publicAuth(page);await page.goto('/');
-  await page.locator('.landActions').getByRole('link',{name:'무료로 시작하기'}).click();
-  await expect(page).toHaveURL(/\/signup$/);await expect(page.getByRole('button',{name:'계정 만들기'})).toBeVisible();
-  await page.getByRole('link',{name:'로그인',exact:true}).click();
+  await page.locator('.v-actions').getByRole('link',{name:'무료로 시작하기'}).click();
+  await expect(page).toHaveURL(/\/signup$/);await expect(page.getByRole('button',{name:'무료로 시작하기',exact:true})).toBeVisible();
+  await page.locator('.auth-links').getByRole('link',{name:'로그인',exact:true}).click();
   await expect(page).toHaveURL(/\/login$/);await page.getByRole('link',{name:'비밀번호 찾기'}).click();
-  await expect(page).toHaveURL(/\/forgot-password$/);await expect(page.getByRole('button',{name:'복구 메일 요청'})).toBeVisible();
-  for(const [label,path] of [['서비스 소개','about'],['주요 기능','features'],['데이터 출처','sources'],['요금제','pricing'],['고객 사례','customers'],['개인정보','privacy']]){
-    await page.goto('/');await openPublicMenu(page);await page.locator('.landNav').getByRole('link',{name:label}).click();
+  await expect(page).toHaveURL(/\/forgot-password$/);await expect(page.getByRole('button',{name:'재설정 링크 보내기'})).toBeVisible();
+  for(const [label,path] of [['서비스 소개','about'],['주요 기능','features'],['데이터 출처','sources'],['요금제','pricing'],['고객 사례','customers']]){
+    await page.goto('/');await openPublicMenu(page);await page.locator('.public-info-nav').getByRole('link',{name:label}).click();
     await expect(page).toHaveURL(new RegExp('/'+path+'$'));await expect(page.locator('h1')).toBeVisible();
-    await expect(page.locator('.info-nav [aria-current="page"]')).toHaveText(label);
+    await expect(page.locator('.public-info-nav [aria-current="page"]')).toHaveText(label);
   }
-  await page.goto('/');await page.locator('.previewStart').click();await expect(page).toHaveURL(/\/signup$/);
+  await page.goto('/');await page.locator('.v-actions').getByRole('link',{name:'무료로 시작하기'}).click();await expect(page).toHaveURL(/\/signup$/);
   await expect(page.locator('body')).not.toContainText('authentication_required');
 });
 test('email signup and recovery call Auth and display the returned outcome',async({page})=>{
@@ -30,10 +30,10 @@ test('email signup and recovery call Auth and display the returned outcome',asyn
     await route.fulfill({json:url.pathname.endsWith('/signup')?{id:'00000001-0000-4000-8000-000000000001',email:'fixture@example.com'}:{},headers:{'Access-Control-Allow-Origin':'*'}});
   });
   await page.goto('/signup');await page.getByLabel('이메일',{exact:true}).fill('fixture@example.com');await page.getByLabel('비밀번호',{exact:true}).fill('fixture-password-123');
-  await page.getByRole('checkbox').check();await page.getByRole('button',{name:'계정 만들기'}).click();await expect(page.getByRole('status')).toContainText('가입 요청을 접수');
+  await page.getByLabel('비밀번호 확인',{exact:true}).fill('fixture-password-123');await page.getByRole('checkbox').check();await page.getByRole('button',{name:'무료로 시작하기',exact:true}).click();await expect(page.getByRole('status')).toContainText('가입 요청을 접수');
   expect(requests.find(r=>r.path.endsWith('/signup'))?.redirect).toBe(new URL(page.url()).origin+'/auth/callback');
-  await page.getByRole('link',{name:'비밀번호 찾기'}).click();await expect(page).toHaveURL(/\/forgot-password$/);await page.getByLabel('이메일',{exact:true}).fill('fixture@example.com');
-  await page.getByRole('button',{name:'복구 메일 요청'}).click();await expect(page.getByRole('status')).toContainText('복구 가능한 계정');
+  await page.locator('.auth-links').getByRole('link',{name:'로그인',exact:true}).click();await page.getByRole('link',{name:'비밀번호 찾기'}).click();await expect(page).toHaveURL(/\/forgot-password$/);await page.getByLabel('이메일',{exact:true}).fill('fixture@example.com');
+  await page.getByRole('button',{name:'재설정 링크 보내기'}).click();await expect(page.getByRole('status')).toContainText('복구 가능한 계정');
   expect(requests.find(r=>r.path.endsWith('/recover'))?.redirect).toBe(new URL(page.url()).origin+'/auth/callback?next=reset-password');
 });
 test('slow auth keeps a content skeleton and redirects anonymous visitors without a checking page',async({page})=>{
