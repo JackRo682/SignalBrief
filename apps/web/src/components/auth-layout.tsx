@@ -5,6 +5,7 @@ import MarketingHeader from './marketing/header';
 import {ScreenshotPreview,VisualIcon} from './marketing/screenshot-preview';
 import {Handnote} from './marketing/reference-pages';
 import './marketing/screenshot-design.css';
+import './marketing/screenshot-accessibility.css';
 
 export default function AuthLayout({children,recovery=false,passwordReset=false,mode='login'}:{children:ReactNode;recovery?:boolean;passwordReset?:boolean;mode?:'login'|'signup'}){
  const variant=passwordReset?'password-reset':recovery?'recovery':mode;
