@@ -3,11 +3,12 @@
 > vitest run
 
 
- RUN  v4.1.11 C:/Users/nosug/Documents/Codex/2026-10-02/task-3/signalbrief-independent-20261002/github-publication/apps/web
+ RUN  v4.1.11 /workspace/scratch/dbbb0d8f7618/signalbrief/apps/web
 
 
- Test Files  3 passed (3)
-      Tests  27 passed (27)
-   Start at  21:48:53
-   Duration  12.12s (transform 230ms, setup 0ms, import 644ms, tests 124ms, environment 32.75s)
+ Test Files  17 passed (17)
+      Tests  190 passed (190)
+   Start at  09:29:21
+   Duration  1.78s (transform 1.11s, setup 0ms, import 1.87s, tests 1.58s, environment 3.87s)
 
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.

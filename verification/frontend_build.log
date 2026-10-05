@@ -3,39 +3,63 @@
 > next build
 
 ▲ Next.js 16.3.8 (Turbopack)
-✓ Running next.config.ts took 182ms
+✓ Running next.config.ts took 19ms
 
   Creating an optimized production build ...
-✓ Compiled successfully in 10.0s
+✓ Compiled successfully in 175ms
   Running TypeScript ...
-  Finished TypeScript in 5.7s ...
-  Collecting page data using 15 workers ...
-  Generating static pages using 15 workers (0/14) ...
-  Generating static pages using 15 workers (3/14) 
-  Generating static pages using 15 workers (6/14) 
-  Generating static pages using 15 workers (10/14) 
-✓ Generating static pages using 15 workers (14/14) in 633ms
+  Finished TypeScript in 1537ms ...
+  Collecting page data using 8 workers ...
+  Generating static pages using 8 workers (0/28) ...
+  Generating static pages using 8 workers (7/28) 
+  Generating static pages using 8 workers (14/28) 
+  Generating static pages using 8 workers (21/28) 
+✓ Generating static pages using 8 workers (28/28) in 374ms
   Finalizing page optimization ...
 
 Route (app)
 ┌ ○ /
 ├ ○ /_not-found
+├ ○ /about
 ├ ○ /alerts
+├ ƒ /api/[...path]
+├ ƒ /api/auth-config
+├ ƒ /api/market
+├ ƒ /api/public-stats
+├ ƒ /api/release
+├ ƒ /api/us/[...path]
 ├ ○ /auth/callback
 ├ ○ /calendar
 ├ ƒ /companies/[id]
+├ ○ /customers
+├ ○ /disclaimer
 ├ ƒ /events/[id]
+├ ○ /features
+├ ○ /forgot-password
 ├ ○ /login
 ├ ○ /onboarding
 ├ ○ /ops
 ├ ƒ /ops/documents/[id]
+├ ƒ /ops/runs/[id]
 ├ ○ /portfolio
+├ ○ /pricing
 ├ ○ /privacy
+├ ○ /questions
+├ ○ /reset-password
 ├ ○ /settings
+├ ○ /signup
+├ ○ /sources
+├ ○ /status
+├ ○ /terms
+├ ○ /timeline
 ├ ○ /today
+├ ○ /us
 └ ○ /watchlist
 
+
+ƒ Proxy (Middleware)
 
 ○  (Static)   prerendered as static content
 ƒ  (Dynamic)  server-rendered on demand
 
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
