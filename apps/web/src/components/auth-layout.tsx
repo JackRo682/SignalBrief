@@ -1,15 +1,7 @@
 import Link from 'next/link';
 import type {ReactNode} from 'react';
-import {Icon} from './icons';
-import {Brand} from './marketing/layout';
+import {Brand,Glyph} from './marketing/layout';
+import MarketingHeader from './marketing/header';
 import {DashboardPreview} from './marketing/actions';
-import {SecurityArt,TrustItems,SourceCards} from './marketing/design';
-export default function AuthLayout({children,recovery=false,mode='login'}:{children:ReactNode;recovery?:boolean;mode?:'login'|'signup'}) {
- return <main className={'auth-page auth-experience d-account '+(recovery?'is-recovery':mode==='signup'?'is-signup':'is-login')}>
- <div className="auth-top"><Brand/><Link href="/" className="auth-home"><Icon name="arrow" size={16}/>홈으로 돌아가기</Link></div>
- {!recovery&&<header className="d-account-intro"><p className="d-eyebrow">{mode==='signup'?'START YOUR CLEARER PERSPECTIVE':'WELCOME BACK'}</p><h1>{mode==='signup'?'내 종목의 변화, 더 선명하게.':'다시 만나 반갑습니다.'}</h1><p>{mode==='signup'?'무료 계정으로 나만의 브리핑을 시작하세요.':'로그인하고 내 종목의 새로운 변화를 이어서 확인하세요.'}</p></header>}
- <div className="auth-grid"><div className="auth-form-column">{children}</div>
- <aside className="auth-story" aria-label="SignalBrief 소개">{recovery?<><SecurityArt/><h2>안전하게 계정을<br/><em>다시 연결하세요.</em></h2><p>이메일로 받은 복구 링크에서 새 비밀번호를 설정할 수 있습니다.</p><Link className="d-card-link" href="/privacy#contact">도움이 필요하신가요? →</Link></>:<><p className="d-eyebrow">FACT · CHANGE · EVIDENCE</p><h2>내 종목의 변화,<br/><em>근거부터 확인.</em></h2><p>중요한 사실과 이전 자료의 차이를 읽고, 연결된 원문에서 확인하세요.</p><div className="d-phone-preview"><DashboardPreview/></div><Link href="/features" className="d-card-link">서비스 먼저 둘러보기 →</Link></>}</aside></div>
- <div className="d-account-benefits"><TrustItems/></div>{mode==='signup'&&!recovery&&<section className="d-account-sources"><h2>확인 가능한 출처에서 시작합니다.</h2><SourceCards compact/></section>}
- <div className="auth-page-footer"><span>© 2026 SignalBrief</span><Link href="/terms">서비스 이용 안내</Link><Link href="/privacy">개인정보처리방침</Link><Link href="/status">서비스 상태</Link></div></main>;
-}
+import './marketing/reference.css';
+export default function AuthLayout({children,recovery=false,mode='login'}:{children:ReactNode;recovery?:boolean;mode?:'login'|'signup'}){return <div className={'reference-auth '+(recovery?'is-recovery':mode==='signup'?'is-signup':'is-login')}><MarketingHeader current="/"/><main className="reference-auth-grid"><aside className="reference-auth-story" aria-label="SignalBrief 소개"><p className="r-eyebrow">{mode==='signup'?'데이터가 만드는 더 나은 투자':'더 나은 투자, 데이터로부터'}</p><h1>{mode==='signup'?<>누구나 쉽게,<br/>더 나은 투자 습관을</>:<>중요한 투자 변화를<br/>더 빠르게, 더 정확하게</>}</h1><p>SignalBrief는 공시와 기업 자료를 AI가 분석해 핵심만 선별하고, 투자 판단에 필요한 근거를 제공합니다.</p>{(['시간을 아끼는 요약','신뢰할 수 있는 데이터','더 나은 투자 습관']).map((title,i)=><div className="reference-auth-benefit" key={title}><span className="r-icon"><Glyph name={(['spark','bars','shield'] as const)[i]}/></span><div><h3>{title}</h3><p>{['복잡한 정보를 한눈에 정리해 중요한 것에 집중하세요.','공식 원문과 확인 가능한 인용 근거를 읽으세요.','사실과 해석을 구분하고 변화의 맥락을 확인하세요.'][i]}</p></div></div>)}{mode==='signup'&&<div className="reference-auth-preview"><DashboardPreview/></div>}</aside><div>{children}</div></main><footer className="reference-auth-footer"><Brand/><nav aria-label="계정 하단 안내"><Link href="/terms">이용약관</Link><Link href="/privacy">개인정보처리방침</Link><Link href="/disclaimer">투자 유의사항</Link></nav></footer></div>;}

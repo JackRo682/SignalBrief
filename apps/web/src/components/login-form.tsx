@@ -7,24 +7,25 @@ import { useAuth } from "./auth";
 import { initializeSupabase } from "@/lib/supabase";
 import { siteOrigin } from "@/lib/site-url";
 import { Icon } from "./icons";
+import {Brand} from "./marketing/layout";
 
 export type AuthMode = "login" | "signup" | "reset";
 
 const copy: Record<AuthMode, { title: string; description: string; submit: string }> = {
   login: {
-    title: "중요한 변화부터 확인하세요",
-    description: "내 종목, 이전과의 차이, 확인 가능한 원문.",
+    title: "로그인",
+    description: "지금, 더 나은 투자를 시작하세요.",
     submit: "로그인",
   },
   signup: {
-    title: "나만의 브리핑을 시작하세요",
+    title: "회원가입",
     description: "이메일 또는 Google 계정으로 무료 계정을 만들 수 있습니다.",
-    submit: "계정 만들기",
+    submit: "무료로 시작하기",
   },
   reset: {
-    title: "비밀번호를 재설정하세요",
+    title: "비밀번호 찾기",
     description: "가입한 이메일 주소로 비밀번호 재설정 링크를 보내드립니다.",
-    submit: "복구 메일 요청",
+    submit: "재설정 링크 보내기",
   },
 };
 
@@ -36,6 +37,8 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
   const [name, setName] = useState("");
   const [acknowledged, setAcknowledged] = useState(false);
   const [password, setPassword] = useState("");
+  const [repeat, setRepeat] = useState("");
+  const [showRepeat, setShowRepeat] = useState(false);
   const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -70,6 +73,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
 
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (mode === "signup" && password !== repeat) {setError("두 비밀번호가 다릅니다. 다시 확인해 주세요.");return;}
     if (mode === "signup" && !acknowledged) {
       setError("서비스 이용 안내와 개인정보 처리 안내를 먼저 확인해 주세요.");
       return;
@@ -123,6 +127,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
 
   return (
     <section className="login-box" aria-label={text.title} aria-busy={busy}>
+      {mode === "reset" ? <span className="recovery-symbol" aria-hidden="true">✉</span> : <Brand/>}
       <span className="eyebrow">
         {mode === "login" ? "WELCOME BACK" : mode === "signup" ? "GET STARTED" : "ACCOUNT RECOVERY"}
       </span>
@@ -139,7 +144,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            placeholder="name@example.com"
+            placeholder="이메일을 입력하세요."
             required
             maxLength={254}
             disabled={busy}
@@ -177,6 +182,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
           </div>
         )}
 
+        {mode === "signup" && <div className="field"><label htmlFor="auth-repeat">비밀번호 확인</label><div className="password-field"><input id="auth-repeat" type={showRepeat?'text':'password'} autoComplete="new-password" required maxLength={128} value={repeat} disabled={busy} onChange={event=>setRepeat(event.target.value)} placeholder="비밀번호를 다시 입력해주세요."/><button type="button" disabled={busy} aria-pressed={showRepeat} aria-label={showRepeat?'확인 비밀번호 숨기기':'확인 비밀번호 보기'} onClick={()=>setShowRepeat(value=>!value)}>{showRepeat?'숨김':'보기'}</button></div></div>}
         {mode === "login" && <Link className="d-forgot-link" href="/forgot-password">비밀번호 찾기</Link>}
         {mode === "signup" && <div className="d-signup-ack"><label><input type="checkbox" checked={acknowledged} onChange={event=>setAcknowledged(event.target.checked)} required disabled={busy}/>서비스 이용 안내와 개인정보 처리 안내를 확인했습니다.</label><p><Link href="/terms" target="_blank" rel="noopener noreferrer">서비스 이용 안내</Link><span> · </span><Link href="/privacy" target="_blank" rel="noopener noreferrer">개인정보 처리 안내</Link></p></div>}
         <button className="button primary full" disabled={busy}>

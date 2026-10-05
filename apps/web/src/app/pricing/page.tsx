@@ -1,10 +1,2 @@
-import Link from 'next/link';
-import MarketingLayout,{ClosingBanner} from '@/components/marketing/layout';
-import {DesignFaq,DesignHeading,DesignHero,SecurityArt,TrustItems} from '@/components/marketing/design';
-import {PricingPlans} from '@/components/marketing/interactive';
-export const metadata={title:'요금제',description:'현재 공개 베타에서 무료로 이용할 수 있는 SignalBrief의 요금 안내입니다.'};
-export default function Pricing(){return <MarketingLayout current="/pricing"><DesignHero eyebrow="PRICING" title={<>내 브리핑의 시작,<br/><em>지금은 무료로.</em></>} art={<SecurityArt/>} secondary={{href:'#plans',label:'요금제 살펴보기'}}>현재 제공되는 기능은 무료 공개 베타로 이용할 수 있습니다. 결제 정보를 등록할 필요 없이, 근거를 읽는 흐름부터 경험하세요.</DesignHero><div className="public-info-container d-content">
- <section id="plans"><DesignHeading eyebrow="PLANS FOR A CLEARER PERSPECTIVE" title="현재 이용 요금과 준비 상태">무료 베타와 향후 요금제의 준비 상태를 구분해 안내합니다.</DesignHeading><PricingPlans/></section>
- <section><DesignHeading eyebrow="COMPARE PLANS" title="기능별 현재 제공 상태"/><div className="d-comparison" tabIndex={0} role="region" aria-label="요금제 기능 비교 표, 좌우 스크롤 가능"><table><caption>현재 공개 베타 및 미확정 유료 요금제</caption><thead><tr><th scope="col">기능</th><th scope="col">Free · 공개 베타</th><th scope="col">Pro</th><th scope="col">Pro+</th></tr></thead><tbody>{['관심종목·포트폴리오','오늘의 변화·브리핑','출처·인용 근거','타임라인·근거 질문','결제·자동 갱신'].map((name,i)=><tr key={name}><th scope="row">{name}</th><td>{i===4?'없음':'현재 연결 범위에서 제공'}</td><td>{i===4?'미연결':'미확정'}</td><td>{i===4?'미연결':'미확정'}</td></tr>)}</tbody></table></div></section>
- <DesignFaq items={[{question:'신용카드를 등록해야 하나요?',answer:'아니요. 현재 공개 베타는 무료이며 결제 정보가 필요하지 않습니다.'},{question:'월간·연간을 선택하면 결제되나요?',answer:'아니요. 이 토글은 요금의 표시 기간만 바꿉니다. 유료 결제와 자동 갱신은 연결되어 있지 않습니다.'},{question:'Pro와 Pro+는 언제 시작하나요?',answer:'가격, 제공 기능과 출시 시점은 미정입니다. 확정 시 이 페이지에서 먼저 안내합니다.'},{question:'종목 수나 질문 횟수에 제한이 있나요?',answer:<>운영 범위는 현재 연결 데이터와 API 정책에 따라 다를 수 있습니다. 확정된 기능과 범위를 운영 안내에서 확인하세요. <Link href="/terms">서비스 이용 안내</Link></>} ]}/>
- <TrustItems/><ClosingBanner title="더 많은 가능성을, 함께 만들어갑니다." secondary={{href:'/privacy#contact',label:'문의하기'}}>결제 정보 없이 현재의 공개 베타를 경험해 보세요.</ClosingBanner></div></MarketingLayout>;}
+import {ReferencePage} from '@/components/marketing/reference-pages';
+export default function Page(){return <ReferencePage kind="pricing"/>;}

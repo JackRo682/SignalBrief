@@ -81,3 +81,5 @@ DART 키, SEC 실명 연락처 User-Agent, 사용 가능한 OpenAI 모델과 키
 이메일/모바일 푸시는 구현하지 않았습니다. 알림은 앱 내부입니다.
 PDF/OCR와 입력 예산을 넘는 장문 공시는 자동 처리하지 않고 검토/실패 상태로 남깁니다.
 수치·원문 검사만으로 모든 금융 해석의 진실을 자동 증명할 수 있다고 주장하지 않습니다.
+
+Public page redesign: see [design scope and validation](docs/PUBLIC_REDESIGN_2026-10-05.md). The 13 supplied public/account references are implemented as React and CSS; existing Supabase and API connections are retained. No new environment variables are required. Proposed paid tiers do not charge users.
