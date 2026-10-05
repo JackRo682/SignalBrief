@@ -1,10 +1,2 @@
-import MarketingLayout,{Hero,SectionTitle,Card,ClosingBanner} from '@/components/marketing/layout';
-export const metadata={title:'서비스 소개',description:'내 종목의 변화와 원문 근거를 연결하는 SignalBrief를 소개합니다.'};
-export default function About(){return <MarketingLayout current="/about"><Hero eyebrow="ABOUT SIGNALBRIEF" title={<>투자의 세상은 늘 변합니다.<br/>그래서, <em>근거부터 확인합니다.</em></>} description={<>SignalBrief는 흩어진 정보를 정리해,<br/>투자에 필요한 변화를 빠르고 근거 있게 확인하도록 돕는<br/>AI 기반 투자 정보 서비스입니다.</>} stats={[{value:'변화',label:'이전과 현재의 차이'},{value:'근거',label:'확인 가능한 원문'},{value:'내 종목',label:'관심종목 중심 탐색'}]}/><div className="public-info-container public-info-content"><SectionTitle eyebrow="OUR STORY" title="더 나은 투자 결정을 위한, 새로운 기준" id="story">SignalBrief는 투자자가 마주하는 정보의 불확실성을 줄이고,<br/>사실에 기반한 인사이트로 더 나은 결정을 할 수 있도록 돕습니다.</SectionTitle><div className="public-info-grid cols-3">
-<Card icon="bars" title="SignalBrief는 무엇인가요?" href="/features" label="서비스 더 알아보기">공시와 기업의 공식 자료를 분석해, 중요한 변화와 확인 가능한 근거를 함께 정리하는 투자 정보 서비스입니다.</Card>
-<Card icon="warning" title="어떤 문제를 해결하나요?" tone="purple" href="/features#features" label="우리가 해결하는 문제">투자에 필요한 정보는 넘쳐나지만 중요한 변화가 무엇인지 찾기는 어렵습니다. 복잡한 정보를 맥락과 근거와 함께 정리해 드립니다.</Card>
-<Card icon="search" title="근거가 먼저인 분석 흐름" tone="green" href="/sources#process" label="분석 프로세스 보기">요약과 설명에서 출발해 원문과 출처를 함께 확인할 수 있습니다. 투자 판단의 시작은 확인할 수 있는 근거라는 원칙을 지킵니다.</Card>
-<Card icon="user" title="관심종목과 포트폴리오에 맞춘 개인화" href="/features#features" label="개인화 기능 살펴보기">내 관심종목과 보유종목을 기준으로 나에게 관련 있는 변화를 찾아보고, 기업의 자료를 이어서 확인합니다.</Card>
-<Card icon="shield" title="투자 조언이 아닌, 투자 정보를" tone="purple" href="/privacy#scope" label="우리의 원칙">특정 종목의 매수·매도 추천이나 목표주가를 제공하지 않습니다. 확인 가능한 정보와 분석을 통해 스스로 판단할 수 있도록 돕습니다.</Card>
-<Card icon="target" title="더 나은 투자 문화를 위해" tone="purple" href="/customers#approach" label="팀의 미션과 비전">더 많은 사람들이 근거 있는 정보에 기반해 투자하고, 건강한 투자 문화를 만들어 갈 수 있도록 돕고자 합니다.</Card>
-</div><ClosingBanner title="근거 있는 투자, 지금 시작해보세요.">SignalBrief와 함께 더 넓은 시야로 더 나은 투자 결정을 만들어가세요.<br/>지금 무료로 시작하고, 변화와 근거를 함께 확인해보세요.</ClosingBanner></div></MarketingLayout>;}
+import {ReferencePage} from '@/components/marketing/reference-pages';
+export default function Page(){return <ReferencePage kind="about"/>;}

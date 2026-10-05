@@ -1,12 +1,2 @@
-import Link from 'next/link';
-import MarketingLayout,{ClosingBanner} from '@/components/marketing/layout';
-import {DashboardPreview} from '@/components/marketing/actions';
-import {DesignCard,DesignFaq,DesignHeading,DesignHero,DesignSteps,EvidenceArt,SourceCards} from '@/components/marketing/design';
-export const metadata={title:'데이터 출처',description:'SignalBrief의 원문 출처와 자료 검증 흐름, 현재 제공 범위를 확인하세요.'};
-export default function Sources(){return <MarketingLayout current="/sources"><DesignHero eyebrow="DATA SOURCES" title={<>정보의 시작은,<br/><em>확인 가능한 출처.</em></>} art={<EvidenceArt/>} secondary={{href:'#scope',label:'제공 범위 확인'}}>공식 원문에서 확인한 사실을 정리하고, 중요한 변화와 인용 근거를 연결합니다. 출처별 실제 제공 범위도 함께 안내합니다.</DesignHero><div className="public-info-container d-content">
- <section><DesignHeading eyebrow="OUR SOURCES" title="투자 정보의 출처를 직접 확인하세요">제공자를 표시하는 것은 제휴를 의미하지 않습니다. 연결·검토된 자료만 서비스에 반영합니다.</DesignHeading><SourceCards/></section>
- <section className="d-evidence-section"><div><DesignHeading eyebrow="EVIDENCE FIRST" title="요약에서 원문까지, 근거를 따라 읽으세요">사실과 해석을 구분하고 연결된 원문에서 추가 맥락을 확인하세요.</DesignHeading><Link className="d-card-link" href="https://www.sec.gov/edgar/search/" target="_blank" rel="noopener noreferrer">SEC 공식 자료 보기 →</Link></div><div className="d-phone-preview"><DashboardPreview/></div></section>
- <section id="process"><DesignHeading eyebrow="OUR PROCESS" title="자료는 이렇게 연결됩니다"/><DesignSteps source/></section>
- <section id="scope"><DesignHeading eyebrow="QUALITY & SCOPE" title="제공 범위와 검토 상태를 함께 표시합니다"/><div className="d-card-grid four">{[['shield','공식 자료 우선','권위 있는 출처를 우선하며, 충돌하는 자료는 검토합니다.'],['file','원문과 인용 연결','요약의 근거를 원문 링크에서 직접 확인할 수 있습니다.'],['bars','미국 주식 중심','현재 미국 기업 공시를 우선 연결합니다. DART·KRX는 보류 중입니다.'],['clock','상태 확인','공급자 사용 조건과 연결 상태에 따라 제공 범위가 달라집니다.']].map(([icon,title,copy])=><DesignCard key={title} icon={icon as 'shield'|'file'|'bars'|'clock'} title={title} href="/status" label="연결 상태 확인">{copy}</DesignCard>)}</div></section>
- <DesignFaq items={[{question:'모든 기업과 모든 자료를 볼 수 있나요?',answer:'자료 수집과 검토가 완료된 범위에서 제공합니다. 기업·제공자별 범위가 다를 수 있습니다.'},{question:'한국 기업 공시도 제공하나요?',answer:'현재 미국 기업 공시 중심입니다. 한국 DART·KRX 연결은 보류 중이며 확정 시 안내합니다.'},{question:'시장 데이터는 실시간인가요?',answer:'공급자 연결, 시점과 표시 라이선스가 확인된 범위에서 제공합니다. 지연 여부와 실제 연결 상태를 확인하세요.'},{question:'원문이 변경되거나 서로 다르면 어떻게 하나요?',answer:'출처와 수집 상태를 기록하고 충돌하는 자료는 검토합니다. 검토 중이거나 근거가 부족한 내용은 확정된 사실로 표시하지 않습니다.'}]}/>
- <ClosingBanner title="신뢰할 수 있는 근거로, 더 선명하게.">자료의 맥락과 이전 대비 변화를 원문과 함께 읽어보세요.</ClosingBanner></div></MarketingLayout>;}
+import {ReferencePage} from '@/components/marketing/reference-pages';
+export default function Page(){return <ReferencePage kind="sources"/>;}

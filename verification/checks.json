@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-02T12:21:23.357130+00:00",
+  "checked_at": "2026-10-05T00:29:27.740936+00:00",
   "full_release_suite": true,
   "results": [
     {
@@ -7,7 +7,7 @@
       "status": "PASS",
       "returncode": 0,
       "command": [
-        "C:\\Users\\nosug\\Documents\\Codex\\2026-10-02\\task-3\\signalbrief-independent-20261002\\source\\.venv\\Scripts\\python.exe",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
         "-m",
         "compileall",
         "-q",
@@ -22,11 +22,11 @@
       "status": "PASS",
       "returncode": 0,
       "command": [
-        "C:\\Users\\nosug\\Documents\\Codex\\2026-10-02\\task-3\\signalbrief-independent-20261002\\source\\.venv\\Scripts\\python.exe",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
         "-m",
         "pytest",
         "-q",
-        "--junitxml=C:\\Users\\nosug\\Documents\\Codex\\2026-10-02\\task-3\\signalbrief-independent-20261002\\source\\verification\\pytest.xml"
+        "--junitxml=/workspace/scratch/dbbb0d8f7618/signalbrief/verification/pytest.xml"
       ],
       "log": "verification/backend_tests.log"
     },
@@ -35,7 +35,7 @@
       "status": "PASS",
       "returncode": 0,
       "command": [
-        "C:\\Users\\nosug\\Documents\\Codex\\2026-10-02\\task-3\\signalbrief-independent-20261002\\source\\.venv\\Scripts\\python.exe",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
         "scripts/export_openapi.py"
       ],
       "log": "verification/openapi_export.log"
@@ -45,7 +45,7 @@
       "status": "PASS",
       "returncode": 0,
       "command": [
-        "C:\\Users\\nosug\\Documents\\Codex\\2026-10-02\\task-3\\signalbrief-independent-20261002\\source\\.venv\\Scripts\\python.exe",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
         "-m",
         "ruff",
         "check",
@@ -60,7 +60,7 @@
       "status": "PASS",
       "returncode": 0,
       "command": [
-        "C:\\Users\\nosug\\Documents\\Codex\\2026-10-02\\task-3\\signalbrief-independent-20261002\\runtime\\node22\\node-v22.22.0-win-x64\\npm.cmd",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm",
         "run",
         "lint"
       ],
@@ -71,7 +71,7 @@
       "status": "PASS",
       "returncode": 0,
       "command": [
-        "C:\\Users\\nosug\\Documents\\Codex\\2026-10-02\\task-3\\signalbrief-independent-20261002\\runtime\\node22\\node-v22.22.0-win-x64\\npm.cmd",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm",
         "run",
         "typecheck"
       ],
@@ -82,7 +82,7 @@
       "status": "PASS",
       "returncode": 0,
       "command": [
-        "C:\\Users\\nosug\\Documents\\Codex\\2026-10-02\\task-3\\signalbrief-independent-20261002\\runtime\\node22\\node-v22.22.0-win-x64\\npm.cmd",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm",
         "run",
         "test"
       ],
@@ -93,7 +93,7 @@
       "status": "PASS",
       "returncode": 0,
       "command": [
-        "C:\\Users\\nosug\\Documents\\Codex\\2026-10-02\\task-3\\signalbrief-independent-20261002\\runtime\\node22\\node-v22.22.0-win-x64\\npm.cmd",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm",
         "run",
         "build"
       ],
