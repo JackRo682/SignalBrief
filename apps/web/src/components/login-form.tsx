@@ -8,6 +8,7 @@ import { initializeSupabase } from "@/lib/supabase";
 import { siteOrigin } from "@/lib/site-url";
 import { Icon } from "./icons";
 import {Brand} from "./marketing/layout";
+import {SecurityPicture,PasswordEye} from "./marketing/screenshot-preview";
 
 export type AuthMode = "login" | "signup" | "reset";
 
@@ -19,12 +20,12 @@ const copy: Record<AuthMode, { title: string; description: string; submit: strin
   },
   signup: {
     title: "회원가입",
-    description: "이메일 또는 Google 계정으로 무료 계정을 만들 수 있습니다.",
+    description: "지금 가입하고, 더 나은 투자를 시작하세요.",
     submit: "무료로 시작하기",
   },
   reset: {
     title: "비밀번호 찾기",
-    description: "가입한 이메일 주소로 비밀번호 재설정 링크를 보내드립니다.",
+    description: "가입하신 이메일로 비밀번호 재설정 링크를 보내드립니다. 이메일을 확인하여 새로운 비밀번호를 설정해주세요.",
     submit: "재설정 링크 보내기",
   },
 };
@@ -126,17 +127,17 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
   const text = copy[mode];
 
   return (
-    <section className="login-box" aria-label={text.title} aria-busy={busy}>
-      {mode === "reset" ? <span className="recovery-symbol" aria-hidden="true">✉</span> : <Brand/>}
+    <section className={"login-box v-login-box v-form-"+mode} aria-label={text.title} aria-busy={busy}>
+      {mode === "reset" ? <SecurityPicture mail/> : <Brand/>}
       <span className="eyebrow">
         {mode === "login" ? "WELCOME BACK" : mode === "signup" ? "GET STARTED" : "ACCOUNT RECOVERY"}
       </span>
 
-      {mode === "reset" ? <h1>{text.title}</h1> : <h2>{text.title}</h2>}
+      <h1>{text.title}</h1>
       <p className="muted">{text.description}</p>
 
       <form className="form-stack" onSubmit={submit}>
-        {mode === "signup" && <label className="field"><span>이름 (선택)</span><input autoComplete="name" value={name} onChange={event=>setName(event.target.value)} placeholder="표시 이름" maxLength={80} disabled={busy}/></label>}
+        {mode === "signup" && <label className="field"><span>이름 (선택)</span><input className="v-name-input" autoComplete="name" value={name} onChange={event=>setName(event.target.value)} placeholder="이름을 입력해주세요." maxLength={80} disabled={busy}/></label>}
         <label className="field">
           <span>이메일</span>
           <input
@@ -163,7 +164,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
                 onChange={(event) => setPassword(event.target.value)}
                 minLength={mode === "signup" ? 12 : 1}
                 maxLength={128}
-                placeholder={mode === "signup" ? "12자 이상 입력" : "비밀번호 입력"}
+                placeholder={mode === "signup" ? "비밀번호를 입력해주세요. (12자 이상)" : "비밀번호를 입력하세요."}
                 required
                 disabled={busy}
                 aria-describedby={mode === "signup" ? "password-requirement" : undefined}
@@ -175,16 +176,16 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
                 aria-pressed={show}
                 disabled={busy}
               >
-                {show ? "숨김" : "보기"}
+                <PasswordEye visible={show}/>
               </button>
             </div>
             {mode === "signup" && <p id="password-requirement" className={'password-requirement'+(password.length >= 12 ? ' is-met' : '')}><Icon name={password.length >= 12 ? 'check' : 'shield'} size={14}/>{password.length >= 12 ? '12자 이상 입력했습니다.' : '비밀번호는 12자 이상으로 입력해 주세요.'}</p>}
           </div>
         )}
 
-        {mode === "signup" && <div className="field"><label htmlFor="auth-repeat">비밀번호 확인</label><div className="password-field"><input id="auth-repeat" type={showRepeat?'text':'password'} autoComplete="new-password" required maxLength={128} value={repeat} disabled={busy} onChange={event=>setRepeat(event.target.value)} placeholder="비밀번호를 다시 입력해주세요."/><button type="button" disabled={busy} aria-pressed={showRepeat} aria-label={showRepeat?'확인 비밀번호 숨기기':'확인 비밀번호 보기'} onClick={()=>setShowRepeat(value=>!value)}>{showRepeat?'숨김':'보기'}</button></div></div>}
-        {mode === "login" && <Link className="d-forgot-link" href="/forgot-password">비밀번호 찾기</Link>}
-        {mode === "signup" && <div className="d-signup-ack"><label><input type="checkbox" checked={acknowledged} onChange={event=>setAcknowledged(event.target.checked)} required disabled={busy}/>서비스 이용 안내와 개인정보 처리 안내를 확인했습니다.</label><p><Link href="/terms" target="_blank" rel="noopener noreferrer">서비스 이용 안내</Link><span> · </span><Link href="/privacy" target="_blank" rel="noopener noreferrer">개인정보 처리 안내</Link></p></div>}
+        {mode === "signup" && <div className="field"><label htmlFor="auth-repeat">비밀번호 확인</label><div className="password-field"><input id="auth-repeat" type={showRepeat?'text':'password'} autoComplete="new-password" required maxLength={128} value={repeat} disabled={busy} onChange={event=>setRepeat(event.target.value)} placeholder="비밀번호를 다시 입력해주세요."/><button type="button" disabled={busy} aria-pressed={showRepeat} aria-label={showRepeat?'확인 비밀번호 숨기기':'확인 비밀번호 보기'} onClick={()=>setShowRepeat(value=>!value)}><PasswordEye visible={showRepeat}/></button></div></div>}
+        {mode === "login" && <Link className="d-forgot-link" href="/forgot-password" aria-label="비밀번호 찾기">비밀번호를 잊으셨나요?</Link>}
+        {mode === "signup" && <div className="d-signup-ack"><label><input type="checkbox" checked={acknowledged} onChange={event=>setAcknowledged(event.target.checked)} required disabled={busy}/><span><Link href="/terms" target="_blank" rel="noopener noreferrer">이용약관 안내</Link> 및 <Link href="/privacy" target="_blank" rel="noopener noreferrer">개인정보처리방침</Link>을 확인했습니다.</span></label></div>}
         <button className="button primary full" disabled={busy}>
           {busy ? "처리 중…" : text.submit}
           <Icon name="arrow" size={17} />
@@ -196,6 +197,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
           <button
             type="button"
             className="button google full"
+            aria-label={mode === "signup" ? "Google로 회원가입" : "Google로 로그인"}
             disabled={busy}
             onClick={() => {
               if (mode === "signup" && !acknowledged) {
@@ -206,7 +208,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
             }}
           >
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24"><path fill="#4285f4" d="M22 12.2c0-.7-.1-1.4-.2-2.1H12v4h5.6a4.8 4.8 0 0 1-2.1 3.1v2.6h3.4c2-1.8 3.1-4.5 3.1-7.6Z"/><path fill="#34a853" d="M12 22c2.8 0 5.2-.9 6.9-2.4l-3.4-2.6c-.9.6-2.1 1-3.5 1a6 6 0 0 1-5.6-4.1H2.9v2.7A10 10 0 0 0 12 22Z"/><path fill="#fbbc05" d="M6.4 13.9a6 6 0 0 1 0-3.8V7.4H2.9a10 10 0 0 0 0 9.2Z"/><path fill="#ea4335" d="M12 6c1.6 0 3 .5 4.1 1.6l3.1-3.1A10 10 0 0 0 2.9 7.4l3.5 2.7A6 6 0 0 1 12 6Z"/></svg>
-            {mode === "signup" ? "Google로 회원가입" : "Google로 로그인"}
+            Google로 계속하기
           </button>
       </>}
 
@@ -232,7 +234,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
       {mode === "login" && (
         <div className="auth-links">
           <span>계정이 없으신가요?</span>
-          <Link href="/signup">회원가입하기</Link>
+          <Link href="/signup" aria-label="회원가입하기">회원가입</Link>
         </div>
       )}
 
@@ -240,14 +242,14 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
         <div className="auth-links">
           <span>이미 계정이 있으신가요?</span>
           <Link href="/login">로그인</Link>
-          <Link href="/forgot-password">비밀번호 찾기</Link>
+
         </div>
       )}
 
+      {mode === "reset" && <div className="v-recovery-info"><span>i</span><p>가입하신 이메일 주소로 재설정 링크가 발송됩니다.<br/>이메일이 보이지 않으면 스팸 메일함을 확인해주세요.</p></div>}
       {mode === "reset" && (
         <div className="auth-links">
-          <Link href="/login">로그인으로 돌아가기</Link>
-          <Link href="/signup">회원가입하기</Link>
+          <Link href="/login">← 로그인으로 돌아가기</Link>
         </div>
       )}
 
