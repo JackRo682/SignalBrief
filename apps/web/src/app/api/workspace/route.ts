@@ -23,7 +23,12 @@ export async function POST(req:Request){
   // Only the existing public project key. Every SQL operation also binds auth.uid().
   const db=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false},global:{headers:{Authorization:auth},fetch:(input,init)=>fetch(input,{...init,cache:'no-store',signal:AbortSignal.timeout(20000)})}});
   const user=await db.auth.getUser();if(user.error||!user.data.user)return fail(401,'invalid_or_expired_session');
-  const {data,error}=await db.rpc('sb_workspace',parsed.data);
+  // Search-list controls have a dedicated, bounded RPC so clearing searches
+  // never invokes the older operation that also deletes browsing history.
+  const rpcName=parsed.data.action==='search_delete'||parsed.data.action==='searches_clear'?'sb_workspace_searches':'sb_workspace';
+  const {data,error}=await (parsed.data.action==='onboarding_complete'
+   ?db.rpc('sb_mobile_onboarding',{p:parsed.data.p})
+   :db.rpc(rpcName,parsed.data));
   if(error){const status=/^PT\d{3}$/.test(error.code)?Number(error.code.slice(2)):error.code==='42501'?403:error.code==='PGRST202'?503:422;
    return fail(status,/^[a-z_0-9]{1,80}$/.test(error.message)?error.message:'workspace_request_failed');}
   return Response.json(data,{headers});

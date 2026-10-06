@@ -16,6 +16,26 @@ describe('workspace contracts and deterministic presentation',()=>{
  it('rejects arbitrary actions',()=>expect(workspaceRequest.safeParse({action:'execute_sql',p:{}}).success).toBe(false));
  it('bounds search and pagination',()=>{for(const p of [{q:'x'.repeat(101)},{offset:1001},{limit:51},{days:-1},{sort:'random'}])expect(workspaceRequest.safeParse({action:'catalog',p}).success).toBe(false);});
  it('has exact source lookup distinct from paginated catalog',()=>expect(workspaceRequest.parse({action:'resource',p:{id,kind:'filing'}}).action).toBe('resource'));
+ it('supports search-only deletion and rejects caller identity or broad payloads',()=>{
+  expect(workspaceRequest.parse({action:'search_delete',p:{query:' TEST '}})).toEqual({action:'search_delete',p:{query:'TEST'}});
+  expect(workspaceRequest.parse({action:'searches_clear',p:{}}).action).toBe('searches_clear');
+  for(const p of [{query:''},{query:'x'.repeat(101)},{query:'TEST',user_id:id}])expect(workspaceRequest.safeParse({action:'search_delete',p}).success).toBe(false);
+  expect(workspaceRequest.safeParse({action:'searches_clear',p:{history:true}}).success).toBe(false);
+ });
+ it('accepts bounded onboarding deltas and an empty skip without replacing lists',()=>{
+  const empty={company_ids:[],removed_company_ids:[],positions:[]};
+  expect(workspaceRequest.parse({action:'onboarding_complete',p:empty}).p).toEqual(empty);
+  const p={...empty,company_ids:[id],positions:[{company_id:id,quantity:'1000.00000001',average_cost:'99.50000001',currency:'EUR'}],analytics_consent:false};
+  expect(workspaceRequest.parse({action:'onboarding_complete',p}).p).toEqual(p);
+ });
+ it('rejects unbounded, malformed or caller-owned onboarding fields',()=>{
+  const empty={company_ids:[],removed_company_ids:[],positions:[]};
+  for(const p of [{...empty,user_id:id},{...empty,company_ids:Array(11).fill(id)},{...empty,removed_company_ids:Array(51).fill(id)},{...empty,analytics_consent:'false'},{company_ids:[],positions:[]}])expect(workspaceRequest.safeParse({action:'onboarding_complete',p}).success).toBe(false);
+  for(const patch of [{quantity:'0'},{quantity:'0.00000000'},{quantity:'1e3'},{quantity:'-1'},{quantity:'1.000000001'},{quantity:1},{average_cost:'NaN'},{average_cost:'-1'},{average_cost:'1.000000001'},{currency:'BTC'},{user_id:id}]){
+   const row={company_id:id,quantity:'1.5',average_cost:null,currency:'USD',...patch};
+   expect(workspaceRequest.safeParse({action:'onboarding_complete',p:{...empty,positions:[row]}}).success).toBe(false);
+  }
+ });
  it('supports durable notification settings but not imaginary delivery toggles',()=>{expect(workspaceRequest.safeParse({action:'notification_save',p:{realtime_enabled:true,notify_min_score:.8}}).success).toBe(true);expect(workspaceRequest.safeParse({action:'notification_save',p:{email_enabled:true}}).success).toBe(false);});
  it.each(['javascript:alert(1)','data:text/html,test','http://unsafe.example','https://name:password@example.com','not-a-url'])('rejects unsafe source link %s',url=>expect(safeSource(url)).toBeUndefined());
  it('does not fabricate a chart from missing, single or non-finite values',()=>{expect(chartPoints([])).toBeNull();expect(chartPoints([1])).toBeNull();expect(chartPoints([1,NaN])).toBeNull();expect(chartPoints([4,4])).toBe('0,32 200,32');});
@@ -30,6 +50,23 @@ describe('authenticated workspace BFF',()=>{
  it('rejects unknown root fields and ownership injection',async()=>{for(const v of [{action:'preferences',p:{},user_id:id},{action:'preferences',p:{user_id:id}}])expect((await POST(req(v))).status).toBe(422);expect(mock.rpc).not.toHaveBeenCalled();});
  it('checks Auth.getUser and does not merely decode an unverified token',async()=>{mock.getUser.mockResolvedValueOnce({data:{user:null},error:{message:'bad'}});expect((await POST(req({action:'preferences',p:{}}))).status).toBe(401);expect(mock.rpc).not.toHaveBeenCalled();});
  it('uses caller JWT, public project key, private no-store response and server ownership',async()=>{const r=await POST(req({action:'preferences',p:{}}));expect(r.status).toBe(200);expect(r.headers.get('Cache-Control')).toContain('private, no-store');expect(mock.rpc).toHaveBeenCalledWith('sb_workspace',{action:'preferences',p:{}});expect(mock.createClient.mock.calls[0][2].global.headers.Authorization).toContain('isolated_fixture_token');});
+ it.each([{action:'search_delete',p:{query:'TEST'}},{action:'searches_clear',p:{}}])('dispatches $action only to the scoped search RPC',async value=>{
+  mock.rpc.mockResolvedValue({data:{cleared:true,deleted:1},error:null});
+  const r=await POST(req(value));expect(r.status).toBe(200);expect(mock.rpc).toHaveBeenCalledWith('sb_workspace_searches',value);
+  expect(mock.rpc).not.toHaveBeenCalledWith('sb_workspace',expect.objectContaining({action:'history_clear'}));
+ });
+ it('dispatches onboarding completion to the delta RPC with the exact validated payload',async()=>{
+  const p={company_ids:[id],removed_company_ids:[],positions:[],analytics_consent:false};
+  mock.rpc.mockResolvedValue({data:{id,onboarding_completed:true},error:null});
+  const r=await POST(req({action:'onboarding_complete',p}));
+  expect(r.status).toBe(200);expect(await r.json()).toEqual({id,onboarding_completed:true});
+  expect(mock.rpc).toHaveBeenCalledExactlyOnceWith('sb_mobile_onboarding',{p});
+ });
+ it('returns onboarding persistence errors without reporting completion',async()=>{
+  mock.rpc.mockResolvedValue({data:null,error:{code:'PT422',message:'watchlist_limit_50'}});
+  const r=await POST(req({action:'onboarding_complete',p:{company_ids:[],removed_company_ids:[],positions:[]}}));
+  expect(r.status).toBe(422);expect(await r.json()).toEqual({error:{code:'watchlist_limit_50'}});
+ });
  it.each([['PT409',409],['PT403',403],['PT404',404],['PT429',429],['PGRST202',503]])('preserves safe actionable status %s',async(code,status)=>{mock.rpc.mockResolvedValueOnce({data:null,error:{code,message:'request_failed'}});expect((await POST(req({action:'preferences',p:{}}))).status).toBe(status);});
  it('does not leak database detail in errors',async()=>{mock.rpc.mockResolvedValueOnce({data:null,error:{code:'42501',message:'sensitive table row details'}});const r=await POST(req({action:'preferences',p:{}}));expect(await r.text()).not.toContain('sensitive');});
  it('fails closed when configuration is missing or not Supabase HTTPS',async()=>{vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL','http://127.0.0.1/internal');expect((await POST(req({action:'preferences',p:{}}))).status).toBe(503);expect(mock.createClient).not.toHaveBeenCalled();});

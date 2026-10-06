@@ -1,2 +1,4 @@
 import ReferenceApp from "@/reference/reference-app";
-export default function Page(){return <ReferenceApp screen="today"/>;}
+import ResponsiveScreen from '@/mobile/responsive';
+import MobileToday from '@/mobile/today';
+export default function Page(){return <ResponsiveScreen mobile={<MobileToday/>} desktop={<ReferenceApp screen="today"/>}/>;}

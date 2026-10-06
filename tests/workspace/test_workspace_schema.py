@@ -6,6 +6,7 @@ minimal test doubles; hosted/reference/US/workspace migrations themselves are re
 import importlib.util
 import json
 import os
+from decimal import Decimal
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -176,6 +177,229 @@ def test_history_is_opt_in_clearable_and_isolated(own):
     rpc(own, 'preferences_save', {'version': 1, 'value': {'history_enabled': False}})
     assert rpc(own, 'searches') == []
     assert rpc(own, 'saved_list', {'kind': 'history'})['items'] == []
+
+
+def searches_rpc(db, action, payload=None):
+    return db.execute(text('SELECT public.sb_workspace_searches(:action,cast(:payload AS jsonb))'),
+                      {'action': action, 'payload': json.dumps(payload if payload is not None else {})}).scalar()
+
+
+def test_search_deletion_is_exact_idempotent_and_preserves_visits_and_saves(own):
+    rpc(own, 'preferences_save', {'version': 0, 'value': {'history_enabled': True}})
+    rpc(own, 'visit', {'kind': 'company', 'id': C})
+    rpc(own, 'save', {'kind': 'filing', 'id': F, 'saved': True})
+    rpc(own, 'search_record', {'query': 'TEST'})
+    rpc(own, 'search_record', {'query': 'OTHER'})
+    assert searches_rpc(own, 'search_delete', {'query': 'TEST'}) == {'deleted': 1}
+    assert searches_rpc(own, 'search_delete', {'query': 'TEST'}) == {'deleted': 0}
+    assert [x['query'] for x in rpc(own, 'searches')] == ['OTHER']
+    assert rpc(own, 'saved_list', {'kind': 'history'})['counts']['history'] == 1
+    assert rpc(own, 'saved_list')['counts']['document'] == 1
+    assert searches_rpc(own, 'searches_clear') == {'cleared': True, 'deleted': 1}
+    assert rpc(own, 'searches') == []
+    assert rpc(own, 'saved_list', {'kind': 'history'})['counts']['history'] == 1
+    assert rpc(own, 'saved_list')['counts']['document'] == 1
+
+
+def test_search_controls_cannot_delete_another_account_or_accept_injected_fields(own):
+    rpc(own, 'preferences_save', {'version': 0, 'value': {'history_enabled': True}})
+    rpc(own, 'search_record', {'query': 'TEST'})
+    own.execute(text("SELECT set_config('request.jwt.claim.sub',:u,true)"), {'u': B})
+    assert searches_rpc(own, 'search_delete', {'query': 'TEST'}) == {'deleted': 0}
+    assert searches_rpc(own, 'searches_clear') == {'cleared': True, 'deleted': 0}
+    own.execute(text("SELECT set_config('request.jwt.claim.sub',:u,true)"), {'u': A})
+    assert rpc(own, 'searches')[0]['query'] == 'TEST'
+    for action, payload, code in [
+        ('search_delete', {'query': ''}, 'PT422'),
+        ('search_delete', {'query': 'x' * 101}, 'PT422'),
+        ('search_delete', {'query': 'TEST', 'user_id': B}, 'PT422'),
+        ('searches_clear', {'history': True}, 'PT422'),
+        ('history_clear', {}, 'PT404'),
+    ]:
+        savepoint = own.begin_nested()
+        with pytest.raises(Exception) as caught:
+            searches_rpc(own, action, payload)
+        savepoint.rollback()
+        assert caught.value.orig.sqlstate == code
+    assert rpc(own, 'searches')[0]['query'] == 'TEST'
+
+
+def test_search_controls_deny_anonymous_calls_and_require_mfa(own):
+    own.exec_driver_sql('SET LOCAL ROLE anon')
+    savepoint = own.begin_nested()
+    with pytest.raises(Exception) as caught:
+        searches_rpc(own, 'searches_clear')
+    savepoint.rollback()
+    assert caught.value.orig.sqlstate == '42501'
+    own.exec_driver_sql('RESET ROLE')
+    own.execute(text("insert into auth.mfa_factors values (gen_random_uuid(),:u,'verified')"), {'u': A})
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+    savepoint = own.begin_nested()
+    with pytest.raises(Exception) as caught:
+        searches_rpc(own, 'searches_clear')
+    savepoint.rollback()
+    assert caught.value.orig.sqlstate == 'PT403'
+    own.execute(text("select set_config('request.jwt.claims',:claims,true)"), {'claims': json.dumps({'sub': A, 'aal': 'aal2'})})
+    assert searches_rpc(own, 'searches_clear') == {'cleared': True, 'deleted': 0}
+
+
+def onboarding_rpc(db, payload):
+    return db.execute(text('SELECT public.sb_mobile_onboarding(cast(:payload AS jsonb))'),
+                      {'payload': json.dumps(payload)}).scalar()
+
+
+def user_action(db, action, payload):
+    return db.execute(text('SELECT public.sb_user_action(:action,cast(:payload AS jsonb))'),
+                      {'action': action, 'payload': json.dumps(payload)}).scalar()
+
+
+def seed_onboarding_companies(db):
+    """Additional real-shaped synthetic catalog rows, scoped to this test savepoint."""
+    db.exec_driver_sql('RESET ROLE')
+    db.exec_driver_sql("""
+        INSERT INTO public.companies(id,name,ticker,market,provider,provider_company_id,is_demo,created_at)
+        SELECT '20000000-0000-4000-8000-'||lpad(i::text,12,'0'),
+               'Synthetic onboarding '||i,'ONBOARD'||i,'NASDAQ','sec',lpad(i::text,10,'0'),false,now()
+        FROM generate_series(3,4) i
+    """)
+    db.exec_driver_sql('SET LOCAL ROLE authenticated')
+    return ['20000000-0000-4000-8000-000000000003', '20000000-0000-4000-8000-000000000004']
+
+
+def test_onboarding_deltas_preserve_changes_from_another_screen_and_are_idempotent(own):
+    concurrent, draft = seed_onboarding_companies(own)
+    user_action(own, 'watch_add', {'company_id': C})
+    user_action(own, 'positions', {'rows': [{'company_id': C, 'quantity': '10.25', 'average_cost': '12.5', 'currency': 'EUR'}]})
+    # The onboarding screen has already read its original C selection here.
+    # Another screen adds a different company before the stale draft is saved.
+    user_action(own, 'watch_add', {'company_id': concurrent})
+    user_action(own, 'positions', {'rows': [{'company_id': concurrent, 'quantity': '2.00000001', 'average_cost': '15.75', 'currency': 'GBP'}]})
+    own.execute(text("SELECT set_config('request.jwt.claim.sub',:u,true)"), {'u': B})
+    user_action(own, 'watch_add', {'company_id': C})
+    user_action(own, 'positions', {'rows': [{'company_id': C, 'quantity': '4', 'average_cost': None, 'currency': 'CAD'}]})
+    own.execute(text("SELECT set_config('request.jwt.claim.sub',:u,true)"), {'u': A})
+    payload = {'company_ids': [draft], 'removed_company_ids': [C], 'positions': [
+        {'company_id': draft, 'quantity': '99999999999999999999.12345678', 'average_cost': '99.50000001', 'currency': 'EUR'}
+    ], 'analytics_consent': True}
+    for _ in range(2):
+        result = onboarding_rpc(own, payload)
+        assert result['id'] == A and result['onboarding_completed'] is True
+        assert result['analytics_consent'] is True
+    watch = own.exec_driver_sql('SELECT public.sb_watchlist()').scalar()['items']
+    assert {x['id'] for x in watch} == {concurrent, draft}
+    positions = own.exec_driver_sql('SELECT public.sb_portfolio()').scalar()['positions']
+    by_company = {x['company']['id']: x for x in positions}
+    assert set(by_company) == {C, concurrent, draft}
+    assert Decimal(by_company[C]['quantity']) == Decimal('10.25')
+    assert by_company[C]['currency'] == 'EUR'
+    assert Decimal(by_company[concurrent]['quantity']) == Decimal('2.00000001')
+    assert Decimal(by_company[concurrent]['average_cost']) == Decimal('15.75')
+    assert by_company[concurrent]['currency'] == 'GBP'
+    assert Decimal(by_company[draft]['quantity']) == Decimal('99999999999999999999.12345678')
+    assert Decimal(by_company[draft]['average_cost']) == Decimal('99.50000001')
+    own.execute(text("SELECT set_config('request.jwt.claim.sub',:u,true)"), {'u': B})
+    assert [x['id'] for x in own.exec_driver_sql('SELECT public.sb_watchlist()').scalar()['items']] == [C]
+    other_position = own.exec_driver_sql('SELECT public.sb_portfolio()').scalar()['positions'][0]
+    assert Decimal(other_position['quantity']) == Decimal('4') and other_position['currency'] == 'CAD'
+
+
+def test_onboarding_empty_skip_preserves_existing_lists_costs_and_consent(own):
+    user_action(own, 'profile', {'analytics_consent': True})
+    user_action(own, 'watch_add', {'company_id': C})
+    user_action(own, 'positions', {'rows': [{'company_id': C, 'quantity': '0.00000001', 'average_cost': None, 'currency': 'JPY'}]})
+    before_watch = own.exec_driver_sql('SELECT public.sb_watchlist()').scalar()
+    before_positions = own.exec_driver_sql('SELECT public.sb_portfolio()').scalar()
+    before_alerts = own.exec_driver_sql('SELECT count(*) FROM public.alerts').scalar()
+    for _ in range(2):
+        result = onboarding_rpc(own, {'company_ids': [], 'removed_company_ids': [], 'positions': []})
+        assert result['onboarding_completed'] is True and result['analytics_consent'] is True
+        assert own.exec_driver_sql('SELECT public.sb_watchlist()').scalar() == before_watch
+        assert own.exec_driver_sql('SELECT public.sb_portfolio()').scalar() == before_positions
+        assert own.exec_driver_sql('SELECT count(*) FROM public.alerts').scalar() == before_alerts
+
+
+def test_onboarding_rejects_invalid_payloads_without_partial_changes(own):
+    draft, _ = seed_onboarding_companies(own)
+    user_action(own, 'watch_add', {'company_id': C})
+    user_action(own, 'positions', {'rows': [{'company_id': C, 'quantity': '10', 'average_cost': '12.5', 'currency': 'EUR'}]})
+    before_watch = own.exec_driver_sql('SELECT public.sb_watchlist()').scalar()
+    before_positions = own.exec_driver_sql('SELECT public.sb_portfolio()').scalar()
+    valid = {'company_ids': [draft], 'removed_company_ids': [C], 'positions': []}
+    row = {'company_id': draft, 'quantity': '1.5', 'average_cost': None, 'currency': 'USD'}
+    invalid_payloads = [None, [], 'wrong', {}, {**valid, 'user_id': B},
+        {**valid, 'company_ids': [draft, draft]}, {**valid, 'company_ids': [C]},
+        {**valid, 'company_ids': ['not-a-uuid']}, {**valid, 'company_ids': [1]},
+        {**valid, 'company_ids': ['20000000-0000-4000-8000-000000000002']},
+        {**valid, 'company_ids': [draft] * 11}, {**valid, 'removed_company_ids': [C] * 51},
+        {**valid, 'positions': [row] * 11}, {**valid, 'positions': [row, row]},
+        {**valid, 'positions': [None]}, {**valid, 'analytics_consent': 'true'}]
+    for patch in [{'quantity': '0'}, {'quantity': '0.00000000'}, {'quantity': '-1'},
+                  {'quantity': '1e3'}, {'quantity': '1.000000001'}, {'quantity': '9' * 21},
+                  {'quantity': 1}, {'average_cost': '-1'}, {'average_cost': 'NaN'},
+                  {'average_cost': '1.000000001'}, {'average_cost': 0}, {'currency': 'BTC'},
+                  {'company_id': B}, {'user_id': B}]:
+        invalid_payloads.append({**valid, 'positions': [{**row, **patch}]})
+    for payload in invalid_payloads:
+        savepoint = own.begin_nested()
+        with pytest.raises(Exception) as caught:
+            onboarding_rpc(own, payload)
+        savepoint.rollback()
+        assert caught.value.orig.sqlstate == 'PT422', payload
+    assert own.exec_driver_sql('SELECT public.sb_watchlist()').scalar() == before_watch
+    assert own.exec_driver_sql('SELECT public.sb_portfolio()').scalar() == before_positions
+    assert own.exec_driver_sql('SELECT onboarding_completed FROM public.users').scalar() is False
+
+
+def test_onboarding_does_not_complete_when_a_late_write_fails(own):
+    draft, _ = seed_onboarding_companies(own)
+    user_action(own, 'watch_add', {'company_id': C})
+    own.exec_driver_sql('RESET ROLE')
+    # An isolated test trigger fails during the nested holding upsert, after the
+    # watchlist delta has been written, proving whole-call transaction rollback.
+    own.exec_driver_sql("""
+        CREATE FUNCTION public.synthetic_reject_position() RETURNS trigger LANGUAGE plpgsql AS $$
+        BEGIN RAISE EXCEPTION 'synthetic_write_rejected' USING ERRCODE='PT409'; END $$;
+        CREATE TRIGGER synthetic_reject_position BEFORE INSERT ON public.positions
+        FOR EACH ROW EXECUTE FUNCTION public.synthetic_reject_position()
+    """)
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+    savepoint = own.begin_nested()
+    with pytest.raises(Exception) as caught:
+        onboarding_rpc(own, {'company_ids': [draft], 'removed_company_ids': [C], 'positions': [
+            {'company_id': draft, 'quantity': '1', 'average_cost': None, 'currency': 'USD'}]})
+    savepoint.rollback()
+    assert caught.value.orig.sqlstate == 'PT409'
+    assert [x['id'] for x in own.exec_driver_sql('SELECT public.sb_watchlist()').scalar()['items']] == [C]
+    assert own.exec_driver_sql('SELECT public.sb_portfolio()').scalar()['positions'] == []
+    assert own.exec_driver_sql('SELECT onboarding_completed FROM public.users').scalar() is False
+
+
+def test_onboarding_denies_anonymous_and_unassured_accounts(own):
+    payload = {'company_ids': [], 'removed_company_ids': [], 'positions': []}
+    own.exec_driver_sql('SET LOCAL ROLE anon')
+    savepoint = own.begin_nested()
+    with pytest.raises(Exception) as caught:
+        onboarding_rpc(own, payload)
+    savepoint.rollback()
+    assert caught.value.orig.sqlstate == '42501'
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+    own.execute(text("SELECT set_config('request.jwt.claim.sub',:u,true)"), {'u': T})
+    savepoint = own.begin_nested()
+    with pytest.raises(Exception) as caught:
+        onboarding_rpc(own, payload)
+    savepoint.rollback()
+    assert caught.value.orig.sqlstate == 'PT401'
+    own.execute(text("SELECT set_config('request.jwt.claim.sub',:u,true)"), {'u': A})
+    own.exec_driver_sql('RESET ROLE')
+    own.execute(text("insert into auth.mfa_factors values (gen_random_uuid(),:u,'verified')"), {'u': A})
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+    savepoint = own.begin_nested()
+    with pytest.raises(Exception) as caught:
+        onboarding_rpc(own, payload)
+    savepoint.rollback()
+    assert caught.value.orig.sqlstate == 'PT403'
+    own.execute(text("select set_config('request.jwt.claims',:claims,true)"), {'claims': json.dumps({'sub': A, 'aal': 'aal2'})})
+    assert onboarding_rpc(own, payload)['onboarding_completed'] is True
 
 
 def test_notification_preferences_touch_real_existing_delivery_configuration(own):
