@@ -1,0 +1,80 @@
+name: Workspace production smoke and source package
+on:
+  push:
+    branches: [codex/workspace-smoke-20261006]
+    paths: [.github/workflows/workspace-production-smoke.yml]
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false, fetch-depth: 2}
+      - name: Read-only production HTTP checks and exact source package
+        env:
+          RELEASE_SHA: 82e86ca57f1a0188b423139d7219eefd0ddb3960
+        run: |
+          python - <<'PY'
+          import base64, hashlib, json, os, pathlib, subprocess, time, urllib.error, urllib.request, zipfile
+          sha=os.environ['RELEASE_SHA']; base='https://signalbrief.online'
+          out=pathlib.Path('/tmp/workspace-release');out.mkdir()
+          results=[]
+          def probe(path,method='GET',payload=None,headers=None,absolute=False):
+              raw=None if payload is None else (payload if isinstance(payload,bytes) else json.dumps(payload).encode())
+              req=urllib.request.Request(path if absolute else base+path,data=raw,method=method,headers=headers or {})
+              try:r=urllib.request.urlopen(req,timeout=30)
+              except urllib.error.HTTPError as e:r=e
+              with r:return r.status,dict(r.headers),r.read()
+          def record(name,condition,detail):
+              results.append({'check':name,'status':'PASS' if condition else 'FAIL','detail':detail})
+              (out/'production-smoke.json').write_text(json.dumps({'commit':sha,'base_url':base,'checked_at_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'checks':results,'live_user_login':'not_tested'},indent=2))
+              if not condition:raise AssertionError((name,detail))
+          for _ in range(60):
+              status,_,raw=probe('/api/release')
+              if status==200 and json.loads(raw).get('commit')==sha:break
+              time.sleep(5)
+          record('production_release_identity',status==200 and json.loads(raw).get('commit')==sha,{'http':status,'commit':json.loads(raw).get('commit') if status==200 else None})
+          status,_,raw=probe('/api/auth-config');config=json.loads(raw)
+          key=config.get('publishableKey','');url=config.get('url','')
+          record('public_auth_configuration',status==200 and url=='https://xabzzhtdmqsaqdauthbu.supabase.co' and key.startswith('sb_publishable_'),{'http':status,'public_project_matches':url=='https://xabzzhtdmqsaqdauthbu.supabase.co'})
+          status,_,raw=probe('/api/health/ready')
+          record('live_api_database_ready',status==200 and json.loads(raw).get('database_ready') is True,{'http':status})
+          paths=['/explore','/search','/companies/probe-no-auth','/saved','/settings/account','/settings/security','/settings/notifications','/settings/appearance','/help']
+          for path in paths:
+              status,h,raw=probe(path)
+              record('page_shell:'+path,status==200 and 'text/html' in h.get('Content-Type',h.get('content-type','')) and b'Synthetic User' not in raw,{'http':status,'scope':'anonymous HTML shell only; authenticated DOM separately tested with isolated fixtures'})
+          for path in ['/api/v1/me','/api/v1/portfolio','/api/v1/ops/dashboard']:
+              status,_,_=probe(path);record('private_api_denied:'+path,status==401,{'http':status})
+          tests=[('missing_bearer',{}, {'action':'preferences','p':{}},401),('invalid_bearer',{'Authorization':'Bearer '+'x'*40,'Content-Type':'application/json'}, {'action':'preferences','p':{}},401),('untrusted_origin',{'Authorization':'Bearer '+'x'*40,'Content-Type':'application/json','Origin':'https://untrusted.invalid'}, {'action':'preferences','p':{}},403),('non_json',{'Authorization':'Bearer '+'x'*40,'Content-Type':'text/plain'},b'not-json',415),('oversized_body',{'Authorization':'Bearer '+'x'*40,'Content-Type':'application/json'},b'x'*33000,413)]
+          for name,headers,payload,expected in tests:
+              status,_,_=probe('/api/workspace','POST',payload,headers)
+              record('workspace:'+name,status==expected,{'http':status,'expected':expected})
+          status,_,_=probe(url+'/rest/v1/rpc/sb_workspace','POST',{'action':'preferences','p':{}},{'apikey':key,'Content-Type':'application/json'},True)
+          record('direct_anonymous_rpc_denied',status in (401,403),{'http':status})
+          # Package exact merged source, never local changes, credentials, font files or archived transport.
+          entries=subprocess.check_output(['git','ls-tree','-rz','--full-tree',sha])
+          manifest={}
+          forbidden_suffix={'.woff','.woff2','.ttf','.otf','.eot','.ttc','.pfa','.pfb','.sfd'}
+          with zipfile.ZipFile(out/'SignalBrief-source-82e86ca.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for row in entries.split(b'\0'):
+                  if not row:continue
+                  meta,path=row.split(b'\t',1);mode,kind,oid=meta.split();name=path.decode()
+                  p=pathlib.PurePosixPath(name)
+                  if kind!=b'blob' or mode==b'120000' or p.suffix.lower() in forbidden_suffix:continue
+                  if name.startswith(('verification/','.workspace-release/','.reference-release/')):continue
+                  if p.name.startswith('.env') and p.name!='.env.example':continue
+                  content=subprocess.check_output(['git','cat-file','blob',oid.decode()])
+                  z.writestr('SignalBrief/'+name,content);manifest[name]=hashlib.sha256(content).hexdigest()
+              z.writestr('SignalBrief/DELIVERY_README.txt','Exact source snapshot of '+sha+'\nFont binaries and archived verification/transport are intentionally omitted. Retain the original repository font assets when using this source snapshot. No credentials are included. See docs/WORKSPACE_RELEASE_20261005.md for dependencies, migration order and verification boundaries.\n')
+              z.writestr('SignalBrief/DELIVERY_MANIFEST.json',json.dumps({'commit':sha,'files_sha256':manifest},indent=2))
+          (out/'source-package-sha256.txt').write_text(hashlib.sha256((out/'SignalBrief-source-82e86ca.zip').read_bytes()).hexdigest()+'  SignalBrief-source-82e86ca.zip\n')
+          print(json.dumps({'checks':len(results),'all_passed':all(x['status']=='PASS' for x in results),'commit':sha,'source_files':len(manifest)},indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: workspace-production-delivery
+          path: /tmp/workspace-release/
+          retention-days: 3
