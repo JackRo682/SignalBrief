@@ -10,6 +10,15 @@ export const defaults:Preferences={timezone:'Asia/Seoul',locale:'ko',theme:'ligh
 export const catalogSchema=z.object({items:z.array(resourceSchema),total:z.number(),counts:z.record(z.number()),markets:z.array(z.string()),next_offset:z.number().nullable()});
 export const savedSchema=z.object({items:z.array(resourceSchema),counts:z.object({event:z.number(),document:z.number(),history:z.number()})});
 export const companyDetailSchema=z.object({company:resourceSchema,events:z.array(resourceSchema),documents:z.array(resourceSchema),facts:z.array(z.object({id:z.string(),field:z.string(),value_raw:z.string().nullable(),unit:z.string().nullable(),period:z.string().nullable(),basis:z.string(),quote:z.string(),event_id:z.string()})),watching:z.boolean(),holding:z.boolean()});
+export const documentDetailSchema=z.object({
+ document:resourceSchema,
+ metadata:z.object({mime_type:z.string().nullable(),size_bytes:z.number().int().nonnegative().nullable(),page_count:z.number().int().positive().nullable(),provider:z.string(),publication_timezone:z.string().nullable(),ingested_at:z.string().nullable(),raw_sha256:z.string().nullable()}),
+ summaries:z.array(z.object({event_id:z.string(),title:z.string(),text:z.string()})),
+ facts:z.array(z.object({id:z.string(),field:z.string(),value_raw:z.string().nullable(),unit:z.string().nullable(),period:z.string().nullable(),basis:z.string(),quote:z.string(),event_id:z.string(),origin_event_id:z.string(),source_url:z.string(),location:z.string()})),
+ sections:z.array(z.object({id:z.string(),title:z.string(),location:z.string(),content:z.string(),page_start:z.number().int().positive().nullable(),page_end:z.number().int().positive().nullable()})),
+ sections_total:z.number().int().nonnegative(),next_section_offset:z.number().int().nonnegative().nullable(),
+ events:z.array(resourceSchema),related:z.array(resourceSchema),counts:z.object({summaries:z.number().int().nonnegative(),facts:z.number().int().nonnegative(),events:z.number().int().nonnegative(),related:z.number().int().nonnegative()})
+});
 export const ticketSchema=z.object({id:uuid,title:z.string(),category:z.string(),state:z.enum(['open','in_progress','resolved']),created_at:z.string(),message:z.string().optional(),attachments:z.array(z.object({filename:z.string(),object_path:z.string(),mime_type:z.string()})).optional()});
 export const accountSchema=z.object({created_at:z.string(),bio:z.string(),tickets:z.array(ticketSchema)});
 export const securitySchema=z.object({sessions:z.array(z.object({id:z.string(),created_at:z.string(),last_seen:z.string(),user_agent:z.string().nullable(),aal:z.string().nullable(),current:z.boolean()})),history:z.array(z.object({created_at:z.string(),action:z.string()}))});
@@ -26,6 +35,7 @@ export const workspaceRequest=z.discriminatedUnion('action',[
  z.object({action:z.literal('preferences_save'),p:z.object({value:preferenceValue.partial(),version:z.number().int().nonnegative()}).strict()}),
  z.object({action:z.literal('catalog'),p:z.object({q:z.string().max(100).optional(),market:z.string().max(32).optional(),kind:resourceKind.or(z.literal('')).optional(),days:z.number().int().min(0).max(3650).optional(),offset:z.number().int().min(0).max(1000).optional(),limit:z.number().int().min(1).max(50).optional(),sort:z.enum(['relevance','newest']).optional()}).strict()}),
  z.object({action:z.literal('resource'),p:z.object({kind:resourceKind,id:uuid}).strict()}),
+ z.object({action:z.literal('document_detail'),p:z.object({id:uuid,kind:z.enum(['document','filing']),section_offset:z.number().int().min(0).max(2147483600).optional()}).strict()}),
  z.object({action:z.literal('notifications'),p:empty}),
  z.object({action:z.literal('notification_save'),p:z.object({realtime_enabled:z.boolean().optional(),notify_min_score:z.number().min(0).max(1).optional()}).strict()}),
  z.object({action:z.literal('company'),p:idPayload}),

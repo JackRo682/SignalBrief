@@ -10,6 +10,12 @@ import {type EventCard} from '@/lib/contracts';
 import {vectorBrands} from './brand-paths';
 
 const extraIcons: Record<string, string> = {
+  sun: 'M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10M12 1v3M12 20v3M1 12h3M20 12h3M4 4l2 2M18 18l2 2M4 20l2-2M18 6l2-2',
+  font: 'M2 5h14M9 5v15M17 10h6M20 10v10',
+  motion: 'M14 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4M4 10l6-2 4 3 5 1M11 8l-3 7 5 2-3 5M8 15l-5 6',
+  book: 'M12 5C8 2 3 3 3 3v16s5-1 9 2c4-3 9-2 9-2V3s-5-1-9 2ZM12 5v16',
+  headset: 'M4 14v-2a8 8 0 0 1 16 0v2M3 13h4v7H3ZM17 13h4v7h-4ZM19 20c0 2-4 2-7 2',
+  wrench: 'M14 4a6 6 0 0 0-7 8L2 18a3 3 0 0 0 4 4l6-6a6 6 0 0 0 8-7l-4 4-4-4Z',
   person: 'M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8M4 21v-2a8 8 0 0 1 16 0v2Z',
   back: 'm14 5-7 7 7 7', chevron: 'm9 5 7 7-7 7',
   filter: 'M4 6h16M7 12h10M10 18h4M7 3v6M16 9v6M12 15v6',

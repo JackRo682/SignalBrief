@@ -1,6 +1,6 @@
 // @vitest-environment node
 import {describe,it,expect,vi,beforeEach,afterEach} from 'vitest';
-import {workspaceRequest,preferenceValue,defaults,chartPoints,safeSource,resourceHref,resourceSchema} from '../src/workspace/contracts';
+import {workspaceRequest,preferenceValue,defaults,chartPoints,safeSource,resourceHref,resourceSchema,documentDetailSchema} from '../src/workspace/contracts';
 import {searchHelp,helpArticles as articles} from '../src/workspace/help-content';
 import {POST} from '../src/app/api/workspace/route';
 const mock=vi.hoisted(()=>({getUser:vi.fn(),rpc:vi.fn(),createClient:vi.fn()}));
@@ -16,6 +16,16 @@ describe('workspace contracts and deterministic presentation',()=>{
  it('rejects arbitrary actions',()=>expect(workspaceRequest.safeParse({action:'execute_sql',p:{}}).success).toBe(false));
  it('bounds search and pagination',()=>{for(const p of [{q:'x'.repeat(101)},{offset:1001},{limit:51},{days:-1},{sort:'random'}])expect(workspaceRequest.safeParse({action:'catalog',p}).success).toBe(false);});
  it('has exact source lookup distinct from paginated catalog',()=>expect(workspaceRequest.parse({action:'resource',p:{id,kind:'filing'}}).action).toBe('resource'));
+ it('bounds exact document-detail reads and rejects caller identity and invalid pagination',()=>{
+  expect(workspaceRequest.parse({action:'document_detail',p:{id,kind:'document',section_offset:12}}).p).toEqual({id,kind:'document',section_offset:12});
+  for(const patch of [{id:'not-an-id'},{kind:'company'},{section_offset:-1},{section_offset:1.5},{section_offset:2147483601},{section_offset:'12'},{user_id:id}])expect(workspaceRequest.safeParse({action:'document_detail',p:{id,kind:'filing',...patch}}).success).toBe(false);
+ });
+ it('keeps unknown source metadata null and exact financial values as strings',()=>{
+  const source={id,kind:'filing',title:'Synthetic source',summary:'',company_id:id,company_name:'Synthetic',ticker:'TEST',market:'NASDAQ',source_url:'https://www.sec.gov/test.htm',published_at:null,publication_precision:'date',category:'10-K',is_saved:false};
+  const data={document:source,metadata:{mime_type:null,size_bytes:null,page_count:null,provider:'sec',publication_timezone:null,ingested_at:null,raw_sha256:null},summaries:[],facts:[{id,field:'revenue',value_raw:'999999999999.12345678',unit:'USD',period:null,basis:'reported',quote:'Synthetic cited quote',event_id:id,origin_event_id:id,source_url:source.source_url,location:'Synthetic section'}],sections:[],sections_total:0,next_section_offset:null,events:[],related:[],counts:{summaries:0,facts:1,events:0,related:0}};
+  expect(documentDetailSchema.parse(data).facts[0].value_raw).toBe('999999999999.12345678');
+  expect(documentDetailSchema.safeParse({...data,metadata:{...data.metadata,page_count:0}}).success).toBe(false);
+ });
  it('supports search-only deletion and rejects caller identity or broad payloads',()=>{
   expect(workspaceRequest.parse({action:'search_delete',p:{query:' TEST '}})).toEqual({action:'search_delete',p:{query:'TEST'}});
   expect(workspaceRequest.parse({action:'searches_clear',p:{}}).action).toBe('searches_clear');
@@ -61,6 +71,14 @@ describe('authenticated workspace BFF',()=>{
   const r=await POST(req({action:'onboarding_complete',p}));
   expect(r.status).toBe(200);expect(await r.json()).toEqual({id,onboarding_completed:true});
   expect(mock.rpc).toHaveBeenCalledExactlyOnceWith('sb_mobile_onboarding',{p});
+ });
+ it('dispatches document-detail reads only to their reviewed projection RPC',async()=>{
+  const p={id,kind:'document',section_offset:12};mock.rpc.mockResolvedValue({data:{sections:[],sections_total:12,next_section_offset:null},error:null});
+  const r=await POST(req({action:'document_detail',p}));expect(r.status).toBe(200);expect(mock.rpc).toHaveBeenCalledExactlyOnceWith('sb_document_detail',{p});expect(r.headers.get('Cache-Control')).toContain('private, no-store');
+ });
+ it('preserves hidden-document denial without exposing provider metadata',async()=>{
+  mock.rpc.mockResolvedValue({data:null,error:{code:'PT404',message:'resource_not_available',details:'private provider content'}});
+  const r=await POST(req({action:'document_detail',p:{id,kind:'document'}}));expect(r.status).toBe(404);expect(await r.json()).toEqual({error:{code:'resource_not_available'}});
  });
  it('returns onboarding persistence errors without reporting completion',async()=>{
   mock.rpc.mockResolvedValue({data:null,error:{code:'PT422',message:'watchlist_limit_50'}});

@@ -28,6 +28,7 @@ export async function POST(req:Request){
   const rpcName=parsed.data.action==='search_delete'||parsed.data.action==='searches_clear'?'sb_workspace_searches':'sb_workspace';
   const {data,error}=await (parsed.data.action==='onboarding_complete'
    ?db.rpc('sb_mobile_onboarding',{p:parsed.data.p})
+   :parsed.data.action==='document_detail'?db.rpc('sb_document_detail',{p:parsed.data.p})
    :db.rpc(rpcName,parsed.data));
   if(error){const status=/^PT\d{3}$/.test(error.code)?Number(error.code.slice(2)):error.code==='42501'?403:error.code==='PGRST202'?503:422;
    return fail(status,/^[a-z_0-9]{1,80}$/.test(error.message)?error.message:'workspace_request_failed');}
