@@ -1,0 +1,33 @@
+name: Workspace schema security replay
+on:
+  push:
+    branches: [main, codex/workspace-reviewed-20261006]
+    paths: ['supabase/**', 'tests/workspace/**', '.github/workflows/workspace-schema.yml']
+  pull_request:
+    paths: ['supabase/**', 'tests/workspace/**', '.github/workflows/workspace-schema.yml']
+permissions:
+  contents: read
+jobs:
+  workspace-postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env: {POSTGRES_USER: postgres, POSTGRES_PASSWORD: test-only, POSTGRES_DB: workspace_test}
+        ports: ['5432:5432']
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      SB_TEST_WORKSPACE_POSTGRES_URL: postgresql+psycopg://postgres:test-only@localhost:5432/workspace_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install -e '.[dev]'
+      - run: python -m ruff check tests/workspace
+      - run: python -m pytest tests/workspace -q --junitxml=workspace-replay.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: workspace-schema-replay
+          path: workspace-replay.xml

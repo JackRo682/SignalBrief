@@ -43,7 +43,7 @@ jobs:
             sleep 1
           done
           curl -fsS http://127.0.0.1:3000/login > /dev/null
-          npm run test:e2e -- performance.spec.ts auth-navigation.spec.ts marketing-pages.spec.ts ui-refinement.spec.ts responsive-design.spec.ts
+          npm run test:e2e -- performance.spec.ts auth-navigation.spec.ts marketing-pages.spec.ts ui-refinement.spec.ts responsive-design.spec.ts workspace-pages.spec.ts
       - uses: actions/upload-artifact@v4
         if: always()
         with:

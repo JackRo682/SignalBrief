@@ -70,33 +70,70 @@ an idempotency key and daily quota. Attachment policy requires both own account 
 ticket; attached metadata must match the stored object. Only the existing server-side
 admin role can review other users' requests and change their state. Session queries return
 no Auth secrets, no access tokens and no inferred device geography. TOTP is enabled only
-after code verification. Last-provider unlinking is blocked. Already-issued access tokens
-may remain valid until expiry after other-session revocation, as shown in the interface.
+after code verification. An enrolled user must complete AAL2 step-up on later logins;
+a front-end challenge, the PostgREST pre-request hook, explicit RPC checks and restrictive
+RLS on private tables/Storage enforce this. Raw support uploads are serialized against
+the owned ticket and limited to three objects, including uploads not yet attached.
+Last-provider unlinking is blocked. Already-issued access tokens may remain valid until
+expiry after other-session revocation, as shown in the interface.
 
 ## Migration, tests and rollback
 
-Apply `supabase/workspace-migrations/20261005094500_workspace_pages.sql` once after existing
-hosted/reference/US migrations, before deploying this app revision. Do not run disposable
-schema tests against production. `tests/workspace/test_workspace_schema.py` rejects
-anything other than loopback databases ending `_test`. It replays frozen application
-DDL and hosted/reference/US/workspace SQL against disposable Auth/Storage/Vault stubs.
-Actual Supabase OAuth/SMTP and third-party price delivery still require live account checks.
+Apply these files in order, once after the existing hosted/reference/US migrations,
+before deploying this app revision:
+
+1. `supabase/workspace-migrations/20261005094000_workspace_mfa.sql`
+2. `supabase/workspace-migrations/20261005094500_workspace_pages.sql`
+3. `supabase/workspace-migrations/20261005095000_workspace_guards.sql`
+
+All three were applied through the Management API to the existing project on 2026-10-06.
+Post-application inspection confirmed all six function bodies match the tested source,
+all six private tables have RLS, the support bucket is private with a 5 MB limit,
+19 restrictive MFA policies are installed, and anonymous workspace RPC execution is denied.
+The original notification-preference trigger remains alongside the new delivery gate.
+
+Do not run disposable schema tests against production.
+`tests/workspace/test_workspace_schema.py` rejects anything other than loopback databases
+ending `_test`. It replays frozen application DDL and hosted/reference/US/workspace SQL
+against disposable Auth/Storage/Vault stubs. Actual Supabase OAuth/SMTP and third-party
+price delivery still require live account checks.
 
 Run `npm run lint`, `npm run typecheck`, `npm test`, `npm run build` from `apps/web`.
 Run `workspace-pages.spec.ts` with the existing isolated Next E2E configuration on desktop
 and mobile. Synthetic browser/SQL fixtures live only in test files; no production seeding.
 Run existing backend and auth/public/navigation regressions as well.
 
-Rollback the web deployment/commit without dropping the new tables: user bookmarks,
-preferences and support requests must be retained. To suspend only the new notification
-filter during a reviewed rollback, drop `sb_workspace_notification_preferences` trigger;
-keep its data and function intact. Never restore production fixtures or reset user records.
+Rollback only to an MFA-aware web revision once any user enrolls a factor. Do not remove
+server assurance checks to make an older client work. Retain the MFA challenge provider
+and related API handling when reverting an individual page. Never drop the new tables:
+user bookmarks, preferences and support requests must be retained. To suspend only the
+new notification filter during a reviewed rollback, drop the
+`sb_workspace_notification_preferences` trigger; keep its data and function intact.
+Never restore production fixtures or reset user records.
 
-## Verification status
+## Verification status — 2026-10-06
 
-Local TypeScript check, lint (warnings only), 230 web unit tests and a Next production
-build passed during implementation. The local managed Chromium blocks navigation, so
-browser screenshots and journeys run in GitHub Actions instead. Hosted-schema and browser
-results must be reviewed before merge/deploy; this document does not claim they passed
-until their run reports exist. No user password, session revocation, MFA enrollment,
-account deletion or other destructive action is executed against a live user during QA.
+Release gate: https://github.com/JackRo682/SignalBrief/actions/runs/37426044198
+Published application source: `3067ca820f8962f04fe188037d9928b59cefd9f0`.
+
+* `python scripts/verify.py --full`: all eight checks PASS on GitHub Actions.
+* Web: TypeScript PASS; 230 unit tests PASS; production build PASS; lint zero errors
+  with five pre-existing location-assignment warnings.
+* Python: 256 PASS, two conditional legacy database checks skipped in this particular
+  workspace-database job. No skips in the 13-case workspace PostgreSQL replay.
+* Browser: 60/60 PASS, zero failed/flaky/skipped, covering desktop and mobile. Sixteen
+  cases exercise the new workspace journeys, including navigation, persistent saves,
+  preference failures, support requests, private data and MFA step-up. All nine screens
+  were captured as actual DOM screenshots at both viewport sizes.
+* The existing legacy PostgreSQL job and new workspace replay workflow also run on the
+  final pull request; see their actual run status rather than treating skipped tests as PASS.
+
+Local full verification was separately attempted: local Ruff was unavailable and that
+local script correctly exited nonzero. The complete remote gate above had Ruff installed
+and passed; local and remote outcomes are not conflated.
+
+Browser/SQL fixtures are synthetic and isolated. Google OAuth redirects, SMTP delivery,
+live TOTP enrollment/revocation and licensed market-data delivery were not exercised with
+real user credentials. No live user password, session revocation, factor enrollment,
+account deletion, portfolio mutation or production data seeding was performed during QA.
+Production deployment identity and anonymous HTTP smoke results are recorded separately.
