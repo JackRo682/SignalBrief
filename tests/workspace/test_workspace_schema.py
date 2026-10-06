@@ -318,6 +318,44 @@ def test_onboarding_empty_skip_preserves_existing_lists_costs_and_consent(own):
         assert own.exec_driver_sql('SELECT count(*) FROM public.alerts').scalar() == before_alerts
 
 
+def test_onboarding_skip_restores_scope_and_legacy_onboarding_keeps_its_default_alert(own):
+    first, second = seed_onboarding_companies(own)
+    own.execute(text("SELECT set_config('signalbrief.skip_default_alert_user',:scope,true)"), {'scope': 'synthetic-prior-scope'})
+    onboarding_rpc(own, {'company_ids': [], 'removed_company_ids': [], 'positions': []})
+    assert own.exec_driver_sql('SELECT count(*) FROM public.alerts').scalar() == 0
+    assert own.exec_driver_sql("SELECT current_setting('signalbrief.skip_default_alert_user',true)").scalar() == 'synthetic-prior-scope'
+    own.execute(text("SELECT set_config('request.jwt.claim.sub',:u,true)"), {'u': B})
+    # A mobile skip for A must not change the existing legacy behavior for B.
+    user_action(own, 'onboarding', {'company_ids': [C, first, second], 'analytics_consent': False})
+    alerts = own.exec_driver_sql('SELECT name,enabled FROM public.alerts').all()
+    assert alerts == [('내 종목의 중요한 변화', True)]
+
+
+def test_onboarding_explicit_empty_completion_still_creates_the_normal_default(own):
+    payload = {'company_ids': [], 'removed_company_ids': [], 'positions': [], 'analytics_consent': False}
+    for _ in range(2):
+        assert onboarding_rpc(own, payload)['onboarding_completed'] is True
+        assert own.exec_driver_sql('SELECT count(*) FROM public.alerts').scalar() == 1
+
+
+def test_onboarding_repeated_completion_does_not_restore_a_removed_alert(own):
+    payload = {'company_ids': [], 'removed_company_ids': [], 'positions': [], 'analytics_consent': False}
+    onboarding_rpc(own, payload)
+    alert_id = own.exec_driver_sql('SELECT id FROM public.alerts').scalar()
+    assert alert_id is not None
+    user_action(own, 'alert_remove', {'id': alert_id})
+    for value in [{'company_ids': [], 'removed_company_ids': [], 'positions': []}, payload]:
+        assert onboarding_rpc(own, value)['onboarding_completed'] is True
+        assert own.exec_driver_sql('SELECT count(*) FROM public.alerts').scalar() == 0
+
+
+def test_onboarding_skip_preserves_an_existing_disabled_alert_exactly(own):
+    user_action(own, 'alert_save', {'name': 'Synthetic private alert', 'event_types': ['earnings'], 'min_score': 0.9, 'enabled': False})
+    before = own.exec_driver_sql('SELECT to_jsonb(a) FROM public.alerts a').all()
+    onboarding_rpc(own, {'company_ids': [], 'removed_company_ids': [], 'positions': []})
+    assert own.exec_driver_sql('SELECT to_jsonb(a) FROM public.alerts a').all() == before
+
+
 def test_onboarding_rejects_invalid_payloads_without_partial_changes(own):
     draft, _ = seed_onboarding_companies(own)
     user_action(own, 'watch_add', {'company_id': C})

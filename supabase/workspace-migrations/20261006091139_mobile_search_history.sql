@@ -46,6 +46,25 @@ GRANT EXECUTE ON FUNCTION public.sb_workspace_searches(text, jsonb) TO authentic
 COMMENT ON FUNCTION public.sb_workspace_searches(text, jsonb) IS
   'Intentional per-user mutation API: current Auth identity, MFA, rate limits and exact owner predicates; no browsing history deletion.';
 
+-- Keep the legacy onboarding default, except for an explicitly scoped mobile
+-- skip. The transaction-local marker is restored by that RPC after its update.
+-- It controls only this optional default, never authentication or authorization.
+CREATE OR REPLACE FUNCTION app_private.sb_default_alert()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+DECLARE threshold double precision;
+BEGIN
+  IF NEW.onboarding_completed AND NOT OLD.onboarding_completed
+     AND coalesce(current_setting('signalbrief.skip_default_alert_user', true), '') <> NEW.id
+     AND NOT EXISTS (SELECT 1 FROM public.alerts WHERE user_id = NEW.id) THEN
+    SELECT CASE alert_frequency WHEN 'essential' THEN 0.7 WHEN 'normal' THEN 0.4 ELSE 0.0 END
+      INTO threshold FROM public.user_preferences WHERE user_id = NEW.id;
+    INSERT INTO public.alerts(id, user_id, name, event_types, min_score, enabled, created_at)
+      VALUES(gen_random_uuid()::text, NEW.id, '내 종목의 중요한 변화', '[]'::json, coalesce(threshold, 0.7), true, now());
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
 -- Complete onboarding from explicit deltas. A stale screen may not replace
 -- the whole watchlist/portfolio and remove another screen's recent additions.
 CREATE FUNCTION public.sb_mobile_onboarding(p jsonb)
@@ -60,6 +79,9 @@ DECLARE
   item jsonb;
   add_ids text[];
   remove_ids text[];
+  skip_default_alert boolean;
+  prior_alert_scope text;
+  result jsonb;
 BEGIN
   IF u IS NULL OR NOT EXISTS (SELECT 1 FROM auth.users WHERE id = u::uuid) THEN
     RAISE EXCEPTION 'authentication_required' USING ERRCODE = 'PT401';
@@ -125,10 +147,20 @@ BEGIN
   IF jsonb_array_length(p->'positions') > 0 THEN
     PERFORM public.sb_user_action('positions', jsonb_build_object('rows', p->'positions'));
   END IF;
-  UPDATE public.users SET onboarding_completed = true,
-    analytics_consent = CASE WHEN p ? 'analytics_consent' THEN (p->>'analytics_consent')::boolean ELSE analytics_consent END,
-    updated_at = now() WHERE id = u;
-  RETURN public.sb_initialize_profile();
+  skip_default_alert := cardinality(add_ids) = 0 AND cardinality(remove_ids) = 0
+    AND jsonb_array_length(p->'positions') = 0 AND NOT (p ? 'analytics_consent');
+  IF skip_default_alert THEN
+    prior_alert_scope := current_setting('signalbrief.skip_default_alert_user', true);
+    PERFORM set_config('signalbrief.skip_default_alert_user', u, true);
+  END IF;
+  UPDATE public.users AS usr SET onboarding_completed = true,
+    analytics_consent = CASE WHEN p ? 'analytics_consent' THEN (p->>'analytics_consent')::boolean ELSE usr.analytics_consent END,
+    updated_at = now() WHERE usr.id = u
+    RETURNING to_jsonb(usr) || jsonb_build_object('is_admin', app_private.sb_is_admin(), 'demo_mode', false) INTO result;
+  IF skip_default_alert THEN
+    PERFORM set_config('signalbrief.skip_default_alert_user', coalesce(prior_alert_scope, ''), true);
+  END IF;
+  RETURN result;
 END;
 $$;
 REVOKE ALL ON FUNCTION public.sb_mobile_onboarding(jsonb) FROM PUBLIC, anon;
