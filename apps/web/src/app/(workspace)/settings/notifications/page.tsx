@@ -1,2 +1,2 @@
-import Screen from "@/workspace/account";
+import Screen from "@/workspace/notifications";
 export default function Page(){return <Screen/>;}

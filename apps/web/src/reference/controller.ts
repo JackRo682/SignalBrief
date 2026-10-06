@@ -118,7 +118,7 @@ export function mountReference(root:HTMLElement,screen:string,ctx:ReferenceConte
   let serial=0,delay:ReturnType<typeof setTimeout>;const render=async(q:string)=>{const version=++serial;try{const data=list(await api(`/v1/companies?q=${encodeURIComponent(q)}&limit=30`));if(version!==serial||!d.open)return;html('#dialogSearchResults',data.map(c=>`<a class="searchOption" href="/companies/${E(c.id)}">${companyLogo(c)}<span><strong>${E(c.name)}</strong><small>${E(c.ticker)} · ${E(c.market)}</small></span>${icon('arrow',16)}</a>`).join('')||empty('검색 결과가 없습니다.'));}catch(e){toast(e);}};
   const input=$<HTMLInputElement>('#dialogSearch');input.focus();input.addEventListener('input',()=>{clearTimeout(delay);delay=setTimeout(()=>{void render(input.value);},300);timers.push(delay);},{signal:abort.signal});await render(term);
  }
- search?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();void run(()=>showSearch(search.value));}},{signal:abort.signal});
+ search?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();ctx.go('/search?q='+encodeURIComponent(search.value));}},{signal:abort.signal});
  window.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();void run(()=>showSearch());}},{signal:abort.signal});
  delegate('click','[data-open-status]',()=>ctx.go('/status'));
  delegate('click','[data-share]',b=>{void run(async()=>{await navigator.clipboard.writeText(location.origin+location.pathname+location.search);toast('현재 페이지 주소를 복사했습니다.');},b);});
