@@ -2,10 +2,17 @@
 
 ## Release status
 
-This is the implementation and verification draft for the mobile work continued from
-`82e86ca` on the existing GitHub project. Final commit, GitHub Actions run URLs, remote
-production deployment verification must be added after that operation completes. The
-reviewed migration has been applied; the checks below do not yet claim a web deployment.
+The mobile work continues from `82e86ca` on the existing GitHub project. The reviewed
+migration is applied, full repository release checks pass at the recorded `bd16c6a`
+snapshot, and all eight new mobile browser journeys pass. Two existing performance
+journeys still require the CI rerun described below. This snapshot does not claim a
+completed production web deployment.
+
+[PR #10](https://github.com/JackRo682/SignalBrief/pull/10), its
+[checks](https://github.com/JackRo682/SignalBrief/pull/10/checks) and linked deployment
+records are the living evidence for the final head, CI outcome and deployed revision.
+Use those records for later results rather than treating this document's snapshot as the
+final release status.
 
 The ten supplied PNGs are the mobile visual references. The implementation uses live DOM,
 interactive controls and responsive CSS. Financial rows, dates, prices, balances, source
@@ -107,7 +114,8 @@ Normal completion, including an explicit consent value with no stocks, retains t
 default-alert behavior. Repeated completion does not recreate an alert a user removed.
 The completed profile is returned directly from the update without rerunning initialization.
 
-Apply the new migration once, after the existing hosted/reference/US/workspace migrations:
+The reviewed migration was applied after the existing hosted/reference/US/workspace
+migrations:
 
 `supabase/workspace-migrations/20261006091139_mobile_search_history.sql`
 
@@ -115,9 +123,11 @@ Its filename was generated with Supabase CLI 2.119.0. It adds the two scoped fun
 their explicit authenticated execution grants, the bounded skip condition in the existing
 `app_private.sb_default_alert` trigger function and a schema reload notification. Anonymous
 execution of the new RPCs is revoked; existing tables and policies are not replaced, and the
-onboarding trigger remains installed and enabled. Review and successful
-disposable PostgreSQL replay precede application to the existing project. No production
-fixtures or real-user mutations are part of verification.
+onboarding trigger remains installed and enabled. Successful disposable PostgreSQL replay
+and review preceded application as ledger `20261006095100_mobile_search_history`.
+Read-only catalog checks confirmed security-definer functions with empty search paths,
+anonymous execution denied and authenticated execution granted. No production fixtures or
+real-user mutations were part of verification.
 
 ## Data and provider boundaries
 
@@ -140,50 +150,42 @@ unavailable and policy-blocked states. This release does not activate unrestrict
 generative financial advice, new model budgets, market licenses, automatic broker import,
 scheduled ingestion, investment email delivery or background push.
 
-## Verification evidence at draft time
+## Verification evidence
 
 | Check | Observed result | Boundary |
 |---|---|---|
-| Targeted Vitest: mobile flow and workspace contract/BFF tests | 2 files, 62 tests passed | Latest targeted run includes saved conversation navigation, duplicate reconciliation, deletion failure handling, event/company/period isolation and onboarding/search payloads |
-| Prior broader targeted Vitest: mobile flow, workspace, reference, publication, decimal helper | 5 files, 107 tests passed | Completed before the final seven timeline/question regression cases were added |
-| Web TypeScript | Passed | Re-run after the final research-screen changes |
-| Scoped ESLint: event, timeline, questions and mobile-flow tests | Passed, zero errors/warnings | Broader release lint remains a separate gate |
-| First actual workspace PostgreSQL CI replay | 20 passed, 1 failed | [Run 37444196478](https://github.com/JackRo682/SignalBrief/actions/runs/37444196478), job `112204939183`: skip unexpectedly created a default alert; the failing assertion was retained and the trigger behavior was corrected |
-| Corrected workspace PostgreSQL replay suite | **25 passed**, zero failures/skips; workspace Ruff passed | [Run 37444961579, job 112207454995](https://github.com/JackRo682/SignalBrief/actions/runs/37444961579/job/112207454995), tested commit `d0a86108de29834c62d88373e4b8e92006844fa5`; adds normal legacy/mobile default-alert behavior, restored transaction scope, removed-alert idempotency and exact preservation of an existing disabled alert |
-| Final full release gate / browser journeys / production build | Pending final recorded run | Append actual run links and results before release sign-off |
-| Remote migration | Applied successfully to the existing Supabase project | Ledger `20261006095100_mobile_search_history`; both new RPCs retain empty search paths, deny anonymous execution and allow authenticated execution |
-| Production web deployment | Pending recorded execution | No success inferred from a preview build or source changes |
+| Full repository release checks | **Passed** at `bd16c6a`; **294 web unit tests passed** | The browser gate is separate; see [PR checks](https://github.com/JackRo682/SignalBrief/pull/10/checks) for the final head |
+| Desktop/mobile browser suite | **66 passed, 2 failed, 8 skipped** | [Run 37447539525](https://github.com/JackRo682/SignalBrief/actions/runs/37447539525); all **8 new mobile journeys passed** |
+| Remaining browser failures | Two performance journeys | Next's development status badge intercepted clicks on the mobile Home tab; the next CI run is pending |
+| Workspace PostgreSQL replay | **25 passed**, zero failures/skips; workspace Ruff passed | [Run 37444961579, job 112207454995](https://github.com/JackRo682/SignalBrief/actions/runs/37444961579/job/112207454995); PostgreSQL 17, tested migration unchanged |
+| Remote migration | **Applied successfully** | Ledger `20261006095100_mobile_search_history`; scoped grants and function security verified |
+| Production web deployment | No completed deployment recorded in this snapshot | Final evidence belongs to [PR #10's linked deployment records](https://github.com/JackRo682/SignalBrief/pull/10) |
 
-The SQL replay additions cover exact search deletion, search-only clearing, preservation
-of visits/bookmarks, account ownership, anonymous denial and MFA. Onboarding cases cover
-stale-screen interleaving with another screen's additions, exact decimals, empty skip,
-idempotency, malformed inputs, owner isolation and whole-call rollback after a deliberately
-failed late holding write. The empty-skip alert assertion was not weakened after its real
-PostgreSQL failure. This is not a claimed simultaneous-connection concurrency run.
+The prepared `next.config.ts` correction disables only the development status badge when
+`CI=true` outside production. Compile/runtime error overlays remain enabled. The two
+performance journeys need a passing rerun; this document does not infer that result from
+the configuration change.
 
-Local PostgreSQL execution was unavailable in this workspace. The replay fixture requires
-`SB_TEST_WORKSPACE_POSTGRES_URL` pointing to a loopback disposable database whose name ends
-in `_test`; it must never run against the production project. Synthetic browser/unit/SQL
-fixtures remain exclusively in tests.
+The SQL suite covers search-only deletion, visits/bookmarks preservation, ownership,
+anonymous denial and MFA. Onboarding coverage includes exact decimals, empty skip,
+idempotency, malformed input, interleaved unrelated account edits and rollback after a late
+holding failure. Alert cases verify skipped completion, normal legacy/mobile defaults,
+restored transaction scope and preservation of existing or deliberately removed alerts.
+The original failing empty-skip assertion was retained. These are transaction replay tests,
+not a simultaneous-connection concurrency claim.
 
-The completed corrected job logs were retrieved and checked: PostgreSQL 17 replay reported
-`25 passed, 1 warning in 0.63s`. The warning was the existing Starlette/AnyIO deprecation.
-The checked-out commit matched the current migration source; its SHA-256 is
+The applied migration matches the replayed source, SHA-256
 `3188438d8c2c6b52aa8a4b9e9996147758f47f0997f08f29ef0e2e14722809b3`.
-The full browser gate still requires its question-control locator correction and rerun.
-The exact migration was then applied successfully to the existing project as
-`20261006095100_mobile_search_history`. Read-only catalog checks confirmed the new RPCs
-are security-definer functions with empty search paths, anonymous execution denied and
-authenticated execution granted. No production fixture data was written. The web release
-remains pending the corrected browser run and production deployment.
+The job reported one existing Starlette/AnyIO deprecation warning. SQL fixtures require
+`SB_TEST_WORKSPACE_POSTGRES_URL` to reference a loopback disposable database ending in
+`_test`; browser, unit and SQL fixtures never target production accounts or providers.
 
 ## Release and rollback notes
 
-Run the repository full verification and desktop/mobile browser gates against the final
-commit, apply only the reviewed missing migration, then verify the deployed commit and
-public/authentication HTTP behavior. Add exact CI and deployment identifiers here after
-completion. Live OAuth consent, SMTP delivery, licensed-provider delivery and real-user
-mutation checks must be reported separately from isolated test results.
+Complete the corrected browser gate and verify the deployed revision and public/authentication
+HTTP behavior. The reviewed migration is already applied and must not be reapplied as a new
+change. Record final CI and deployment evidence on PR #10. Live OAuth consent, SMTP delivery,
+licensed-provider delivery and real-user mutation checks remain separate from isolated tests.
 
 A page rollback should target an MFA-aware prior web revision. The new helper functions
 can remain installed while an older frontend runs; do not delete user histories,
