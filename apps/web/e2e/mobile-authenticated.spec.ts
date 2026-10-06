@@ -1,4 +1,5 @@
 import {expect, test, type Page, type TestInfo} from '@playwright/test';
+import {writeFile} from 'node:fs/promises';
 import {companies, companyId, documents, eventId, eventTitle, events, mobileFixture, type MobileFixture} from './mobile-fixture';
 
 // Runs against the local CI web process with intercepted, isolated synthetic data.
@@ -15,7 +16,28 @@ async function healthy(page: Page, fixture: MobileFixture) {
 
 async function screenshot(page: Page, info: TestInfo, fixture: MobileFixture, name: string) {
   await healthy(page, fixture);
-  await page.evaluate(async () => {await document.fonts.ready;});
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+    const visibleImages = [...document.images].filter(image => {
+      const rect = image.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 && rect.top < innerHeight && rect.bottom > 0 && getComputedStyle(image).visibility !== 'hidden';
+    });
+    await Promise.all(visibleImages.map(async image => {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      try {
+        await Promise.race([image.decode(), new Promise<never>((_, reject) => {timer = setTimeout(() => reject(new Error(`Visible image did not load: ${image.getAttribute('src')}`)), 10000);})]);
+        if (!image.naturalWidth) throw new Error(`Visible image is broken: ${image.getAttribute('src')}`);
+      } finally {if (timer !== undefined) clearTimeout(timer);}
+    }));
+  });
+  const layout = await page.evaluate(() => {
+    const selectors = ['.m-brand-header', '.m-detail-header', '.m-main', '.m-section-title', '.m-search-heading', '.m-search-input-row', '.m-search-history-grid', '.m-search-suggestion-grid', '.m-search-company-tile', '.m-search-inline-filters', '.m-search-result-company', '.m-search-result-resource', '.m-company-hero', '.m-company-metric', '.m-company-event', '.m-company-timeline', '.m-company-monitor', '.m-company-document', '.m-portfolio-heading', '.m-portfolio-metrics', '.m-portfolio-basis', '.m-portfolio-allocation', '.m-portfolio-holding', '.m-portfolio-holding-main', '.m-portfolio-holding>footer'];
+    return selectors.flatMap(selector => [...document.querySelectorAll(selector)].map((element, index) => {
+      const rect = element.getBoundingClientRect(), style = getComputedStyle(element);
+      return {selector, index, x: rect.x, y: rect.y, width: rect.width, height: rect.height, padding: style.padding, margin: style.margin, minHeight: style.minHeight, fontSize: style.fontSize, lineHeight: style.lineHeight};
+    }));
+  });
+  await writeFile(info.outputPath(`${name}-layout.json`), JSON.stringify(layout, null, 2));
   await page.screenshot({path: info.outputPath(`${name}.png`), animations: 'disabled', scale: 'css'});
 }
 
@@ -160,7 +182,7 @@ for (const viewport of [{width: 470, height: 836}, {width: 390, height: 844}]) {
       await ask.getByRole('link', {name: '전체 대화와 기록 열기', exact: true}).click();
       await expect(page).toHaveURL(new RegExp(`/questions\\?event=${eventId}`));
       await expect(page.locator('.m-question-context h2')).toHaveText(eventTitle);
-      await expect(page.getByLabel('질문할 이벤트', {exact: true})).toHaveValue(eventId);
+      await expect(page.getByRole('combobox', {name: '질문할 이벤트', exact: true})).toHaveValue(eventId);
       await expect(page.locator('.m-question-history-item')).toHaveCount(1);
       await healthy(page, fixture);
 

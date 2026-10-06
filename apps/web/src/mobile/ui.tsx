@@ -7,6 +7,7 @@ import {Icon, type IconName} from '@/components/icons';
 import {usePrefs} from '@/workspace/preferences';
 import {chartPoints} from '@/workspace/contracts';
 import {type EventCard} from '@/lib/contracts';
+import {vectorBrands} from './brand-paths';
 
 const extraIcons: Record<string, string> = {
   person: 'M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8M4 21v-2a8 8 0 0 1 16 0v2Z',
@@ -39,7 +40,7 @@ export function MIcon({name, size = 20, className = ''}: {name: IconName | strin
 
 const logoTickers = new Set(['NVDA','AAPL','TSLA','005930','000660','005380','005490','035420','035720','373220']);
 export function CompanyLogo({ticker, size = 48}: {ticker: string; size?: number}) {
-  return <span className={`m-company-logo m-logo-${ticker.replace(/[^a-zA-Z0-9]/g,'')}`} style={{width:size,height:size}} aria-hidden="true">{logoTickers.has(ticker) ? <Image src={`/reference-assets/logos/${ticker}.webp`} alt="" width={size} height={size}/> : ticker === 'MSFT' ? <span className="m-microsoft-logo"><i/><i/><i/><i/></span> : <b>{ticker.slice(0,4)}</b>}</span>;
+  return <span className={`m-company-logo m-logo-${ticker.replace(/[^a-zA-Z0-9]/g,'')}`} style={{width:size,height:size}} aria-hidden="true">{vectorBrands[ticker] ? <svg viewBox="0 0 24 24" fill={vectorBrands[ticker].color}><path d={vectorBrands[ticker].path}/></svg> : logoTickers.has(ticker) ? <Image src={`/reference-assets/logos/${ticker}.webp`} alt="" width={size} height={size}/> : ticker === 'MSFT' ? <span className="m-microsoft-logo"><i/><i/><i/><i/></span> : <b>{ticker.slice(0,4)}</b>}</span>;
 }
 
 export function SectionTitle({title, href, action, className = ''}: {title: string; href?: string; action?: ReactNode; className?: string}) {
@@ -83,7 +84,7 @@ export function DateNote({message}: {message?: ReactNode}) {
   const {value}=usePrefs();
   return <aside className="m-date-note"><time dateTime={new Date().toISOString()}>{new Intl.DateTimeFormat(value.locale==='ko'?'ko-KR':'en-US',{timeZone:value.timezone,month:'long',day:'numeric',weekday:'short'}).format(new Date())}</time>{message && <p>{message}</p>}</aside>;
 }
-const categoryLabels: Record<string,[string,string]>={earnings:['실적','Earnings'],guidance:['전망','Guidance'],contract:['계약','Contract'],business:['사업','Business'],regulatory:['공시','Filing'],capital:['자본','Capital'],risk:['위험','Risk'],other:['공시','Filing']};
+const categoryLabels: Record<string,[string,string]>={earnings:['실적','Earnings'],guidance:['전망','Guidance'],contract:['계약','Contract'],business:['사업','Business'],regulatory:['공시','Filing'],capital:['자본','Capital'],risk:['위험','Risk'],product:['제품/기술','Product / technology'],supply:['생산/공급','Production / supply'],capex:['투자/설비','Investment / facilities'],policy:['정책','Policy'],regulation:['규제','Regulation'],management:['경영','Management'],dividend:['배당','Dividend'],buyback:['자사주','Buyback'],other:['공시','Filing']};
 export function eventLabel(type:string, locale='ko') {const labels=categoryLabels[type];return labels?labels[locale==='ko'?0:1]:type;}
 export function MobileEventCard({event}: {event: EventCard}) {
   const {text:t,value,date}=usePrefs();

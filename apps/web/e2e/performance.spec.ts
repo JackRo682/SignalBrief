@@ -2,12 +2,15 @@ import { test, expect, type Page } from '@playwright/test';
 import {companyId, eventId, events, mobileFixture} from './mobile-fixture';
 
 async function verifyMobileProgressiveNavigation(page: Page, summaryOnly: boolean) {
-  const fixture = await mobileFixture(page, {summaryOnly}), navigationDocuments: string[] = [];
+  const fixture = await mobileFixture(page, {summaryOnly}), navigationDocuments: string[] = [], completedRequests: string[] = [];
   let release!: () => void, holdSecondary = true, pendingPortfolio = false;
   const delayed = new Promise<void>(resolve => {release = resolve;});
   page.on('request', request => {if (request.isNavigationRequest() && request.frame() === page.mainFrame()) navigationDocuments.push(request.url());});
-  await page.route('**/v1/portfolio', async route => {if (holdSecondary) {pendingPortfolio = true; await delayed;} await route.fallback();});
-  await page.route('**/api/market?**', async route => {if (holdSecondary) await delayed; await route.fallback();});
+  page.on('requestfinished', request => {completedRequests.push(new URL(request.url()).pathname.replace(/^\/api/, ''));});
+  // Next dev replays effects in Strict Mode. The first effect cancels its request;
+  // a delayed fixture must not turn that cancelled request into another API read.
+  await page.route('**/v1/portfolio', async route => {if (holdSecondary) {pendingPortfolio = true; await delayed;} if (route.request().failure()?.errorText === 'net::ERR_ABORTED') {await route.abort('aborted'); return;} await route.fallback();});
+  await page.route('**/api/market?**', async route => {if (holdSecondary) await delayed; if (route.request().failure()?.errorText === 'net::ERR_ABORTED') {await route.abort('aborted'); return;} await route.fallback();});
   await page.goto('/today');
   const main = page.locator('main#mobile-main');
   await expect(page.locator('.m-event-card')).toHaveCount(4);
@@ -18,6 +21,7 @@ async function verifyMobileProgressiveNavigation(page: Page, summaryOnly: boolea
   expect(fixture.state.apiCalls.some(call => call.path.startsWith('/v1/events/'))).toBe(false);
   holdSecondary = false; release();
   await expect.poll(() => fixture.state.apiCalls.filter(call => call.path === '/v1/portfolio').length).toBe(1);
+  await expect.poll(() => completedRequests.filter(path => path === '/v1/portfolio').length).toBe(1);
   await expect(page.locator('.m-loading')).toHaveCount(0);
   const initialDocuments = navigationDocuments.length;
   const initialWatchReads = fixture.state.apiCalls.filter(call => call.path === '/v1/watchlist').length;
@@ -34,7 +38,7 @@ async function verifyMobileProgressiveNavigation(page: Page, summaryOnly: boolea
   await footer.getByRole('link', {name: '홈', exact: true}).click();
   await main.getByRole('navigation', {name: '바로가기', exact: true}).getByRole('link', {name: '기업 타임라인', exact: true}).click();
   await expect(main.getByRole('heading', {level: 1})).toHaveText('기업 타임라인');
-  await page.getByLabel('타임라인 기업 선택', {exact: true}).selectOption(companyId);
+  await page.getByRole('combobox', {name: '타임라인 기업 선택', exact: true}).selectOption(companyId);
   await expect(page.locator('.m-timeline-item')).toHaveCount(3);
   await expect(page.locator('.m-timeline-item').first().getByRole('link', {name: 'SEC', exact: true})).toHaveAttribute('href', events[0].source_url);
   expect(navigationDocuments).toHaveLength(initialDocuments);
@@ -51,7 +55,7 @@ async function verifyMobileProgressiveNavigation(page: Page, summaryOnly: boolea
   await page.getByRole('button', {name: /원문 인용 보기/}).click();
   await expect(page.locator('#mobile-event-evidence blockquote')).toHaveCount(4);
   await expect(page.locator('#mobile-event-evidence')).toContainText('Synthetic fixture: Revenue was USD 45,000 million');
-  expect(fixture.state.apiCalls.filter(call => call.path === `/v1/events/${eventId}`)).toHaveLength(1);
+  await expect.poll(() => completedRequests.filter(path => path === `/v1/events/${eventId}`).length).toBe(1);
   expect(navigationDocuments).toHaveLength(initialDocuments);
   expect(fixture.state.unexpected).toEqual([]);
   expect(fixture.state.runtimeErrors).toEqual([]);

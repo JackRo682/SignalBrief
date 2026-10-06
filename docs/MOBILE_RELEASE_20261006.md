@@ -4,8 +4,8 @@
 
 This is the implementation and verification draft for the mobile work continued from
 `82e86ca` on the existing GitHub project. Final commit, GitHub Actions run URLs, remote
-migration application and production deployment verification must be added after those
-operations complete. The checks listed below do not constitute a deployment claim.
+production deployment verification must be added after that operation completes. The
+reviewed migration has been applied; the checks below do not yet claim a web deployment.
 
 The ten supplied PNGs are the mobile visual references. The implementation uses live DOM,
 interactive controls and responsive CSS. Financial rows, dates, prices, balances, source
@@ -23,7 +23,7 @@ The event view uses the reference's compact header without a bottom navigation b
 | Mobile area | Routes | Implemented behavior |
 |---|---|---|
 | Onboarding | `/onboarding` | Three steps for company selection, optional actual holdings and preferences; preserves existing selections and costs; validated completion and empty skip route to Today |
-| Today / home | `/today` | Authenticated published feed, relevant company links, connected portfolio and upcoming schedule data, source/detail links and refresh states |
+| Today / home | `/today` | Authenticated published feed, relevant company/source/detail links, account overview counts, filters and quick links to timeline, calendar, saved items and help |
 | Explore / search | `/explore`, `/search` | Supported companies and actual source types; query, type, market, period and pagination controls; company/event/document destinations; persisted opt-in recent searches |
 | Company overview | `/companies/[id]` | Company identity, provider prices/history when available, sourced facts, published changes, related documents, watch toggle, exact holding edit and timeline link |
 | Event detail | `/events/[id]` | Persisted event detail, changes, interpretation, relevance, uncertainty, monitoring points, exact sources, bookmark toggle, evidence panel and real follow-up answer API |
@@ -102,7 +102,7 @@ An empty mobile skip (all three arrays empty and analytics consent omitted) also
 the existing alert configuration. The legacy onboarding trigger normally creates a default
 alert on first completion; the mobile RPC sets a transaction-local marker scoped to the
 current user only around the skip update and then restores the previous setting. The
-trigger checks that marker without changing its authentication, owner or search path.
+trigger checks that marker without changing its security mode, owner or search path.
 Normal completion, including an explicit consent value with no stocks, retains the legacy
 default-alert behavior. Repeated completion does not recreate an alert a user removed.
 The completed profile is returned directly from the update without rerunning initialization.
@@ -148,10 +148,11 @@ scheduled ingestion, investment email delivery or background push.
 | Prior broader targeted Vitest: mobile flow, workspace, reference, publication, decimal helper | 5 files, 107 tests passed | Completed before the final seven timeline/question regression cases were added |
 | Web TypeScript | Passed | Re-run after the final research-screen changes |
 | Scoped ESLint: event, timeline, questions and mobile-flow tests | Passed, zero errors/warnings | Broader release lint remains a separate gate |
-| First actual workspace PostgreSQL CI replay | 20 passed, 1 failed | Run `37444196478`, job `112204939183`: skip unexpectedly created a default alert; the failing assertion was retained and the trigger behavior was corrected |
-| Corrected workspace PostgreSQL replay suite | 25 cases; rerun pending | Adds normal legacy/mobile default-alert behavior, restored transaction scope, removed-alert idempotency and exact preservation of an existing disabled alert |
+| First actual workspace PostgreSQL CI replay | 20 passed, 1 failed | [Run 37444196478](https://github.com/JackRo682/SignalBrief/actions/runs/37444196478), job `112204939183`: skip unexpectedly created a default alert; the failing assertion was retained and the trigger behavior was corrected |
+| Corrected workspace PostgreSQL replay suite | **25 passed**, zero failures/skips; workspace Ruff passed | [Run 37444961579, job 112207454995](https://github.com/JackRo682/SignalBrief/actions/runs/37444961579/job/112207454995), tested commit `d0a86108de29834c62d88373e4b8e92006844fa5`; adds normal legacy/mobile default-alert behavior, restored transaction scope, removed-alert idempotency and exact preservation of an existing disabled alert |
 | Final full release gate / browser journeys / production build | Pending final recorded run | Append actual run links and results before release sign-off |
-| Remote migration and deployment | Pending recorded execution | No success inferred from source changes or local tests |
+| Remote migration | Applied successfully to the existing Supabase project | Ledger `20261006095100_mobile_search_history`; both new RPCs retain empty search paths, deny anonymous execution and allow authenticated execution |
+| Production web deployment | Pending recorded execution | No success inferred from a preview build or source changes |
 
 The SQL replay additions cover exact search deletion, search-only clearing, preservation
 of visits/bookmarks, account ownership, anonymous denial and MFA. Onboarding cases cover
@@ -164,6 +165,17 @@ Local PostgreSQL execution was unavailable in this workspace. The replay fixture
 `SB_TEST_WORKSPACE_POSTGRES_URL` pointing to a loopback disposable database whose name ends
 in `_test`; it must never run against the production project. Synthetic browser/unit/SQL
 fixtures remain exclusively in tests.
+
+The completed corrected job logs were retrieved and checked: PostgreSQL 17 replay reported
+`25 passed, 1 warning in 0.63s`. The warning was the existing Starlette/AnyIO deprecation.
+The checked-out commit matched the current migration source; its SHA-256 is
+`3188438d8c2c6b52aa8a4b9e9996147758f47f0997f08f29ef0e2e14722809b3`.
+The full browser gate still requires its question-control locator correction and rerun.
+The exact migration was then applied successfully to the existing project as
+`20261006095100_mobile_search_history`. Read-only catalog checks confirmed the new RPCs
+are security-definer functions with empty search paths, anonymous execution denied and
+authenticated execution granted. No production fixture data was written. The web release
+remains pending the corrected browser run and production deployment.
 
 ## Release and rollback notes
 

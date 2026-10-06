@@ -10,7 +10,7 @@ import {catalogSchema, searchesSchema, resourceKind, resourceHref, type Resource
 import {useQuotes} from '@/workspace/market';
 import {usePrefs} from '@/workspace/preferences';
 import {useData, useMutation} from '@/workspace/ui';
-import {ActionNotice, CompanyLogo, Dialog, EmptyState, LoadState, MIcon, SectionTitle, SmallChart, formatMoney} from '@/mobile/ui';
+import {ActionNotice, CompanyLogo, Dialog, EmptyState, LoadState, MIcon, SectionTitle, SmallChart, eventLabel, formatMoney} from '@/mobile/ui';
 import './search.css';
 
 type Quote = ReturnType<typeof useQuotes>['quotes'][number];
@@ -185,7 +185,7 @@ function SearchResultCard({item, quote}: {item: Resource; quote?: Quote}) {
   const document = item.kind !== 'event';
   return <Link href={resourceHref(item)} onClick={track} className={`m-card m-search-result-resource ${document ? 'is-document' : 'is-event'}`}>
     {document ? <span className="m-search-document-icon"><MIcon name="file" size={29}/><b>{item.source_url && /\.pdf(?:\?|$)/i.test(item.source_url) ? 'PDF' : 'DOC'}</b></span> : <span className="m-search-date-tile"><strong>{monthDay}</strong><small>({weekday})</small></span>}
-    <div className="m-search-result-resource-body">{!document && <span className="m-pill m-search-category">{item.category}</span>}<h3>{item.title}</h3>
+    <div className="m-search-result-resource-body">{!document && <span className="m-pill m-search-category">{eventLabel(item.category, value.locale)}</span>}<h3>{item.title}</h3>
       {document && <p className="m-search-document-meta">{companyLabel(item, value.locale)} <span>·</span> {date(item.published_at, item.publication_precision)} <span>·</span> {item.category}</p>}
       {item.summary && <p className="m-search-resource-summary">{item.summary}</p>}
     </div><MIcon name="chevron" size={15}/>
@@ -201,9 +201,9 @@ export function MobileSearchResults({initial, initialKind, initialMarket = '', i
   const [filterOpen, setFilterOpen] = useState(false);
   const filters = {q: initial, market: initialMarket, days: initialDays, sort: initialSort};
   const result = useData({action: 'catalog', p: {...filters, kind, offset: kind ? initialOffset : 0, limit: kind ? 12 : 1}}, catalogSchema);
-  const companies = useData(kind ? null : {action: 'catalog', p: {...filters, kind: 'company', limit: 3}}, catalogSchema);
-  const events = useData(kind ? null : {action: 'catalog', p: {...filters, kind: 'event', limit: 3}}, catalogSchema);
-  const documents = useData(kind ? null : {action: 'catalog', p: {...filters, kind: 'document', limit: 3}}, catalogSchema);
+  const companies = useData(kind ? null : {action: 'catalog', p: {...filters, kind: 'company', limit: 1}}, catalogSchema);
+  const events = useData(kind ? null : {action: 'catalog', p: {...filters, kind: 'event', limit: 2}}, catalogSchema);
+  const documents = useData(kind ? null : {action: 'catalog', p: {...filters, kind: 'document', limit: 1}}, catalogSchema);
   const companyItems = kind ? result.data?.items.filter(item => item.kind === 'company') ?? [] : companies.data?.items ?? [];
   const quoteData = useQuotes(companyItems.map(item => item.ticker));
   const set = (patch: Partial<SearchPatch>) => {
@@ -252,12 +252,12 @@ export function MobileSearchResults({initial, initialKind, initialMarket = '', i
     </div>
     <LoadState loading={result.loading} error={result.error} retry={result.reload}/>
     {!kind ? groups.map(group => <section className="m-search-section m-search-result-group" key={group.kind}>
-      <SectionTitle title={`${group.label}${result.data ? `  ${count(group.kind)}${t('개', '')}` : ''}`} action={<button onClick={() => set({kind: group.kind})}>{t('전체 보기', 'View all')} <MIcon name="chevron" size={12}/></button>}/>
+      <div className="m-section-title"><h2>{group.label}{result.data && <span className="m-search-result-count">{count(group.kind)}{t('개', '')}</span>}</h2><button onClick={() => set({kind: group.kind})}>{t('전체 보기', 'View all')} <MIcon name="chevron" size={12}/></button></div>
       <LoadState loading={group.state.loading} error={group.state.error} retry={group.state.reload}/>
       <div className="m-stack">{group.state.data?.items.map(item => <SearchResultCard key={item.kind + item.id} item={item} quote={quoteData.quotes.find(quote => quote.symbol === item.ticker)}/>)}</div>
       {group.state.data && !group.state.data.items.length && <EmptyState title={t(`${group.label} 검색 결과가 없습니다`, `No ${group.label.toLowerCase()} found`)}/>}
     </section>) : <section className="m-search-section m-search-result-group">
-      <SectionTitle title={`${groups.find(group => group.kind === kind || group.kind === 'document' && kind === 'filing')?.label ?? t('검색 결과', 'Results')}${result.data ? `  ${result.data.total}${t('개', '')}` : ''}`}/>
+      <div className="m-section-title"><h2>{groups.find(group => group.kind === kind || group.kind === 'document' && kind === 'filing')?.label ?? t('검색 결과', 'Results')}{result.data && <span className="m-search-result-count">{result.data.total}{t('개', '')}</span>}</h2></div>
       <div className="m-stack">{result.data?.items.map(item => <SearchResultCard key={item.kind + item.id} item={item} quote={quoteData.quotes.find(quote => quote.symbol === item.ticker)}/>)}</div>
       {result.data && !result.data.items.length && <EmptyState title={t('검색 결과가 없습니다', 'No results found')} description={t('검색어나 필터를 변경해보세요.', 'Try another query or change the filters.')} href="/explore" label={t('기업 탐색하기', 'Explore companies')}/>}
       {result.data && (initialOffset > 0 || result.data.next_offset !== null) && <nav className="m-search-pagination" aria-label={t('검색 결과 페이지', 'Result pages')}>

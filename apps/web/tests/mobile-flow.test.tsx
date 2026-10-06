@@ -94,6 +94,12 @@ describe('mobile event actions use owned, persisted responses',()=>{
   expect(document.querySelector('#mobile-event-evidence blockquote')).toHaveTextContent(detail.evidence[0].quote);
   expect(screen.getByRole('link',{name:'Synthetic 10-K'})).toHaveAttribute('href',`/documents/${documentId}?kind=document`);
   await waitFor(()=>expect(mocks.workspace).toHaveBeenCalledWith('isolated-synthetic-token',{action:'visit',p:{kind:'event',id:eventId}},expect.anything()));
+  fireEvent.click(screen.getByRole('button',{name:'원문 인용 닫기'}));
+  const evidenceNumber=screen.getByRole('button',{name:/^1\..*원문 근거 보기$/});
+  expect(evidenceNumber).toHaveAttribute('aria-expanded','false');
+  fireEvent.click(evidenceNumber);
+  expect(evidenceNumber).toHaveAttribute('aria-expanded','true');
+  expect(document.querySelector(`#mobile-evidence-${factId} blockquote`)).toHaveTextContent(detail.evidence[0].quote);
  });
  it('posts the entered follow-up and displays a real abstention response',async()=>{
   render(<MobileEvent id={eventId}/>);await screen.findByRole('heading',{level:1,name:resource.title});

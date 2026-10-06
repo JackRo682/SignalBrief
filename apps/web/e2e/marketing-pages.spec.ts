@@ -63,5 +63,7 @@ test('signed-in visitors open their real workspace from a feature card',async({p
   return route.fulfill({json});
  });
  await page.goto('/features');const calendar=page.locator('.v-widget-calendar').getByRole('link',{name:'알림 설정'});await expect(calendar).toHaveAttribute('href','/calendar');
- await calendar.click();await expect(page).toHaveURL(/\/calendar$/);await expect(page.locator('[data-screen="calendar"]')).toBeVisible();
+ await calendar.click();await expect(page).toHaveURL(/\/calendar$/);
+ const mobile=(page.viewportSize()?.width??1280)<768;
+ await expect(page.locator(mobile?'.m-calendar-page':'[data-screen="calendar"]')).toBeVisible();
 });

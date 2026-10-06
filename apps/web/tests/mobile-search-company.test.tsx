@@ -53,7 +53,9 @@ describe('mobile exploration and search connections', () => {
     fireEvent.click(await screen.findByRole('button', {name: 'TEST 검색 기록 삭제'}));
     await waitFor(() => expect(screen.queryByRole('button', {name: 'TEST 검색 기록 삭제'})).toBeNull());
     expect(mocks.workspace).toHaveBeenCalledWith('isolated-fixture-token', {action: 'search_delete', p: {query: 'TEST'}}, expect.anything());
-    fireEvent.click(screen.getByRole('button', {name: '전체 삭제'}));
+    const clear = screen.getByRole('button', {name: '전체 삭제'}) as HTMLButtonElement;
+    await waitFor(() => expect(clear.disabled).toBe(false));
+    fireEvent.click(clear);
     await screen.findByText('최근 검색어가 없습니다');
     expect(mocks.workspace.mock.calls.some(([, req]) => req.action === 'searches_clear')).toBe(true);
     expect(mocks.workspace.mock.calls.some(([, req]) => req.action === 'history_clear')).toBe(false);
@@ -77,6 +79,19 @@ describe('mobile exploration and search connections', () => {
 });
 
 describe('mobile company persisted actions', () => {
+  it('keeps metric digits and units exact while presenting readable Korean labels', async () => {
+    const original = mocks.workspace.getMockImplementation()!;
+    mocks.workspace.mockImplementation(async (token, req) => {
+      const response = await original(token, req);
+      return req.action === 'company' ? {...response, facts: [{id: 'fact', field: 'revenue', value_raw: '12345678901234567890.12345678', unit: 'USD million', period: '2026 Q3', basis: 'GAAP', quote: 'Synthetic precise source metric.', event_id: eventId}]} : response;
+    });
+    render(<MobileCompany id={companyId}/>);
+    const metric = await screen.findByRole('link', {name: /매출액/});
+    expect(metric.textContent).toContain('12,345,678,901,234,567,890.12345678');
+    expect(metric.textContent).toContain('백만 USD · 2026 Q3');
+    expect(metric.getAttribute('href')).toBe(`/events/${eventId}?panel=evidence`);
+  });
+
   it('prefills an existing holding without losing decimal precision or changing currency', async () => {
     render(<MobileCompany id={companyId}/>);
     fireEvent.click(await screen.findByRole('button', {name: '보유 정보 수정'}));

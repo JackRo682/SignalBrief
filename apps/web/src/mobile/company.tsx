@@ -18,6 +18,12 @@ import './company.css';
 type Fact = z.infer<typeof companyDetailSchema>['facts'][number];
 const savedResponse = z.object({saved: z.boolean()});
 const knownNames: Record<string, [string, string]> = {NVDA: ['엔비디아', 'NVIDIA'], AAPL: ['애플', 'Apple'], TSLA: ['테슬라', 'Tesla'], MSFT: ['마이크로소프트', 'Microsoft']};
+const factNames: Record<string, [string, string]> = {revenue: ['매출액', 'Revenue'], sales: ['매출액', 'Sales'], operating_income: ['영업이익', 'Operating income'], operating_profit: ['영업이익', 'Operating profit'], net_income: ['순이익', 'Net income'], net_profit: ['순이익', 'Net profit'], eps: ['주당순이익', 'Earnings per share'], capex: ['설비투자', 'Capital expenditure'], dividend: ['배당', 'Dividend']};
+function metricNumber(raw: string | null) {
+  if (raw === null) return null;
+  const decimal = decimalInput(raw), match = /^([+-]?)(\d+)(\.\d+)?$/.exec(decimal);
+  return match ? `${match[1]}${match[2].replace(/\B(?=(\d{3})+(?!\d))/g, ',')}${match[3] ?? ''}` : raw;
+}
 
 function PositionDialog({id, onClose, onSaved}: {id: string; onClose: () => void; onSaved: () => void}) {
   const {token} = useAuth();
@@ -82,10 +88,12 @@ function SavedMonitoringRow({item}: {item: Resource}) {
 function SourcedMetric({fact, index}: {fact: Fact; index: number}) {
   const {text: t} = usePrefs();
   const icons = ['coins', 'timeline', 'trend', 'pie'];
+  const unit = fact.unit === 'USD million' ? t('백만 USD', 'USD million') : fact.unit === 'USD/share' ? t('USD / 주', 'USD/share') : fact.unit;
+  const metadata = [unit, fact.period || fact.basis].filter(Boolean).join(' · ') || t('검증된 원문', 'Verified source');
   return <Link href={`/events/${encodeURIComponent(fact.event_id)}?panel=evidence`} className={`m-card m-company-metric m-company-metric-${index % 4}`}>
-    <div><span className="m-company-metric-icon"><MIcon name={icons[index % 4]} size={16}/></span><span>{fact.field}</span></div>
-    <strong>{fact.value_raw ?? t('원문 확인', 'View source')}{fact.unit && <small> {fact.unit}</small>}</strong>
-    <p>{fact.period || fact.basis || t('검증된 원문', 'Verified source')}</p>
+    <div><span className="m-company-metric-icon"><MIcon name={icons[index % 4]} size={16}/></span><span>{factNames[fact.field] ? t(...factNames[fact.field]) : fact.field}</span></div>
+    <strong>{metricNumber(fact.value_raw) ?? t('원문 확인', 'View source')}</strong>
+    <p title={metadata}>{metadata}</p>
   </Link>;
 }
 
@@ -102,6 +110,10 @@ export default function MobileCompany({id}: {id: string}) {
   const quotes = useQuotes(company ? [company.ticker] : [], period), quote = quotes.quotes.find(item => item.symbol === company?.ticker);
   const title = company ? knownNames[company.ticker]?.[value.locale === 'ko' ? 0 : 1] ?? company.company_name : '';
   const query = encodeURIComponent(company?.ticker ?? '');
+  const timelineDate = (event: Resource) => {
+    const timestamp = Date.parse(event.published_at ?? '');
+    return Number.isFinite(timestamp) ? new Intl.DateTimeFormat(value.locale === 'ko' ? 'ko-KR' : 'en-US', {timeZone: ['date', 'date_only'].includes(event.publication_precision) ? 'UTC' : value.timezone, year: 'numeric', month: 'short', day: 'numeric'}).format(timestamp) : date(event.published_at, event.publication_precision);
+  };
   const noMetrics = [
     {ko: '시가총액', en: 'Market cap', icon: 'coins'}, {ko: '주가수익비율 (PER)', en: 'P/E ratio', icon: 'timeline'},
     {ko: '매출 성장률', en: 'Revenue growth', icon: 'trend'}, {ko: '영업이익률', en: 'Operating margin', icon: 'pie'},
@@ -144,13 +156,13 @@ export default function MobileCompany({id}: {id: string}) {
 
       <section className="m-company-section"><SectionTitle title={t('타임라인 미리보기', 'Timeline preview')} href={`/companies/${encodeURIComponent(id)}/timeline`}/>
         <div className="m-company-timeline">{data.events.slice(0, 3).map((event, index) => <Link href={resourceHref(event)} onClick={() => visit(event)} className={index === 0 ? 'is-latest' : ''} key={event.id}>
-          <i/><time>{date(event.published_at, event.publication_precision)}</time><div><strong>{event.title}</strong>{event.summary && <p>{event.summary}</p>}</div>
+          <i/><time dateTime={event.published_at ?? undefined} title={date(event.published_at, event.publication_precision)}>{timelineDate(event)}</time><div><strong>{event.title}</strong>{event.summary && <p>{event.summary}</p>}</div>
         </Link>)}</div>
         {!data.events.length && <EmptyState title={t('확인된 변화가 쌓이면 표시됩니다', 'Verified changes will appear here')} href={`/companies/${encodeURIComponent(id)}/timeline`} label={t('기업 타임라인 보기', 'View company timeline')}/>}
       </section>
 
       <section className="m-company-section"><SectionTitle title={t('모니터링 포인트', 'Monitoring points')} href={`/saved?kind=event&company=${encodeURIComponent(id)}`}/>
-        {data.events.length > 0 ? <><p className="m-company-monitor-note m-muted">{t('중요한 변화를 저장하고 다시 확인하세요.', 'Save important changes to follow up.')}</p><div className="m-card m-company-monitor">{data.events.slice(0, 3).map(event => <SavedMonitoringRow item={event} key={event.id}/>)}</div></> : <EmptyState title={t('모니터링할 변화가 없습니다', 'No changes to monitor yet')} description={t('기업 변화가 공개되면 저장하고 추적할 수 있어요.', 'Save and revisit company changes once they are published.')}/>}
+        {data.events.length > 0 ? <div className="m-card m-company-monitor">{data.events.slice(0, 3).map(event => <SavedMonitoringRow item={event} key={event.id}/>)}</div> : <EmptyState title={t('모니터링할 변화가 없습니다', 'No changes to monitor yet')} description={t('기업 변화가 공개되면 저장하고 추적할 수 있어요.', 'Save and revisit company changes once they are published.')}/>}
       </section>
 
       <section className="m-company-section m-company-documents-section"><SectionTitle title={t('관련 문서 / 근거 자료', 'Documents / evidence')} href={`/search?q=${query}&kind=document`}/>
@@ -161,7 +173,7 @@ export default function MobileCompany({id}: {id: string}) {
       </section>
 
       {metricsOpen && <Dialog title={t('핵심 지표 / 원문 근거', 'Key metrics / source evidence')} onClose={() => setMetricsOpen(false)}>
-        <div className="m-company-facts-dialog">{data.facts.length ? data.facts.map(fact => <article className="m-card" key={fact.id}><h3>{fact.field}</h3><strong>{fact.value_raw ?? t('원문 확인', 'View source')} {fact.unit}</strong><p className="m-muted">{[fact.period, fact.basis].filter(Boolean).join(' · ')}</p>{fact.quote && <blockquote>{fact.quote}</blockquote>}<Link href={`/events/${encodeURIComponent(fact.event_id)}?panel=evidence`} className="m-button m-button-secondary" onClick={() => setMetricsOpen(false)}>{t('근거 보기', 'View evidence')}<MIcon name="chevron" size={13}/></Link></article>) : <EmptyState title={t('검증된 지표가 없습니다', 'No verified metrics available')} description={t('원문과 회계기간이 확인된 수치가 표시됩니다.', 'Metrics appear with confirmed sources and reporting periods.')}/>}
+        <div className="m-company-facts-dialog">{data.facts.length ? data.facts.map(fact => <article className="m-card" key={fact.id}><h3>{factNames[fact.field] ? t(...factNames[fact.field]) : fact.field}</h3><strong>{metricNumber(fact.value_raw) ?? t('원문 확인', 'View source')} {fact.unit}</strong><p className="m-muted">{[fact.period, fact.basis].filter(Boolean).join(' · ')}</p>{fact.quote && <blockquote>{fact.quote}</blockquote>}<Link href={`/events/${encodeURIComponent(fact.event_id)}?panel=evidence`} className="m-button m-button-secondary" onClick={() => setMetricsOpen(false)}>{t('근거 보기', 'View evidence')}<MIcon name="chevron" size={13}/></Link></article>) : <EmptyState title={t('검증된 지표가 없습니다', 'No verified metrics available')} description={t('원문과 회계기간이 확인된 수치가 표시됩니다.', 'Metrics appear with confirmed sources and reporting periods.')}/>}
         </div>
       </Dialog>}
       {chartOpen && <Dialog title={`${title} ${t('주가 추이', 'price history')}`} onClose={() => setChartOpen(false)}><div className="m-company-chart-dialog">
