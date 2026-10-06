@@ -1,0 +1,86 @@
+name: Validate and publish recovered workspace
+on:
+  push:
+    branches: [codex/workspace-pages-20261005]
+    paths: [.github/workflows/workspace-publish.yml]
+permissions:
+  contents: write
+jobs:
+  verified-publication:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17
+        env: {POSTGRES_USER: postgres, POSTGRES_PASSWORD: test-only, POSTGRES_DB: workspace_test}
+        ports: ['5432:5432']
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      SB_TEST_WORKSPACE_POSTGRES_URL: postgresql+psycopg://postgres:test-only@localhost:5432/workspace_test
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - name: Recover checksum-verified implementation and review fixes
+        run: |
+          cat .workspace-release/part0* | base64 -d | xz -d > /tmp/workspace.patch
+          echo '3111bea4d1653c9aa22c3d3839f56fbffe131bf1e7f4f6b8a9df7f4f6346dc07  /tmp/workspace.patch' | sha256sum -c -
+          git apply --check /tmp/workspace.patch
+          git apply /tmp/workspace.patch
+          cat .workspace-release/review0* | base64 -d | xz -d > /tmp/review.patch
+          echo 'e365aaa625b3ff089084ee7fd009a0176386f1c64fa966c2244acb9ff5b268e3  /tmp/review.patch' | sha256sum -c -
+          git apply --check /tmp/review.patch
+          git apply /tmp/review.patch
+          echo 'a6ade2fc489743441c77f61685dd9e9ec53e0a23d04ebcc947c325ce6668472c  .workspace-release/final-review.patch' | sha256sum -c -
+          git apply --check .workspace-release/final-review.patch
+          git apply .workspace-release/final-review.patch
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install -e '.[dev]'
+      - working-directory: apps/web
+        run: npm ci
+      - name: Full release verification including isolated workspace PostgreSQL
+        run: python scripts/verify.py --full
+      - working-directory: apps/web
+        run: npx playwright install --with-deps chromium
+      - name: Desktop and mobile browser regression
+        working-directory: apps/web
+        run: |
+          NEXT_PUBLIC_API_URL=/api NEXT_PUBLIC_SUPABASE_URL=https://test-project.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_isolated_fixture setsid npm run dev -- --hostname 127.0.0.1 > /tmp/signalbrief-web.log 2>&1 &
+          web_pid=$!
+          trap 'kill -- -"$web_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3000/login > /dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:3000/login > /dev/null
+          npm run test:e2e -- performance.spec.ts auth-navigation.spec.ts marketing-pages.spec.ts ui-refinement.spec.ts responsive-design.spec.ts workspace-pages.spec.ts
+      - name: Publish actual application source without rewriting history
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          export GIT_CONFIG_COUNT=1
+          export GIT_CONFIG_KEY_0=http.https://github.com/.extraheader
+          export GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git fetch origin codex/workspace-pages-20261005
+          test "$(git rev-parse FETCH_HEAD)" = "$EXPECTED_SHA"
+          git config user.name 'JackRo682'
+          git config user.email '60928974+JackRo682@users.noreply.github.com'
+          git add apps/web/src apps/web/e2e apps/web/tests supabase/workspace-migrations tests/workspace docs/WORKSPACE_RELEASE_20261005.md
+          git diff --cached --check
+          git commit -m 'feat: implement nine authenticated workspace screens with verified interactions and MFA'
+          git push origin HEAD:refs/heads/codex/workspace-pages-20261005
+          printf '{"commit":"%s","base":"%s","validation":"full-and-browser-passed"}\n' "$(git rev-parse HEAD)" "$EXPECTED_SHA" > /tmp/workspace-published.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: workspace-final-verification
+          path: |
+            verification/
+            apps/web/playwright-report/
+            apps/web/test-results/
+            /tmp/signalbrief-web.log
+            /tmp/workspace-published.json
+          retention-days: 3
