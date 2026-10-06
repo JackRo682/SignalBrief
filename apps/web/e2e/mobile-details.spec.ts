@@ -121,7 +121,7 @@ for(const viewport of [{width:432,height:768},{width:390,height:844}]){
    await page.getByRole('button',{name:'실적 (1)',exact:true}).click();await expect(page.locator('.m-timeline-item')).toHaveCount(1);
    await expect(page.locator('.m-timeline-item h2')).toHaveText(eventTitle);
    await page.getByRole('button',{name:'전체 (3)',exact:true}).click();
-   await page.getByLabel('기간',{exact:true}).selectOption('90');await expect(page.locator('.m-timeline-item')).toHaveCount(3);
+   const period=page.getByRole('combobox',{name:'기간',exact:true});await period.selectOption('90');await expect(period).toHaveValue('90');await expect(page.locator('.m-timeline-item')).toHaveCount(3);
    await expect.poll(()=>fixture.state.apiCalls.some(call=>call.path===`/v1/companies/${companyId}/timeline`)).toBe(true);
    await page.getByRole('button',{name:'분석 근거 보기',exact:true}).click();await expect(page.locator('.m-timeline-reviewed section')).toHaveCount(3);
    await page.locator('.m-timeline-item').first().getByRole('link').first().click();await expect(page).toHaveURL(new RegExp(`/events/${eventId}$`));

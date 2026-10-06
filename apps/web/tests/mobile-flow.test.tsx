@@ -199,7 +199,10 @@ describe('mobile timeline route and period scoping',()=>{
   const original=mocks.request.getMockImplementation()!;let resolvePeriod!:(items:EventDetail['event'][])=>void;
   mocks.request.mockImplementation((path,...args)=>path.includes('/timeline?days=180')?Promise.resolve([old]):path.includes('/timeline?days=90')?new Promise(resolve=>{resolvePeriod=resolve;}):original(path,...args));
   render(<MobileTimeline id={id}/>);await screen.findByRole('heading',{name:old.headline});
-  fireEvent.change(screen.getByLabelText('기간'),{target:{value:'90'}});
+  const period=screen.getByRole('combobox',{name:'기간'});expect(period).toHaveAccessibleName('기간');
+  expect(document.getElementById(period.getAttribute('aria-labelledby')??'')).toHaveTextContent('기간');
+  fireEvent.change(period,{target:{value:'90'}});
+  expect(screen.getByRole('combobox',{name:'기간'})).toHaveValue('90');
   expect(screen.queryByRole('heading',{name:old.headline})).toBeNull();
   await waitFor(()=>expect(resolvePeriod).toBeTypeOf('function'));resolvePeriod([old,recent]);
   await screen.findByRole('heading',{name:recent.headline});expect(screen.queryByRole('heading',{name:old.headline})).toBeNull();
