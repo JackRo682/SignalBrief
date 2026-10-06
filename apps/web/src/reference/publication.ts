@@ -21,6 +21,13 @@ export const googleMark='<svg aria-hidden="true" viewBox="0 0 24 24" width="23" 
 export function polishReference(root:HTMLElement,screen:string,ctx:ReferenceContext):()=>void {
  const lifecycle=new AbortController();
  root.dataset.uiRelease='reference-screen-r2';
+ if(screen!=='landing'){
+  const nav=root.querySelector('.nav');
+  if(nav){for(const [href,label,ico] of [['/explore','검색 / 탐색','search'],['/saved','저장 / 기록','star'],['/help','도움말 및 지원','shield']]){
+   const a=document.createElement('a');a.href=href;a.innerHTML=`<span class="ico">${pubIcon(ico)}</span><span>${label}</span>`;nav.append(a);
+  }}
+ }
+
  root.querySelectorAll<HTMLInputElement>('#globalSearch,#stockSearch').forEach(input=>{
   if(!input.hasAttribute('aria-label'))input.setAttribute('aria-label',input.id==='globalSearch'?'기업 검색':'관심종목 검색');
  });
