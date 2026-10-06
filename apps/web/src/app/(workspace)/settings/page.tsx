@@ -1,2 +1,4 @@
 import Screen from "@/workspace/account";
-export default function Page(){return <Screen/>;}
+import ResponsiveScreen from '@/mobile/responsive';
+import MobileSettings from '@/mobile/settings';
+export default function Page(){return <ResponsiveScreen mobile={<MobileSettings/>} desktop={<Screen/>}/>;}

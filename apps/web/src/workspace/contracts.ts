@@ -19,6 +19,8 @@ export const quoteSchema=z.object({symbol:z.string(),price:z.number().nullable()
 export const quotesSchema=z.object({quotes:z.array(quoteSchema),available:z.boolean().optional(),reason:z.string().optional()});
 const empty=z.object({}).strict();
 const idPayload=z.object({id:uuid}).strict();
+const decimalString=z.string().regex(/^\d{1,20}(\.\d{1,8})?$/);
+const onboardingPosition=z.object({company_id:uuid,quantity:decimalString.refine(v=>/[1-9]/.test(v),'Quantity must be positive'),average_cost:decimalString.nullable(),currency:z.enum(['USD','KRW','EUR','JPY','GBP','AUD','CAD','HKD','CNY','CHF'])}).strict();
 export const workspaceRequest=z.discriminatedUnion('action',[
  z.object({action:z.literal('preferences'),p:empty}),
  z.object({action:z.literal('preferences_save'),p:z.object({value:preferenceValue.partial(),version:z.number().int().nonnegative()}).strict()}),
@@ -31,6 +33,8 @@ export const workspaceRequest=z.discriminatedUnion('action',[
  z.object({action:z.literal('save'),p:z.object({kind:z.enum(['event','document','filing']),id:uuid,saved:z.boolean()}).strict()}),
  z.object({action:z.literal('visit'),p:z.object({kind:resourceKind,id:uuid}).strict()}),
  z.object({action:z.literal('searches'),p:empty}),z.object({action:z.literal('search_record'),p:z.object({query:z.string().trim().min(1).max(100)}).strict()}),
+ z.object({action:z.literal('search_delete'),p:z.object({query:z.string().trim().min(1).max(100)}).strict()}),z.object({action:z.literal('searches_clear'),p:empty}),
+ z.object({action:z.literal('onboarding_complete'),p:z.object({company_ids:z.array(uuid).max(10),removed_company_ids:z.array(uuid).max(50),positions:z.array(onboardingPosition).max(10),analytics_consent:z.boolean().optional()}).strict()}),
  z.object({action:z.literal('history_clear'),p:empty}),z.object({action:z.literal('account'),p:empty}),z.object({action:z.literal('security'),p:empty}),
  z.object({action:z.literal('ticket_create'),p:z.object({request_key:uuid,category:z.enum(['general','data','bug','feedback','privacy']),title:z.string().trim().min(1).max(120),message:z.string().trim().min(1).max(2000)}).strict()}),
  z.object({action:z.literal('ticket_attach'),p:z.object({ticket_id:uuid,object_path:z.string().max(200),filename:z.string().min(1).max(150),mime_type:z.enum(['image/png','image/jpeg','image/webp','application/pdf']),size_bytes:z.number().int().min(1).max(5242880)}).strict()}),

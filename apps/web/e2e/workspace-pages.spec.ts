@@ -25,6 +25,8 @@ async function fixture(page:Page,stepUp=false){
  case 'save':saved=p.saved;data={saved};break;case 'visit':history=preferences.history_enabled;data={recorded:history};break;
  case 'searches':data=searches;break;case 'search_record':if(preferences.history_enabled)searches.push({query:p.query,searched_at:new Date().toISOString()});data={recorded:preferences.history_enabled};break;
  case 'history_clear':searches.splice(0);history=false;data={cleared:true};break;
+ case 'searches_clear':searches.splice(0);data={cleared:true};break;
+ case 'search_delete':{const index=searches.findIndex(item=>item.query===p.query);if(index>=0)searches.splice(index,1);data={deleted:true};break;}
  case 'account':data={created_at:user.created_at,bio:'',tickets};break;
  case 'security':data={sessions:[{id:'50000000-0000-4000-8000-000000000001',created_at:user.created_at,last_seen:user.created_at,user_agent:'Synthetic Chromium',aal:'aal1',current:true}],history:[]};break;
  case 'notifications':data={realtime_enabled:true,notify_min_score:.75};break;case 'notification_save':data={realtime_enabled:true,notify_min_score:.75,...p};break;
@@ -35,32 +37,88 @@ async function fixture(page:Page,stepUp=false){
  return {calls,failSave:()=>{failSave=true;},failSearch:()=>{failSearch=true;},recover:()=>{failSave=false;failSearch=false;}};
 }
 
-test('all nine pages render real-DOM controls with mobile-safe layout',async({page},info)=>{await fixture(page);const screens=[['/explore','검색 / 탐색'],['/search','검색 결과'],[`/companies/${companyId}`,'기업 개요'],['/saved','저장 / 기록'],['/settings/account','계정 정보'],['/settings/security','보안 및 로그인'],['/settings/notifications','알림 설정'],['/settings/appearance','화면 및 언어 설정'],['/help','도움말 및 지원']];for(const [path,title] of screens){await page.goto(path);await expect(page.locator('h1')).toHaveText(title);await expect(page.locator('.ws-skeleton')).toHaveCount(0);await expect(page.locator('.ws-main [role="alert"]')).toHaveCount(0);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);await page.screenshot({path:info.outputPath(path.replaceAll('/','_')+'.png'),fullPage:true});await expect(page.locator('body')).not.toContainText('$ 146.76');}});
+function workspaceMain(page:Page){return page.locator('main.ws-main,main#mobile-main');}
+function mobileViewport(page:Page){return (page.viewportSize()?.width??1280)<768;}
 
-test('search links exact sources and persists save/un-save across navigation',async({page})=>{const f=await fixture(page);await page.goto('/explore');await page.getByLabel('검색어',{exact:true}).fill('10-K');await page.locator('.ws-search-form').getByRole('button',{name:'검색',exact:true}).click();await expect(page).toHaveURL(/q=10-K/);await page.locator('.ws-resource').getByRole('link',{name:'Synthetic Company · 10-K',exact:true}).click();await expect(page).toHaveURL(new RegExp(`/documents/${filingId}`));await page.getByRole('button',{name:/10-K 저장$/,exact:true}).click();await expect(page.getByRole('button',{name:/10-K 저장 취소$/,exact:true})).toBeVisible();await page.goto('/saved');await page.getByRole('navigation',{name:'저장 유형'}).getByRole('button',{name:'북마크한 자료',exact:true}).click();await expect(page.locator('.ws-resource')).toContainText('Synthetic Company');await page.getByRole('button',{name:/10-K 저장 취소$/,exact:true}).click();await expect(page.locator('.ws-resource')).toHaveCount(0);expect(f.calls.filter(x=>x.action==='save').map(x=>x.p.saved)).toEqual([true,false]);});
+test('all nine pages render real-DOM controls with mobile-safe layout',async({page},info)=>{
+ await fixture(page);
+ const screens=[['/explore','검색 / 탐색'],['/search','검색 결과'],[`/companies/${companyId}`,'기업 개요'],['/saved','저장 / 기록'],['/settings/account','계정 정보'],['/settings/security','보안 및 로그인'],['/settings/notifications','알림 설정'],['/settings/appearance','화면 및 언어 설정'],['/help','도움말 및 지원']];
+ for(const [path,title] of screens){
+  await page.goto(path);
+  const main=workspaceMain(page);
+  await expect(main).toBeVisible();
+  if(mobileViewport(page)&&path===`/companies/${companyId}`){
+   await expect(page.locator('.m-detail-header>strong')).toHaveText(title);
+   await expect(main.locator('.m-company-profile h1')).toHaveText(company.title);
+   await expect(main.locator('.m-company-market')).toContainText(company.ticker);
+  }else await expect(main.getByRole('heading',{level:1})).toHaveText(title);
+  await expect(page.locator('.ws-skeleton')).toHaveCount(0);
+  await expect(main.locator('.m-loading,.ws-loading')).toHaveCount(0);
+  await expect(main.getByRole('alert')).toHaveCount(0);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
+  await page.screenshot({path:info.outputPath(path.replaceAll('/','_')+'.png'),fullPage:true});
+  await expect(page.locator('body')).not.toContainText('$ 146.76');
+ }
+});
 
-test('appearance applies durable settings, language, and honest save errors',async({page})=>{const f=await fixture(page);await page.goto('/settings/appearance');await page.getByRole('radio',{name:/다크 모드/}).click();await expect(page.locator('html')).toHaveAttribute('data-sb-theme','dark');await page.reload();await expect(page.locator('html')).toHaveAttribute('data-sb-theme','dark');await page.getByRole('radio',{name:'English 영어'}).click();await expect(page.locator('h1')).toHaveText('Appearance & language');f.failSave();await page.getByRole('radio',{name:/Light A clear/}).click();await expect(page.locator('.ws-main [role="alert"]').first()).toBeVisible();await expect(page.locator('html')).toHaveAttribute('data-sb-theme','dark');});
+test('search links exact sources and persists save/un-save across navigation',async({page})=>{
+ const f=await fixture(page),mobile=mobileViewport(page);
+ await page.goto('/explore');
+ await page.getByLabel(mobile?'기업명 또는 키워드 검색':'검색어',{exact:true}).fill('10-K');
+ await page.locator(mobile?'.m-search-input':'.ws-search-form').getByRole('button',{name:'검색',exact:true}).click();
+ await expect(page).toHaveURL(/q=10-K/);
+ const source=mobile?page.locator('.m-search-result-resource').filter({hasText:filing.title}):page.locator('.ws-resource').getByRole('link',{name:filing.title,exact:true});
+ await expect(source).toHaveAttribute('href',`/documents/${filingId}?kind=filing`);
+ await source.click();
+ await expect(page).toHaveURL(new RegExp(`/documents/${filingId}`));
+ await page.getByRole('button',{name:/10-K 저장$/,exact:true}).click();
+ await expect(page.getByRole('button',{name:/10-K 저장 취소$/,exact:true})).toBeVisible();
+ await page.goto('/saved');
+ await page.getByRole('navigation',{name:'저장 유형'}).getByRole('button',{name:mobile?'북마크한 문서':'북마크한 자료',exact:true}).click();
+ const cards=page.locator(mobile?'.m-saved-card':'.ws-resource');
+ await expect(cards).toHaveCount(1);
+ await expect(cards).toContainText('Synthetic Company');
+ await page.getByRole('button',{name:/10-K 저장 취소$/,exact:true}).click();
+ await expect(cards).toHaveCount(0);
+ expect(f.calls.filter(x=>x.action==='save').map(x=>x.p.saved)).toEqual([true,false]);
+});
+
+test('appearance applies durable settings, language, and honest save errors',async({page})=>{const f=await fixture(page);await page.goto('/settings/appearance');await page.getByRole('radio',{name:/다크 모드/}).click();await expect(page.locator('html')).toHaveAttribute('data-sb-theme','dark');await page.reload();await expect(page.locator('html')).toHaveAttribute('data-sb-theme','dark');await page.getByRole('radio',{name:'English 영어'}).click();await expect(workspaceMain(page).getByRole('heading',{level:1})).toHaveText('Appearance & language');f.failSave();await page.getByRole('radio',{name:/Light A clear/}).click();await expect(workspaceMain(page).getByRole('alert').first()).toBeVisible();await expect(page.locator('html')).toHaveAttribute('data-sb-theme','dark');});
 
 test('notifications persist controls but never fake email delivery',async({page})=>{const f=await fixture(page);await page.goto('/settings/notifications');await expect(page.getByRole('switch',{name:'이메일 알림 — 미제공'})).toBeDisabled();await page.getByRole('switch',{name:'방해 금지 시간',exact:true}).click();await expect.poll(()=>f.calls.filter(x=>x.action==='preferences_save').at(-1)?.p).toMatchObject({value:{quiet_enabled:true}});await page.getByRole('slider',{name:'일일 최대 알림 수'}).press('Home');for(let i=0;i<4;i++)await page.getByRole('slider',{name:'일일 최대 알림 수'}).press('ArrowRight');await page.getByRole('button',{name:'최대 수 적용'}).click();await expect.poll(()=>f.calls.filter(x=>x.action==='preferences_save').at(-1)?.p).toMatchObject({value:{daily_cap:5}});});
 
-test('help search, FAQs and support submission use actual form and returned ticket',async({page})=>{const f=await fixture(page);await page.goto('/help');await page.getByLabel('도움말 검색').fill('zzzz-nomatch');await page.locator('.ws-help-hero .ws-search-form').getByRole('button',{name:'검색'}).click();await expect(page.locator('details.ws-faq')).toHaveCount(0);await page.getByLabel('도움말 검색').fill('');await page.locator('.ws-help-hero .ws-search-form').getByRole('button',{name:'검색'}).click();await page.locator('.ws-faq summary').first().click();await expect(page.locator('details.ws-faq').first()).toHaveAttribute('open','');await page.getByLabel('제목',{exact:true}).fill('Synthetic browser request');await page.getByLabel('문의 내용',{exact:true}).fill('Synthetic message, not sent to production.');await page.getByRole('button',{name:'문의 내용 제출하기'}).click();await expect.poll(()=>f.calls.filter(x=>x.action==='ticket_create').length).toBe(1);await expect(page.locator('.ws-main')).toContainText('Synthetic browser request');});
+test('help search, FAQs and support submission use actual form and returned ticket',async({page})=>{const f=await fixture(page);await page.goto('/help');await page.getByLabel('도움말 검색').fill('zzzz-nomatch');await page.locator('.ws-help-hero .ws-search-form').getByRole('button',{name:'검색'}).click();await expect(page.locator('details.ws-faq')).toHaveCount(0);await page.getByLabel('도움말 검색').fill('');await page.locator('.ws-help-hero .ws-search-form').getByRole('button',{name:'검색'}).click();await page.locator('.ws-faq summary').first().click();await expect(page.locator('details.ws-faq').first()).toHaveAttribute('open','');await page.getByLabel('제목',{exact:true}).fill('Synthetic browser request');await page.getByLabel('문의 내용',{exact:true}).fill('Synthetic message, not sent to production.');await page.getByRole('button',{name:'문의 내용 제출하기'}).click();await expect.poll(()=>f.calls.filter(x=>x.action==='ticket_create').length).toBe(1);await expect(workspaceMain(page)).toContainText('Synthetic browser request');});
 
 test('MFA never reports enabled before Auth verification',async({page})=>{await fixture(page);await page.goto('/settings/security');await page.getByRole('button',{name:'2단계 인증 설정',exact:true}).click();await expect(page.getByRole('dialog')).toBeVisible();await page.getByRole('dialog').click({position:{x:8,y:8}});await expect(page.getByRole('dialog')).toBeVisible();await page.getByLabel('인증 코드',{exact:true}).fill('123456');await page.getByRole('button',{name:'인증 후 활성화'}).click();await expect(page.getByRole('dialog')).toHaveCount(0);await expect(page.getByRole('button',{name:'관리',exact:true})).toBeVisible();});
 
-test('data outages show retry rather than fabricated empty success',async({page})=>{const f=await fixture(page);f.failSearch();await page.goto('/search');await expect(page.locator('.ws-main [role="alert"]')).toBeVisible();await expect(page.locator('.ws-resource')).toHaveCount(0);f.recover();await page.locator('.ws-main [role="alert"]').getByRole('button').click();await expect(page.locator('.ws-resource')).toHaveCount(2);});
+test('data outages show retry rather than fabricated empty success',async({page})=>{
+ const f=await fixture(page),mobile=mobileViewport(page);
+ f.failSearch();await page.goto('/search');
+ const alerts=workspaceMain(page).getByRole('alert'),expectedRequests=mobile?4:1;
+ await expect(alerts).toHaveCount(expectedRequests);
+ for(const alert of await alerts.all())await expect(alert).toBeVisible();
+ const resources=page.locator(mobile?'.m-search-result-company,.m-search-result-resource':'.ws-resource');
+ await expect(resources).toHaveCount(0);
+ f.recover();
+ for(let remaining=expectedRequests;remaining>0;remaining--){
+  await alerts.first().getByRole('button',{name:'다시 시도',exact:true}).click();
+  await expect(alerts).toHaveCount(remaining-1);
+ }
+ await expect(resources).toHaveCount(2);
+});
 
 
 test('MFA step-up blocks the workspace until the Auth code is verified',async({page})=>{
  const f=await fixture(page,true);
  await page.goto('/settings/account');
  await expect(page.getByRole('heading',{level:1,name:'2단계 인증',exact:true})).toBeVisible();
- await expect(page.locator('.ws-main')).toHaveCount(0);
+ await expect(workspaceMain(page)).toHaveCount(0);
  expect(f.calls).toHaveLength(0);
  await page.getByLabel('인증 앱 코드',{exact:true}).fill('000000');
  await page.getByRole('button',{name:'인증하고 계속하기'}).click();
  await expect(page.locator('.mfa-screen [role="alert"]')).toBeVisible();
- await expect(page.locator('.ws-main')).toHaveCount(0);
+ await expect(workspaceMain(page)).toHaveCount(0);
  await page.getByLabel('인증 앱 코드',{exact:true}).fill('123456');
  await page.getByRole('button',{name:'인증하고 계속하기'}).click();
- await expect(page.locator('.ws-main h1')).toHaveText('계정 정보');
+ await expect(workspaceMain(page).getByRole('heading',{level:1})).toHaveText('계정 정보');
 });

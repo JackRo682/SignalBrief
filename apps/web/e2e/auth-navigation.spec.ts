@@ -8,6 +8,12 @@ async function publicAuth(page:Page){
   await page.route('**/api/auth-config',r=>r.fulfill({json:{url:'https://test-project.supabase.co',publishableKey:'sb_publishable_isolated_fixture'}}));
   await page.route('**/api/public-stats',r=>r.fulfill({json:{}}));
 }
+async function expectExpiredWorkspaceLogin(page:Page){
+  if(test.info().project.name==='mobile'){
+    await expect(page).toHaveURL(/\/login\?next=%2Ftoday$/);
+    expect(new URL(page.url()).searchParams.get('next')).toBe('/today');
+  }else await expect(page).toHaveURL(/\/login$/);
+}
 test('public CTAs and all five header information pages have real destinations',async({page})=>{
   await publicAuth(page);await page.goto('/');
   await page.locator('.v-actions').getByRole('link',{name:'무료로 시작하기'}).click();
@@ -41,7 +47,7 @@ test('slow auth keeps a content skeleton and redirects anonymous visitors withou
   await page.route('**/v1/config',async r=>{await held;await r.fulfill({json:{auth_mode:'supabase',demo_mode:false,demo_admin_enabled:false}});});
   await page.goto('/today');await expect(page.locator('.referenceLoadingShell')).toBeVisible();
   await expect(page.locator('body')).not.toContainText('계정을 확인하고 있습니다');release();
-  await expect(page).toHaveURL(/\/login$/);await expect(page.getByRole('button',{name:'로그인',exact:true})).toBeVisible();
+  await expectExpiredWorkspaceLogin(page);await expect(page.getByRole('button',{name:'로그인',exact:true})).toBeVisible();
 });
 test('expired sessions go to login without showing protocol error toasts',async({page})=>{
   await page.addInitScript(()=>sessionStorage.setItem('signalbrief.demo.token','isolated-synthetic-token'));
@@ -51,7 +57,7 @@ test('expired sessions go to login without showing protocol error toasts',async(
     else if(path.endsWith('/me'))await route.fulfill({json:{id:'fixture-user',display_name:'Test',density:'advanced',onboarding_completed:true,analytics_consent:false,is_admin:false,demo_mode:true}});
     else await route.fulfill({status:401,json:{error:{code:'authentication_required'}}});
   });
-  await page.goto('/today');await expect(page).toHaveURL(/\/login$/);
+  await page.goto('/today');await expectExpiredWorkspaceLogin(page);
   await expect(page.locator('body')).not.toContainText('authentication_required');
   await expect(page.locator('.referenceError')).toHaveCount(0);
 });
