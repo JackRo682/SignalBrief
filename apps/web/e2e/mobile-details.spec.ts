@@ -18,9 +18,27 @@ async function healthy(page:Page,fixture:MobileFixture){
 async function capture(page:Page,info:TestInfo,fixture:MobileFixture,name:string){
  await healthy(page,fixture);
  await page.evaluate(async()=>{window.scrollTo(0,0);await document.fonts.ready;await Promise.all([...document.images].filter(image=>{const box=image.getBoundingClientRect();return box.width>0&&box.height>0&&box.bottom>0&&box.top<innerHeight;}).map(async image=>{let timer:ReturnType<typeof setTimeout>|undefined;try{await Promise.race([image.decode(),new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new Error(`Image did not decode: ${image.getAttribute('src')}`)),10000);})]);if(!image.naturalWidth)throw new Error('Visible image is broken');}finally{if(timer!==undefined)clearTimeout(timer);}}));});
- const layout=await page.evaluate(()=>['.m-detail-header','.m-brand-header','.m-main','.m-question-context','.m-question-user-row','.m-question-answer','.m-question-compose','.m-document-hero','.m-document-summary-card','.m-document-metric','.m-document-toc','.m-document-related-grid','.m-timeline-company','.m-timeline-filters','.m-timeline-item','.m-timeline-insights','.m-account-profile','.m-account-row','.m-security-summary','.m-security-password','.m-appearance-preview','.m-appearance-row','.m-help-hero','.m-help-faq','.mc-heading','.mc-month','.m-calendar-item','.mn-card','.mn-summary','.m-alert-card'].flatMap(selector=>[...document.querySelectorAll(selector)].map((node,index)=>{const rect=node.getBoundingClientRect(),style=getComputedStyle(node);return {selector,index,x:rect.x,y:rect.y,width:rect.width,height:rect.height,padding:style.padding,margin:style.margin,fontSize:style.fontSize,lineHeight:style.lineHeight};})));
+ const layout=await page.evaluate(()=>['.m-detail-header','.m-brand-header','.m-main','.m-question-context','.m-question-user-row','.m-question-answer','.m-question-compose','.m-document-hero','.m-document-summary-card','.m-document-metric','.m-document-toc','.m-document-related-grid','.m-timeline-company','.m-timeline-filters','.m-timeline-item','.m-timeline-insights','.m-account-profile','.m-account-row','.m-security-summary','.m-security-password','.m-appearance-preview','.m-preview-phone','.m-preview-brand','.m-preview-company','.m-preview-phone>h3','.m-appearance-control input[type=range]','.m-appearance-row','.m-help-hero','.m-help-faq','.mc-heading','.mc-month','.m-calendar-item','.mn-card','.mn-summary','.m-alert-card'].flatMap(selector=>[...document.querySelectorAll(selector)].map((node,index)=>{const rect=node.getBoundingClientRect(),style=getComputedStyle(node);return {selector,index,x:rect.x,y:rect.y,width:rect.width,height:rect.height,padding:style.padding,margin:style.margin,fontSize:style.fontSize,lineHeight:style.lineHeight};})));
  await writeFile(info.outputPath(`${name}-layout.json`),JSON.stringify(layout,null,2));
  await page.screenshot({path:info.outputPath(`${name}.png`),animations:'disabled',scale:'css'});
+}
+async function assertSystemDarkContrast(page:Page,info:TestInfo,name:string,selectors:string[]){
+ await expect(page.locator('html')).toHaveAttribute('data-sb-theme','system');
+ expect(await page.evaluate(()=>matchMedia('(prefers-color-scheme: dark)').matches)).toBe(true);
+ const checks=await page.evaluate((selectors)=>{
+  const rgb=(color:string)=>{const values=color.match(/[\d.]+/g)?.map(Number);if(!values||values.length<3)throw new Error(`Unsupported computed color: ${color}`);return values;};
+  const luminance=(color:number[])=>{const [r,g,b]=color.map(v=>{const s=v/255;return s<=.04045?s/12.92:((s+.055)/1.055)**2.4;});return .2126*r+.7152*g+.0722*b;};
+  return selectors.map(selector=>{
+   const node=document.querySelector(selector);if(!node)throw new Error(`Missing contrast target: ${selector}`);
+   const foreground=getComputedStyle(node).color;let parent:Element|null=node,background='';
+   while(parent){const color=getComputedStyle(parent).backgroundColor,channels=rgb(color);if(channels.length<4||channels[3]===1){background=color;break;}if(channels[3]!==0)throw new Error(`Translucent contrast target: ${selector}`);parent=parent.parentElement;}
+   if(!background)throw new Error(`No opaque background for ${selector}`);
+   const fg=luminance(rgb(foreground)),bg=luminance(rgb(background));
+   return {selector,foreground,background,backgroundLuminance:bg,contrast:(Math.max(fg,bg)+.05)/(Math.min(fg,bg)+.05)};
+  });
+ },selectors);
+ await writeFile(info.outputPath(`${name}-contrast.json`),JSON.stringify(checks,null,2));
+ for(const check of checks){expect(check.backgroundLuminance,`${check.selector} uses a dark system surface`).toBeLessThan(.15);expect(check.contrast,`${check.selector}: ${check.foreground} on ${check.background}`).toBeGreaterThanOrEqual(check.selector.includes('m-header-actions')?3:4.5);}
 }
 function seedConversation(fixture:MobileFixture){
  const detail=eventDetails.get(eventId)!;
@@ -55,7 +73,7 @@ for(const viewport of [{width:432,height:768},{width:390,height:844}]){
     if(screen.name==='01-ai-followup')await expect(footer(page)).toHaveCount(0);else await expect(footer(page)).toBeVisible();
     if(screen.name==='04-document')await expect(footer(page).getByRole('link',{name:'저장 / 기록',exact:true})).toHaveAttribute('aria-current','page');
     if(screen.name==='08-timeline')await expect(footer(page).getByRole('link',{name:'관심종목',exact:true})).toHaveAttribute('aria-current','page');
-    if(screen.name==='02-appearance'){await expect(page.locator('.m-preview-company')).toHaveCount(2);for(const price of await page.locator('.m-preview-company>div>strong').all())await expect(price).toContainText(/[0-9]/);}
+    if(screen.name==='02-appearance'){await expect(page.locator('.m-preview-company')).toHaveCount(2);for(const price of await page.locator('.m-preview-company>div>strong').all())await expect(price).toContainText(/[0-9]/);if(viewport.width===432){const preview=await page.locator('.m-appearance-preview').boundingBox();expect(preview).not.toBeNull();expect(preview!.height,'Reference appearance preview remains compact').toBeLessThanOrEqual(185);expect(preview!.y,'Reference appearance preview begins below the compact header and intro').toBeLessThanOrEqual(100);}}
     if(screen.name==='08-timeline'){await expect(page.locator('.m-timeline-company-name>strong')).toHaveText(companies[0].name);await expect(page.locator('.m-timeline-quote>strong')).toContainText(/[0-9]/);}
     if(screen.name==='05-security')await expect(page.getByRole('switch',{name:'2단계 인증',exact:true})).toHaveAttribute('aria-checked','false');
     if(screen.name==='06-account'){await expect(page.locator('.m-account-email')).toHaveText('mobile-fixture@example.invalid');await expect(page.locator('.m-account-profile h2')).toContainText(fixture.state.profile.display_name!);}
@@ -166,6 +184,15 @@ for(const viewport of [{width:432,height:768},{width:390,height:844}]){
    await expect.poll(()=>page.evaluate(()=>document.documentElement.style.getPropertyValue('--sb-font-scale'))).toBe('1.16');
    for(const path of ['/settings/appearance','/settings/notifications','/calendar','/alerts',`/companies/${companyId}/timeline`,`/documents/${documents[0].id}?kind=document`]){await page.goto(path);await expect(main(page).getByRole('heading',{level:1})).toHaveCount(1);await expect.poll(()=>page.evaluate(()=>document.documentElement.style.getPropertyValue('--sb-font-scale'))).toBe('1.16');await healthy(page,fixture);}
    await capture(page,info,fixture,'12-document-large-text');
+   await page.emulateMedia({colorScheme:'dark'});await page.goto('/settings/appearance');
+   await page.getByRole('radio',{name:'시스템',exact:true}).click();await expect.poll(()=>fixture.state.preferences.theme).toBe('system');
+   const darkPages=[
+    {path:'/help',name:'13-help-system-dark',ready:'.m-help-hero',selectors:['.m-help-hero h2','.m-help-faq.open p','.m-help-chips>button','.m-detail-header .m-header-actions .m-icon-button svg'],screenshot:true},
+    {path:'/settings/account',name:'14-account-system-dark',ready:'.m-account-info',selectors:['.m-account-info strong','.m-account-info p','.m-account-profile>button','.m-detail-header .m-header-actions .m-icon-button svg'],screenshot:false},
+    {path:'/settings/security',name:'15-security-system-dark',ready:'.m-security-record em',selectors:['.m-security-summary h2','.m-security-record em','.m-detail-header .m-header-actions .m-icon-button svg'],screenshot:true},
+   ];
+   for(const screen of darkPages){await page.goto(screen.path);await expect(page.locator(screen.ready).first()).toBeVisible();await healthy(page,fixture);await assertSystemDarkContrast(page,info,screen.name,screen.selectors);if(screen.screenshot)await capture(page,info,fixture,screen.name);}
+
   });
  });
 }

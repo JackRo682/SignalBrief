@@ -8,3 +8,6 @@
 .m-calendar-page .mc-list-heading select{min-height:22px;height:auto;width:auto}.m-alert-page .ma-filters select{min-height:18px;height:auto;border-radius:0}.m-calendar-page .mc-scope select{min-height:30px;width:auto}
 /* Preserve this compact calendar when another route loaded legacy collections. */
 .m-calendar-page .mc-grid{gap:0}.m-calendar-page .mc-grid>button.other{opacity:1}.m-calendar-page .mc-grid>button.selected{background:transparent;color:var(--m-ink);border:0;opacity:1}.m-calendar-page .mc-grid>button.selected>span>i{background:var(--m-blue)}.m-alert-page .ma-card.unread{background:var(--m-surface);border-color:var(--m-line)}.m-alert-page .ma-title{margin:0}
+
+/* A block badge avoids an inherited 21px inline line box in compact date cards. */
+.m-calendar-page .mc-category{display:block;width:fit-content}.m-calendar-page .mc-month>header{margin-bottom:2px}.m-calendar-page .mc-weekdays span{padding:2px 0}.m-calendar-page .mc-grid button{height:26px}.m-calendar-page .mc-grid button strong{height:22px}.m-calendar-page .mc-month{padding-bottom:5px}

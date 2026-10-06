@@ -27,7 +27,7 @@
 .m-question-citations{list-style:none;margin:13px 0 0;padding:0;display:grid;gap:14px}
 .m-question-citations>li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:9px;align-items:start}
 .sb-mobile .m-question-citations h3{font-size:calc(13px * var(--sb-font-scale,1));line-height:1.45;margin:2px 0 2px}
-.m-question-citations blockquote{font-size:calc(12px * var(--sb-font-scale,1));color:var(--m-muted);line-height:1.55;margin:0 0 4px;white-space:pre-wrap;overflow-wrap:anywhere}
+.m-question-citations blockquote{padding:0;border:0;border-radius:0;background:transparent;font-size:calc(12px * var(--sb-font-scale,1));color:var(--m-muted);line-height:1.55;margin:0 0 4px;white-space:pre-wrap;overflow-wrap:anywhere}
 .m-question-citations a{display:inline-flex;align-items:center;gap:6px;background:var(--m-soft);color:var(--m-blue);font-size:calc(10px * var(--sb-font-scale,1));font-weight:650;border-radius:8px;padding:3px 8px;max-width:100%}
 .m-question-citations>li>div>.m-muted{font-size:calc(10px * var(--sb-font-scale,1))}
 .m-question-answer-time{display:block;text-align:right;color:var(--m-muted);font-size:calc(9px * var(--sb-font-scale,1));margin-top:3px}

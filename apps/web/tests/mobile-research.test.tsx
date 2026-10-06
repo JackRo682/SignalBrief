@@ -139,7 +139,7 @@ describe('numbered mobile conversation citations',()=>{
  it('puts a selected evidence prompt into the real composer and retains it after a request failure',async()=>{
   mocks.failQuestion=true;render(<MobileQuestions eventId={eventId}/>);
   const suggestion=screen.getByRole('button',{name:'매출 수치 근거'});await waitFor(()=>expect(suggestion).toBeEnabled());fireEvent.click(suggestion);
-  const input=screen.getByLabelText('공시에 관한 질문');expect(input).toHaveValue('매출 수치의 근거를 보여줘');
+  const input=screen.getByRole('textbox',{name:'공시에 관한 질문'});expect(input).toHaveValue('매출 수치의 근거를 보여줘');expect(input).toHaveAccessibleName('공시에 관한 질문');expect(document.getElementById(input.getAttribute('aria-labelledby')??'')).toHaveTextContent('공시에 관한 질문');
   fireEvent.click(screen.getByRole('button',{name:'질문 보내기'}));
   expect(await screen.findByRole('alert')).toHaveTextContent('Synthetic question failed');expect(input).toHaveValue('매출 수치의 근거를 보여줘');
   expect(mocks.request).toHaveBeenCalledWith(`/v1/events/${eventId}/questions`,'isolated-research-token',expect.anything(),{method:'POST',body:JSON.stringify({question:'매출 수치의 근거를 보여줘'})});

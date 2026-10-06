@@ -113,7 +113,11 @@ Source text and quotes remain complete. Sections paginate 12 at a time with
 `sections_total` and `next_section_offset`; other arrays have an explicit cap of
 50 and separate full counts. Prior-period evidence links to an actually visible
 current event when its origin event is not published. Rejection of an ancestor
-continues to hide the dependent analysis.
+continues to hide the dependent analysis. The final release-hardening predicate
+also requires persisted supported validation verdicts and a reviewed publication
+chain. Missing validation or an unreviewed predecessor keeps both the dependent
+event and its document unavailable. A previously published superseded origin
+retains its own public source link and summary.
 
 Missing file size, MIME type and page count remain null. SEC form names do not
 establish a PDF type or page count. A filing's stored checksum identifies its
@@ -161,6 +165,10 @@ coverage remains deferred. The fresh `/api/us/auth-diagnostic` result at
 callback/client-ID format, with interactive sign-in explicitly unverified. An
 older persisted Google error in provider history does not replace that newer,
 narrower initiation check. No account or provider configuration was changed.
+The same read-only database check found four supported non-demo SEC companies,
+zero published events and zero collected SEC filings. Those are content-coverage
+limits, so empty feeds and unavailable document/AI context remain truthful until
+real sources are collected, validated and published.
 
 ## Verification and release evidence
 

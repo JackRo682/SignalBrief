@@ -120,14 +120,15 @@ def document_denied(db, payload, code):
     assert caught.value.orig.sqlstate == code
 
 
-def seed_reviewed_document(db, chunks=1, state='published', is_demo=False):
-    """Synthetic source material, confined to the disposable replay transaction."""
-    from datetime import datetime, timezone
+def seed_reviewed_document(db, chunks=1, state='published', is_demo=False,
+                           published_days_ago=0, has_publication_marker=True):
+    """Synthetic reviewed evidence satisfying the replayed release-hardening rules."""
+    from datetime import datetime, timedelta, timezone
     from uuid import uuid4
 
-    from signalbrief.models import AIRun, Brief, Chunk, Document, Event, Fact, RawBlob
+    from signalbrief.models import AIRun, Brief, Chunk, Document, Event, Fact, RawBlob, Validation
 
-    stamp = datetime.now(timezone.utc)
+    stamp = datetime.now(timezone.utc) - timedelta(days=published_days_ago)
     doc, run, event = [str(uuid4()) for _ in range(3)]
     sha = uuid4().hex * 2
     full_quote = 'Synthetic reviewed source quote: 999999999999.12345678 USD. ' * 100
@@ -140,10 +141,10 @@ def seed_reviewed_document(db, chunks=1, state='published', is_demo=False):
         publication_precision='timestamp', publication_timezone='America/New_York', raw_sha256=sha,
         provider_metadata={'private_provider_field': 'must-not-leak'}, state='complete', is_demo=is_demo))
     db.execute(AIRun.__table__.insert().values(id=run, document_id=doc, stage='extract', model='synthetic-test',
-        prompt_version='test', pipeline_version='test', status='completed', validation_result={}))
+        prompt_version='test', pipeline_version='test', status='validated', validation_result={}))
     db.execute(Event.__table__.insert().values(id=event, company_id=C, document_id=doc, run_id=run, revision='test',
         title='Synthetic reviewed event', event_type='earnings', state=state, published_at=stamp,
-        published_to_users_at=stamp if state == 'published' else None))
+        published_to_users_at=stamp if state in ('published', 'superseded') and has_publication_marker else None))
     db.execute(Brief.__table__.insert().values(event_id=event, headline='Synthetic reviewed headline',
         what_happened=full_quote, interpretation='Synthetic interpretation', uncertainty='Synthetic uncertainty',
         monitor_next='Synthetic next check', template_version='test'))
@@ -157,6 +158,11 @@ def seed_reviewed_document(db, chunks=1, state='published', is_demo=False):
             db.execute(Fact.__table__.insert().values(id=fact, event_id=event, chunk_id=chunk, field='revenue',
                 quote=full_quote, value_raw='999999999999.12345678', unit='USD', period='FY 2026',
                 scope='consolidated', basis='reported', validation_status='supported'))
+            # A supported fact alone is insufficient: the final sb_event_visible
+            # also requires persisted supported validation verdicts for its lineage.
+            db.execute(Validation.__table__.insert().values(event_id=event, claim_key=f'fact.{index}',
+                status='supported', reason='Synthetic exact quote and numeric value are present in this chunk.',
+                validator_version='synthetic-test'))
             facts.append(fact)
             readable.append(chunk)
     db.exec_driver_sql('SET LOCAL ROLE authenticated')
@@ -228,7 +234,12 @@ def test_document_detail_rejects_hidden_documents_and_identity_or_offset_injecti
 def test_document_detail_links_prior_evidence_only_to_a_visible_current_event(own):
     from signalbrief.models import Change
 
-    previous = seed_reviewed_document(own, state='needs_review')
+    # Explicit boundary: a superseded origin without its own publication marker
+    # is not a public event. The existing hardening predicate still permits its
+    # validated facts through a published current comparison; do not relax it.
+    previous = seed_reviewed_document(own, state='superseded', published_days_ago=1,
+                                      has_publication_marker=False)
+    document_denied(own, {'id': previous['id'], 'kind': 'document'}, 'PT404')
     current = seed_reviewed_document(own)
     own.exec_driver_sql('RESET ROLE')
     own.execute(Change.__table__.insert().values(event_id=current['event'], current_fact_id=current['facts'][0],
@@ -245,6 +256,53 @@ def test_document_detail_links_prior_evidence_only_to_a_visible_current_event(ow
     own.exec_driver_sql('SET LOCAL ROLE authenticated')
     document_denied(own, {'id': previous['id'], 'kind': 'document'}, 'PT404')
     document_denied(own, {'id': current['id'], 'kind': 'document'}, 'PT404')
+
+
+def test_document_detail_preserves_a_previously_published_superseded_origin(own):
+    from signalbrief.models import Change
+
+    previous = seed_reviewed_document(own, state='superseded', published_days_ago=1)
+    current = seed_reviewed_document(own)
+    own.exec_driver_sql('RESET ROLE')
+    own.execute(Change.__table__.insert().values(event_id=current['event'], current_fact_id=current['facts'][0],
+        previous_fact_id=previous['facts'][0], field='revenue', change_type='increased'))
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+    result = document_rpc(own, {'id': previous['id'], 'kind': 'document'})
+    assert result['summaries'][0]['event_id'] == previous['event']
+    assert result['summaries'][0]['text'] == previous['quote']
+    assert result['facts'][0]['event_id'] == result['facts'][0]['origin_event_id'] == previous['event']
+    assert [event['id'] for event in result['events']] == [current['event'], previous['event']]
+    assert result['sections'][0]['content'] == previous['quote']
+    assert document_rpc(own, {'id': current['id'], 'kind': 'document'})['document']['id'] == current['id']
+
+
+def test_document_detail_does_not_publish_a_current_event_with_an_unreviewed_ancestor(own):
+    from signalbrief.models import Change
+
+    previous = seed_reviewed_document(own, state='needs_review', published_days_ago=1)
+    current = seed_reviewed_document(own)
+    assert document_rpc(own, {'id': current['id'], 'kind': 'document'})['document']['id'] == current['id']
+    own.exec_driver_sql('RESET ROLE')
+    own.execute(Change.__table__.insert().values(event_id=current['event'], current_fact_id=current['facts'][0],
+        previous_fact_id=previous['facts'][0], field='revenue', change_type='increased'))
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+    assert own.execute(text('SELECT app_private.sb_event_visible(:id)'), {'id': current['event']}).scalar() is False
+    document_denied(own, {'id': previous['id'], 'kind': 'document'}, 'PT404')
+    document_denied(own, {'id': current['id'], 'kind': 'document'}, 'PT404')
+
+
+@pytest.mark.parametrize('verdict', [None, 'unsupported'])
+def test_document_detail_requires_a_persisted_supported_validation(own, verdict):
+    doc = seed_reviewed_document(own)
+    assert document_rpc(own, {'id': doc['id'], 'kind': 'document'})['document']['id'] == doc['id']
+    own.exec_driver_sql('RESET ROLE')
+    if verdict is None:
+        own.execute(text('DELETE FROM public.validations WHERE event_id=:id'), {'id': doc['event']})
+    else:
+        own.execute(text('UPDATE public.validations SET status=:status WHERE event_id=:id'),
+                    {'id': doc['event'], 'status': verdict})
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+    document_denied(own, {'id': doc['id'], 'kind': 'document'}, 'PT404')
 
 
 def test_document_detail_enforces_auth_mfa_and_narrow_function_privileges(own):
