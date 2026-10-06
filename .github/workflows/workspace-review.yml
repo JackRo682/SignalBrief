@@ -2,7 +2,7 @@ name: Review recovered workspace pages
 on:
   push:
     branches: [codex/workspace-pages-20261005]
-    paths: [.github/workflows/workspace-review.yml, .workspace-release/review-fixes.patch]
+    paths: [.github/workflows/workspace-review.yml, '.workspace-release/review0*']
 permissions:
   contents: read
 jobs:
@@ -12,13 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: {persist-credentials: false}
-      - name: Recover exact implementation
+      - name: Recover exact implementation and reviewed fixes
         run: |
           cat .workspace-release/part0* | base64 -d | xz -d > /tmp/workspace.patch
           echo '3111bea4d1653c9aa22c3d3839f56fbffe131bf1e7f4f6b8a9df7f4f6346dc07  /tmp/workspace.patch' | sha256sum -c -
           git apply --check /tmp/workspace.patch
           git apply /tmp/workspace.patch
-          if test -f .workspace-release/review-fixes.patch; then git apply --check .workspace-release/review-fixes.patch; git apply .workspace-release/review-fixes.patch; fi
+          cat .workspace-release/review0* | base64 -d | xz -d > /tmp/review.patch
+          echo 'e365aaa625b3ff089084ee7fd009a0176386f1c64fa966c2244acb9ff5b268e3  /tmp/review.patch' | sha256sum -c -
+          git apply --check /tmp/review.patch
+          git apply /tmp/review.patch
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
       - name: Install and validate web
@@ -62,12 +65,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: {persist-credentials: false}
-      - name: Recover exact implementation
+      - name: Recover exact implementation and reviewed fixes
         run: |
           cat .workspace-release/part0* | base64 -d | xz -d > /tmp/workspace.patch
           echo '3111bea4d1653c9aa22c3d3839f56fbffe131bf1e7f4f6b8a9df7f4f6346dc07  /tmp/workspace.patch' | sha256sum -c -
+          git apply --check /tmp/workspace.patch
           git apply /tmp/workspace.patch
-          if test -f .workspace-release/review-fixes.patch; then git apply --check .workspace-release/review-fixes.patch; git apply .workspace-release/review-fixes.patch; fi
+          cat .workspace-release/review0* | base64 -d | xz -d > /tmp/review.patch
+          echo 'e365aaa625b3ff089084ee7fd009a0176386f1c64fa966c2244acb9ff5b268e3  /tmp/review.patch' | sha256sum -c -
+          git apply --check /tmp/review.patch
+          git apply /tmp/review.patch
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - run: pip install -e '.[dev]'
