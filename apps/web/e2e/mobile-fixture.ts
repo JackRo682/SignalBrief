@@ -1,7 +1,7 @@
 import {type Page, type Route} from '@playwright/test';
 import {z} from 'zod';
 import {answerSchema, calendarSchema, detailSchema, eventSchema, meSchema, notificationsSchema, portfolioSchema, type Company} from '../src/lib/contracts';
-import {companyDetailSchema, defaults, preferenceSchema, resourceSchema, workspaceRequest, type Preferences, type Resource, type WorkspaceRequest} from '../src/workspace/contracts';
+import {companyDetailSchema, documentDetailSchema, defaults, preferenceSchema, resourceSchema, workspaceRequest, type Preferences, type Resource, type WorkspaceRequest} from '../src/workspace/contracts';
 
 // All prices, disclosures, accounts and mutations below are synthetic, local to this E2E suite.
 // The browser never reads or writes a production account or a live financial provider.
@@ -32,7 +32,7 @@ export const companyResources: Resource[] = companies.map(company => resourceSch
 const eventResources: Resource[] = events.map(event => ({...companyResources.find(c => c.id === event.company.id)!, id: event.id, kind: 'event', title: event.headline, summary: event.what_happened, source_url: event.source_url, published_at: event.published_at, category: event.event_type}));
 export const documents: Resource[] = events.map((event, i) => ({...eventResources[i], id: event.source_document.id, kind: i % 2 ? 'filing' : 'document', title: event.source_document.title, summary: '합성 검증 자료: 매출과 사업 현황에 관한 원문 및 인용 위치.', category: i % 2 ? '10-Q' : '실적 보고서'}));
 const resources = [...companyResources, ...eventResources, ...documents];
-const details = new Map(events.map((event, i) => {
+export const eventDetails = new Map(events.map((event, i) => {
   const facts = [
     ['revenue', '45000', 'Synthetic fixture: Revenue was USD 45,000 million for the quarter.'],
     ['operating_income', '12984', 'Synthetic fixture: Operating income was USD 12,984 million.'],
@@ -48,6 +48,7 @@ const details = new Map(events.map((event, i) => {
     run: {id: uid(8, i + 1), stage: 'brief', model: 'synthetic-fixture', model_version: 'v1', prompt_version: 'v1', pipeline_version: 'v1', status: 'completed', latency_ms: 10, input_tokens: null, output_tokens: null, cost_usd: null, error_code: null, created_at: fixtureNow, finished_at: fixtureNow, validation_result: {supported: true}}});
   return [event.id, detail] as const;
 }));
+const details=eventDetails;
 type Position = z.infer<typeof portfolioSchema>['positions'][number];
 type Question = {id: string; event_id: string; question: string; answer: z.infer<typeof answerSchema>; created_at: string};
 type Options = {onboarding?: boolean; empty?: boolean; watchIds?: string[]; holdingIds?: string[]; analyticsConsent?: boolean; summaryOnly?: boolean};
@@ -65,6 +66,11 @@ export async function mobileFixture(page: Page, options: Options = {}) {
     visits: new Map<string, string>(options.empty ? [] : [[`company:${companyId}`, published(1)], [`event:${events[1].id}`, published(2)]]),
     searches: options.empty ? [] : [{query: '엔비디아', searched_at: published(1)}, {query: '테슬라', searched_at: published(2)}, {query: 'AI', searched_at: published(3)}, {query: '실적', searched_at: published(4)}],
     questions: [] as Question[],
+    notificationSettings: {realtime_enabled: true, notify_min_score: .75},
+    reminders: new Set<string>(),
+    authCalls: [] as {method:string;path:string}[],
+    reminderCalls: [] as {action:string;calendar_id?:string;enabled?:boolean}[],
+    tickets: [] as {id:string;title:string;category:string;state:'open';created_at:string;message:string}[],
     notifications: notificationsSchema.parse(events.slice(0, 4).map((event, i) => ({id: uid(8, 100 + i), read_at: i > 1 ? published(1) : null, created_at: event.published_at, event}))),
     calendar: calendarSchema.parse(events.slice(0, 3).map((event, i) => ({id: uid(8, 200 + i), title: `${event.company.name} 공시 확인`, occurs_on: `2026-10-${String(6 + i * 4).padStart(2, '0')}`, company_id: event.company.id, event_id: event.id, origin: 'official', quote: 'Synthetic fixture: Review the published quarterly filing.', source_url: event.source_url, is_demo: false}))),
     calls: [] as WorkspaceRequest[],
@@ -90,7 +96,17 @@ export async function mobileFixture(page: Page, options: Options = {}) {
   await page.route('**/api/auth-config', route => route.fulfill({json: {url: 'https://test-project.supabase.co', publishableKey: 'sb_publishable_isolated_fixture'}}));
   await page.route('https://test-project.supabase.co/auth/v1/**', route => {
     const path = new URL(route.request().url()).pathname;
+    state.authCalls.push({method:route.request().method(),path});
     return route.fulfill({json: path.endsWith('/token') ? {access_token: token, refresh_token: 'isolated-mobile-refresh', expires_in: 36000, token_type: 'bearer', user} : path.endsWith('/logout') ? {} : user, headers: {'Access-Control-Allow-Origin': '*'}});
+  });
+  await page.route('https://test-project.supabase.co/rest/v1/rpc/sb_reference_reminders', async route => {
+    if(route.request().method()==='OPTIONS'){await route.fulfill({status:204,headers:{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Allow-Headers':route.request().headers()['access-control-request-headers']??'authorization, apikey, content-type, x-client-info'}});return;}
+    const payload=z.object({p:z.discriminatedUnion('action',[z.object({action:z.literal('list')}).strict(),z.object({action:z.literal('set'),calendar_id:z.string().uuid(),enabled:z.boolean()}).strict()])}).strict().parse(route.request().postDataJSON()).p;
+    state.reminderCalls.push(payload);
+    if(payload.action==='list'){await route.fulfill({json:[...state.reminders].map(calendar_id=>({calendar_id})),headers:{'Access-Control-Allow-Origin':'*'}});return;}
+    if(!state.calendar.some(item=>item.id===payload.calendar_id)){await unknown(route,`unknown saved calendar ${payload.calendar_id}`);return;}
+    if(payload.enabled)state.reminders.add(payload.calendar_id);else state.reminders.delete(payload.calendar_id);
+    await route.fulfill({json:{saved:true,delivery:'saved_interest_only'},headers:{'Access-Control-Allow-Origin':'*'}});
   });
   await page.route('**/api/release', route => route.fulfill({json: {release: 'mobile-e2e-fixture', commit: 'synthetic-mobile-20261006', branch: 'isolated-test'}}));
   await page.route('**/api/us/reference-rate', route => route.fulfill({json: {base: 'USD', quote: 'KRW', rate: 1350, date: '2026-10-06', source: 'Synthetic E2E reference rate', kind: 'daily_reference'}}));
@@ -115,7 +131,7 @@ export async function mobileFixture(page: Page, options: Options = {}) {
     state.apiCalls.push({method, path, body: data});
     let response: unknown;
     if (path === '/v1/config') response = {demo_mode: false, demo_admin_enabled: false, auth_mode: 'supabase'};
-    else if (path === '/v1/me') response = state.profile;
+    else if (path === '/v1/me') {if(method==='PATCH')Object.assign(state.profile,data);response = meSchema.parse(state.profile);}
     else if (path === '/v1/preferences') {if (method === 'PATCH') Object.assign(state.onboardingPreferences, data); response = state.onboardingPreferences;}
     else if (path === '/v1/companies') {const q = (url.searchParams.get('q') ?? '').toLowerCase(); response = companies.filter(c => `${c.name} ${c.ticker}`.toLowerCase().includes(q));}
     else if (path === '/v1/watchlist') response = {id: uid(1, 2), name: '관심종목', items: companies.filter(c => state.watched.has(c.id))};
@@ -134,7 +150,9 @@ export async function mobileFixture(page: Page, options: Options = {}) {
     else if (path === '/v1/notifications') response = state.notifications;
     else if (/^\/v1\/notifications\/[^/]+\/read$/.test(path) && method === 'PUT') {const id = path.split('/')[3]; state.notifications.forEach(n => {if (id === 'all' || id === n.id) n.read_at = fixtureNow;}); await route.fulfill({status: 204}); return;}
     else if (path === '/v1/alerts') response = [{id: uid(8, 400), name: '주요 공시 변화', event_types: ['earnings', 'guidance'], min_score: .75, enabled: true, created_at: published(72)}];
-    else if (path === '/v1/calendar') response = state.calendar;
+    else if (path === '/v1/calendar'&&method==='GET') response = state.calendar.filter(item=>(!url.searchParams.get('from_date')||item.occurs_on>=url.searchParams.get('from_date')!)&&(!url.searchParams.get('until_date')||item.occurs_on<=url.searchParams.get('until_date')!));
+    else if(path==='/v1/calendar'&&method==='POST'){const item=calendarSchema.element.parse({id:uid(8,250+state.calendar.length),title:data.title,occurs_on:data.occurs_on,company_id:data.company_id,event_id:null,origin:'user',quote:null,source_url:null,is_demo:false});state.calendar.push(item);response=item;}
+    else if(/^\/v1\/calendar\/[^/]+$/.test(path)&&method==='DELETE'){const index=state.calendar.findIndex(item=>item.id===path.split('/')[3]&&item.origin==='user');if(index>=0)state.calendar.splice(index,1);await route.fulfill({status:204});return;}
     else if (path === '/v1/analytics' && method === 'POST') {await route.fulfill({status: 204}); return;}
     else {await unknown(route, `${method} ${path}`); return;}
     if (response === undefined) {await unknown(route, `missing ${method} ${path}`); return;}
@@ -166,6 +184,13 @@ export async function mobileFixture(page: Page, options: Options = {}) {
         response = companyDetailSchema.parse({company, events: eventResources.filter(e => e.company_id === p.id).map(savedResource), documents: documents.filter(d => d.company_id === p.id).map(savedResource), facts: detail?.facts.map(f => ({...f, event_id: detail.event.id})) ?? [], watching: state.watched.has(p.id), holding: state.positions.has(p.id)}); break;
       }
       case 'resource': response = resources.filter(r => r.id === p.id && r.kind === p.kind).map(savedResource)[0]; break;
+      case 'document_detail': {
+        const document=documents.find(item=>item.id===p.id&&item.kind===p.kind),detail=[...details.values()].find(item=>item.document.id===p.id);
+        if(!document){await unknown(route,`unknown document ${p.kind}:${p.id}`);return;}
+        const reviewed=p.kind==='document'?detail:undefined,sections=reviewed?.evidence.map((entry,i)=>({id:entry.chunk_id,title:['매출 요약','영업 실적','순이익','주당순이익'][i]??entry.location,location:entry.location,content:entry.quote,page_start:null,page_end:null}))??[];
+        const related=documents.filter(item=>item.company_id===document.company_id&&item.id!==document.id),offset=p.section_offset??0;
+        response=documentDetailSchema.parse({document:savedResource(document),metadata:{mime_type:reviewed?'text/html':null,size_bytes:null,page_count:null,provider:'sec',publication_timezone:reviewed?.document.publication_timezone??null,ingested_at:fixtureNow,raw_sha256:reviewed?.document.raw_sha256??null},summaries:reviewed?[{event_id:reviewed.event.id,title:reviewed.brief.headline,text:reviewed.brief.what_happened}]:[],facts:reviewed?.facts.map((fact,i)=>({...fact,event_id:reviewed.event.id,origin_event_id:reviewed.event.id,source_url:reviewed.document.source_url,location:reviewed.evidence[i].location}))??[],sections:sections.slice(offset,offset+12),sections_total:sections.length,next_section_offset:offset+12<sections.length?offset+12:null,events:reviewed?eventResources.filter(item=>item.id===reviewed.event.id):[],related:related.map(savedResource),counts:{summaries:reviewed?1:0,facts:reviewed?.facts.length??0,events:reviewed?1:0,related:related.length}});break;
+      }
       case 'saved_list': {
         const saved = resources.filter(r => state.saved.has(`${r.kind}:${r.id}`)).map(r => ({...savedResource(r), saved_at: published(1)}));
         const history = resources.filter(r => state.visits.has(`${r.kind}:${r.id}`)).map(r => ({...savedResource(r), saved_at: state.visits.get(`${r.kind}:${r.id}`)}));
@@ -183,10 +208,12 @@ export async function mobileFixture(page: Page, options: Options = {}) {
         p.removed_company_ids.forEach(id => state.watched.delete(id)); p.company_ids.forEach(id => state.watched.add(id)); p.positions.forEach(position => upsertPosition(position.company_id, position));
         state.profile.onboarding_completed = true; if (p.analytics_consent !== undefined) state.profile.analytics_consent = p.analytics_consent;
         response = meSchema.parse(state.profile); break;
-      case 'account': response = {created_at: user.created_at, bio: state.preferences.bio, tickets: []}; break;
+      case 'account': response = {created_at: user.created_at, bio: state.preferences.bio, tickets: state.tickets}; break;
       case 'security': response = {sessions: [{id: uid(1, 99), created_at: user.created_at, last_seen: fixtureNow, user_agent: 'Synthetic Chromium mobile', aal: 'aal1', current: true}], history: []}; break;
-      case 'notifications': response = {realtime_enabled: true, notify_min_score: .75}; break;
-      case 'tickets': response = []; break;
+      case 'notifications': response = state.notificationSettings; break;
+      case 'notification_save': Object.assign(state.notificationSettings,p);response=state.notificationSettings;break;
+      case 'tickets': response = state.tickets; break;
+      case 'ticket_create': {const ticket={id:uid(8,600+state.tickets.length),title:p.title,category:p.category,state:'open' as const,created_at:fixtureNow,message:p.message};state.tickets.unshift(ticket);response=ticket;break;}
       default: await unknown(route, `workspace action ${action}`); return;
     }
     if (response === undefined) {await unknown(route, `missing workspace resource ${action}`); return;}

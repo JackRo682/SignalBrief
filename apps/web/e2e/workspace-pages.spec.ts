@@ -1,5 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
-import {defaults,type Preferences,type Resource} from '../src/workspace/contracts';
+import {defaults,documentDetailSchema,type Preferences,type Resource} from '../src/workspace/contracts';
 // Synthetic fixtures are confined to this isolated browser suite; never imported by the app.
 const userId='10000000-0000-4000-8000-000000000071',companyId='20000000-0000-4000-8000-000000000001',filingId='30000000-0000-4000-8000-000000000001';
 const company:Resource={id:companyId,kind:'company',title:'Synthetic Company',summary:'',company_id:companyId,company_name:'Synthetic Company',ticker:'TEST',market:'NASDAQ',source_url:null,published_at:null,publication_precision:'timestamp',category:'company',is_saved:false};
@@ -21,6 +21,7 @@ async function fixture(page:Page,stepUp=false){
  case 'catalog':{if(failSearch){await r.fulfill({status:503,json:{error:{code:'provider_unavailable'}}});return;}const all=[company,resource].filter(x=>(!p.q||`${x.title} ${x.ticker} ${x.category}`.toLowerCase().includes(p.q.toLowerCase()))&&(!p.market||x.market===p.market));const filtered=all.filter(x=>!p.kind||x.kind===p.kind||p.kind==='document'&&x.kind==='filing');data={items:filtered.slice(p.offset??0,(p.offset??0)+(p.limit??20)),total:filtered.length,counts:all.reduce((a,x)=>({...a,[x.kind]:(a[x.kind]??0)+1}),{} as Record<string,number>),markets:['NASDAQ'],next_offset:null};break;}
  case 'company':data={company,events:[],documents:[resource],facts:[],watching:false,holding:false};break;
  case 'resource':data=resource;break;
+ case 'document_detail':data=documentDetailSchema.parse({document:resource,metadata:{mime_type:null,size_bytes:null,page_count:null,provider:'sec',publication_timezone:'America/New_York',ingested_at:'2026-10-01T01:00:00Z',raw_sha256:null},summaries:[],facts:[],sections:[],sections_total:0,next_section_offset:null,events:[],related:[],counts:{summaries:0,facts:0,events:0,related:0}});break;
  case 'saved_list':data={items:p.kind==='history'?(history?[company]:[]):saved&&p.kind!=='event'?[{...resource,saved_at:'2026-10-05T01:00:00Z'}]:[],counts:{event:0,document:saved?1:0,history:history?1:0}};break;
  case 'save':saved=p.saved;data={saved};break;case 'visit':history=preferences.history_enabled;data={recorded:history};break;
  case 'searches':data=searches;break;case 'search_record':if(preferences.history_enabled)searches.push({query:p.query,searched_at:new Date().toISOString()});data={recorded:preferences.history_enabled};break;
@@ -71,8 +72,8 @@ test('search links exact sources and persists save/un-save across navigation',as
  await expect(source).toHaveAttribute('href',`/documents/${filingId}?kind=filing`);
  await source.click();
  await expect(page).toHaveURL(new RegExp(`/documents/${filingId}`));
- await page.getByRole('button',{name:/10-K 저장$/,exact:true}).click();
- await expect(page.getByRole('button',{name:/10-K 저장 취소$/,exact:true})).toBeVisible();
+ await page.getByRole('button',{name:mobile?'문서 저장':/10-K 저장$/,exact:true}).click();
+ await expect(page.getByRole('button',{name:mobile?'문서 저장 취소':/10-K 저장 취소$/,exact:true})).toBeVisible();
  await page.goto('/saved');
  await page.getByRole('navigation',{name:'저장 유형'}).getByRole('button',{name:mobile?'북마크한 문서':'북마크한 자료',exact:true}).click();
  const cards=page.locator(mobile?'.m-saved-card':'.ws-resource');
@@ -83,13 +84,50 @@ test('search links exact sources and persists save/un-save across navigation',as
  expect(f.calls.filter(x=>x.action==='save').map(x=>x.p.saved)).toEqual([true,false]);
 });
 
-test('appearance applies durable settings, language, and honest save errors',async({page})=>{const f=await fixture(page);await page.goto('/settings/appearance');await page.getByRole('radio',{name:/다크 모드/}).click();await expect(page.locator('html')).toHaveAttribute('data-sb-theme','dark');await page.reload();await expect(page.locator('html')).toHaveAttribute('data-sb-theme','dark');await page.getByRole('radio',{name:'English 영어'}).click();await expect(workspaceMain(page).getByRole('heading',{level:1})).toHaveText('Appearance & language');f.failSave();await page.getByRole('radio',{name:/Light A clear/}).click();await expect(workspaceMain(page).getByRole('alert').first()).toBeVisible();await expect(page.locator('html')).toHaveAttribute('data-sb-theme','dark');});
+test('appearance applies durable settings, language, and honest save errors',async({page})=>{
+ const f=await fixture(page),mobile=mobileViewport(page);await page.goto('/settings/appearance');
+ await page.getByRole('radio',{name:mobile?'다크':/다크 모드/,exact:mobile}).click();
+ await expect(page.locator('html')).toHaveAttribute('data-sb-theme','dark');
+ await page.reload();await expect(page.locator('html')).toHaveAttribute('data-sb-theme','dark');
+ await page.getByRole('radio',{name:mobile?'영어':'English 영어',exact:true}).click();
+ await expect(workspaceMain(page).getByRole('heading',{level:1})).toHaveText('Appearance & language');
+ f.failSave();await page.getByRole('radio',{name:mobile?'Light':/Light A clear/,exact:mobile}).click();
+ await expect(workspaceMain(page).getByRole('alert').first()).toBeVisible();
+ await expect(page.locator('html')).toHaveAttribute('data-sb-theme','dark');
+});
 
 test('notifications persist controls but never fake email delivery',async({page})=>{const f=await fixture(page);await page.goto('/settings/notifications');await expect(page.getByRole('switch',{name:'이메일 알림 — 미제공'})).toBeDisabled();await page.getByRole('switch',{name:'방해 금지 시간',exact:true}).click();await expect.poll(()=>f.calls.filter(x=>x.action==='preferences_save').at(-1)?.p).toMatchObject({value:{quiet_enabled:true}});await page.getByRole('slider',{name:'일일 최대 알림 수'}).press('Home');for(let i=0;i<4;i++)await page.getByRole('slider',{name:'일일 최대 알림 수'}).press('ArrowRight');await page.getByRole('button',{name:'최대 수 적용'}).click();await expect.poll(()=>f.calls.filter(x=>x.action==='preferences_save').at(-1)?.p).toMatchObject({value:{daily_cap:5}});});
 
-test('help search, FAQs and support submission use actual form and returned ticket',async({page})=>{const f=await fixture(page);await page.goto('/help');await page.getByLabel('도움말 검색').fill('zzzz-nomatch');await page.locator('.ws-help-hero .ws-search-form').getByRole('button',{name:'검색'}).click();await expect(page.locator('details.ws-faq')).toHaveCount(0);await page.getByLabel('도움말 검색').fill('');await page.locator('.ws-help-hero .ws-search-form').getByRole('button',{name:'검색'}).click();await page.locator('.ws-faq summary').first().click();await expect(page.locator('details.ws-faq').first()).toHaveAttribute('open','');await page.getByLabel('제목',{exact:true}).fill('Synthetic browser request');await page.getByLabel('문의 내용',{exact:true}).fill('Synthetic message, not sent to production.');await page.getByRole('button',{name:'문의 내용 제출하기'}).click();await expect.poll(()=>f.calls.filter(x=>x.action==='ticket_create').length).toBe(1);await expect(workspaceMain(page)).toContainText('Synthetic browser request');});
+test('help search, FAQs and support submission use actual form and returned ticket',async({page})=>{
+ const f=await fixture(page),mobile=mobileViewport(page);await page.goto('/help');
+ const submitSearch=mobile?page.getByRole('button',{name:'도움말 검색 실행',exact:true}):page.locator('.ws-help-hero .ws-search-form').getByRole('button',{name:'검색'});
+ const faqs=page.locator(mobile?'.m-help-faq':'details.ws-faq');
+ await page.getByLabel('도움말 검색',{exact:true}).fill('zzzz-nomatch');await submitSearch.click();
+ await expect(faqs).toHaveCount(0);
+ await page.getByLabel('도움말 검색',{exact:true}).fill('');await submitSearch.click();
+ if(mobile){await faqs.first().getByRole('button').click();await expect(faqs.first().getByRole('button')).toHaveAttribute('aria-expanded','true');await page.getByRole('button',{name:'문의하기',exact:true}).click();await expect(page.getByRole('dialog',{name:'문의하기',exact:true})).toBeVisible();}
+ else{await page.locator('.ws-faq summary').first().click();await expect(faqs.first()).toHaveAttribute('open','');}
+ await page.getByLabel('제목',{exact:true}).fill('Synthetic browser request');
+ await page.getByLabel('문의 내용',{exact:true}).fill('Synthetic message, not sent to production.');
+ await page.getByRole('button',{name:'문의 내용 제출하기',exact:true}).click();
+ await expect.poll(()=>f.calls.filter(x=>x.action==='ticket_create').length).toBe(1);
+ if(mobile)await expect(page.getByRole('dialog',{name:'내 문의 내역',exact:true})).toContainText('Synthetic browser request');
+ else await expect(workspaceMain(page)).toContainText('Synthetic browser request');
+});
 
-test('MFA never reports enabled before Auth verification',async({page})=>{await fixture(page);await page.goto('/settings/security');await page.getByRole('button',{name:'2단계 인증 설정',exact:true}).click();await expect(page.getByRole('dialog')).toBeVisible();await page.getByRole('dialog').click({position:{x:8,y:8}});await expect(page.getByRole('dialog')).toBeVisible();await page.getByLabel('인증 코드',{exact:true}).fill('123456');await page.getByRole('button',{name:'인증 후 활성화'}).click();await expect(page.getByRole('dialog')).toHaveCount(0);await expect(page.getByRole('button',{name:'관리',exact:true})).toBeVisible();});
+test('MFA never reports enabled before Auth verification',async({page})=>{
+ await fixture(page);const mobile=mobileViewport(page);await page.goto('/settings/security');
+ const mfa=page.getByRole('switch',{name:'2단계 인증',exact:true});
+ if(mobile){await expect(mfa).toHaveAttribute('aria-checked','false');await mfa.click();}
+ else await page.getByRole('button',{name:'2단계 인증 설정',exact:true}).click();
+ await expect(page.getByRole('dialog')).toBeVisible();
+ if(mobile)await expect(mfa).toHaveAttribute('aria-checked','false');
+ await page.getByRole('dialog').click({position:{x:8,y:8}});await expect(page.getByRole('dialog')).toBeVisible();
+ await page.getByLabel('인증 코드',{exact:true}).fill('123456');await page.getByRole('button',{name:'인증 후 활성화',exact:true}).click();
+ await expect(page.getByRole('dialog')).toHaveCount(0);
+ if(mobile)await expect(mfa).toHaveAttribute('aria-checked','true');
+ else await expect(page.getByRole('button',{name:'관리',exact:true})).toBeVisible();
+});
 
 test('data outages show retry rather than fabricated empty success',async({page})=>{
  const f=await fixture(page),mobile=mobileViewport(page);

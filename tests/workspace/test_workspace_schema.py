@@ -107,6 +107,221 @@ def rpc(db, action, payload=None):
                       {'action': action, 'payload': json.dumps(payload or {})}).scalar()
 
 
+def document_rpc(db, payload):
+    return db.execute(text('SELECT public.sb_document_detail(cast(:payload AS jsonb))'),
+                      {'payload': json.dumps(payload)}).scalar()
+
+
+def document_denied(db, payload, code):
+    point = db.begin_nested()
+    with pytest.raises(Exception) as caught:
+        document_rpc(db, payload)
+    point.rollback()
+    assert caught.value.orig.sqlstate == code
+
+
+def seed_reviewed_document(db, chunks=1, state='published', is_demo=False,
+                           published_days_ago=0, has_publication_marker=True):
+    """Synthetic reviewed evidence satisfying the replayed release-hardening rules."""
+    from datetime import datetime, timedelta, timezone
+    from uuid import uuid4
+
+    from signalbrief.models import AIRun, Brief, Chunk, Document, Event, Fact, RawBlob, Validation
+
+    stamp = datetime.now(timezone.utc) - timedelta(days=published_days_ago)
+    doc, run, event = [str(uuid4()) for _ in range(3)]
+    sha = uuid4().hex * 2
+    full_quote = 'Synthetic reviewed source quote: 999999999999.12345678 USD. ' * 100
+    db.exec_driver_sql('RESET ROLE')
+    db.execute(RawBlob.__table__.insert().values(sha256=sha, object_key=f'private/{doc}', byte_length=123456,
+                                               content_type='application/pdf'))
+    db.execute(Document.__table__.insert().values(id=doc, company_id=C, provider='sec', external_id=doc,
+        title='Synthetic reviewed filing', form_type='10-K', source_url=f'https://www.sec.gov/Archives/{doc}.pdf',
+        download_url=f'https://private.example.invalid/{doc}', published_at=stamp, publication_date=stamp.date(),
+        publication_precision='timestamp', publication_timezone='America/New_York', raw_sha256=sha,
+        provider_metadata={'private_provider_field': 'must-not-leak'}, state='complete', is_demo=is_demo))
+    db.execute(AIRun.__table__.insert().values(id=run, document_id=doc, stage='extract', model='synthetic-test',
+        prompt_version='test', pipeline_version='test', status='validated', validation_result={}))
+    db.execute(Event.__table__.insert().values(id=event, company_id=C, document_id=doc, run_id=run, revision='test',
+        title='Synthetic reviewed event', event_type='earnings', state=state, published_at=stamp,
+        published_to_users_at=stamp if state in ('published', 'superseded') and has_publication_marker else None))
+    db.execute(Brief.__table__.insert().values(event_id=event, headline='Synthetic reviewed headline',
+        what_happened=full_quote, interpretation='Synthetic interpretation', uncertainty='Synthetic uncertainty',
+        monitor_next='Synthetic next check', template_version='test'))
+    facts, readable = [], []
+    for index in range(chunks + 1):
+        chunk, fact = str(uuid4()), str(uuid4())
+        db.execute(Chunk.__table__.insert().values(id=chunk, document_id=doc, ordinal=index, parser_version='test',
+            text=full_quote if index < chunks else 'UNREVIEWED EXCERPT MUST NOT LEAK', text_sha256=uuid4().hex * 2,
+            char_start=index * 10000, char_end=index * 10000 + len(full_quote), location=f'Synthetic section {index + 1}'))
+        if index < chunks:
+            db.execute(Fact.__table__.insert().values(id=fact, event_id=event, chunk_id=chunk, field='revenue',
+                quote=full_quote, value_raw='999999999999.12345678', unit='USD', period='FY 2026',
+                scope='consolidated', basis='reported', validation_status='supported'))
+            # A supported fact alone is insufficient: the final sb_event_visible
+            # also requires persisted supported validation verdicts for its lineage.
+            db.execute(Validation.__table__.insert().values(event_id=event, claim_key=f'fact.{index}',
+                status='supported', reason='Synthetic exact quote and numeric value are present in this chunk.',
+                validator_version='synthetic-test'))
+            facts.append(fact)
+            readable.append(chunk)
+    db.exec_driver_sql('SET LOCAL ROLE authenticated')
+    return {'id': doc, 'event': event, 'facts': facts, 'chunks': readable, 'quote': full_quote, 'sha': sha}
+
+
+def test_document_detail_returns_exact_reviewed_material_and_safe_metadata(own):
+    doc = seed_reviewed_document(own)
+    payload = {'id': doc['id'], 'kind': 'document'}
+    result = document_rpc(own, payload)
+    assert result['document']['id'] == doc['id']
+    assert result['metadata']['mime_type'] == 'application/pdf'
+    assert result['metadata']['size_bytes'] == 123456
+    assert result['metadata']['page_count'] is None
+    assert result['metadata']['raw_sha256'] == doc['sha']
+    assert result['metadata']['publication_timezone'] == 'America/New_York'
+    assert result['summaries'][0]['text'] == doc['quote']
+    assert result['facts'][0]['value_raw'] == '999999999999.12345678'
+    assert result['facts'][0]['quote'] == doc['quote']
+    assert result['facts'][0]['event_id'] == doc['event']
+    assert result['sections'][0]['content'] == doc['quote']
+    assert result['sections_total'] == 1 and result['next_section_offset'] is None
+    assert result['sections'][0]['page_start'] is None
+    assert result['events'][0]['id'] == doc['event']
+    assert result['counts'] == {'summaries': 1, 'facts': 1, 'events': 1, 'related': 1}
+    encoded = json.dumps(result)
+    for forbidden in ['object_key', 'download_url', 'private_provider_field', 'private.example.invalid', 'UNREVIEWED EXCERPT']:
+        assert forbidden not in encoded
+    rpc(own, 'save', {'id': doc['id'], 'kind': 'document', 'saved': True})
+    assert document_rpc(own, payload)['document']['is_saved'] is True
+    own.execute(text("SELECT set_config('request.jwt.claim.sub',:u,true)"), {'u': B})
+    assert document_rpc(own, payload)['document']['is_saved'] is False
+
+
+def test_document_detail_sections_are_paginated_without_repeating_or_truncating(own):
+    doc = seed_reviewed_document(own, chunks=13)
+    first = document_rpc(own, {'id': doc['id'], 'kind': 'document'})
+    second = document_rpc(own, {'id': doc['id'], 'kind': 'document', 'section_offset': first['next_section_offset']})
+    assert first['sections_total'] == second['sections_total'] == 13
+    assert len(first['sections']) == 12 and len(second['sections']) == 1
+    assert first['next_section_offset'] == 12 and second['next_section_offset'] is None
+    assert [x['id'] for x in first['sections'] + second['sections']] == doc['chunks']
+    assert all(x['content'] == doc['quote'] for x in first['sections'] + second['sections'])
+
+
+def test_document_detail_does_not_invent_filing_pdf_pages_or_analysis(own):
+    result = document_rpc(own, {'id': F, 'kind': 'filing'})
+    assert result['document']['publication_precision'] == 'date'
+    assert result['metadata']['provider'] == 'sec'
+    assert result['metadata']['raw_sha256'] == '0' * 64  # Archived SEC submissions envelope.
+    for key in ['mime_type', 'size_bytes', 'page_count', 'publication_timezone']:
+        assert result['metadata'][key] is None
+    assert result['summaries'] == result['facts'] == result['sections'] == result['events'] == []
+    assert result['sections_total'] == 0
+    document_denied(own, {'id': F, 'kind': 'document'}, 'PT404')
+
+
+def test_document_detail_rejects_hidden_documents_and_identity_or_offset_injection(own):
+    for state, demo in [('needs_review', False), ('rejected', False), ('published', True)]:
+        doc = seed_reviewed_document(own, state=state, is_demo=demo)
+        document_denied(own, {'id': doc['id'], 'kind': 'document'}, 'PT404')
+    for payload in [None, [], {}, {'id': F, 'kind': 'company'}, {'id': "' OR 1=1 --", 'kind': 'filing'},
+                    {'id': F, 'kind': 'filing', 'user_id': B}]:
+        document_denied(own, payload, 'PT422')
+    for offset in [-1, 1.5, '12', None, 2147483601]:
+        document_denied(own, {'id': F, 'kind': 'filing', 'section_offset': offset}, 'PT422')
+
+
+def test_document_detail_links_prior_evidence_only_to_a_visible_current_event(own):
+    from signalbrief.models import Change
+
+    # Explicit boundary: a superseded origin without its own publication marker
+    # is not a public event. The existing hardening predicate still permits its
+    # validated facts through a published current comparison; do not relax it.
+    previous = seed_reviewed_document(own, state='superseded', published_days_ago=1,
+                                      has_publication_marker=False)
+    document_denied(own, {'id': previous['id'], 'kind': 'document'}, 'PT404')
+    current = seed_reviewed_document(own)
+    own.exec_driver_sql('RESET ROLE')
+    own.execute(Change.__table__.insert().values(event_id=current['event'], current_fact_id=current['facts'][0],
+        previous_fact_id=previous['facts'][0], field='revenue', change_type='increased'))
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+    result = document_rpc(own, {'id': previous['id'], 'kind': 'document'})
+    assert result['summaries'] == []
+    assert result['facts'][0]['origin_event_id'] == previous['event']
+    assert result['facts'][0]['event_id'] == current['event']
+    assert result['events'][0]['id'] == current['event']
+    assert result['sections'][0]['content'] == previous['quote']
+    own.exec_driver_sql('RESET ROLE')
+    own.execute(text("UPDATE public.events SET state='rejected' WHERE id=:id"), {'id': previous['event']})
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+    document_denied(own, {'id': previous['id'], 'kind': 'document'}, 'PT404')
+    document_denied(own, {'id': current['id'], 'kind': 'document'}, 'PT404')
+
+
+def test_document_detail_preserves_a_previously_published_superseded_origin(own):
+    from signalbrief.models import Change
+
+    previous = seed_reviewed_document(own, state='superseded', published_days_ago=1)
+    current = seed_reviewed_document(own)
+    own.exec_driver_sql('RESET ROLE')
+    own.execute(Change.__table__.insert().values(event_id=current['event'], current_fact_id=current['facts'][0],
+        previous_fact_id=previous['facts'][0], field='revenue', change_type='increased'))
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+    result = document_rpc(own, {'id': previous['id'], 'kind': 'document'})
+    assert result['summaries'][0]['event_id'] == previous['event']
+    assert result['summaries'][0]['text'] == previous['quote']
+    assert result['facts'][0]['event_id'] == result['facts'][0]['origin_event_id'] == previous['event']
+    assert [event['id'] for event in result['events']] == [current['event'], previous['event']]
+    assert result['sections'][0]['content'] == previous['quote']
+    assert document_rpc(own, {'id': current['id'], 'kind': 'document'})['document']['id'] == current['id']
+
+
+def test_document_detail_does_not_publish_a_current_event_with_an_unreviewed_ancestor(own):
+    from signalbrief.models import Change
+
+    previous = seed_reviewed_document(own, state='needs_review', published_days_ago=1)
+    current = seed_reviewed_document(own)
+    assert document_rpc(own, {'id': current['id'], 'kind': 'document'})['document']['id'] == current['id']
+    own.exec_driver_sql('RESET ROLE')
+    own.execute(Change.__table__.insert().values(event_id=current['event'], current_fact_id=current['facts'][0],
+        previous_fact_id=previous['facts'][0], field='revenue', change_type='increased'))
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+    assert own.execute(text('SELECT app_private.sb_event_visible(:id)'), {'id': current['event']}).scalar() is False
+    document_denied(own, {'id': previous['id'], 'kind': 'document'}, 'PT404')
+    document_denied(own, {'id': current['id'], 'kind': 'document'}, 'PT404')
+
+
+@pytest.mark.parametrize('verdict', [None, 'unsupported'])
+def test_document_detail_requires_a_persisted_supported_validation(own, verdict):
+    doc = seed_reviewed_document(own)
+    assert document_rpc(own, {'id': doc['id'], 'kind': 'document'})['document']['id'] == doc['id']
+    own.exec_driver_sql('RESET ROLE')
+    if verdict is None:
+        own.execute(text('DELETE FROM public.validations WHERE event_id=:id'), {'id': doc['event']})
+    else:
+        own.execute(text('UPDATE public.validations SET status=:status WHERE event_id=:id'),
+                    {'id': doc['event'], 'status': verdict})
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+    document_denied(own, {'id': doc['id'], 'kind': 'document'}, 'PT404')
+
+
+def test_document_detail_enforces_auth_mfa_and_narrow_function_privileges(own):
+    payload = {'id': F, 'kind': 'filing'}
+    own.exec_driver_sql('SET LOCAL ROLE anon')
+    document_denied(own, payload, '42501')
+    own.exec_driver_sql('RESET ROLE')
+    own.execute(text("INSERT INTO auth.mfa_factors VALUES (gen_random_uuid(),:u,'verified')"), {'u': A})
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+    document_denied(own, payload, 'PT403')
+    own.execute(text("SELECT set_config('request.jwt.claims',:claims,true)"), {'claims': json.dumps({'sub': A, 'aal': 'aal2'})})
+    assert document_rpc(own, payload)['document']['id'] == F
+    assert own.exec_driver_sql("SELECT prosecdef FROM pg_proc WHERE oid='public.sb_document_detail(jsonb)'::regprocedure").scalar() is False
+    assert own.exec_driver_sql("SELECT has_function_privilege('anon','public.sb_document_detail(jsonb)','EXECUTE')").scalar() is False
+    assert own.exec_driver_sql("SELECT has_function_privilege('anon','app_mobile_private.document_detail(jsonb)','EXECUTE')").scalar() is False
+    own.execute(text("SELECT set_config('request.jwt.claim.sub','',true)"))
+    document_denied(own, payload, 'PT401')
+
+
 def denied(db, action, payload, code):
     savepoint = db.begin_nested()
     with pytest.raises(Exception) as caught:
