@@ -12,7 +12,7 @@ async function expectExpiredWorkspaceLogin(page:Page){
   if(test.info().project.name==='mobile'){
     await expect(page).toHaveURL(/\/login\?next=%2Ftoday$/);
     expect(new URL(page.url()).searchParams.get('next')).toBe('/today');
-  }else await expect(page).toHaveURL(/\/login$/);
+  }else {await expect(page).toHaveURL(/\/login\?next=%2Ftoday$/);expect(new URL(page.url()).searchParams.get('next')).toBe('/today');}
 }
 test('public CTAs and all five header information pages have real destinations',async({page})=>{
   await publicAuth(page);await page.goto('/');

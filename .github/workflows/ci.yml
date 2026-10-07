@@ -33,6 +33,8 @@ jobs:
         run: if [ -f package-lock.json ]; then npm ci; else npm install; fi
       - name: Full repository release checks
         run: python scripts/verify.py --full
+      - name: Preserve the released mobile implementation
+        run: python scripts/verify_desktop_isolation.py
       - working-directory: apps/web
         run: npx playwright install --with-deps chromium
       - name: Auth, public pages and progressive rendering on desktop and mobile
@@ -46,7 +48,7 @@ jobs:
             sleep 1
           done
           curl -fsS http://127.0.0.1:3000/login > /dev/null
-          npm run test:e2e -- performance.spec.ts auth-navigation.spec.ts marketing-pages.spec.ts ui-refinement.spec.ts responsive-design.spec.ts workspace-pages.spec.ts mobile-authenticated.spec.ts mobile-details.spec.ts
+          npm run test:e2e -- performance.spec.ts auth-navigation.spec.ts marketing-pages.spec.ts ui-refinement.spec.ts responsive-design.spec.ts workspace-pages.spec.ts mobile-authenticated.spec.ts mobile-details.spec.ts desktop-references.spec.ts
       - uses: actions/upload-artifact@v4
         if: always()
         with:

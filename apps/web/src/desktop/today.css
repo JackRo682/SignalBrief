@@ -1,0 +1,87 @@
+.sb-pc .pc-today .pc-heading{margin-bottom:22px;align-items:flex-start}
+.sb-pc .pc-today .pc-heading h1{font-size:38px;letter-spacing:-1.7px}
+.sb-pc .pc-today .pc-eyebrow{margin-bottom:2px;font-size:18px;color:#485b7b}
+.sb-pc .pc-today .pc-heading-description{margin-top:0;color:#596b8c;font-size:17px}
+.sb-pc .pc-today-date{text-align:right;color:#7184a7;padding-top:6px;font-size:15px;min-width:160px}
+.sb-pc .pc-today-date time{font-weight:550;color:#455c82}
+.sb-pc .pc-today-date p{margin-top:15px;line-height:1.5}
+.sb-pc .pc-today-market{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:17px}
+.sb-pc .pc-today-market>a,.sb-pc .pc-today-market>div{position:relative;padding:12px 16px 10px;border-radius:10px;min-height:99px;overflow:hidden}
+.sb-pc .pc-today-market .warm{background:linear-gradient(100deg,#fff4f3,#f9f5f8)}
+.sb-pc .pc-today-market .cool{background:linear-gradient(100deg,#edf5ff,#edf4fd)}
+.sb-pc .pc-today-market strong{display:block;font-size:14px;color:#344563;margin-bottom:3px}
+.sb-pc .pc-today-market b{display:block;font-size:21px;color:#17263f;line-height:1.3;font-weight:680;letter-spacing:-.2px}
+.sb-pc .pc-today-market span{display:block;font-size:12px;color:#8291a8;margin-top:5px}
+.sb-pc .pc-today-market svg{position:absolute;right:15px;top:20px;color:#a8c8ee;opacity:.25}
+.sb-pc .pc-market-retry{position:absolute;right:10px;top:10px;color:#6a8bc0;border:0;background:transparent;font-size:19px}
+.sb-pc .pc-today-summaries{display:grid;grid-template-columns:1fr 1fr 1.07fr;gap:12px;margin-bottom:16px}
+.sb-pc .pc-today-summary{display:flex;align-items:flex-start;gap:14px;padding:18px;min-height:139px}
+.sb-pc .pc-today-summary-icon{width:43px;height:42px;background:linear-gradient(120deg,#f2f8ff,#eef5ff);color:#3984f4;border-radius:11px;display:flex;justify-content:center;align-items:center;flex-shrink:0}
+.sb-pc .pc-today-summary-icon.gold{color:#ffb600;background:#fff8e9}
+.sb-pc .pc-today-summary-main{min-width:0;padding-top:3px;flex:1}
+.sb-pc .pc-today-summary-main>a{font-weight:650;font-size:16px;white-space:nowrap}
+.sb-pc .pc-today-summary-main>a>span{margin-left:14px;color:#7286a9;font-size:22px;line-height:12px;font-weight:400}
+.sb-pc .pc-today-summary-main>b{display:block;font-size:24px;line-height:1.25;letter-spacing:-.8px;margin:13px 0 3px;white-space:nowrap}
+.sb-pc .pc-today-summary-main>small{color:#8695ae;font-size:12px;white-space:nowrap}
+.sb-pc .pc-today-summary-main>small>span{color:#8a98b0;font-size:11px}
+.sb-pc .pc-today-summary-aside{border-left:1px solid #edf0f8;padding-left:15px;margin-left:0;align-self:center;min-width:90px;font-size:13px;flex:0 1 110px;line-height:1.85}
+.sb-pc .pc-today-summary-aside p{display:flex;justify-content:space-between;gap:10px;color:#8491aa}
+.sb-pc .pc-today-summary-aside strong{color:#283d67;font-weight:550;white-space:nowrap}
+.sb-pc .pc-today-summary-aside p>span{white-space:nowrap;display:flex;align-items:center;gap:8px}
+.sb-pc .pc-today-summary-aside i{width:7px;height:7px;display:inline-block;border-radius:50%;background:#29b895}
+.sb-pc .pc-today-summary-aside i.dot-1{background:#f55b65}.sb-pc .pc-today-summary-aside i.dot-2{background:#ffb900}.sb-pc .pc-today-summary-aside i.dot-3{background:#377efe}
+.sb-pc .pc-today .positive{color:#08a986!important}.sb-pc .pc-today .negative{color:#ee505f!important}
+.sb-pc .pc-today-coverage{font-size:12px;color:#7187a7;background:#eef5fe;padding:9px 14px;border-radius:7px;margin:-4px 0 14px}
+.sb-pc .pc-today-content{display:grid;grid-template-columns:minmax(0,1.61fr) minmax(0,1fr) minmax(0,1.025fr);gap:12px}
+.sb-pc .pc-today-content>.pc-card,.sb-pc .pc-today-right>.pc-card{padding:16px 14px}
+.sb-pc .pc-today-content .pc-panel-head{border-bottom:1px solid #eaf0fa;padding:0 4px 14px;margin-bottom:0;min-height:38px}
+.sb-pc .pc-today .pc-today-more{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:#1671f7}
+.sb-pc .pc-today-more>span{font-size:20px;line-height:14px}
+.sb-pc .pc-today-change{padding:10px 0 13px;display:grid;grid-template-columns:62px minmax(0,1fr) 63px;gap:13px;align-items:center;border-bottom:1px solid #edf1f8;min-height:90px}
+.sb-pc .pc-today-change:last-of-type{border-bottom:0;padding-bottom:0}
+.sb-pc .pc-today-company{display:flex;gap:7px;align-items:center;font-size:13px;min-width:0}
+.sb-pc .pc-today-company>a{font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-pc .pc-today-company>span{color:#8593ac;font-size:12px;white-space:nowrap}
+.sb-pc .pc-today-event-title{font-weight:650;font-size:13px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:3px;line-height:1.4}
+.sb-pc .pc-today-change>div>p{font-size:12px;color:#8694ae;margin-top:4px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.sb-pc .pc-today-change-meta{align-self:start;text-align:center;padding-top:2px}
+.sb-pc .pc-today-tag{display:block;background:#eaf0ff;color:#4680e4;padding:4px 8px;border-radius:9px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-pc .pc-today-tag.product,.sb-pc .pc-today-tag.partnership{background:#e7f9f3;color:#179f7c}
+.sb-pc .pc-today-tag.risk{background:#fff1f3;color:#d85a73}
+.sb-pc .pc-today-change-meta>time{font-size:10px;color:#8092b1;display:block;margin-top:6px;line-height:1.5}
+.sb-pc .pc-today-feed-status{font-size:11px;color:#93a0b8;padding-top:10px}
+.sb-pc .pc-today-calendar-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #edf1f8;min-height:85px}
+.sb-pc .pc-today-calendar-row:last-child{border-bottom:0}
+.sb-pc .pc-today-calendar-row>time{padding:7px 4px;background:#f3f7ff;border-radius:8px;color:#4d6696;text-align:center;width:64px;flex-shrink:0;font-size:13px;font-weight:600;line-height:1.6}
+.sb-pc .pc-today-calendar-row>time>small{display:block;font-size:12px;font-weight:500}
+.sb-pc .pc-today-calendar-row>div{min-width:0}
+.sb-pc .pc-today-calendar-row strong{display:block;font-size:13px;line-height:1.5;font-weight:550}
+.sb-pc .pc-today-calendar-row p{font-size:11px;color:#8999b6;margin-top:3px}
+.sb-pc .pc-today-right{min-width:0;display:flex;flex-direction:column;gap:13px}
+.sb-pc .pc-today-gainers{min-height:245px}
+.sb-pc .pc-today-gainers>a{display:flex;align-items:center;gap:8px;padding:5px 3px;border-bottom:1px solid #eef2f8;font-size:12px;min-height:38px;color:#7186a8}
+.sb-pc .pc-today-gainers>a:last-of-type{border-bottom:0}
+.sb-pc .pc-today-gainers>a>strong{margin-left:auto;color:#08a985;white-space:nowrap;font-size:13px}
+.sb-pc .pc-today-rank{width:25px;height:25px;background:#edf5ff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#2272ed;font-size:13px;flex-shrink:0}
+.sb-pc .pc-today-gainer-name{max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-pc .pc-today-rank-note{font-size:10px;color:#93a2b9;margin:5px 3px 0}
+.sb-pc .pc-today-notification-list{flex:1;min-height:205px}
+.sb-pc .pc-today-notification-list>a{display:flex;align-items:flex-start;gap:12px;padding:12px 3px;border-bottom:1px solid #edf1f8}
+.sb-pc .pc-today-notification-list>a:last-child{border-bottom:0}
+.sb-pc .pc-today-notification-list>a>i{width:7px;height:9px;background:#ff4d5d;border-radius:50%;margin-top:5px;flex-shrink:0}
+.sb-pc .pc-today-notification-list>a>i.read{background:#4087f6}
+.sb-pc .pc-today-notification-list>a>div{min-width:0;flex:1}
+.sb-pc .pc-today-notification-list p{font-size:12px;color:#526b95;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.6}
+.sb-pc .pc-today-notification-list time{font-size:10px;color:#91a0ba}
+.sb-pc .pc-today-notification-list>a>span{color:#90a5c7;font-size:18px;line-height:20px}
+.sb-pc .pc-today-alert-cta{display:flex;align-items:center;gap:18px;background:linear-gradient(100deg,#e8f2ff,#eaf3ff);padding:12px 20px;border-radius:12px;margin-top:13px;min-height:73px}
+.sb-pc .pc-today-alert-cta>span{width:48px;height:48px;background:#dfedff;border-radius:50%;color:#146eff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-pc .pc-today-alert-cta strong{font-size:15px}
+.sb-pc .pc-today-alert-cta p{font-size:13px;color:#8a9bbc;margin-top:2px}
+.sb-pc .pc-today-alert-cta>b{display:flex;align-items:center;gap:11px;margin-left:auto;background:#fff;border-radius:28px;padding:9px 21px;color:#1975fe;white-space:nowrap;font-size:13px;box-shadow:0 2px 5px #a7c3ee14}
+.sb-pc .pc-today-alert-cta>b>span{font-size:22px;line-height:12px}
+@media(min-width:1400px){.sb-pc .pc-today-content>.pc-card,.sb-pc .pc-today-right{min-height:505px}.sb-pc .pc-today-change{min-height:90px}}
+@media(max-width:1300px){.sb-pc .pc-today-summary{gap:8px;padding:15px 12px}.sb-pc .pc-today-summary-icon{width:34px;height:36px}.sb-pc .pc-today-summary-main>b{font-size:21px}.sb-pc .pc-today-summary-main>a{font-size:14px}.sb-pc .pc-today-summary-aside{padding-left:10px;font-size:11px;min-width:76px}.sb-pc .pc-today-summary-main>a>span{margin-left:7px}.sb-pc .pc-today-content{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}.sb-pc .pc-today-right{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}.sb-pc .pc-today-change{min-height:88px}.sb-pc .pc-today-gainers,.sb-pc .pc-today-notification-list{min-height:220px}}
+@media(max-width:1000px){.sb-pc .pc-today .pc-heading h1{font-size:31px}.sb-pc .pc-today .pc-heading-description{font-size:14px}.sb-pc .pc-today-date{min-width:110px;font-size:13px}.sb-pc .pc-today-market{gap:8px;grid-template-columns:repeat(3,minmax(0,1fr))}.sb-pc .pc-today-summaries{grid-template-columns:1fr}.sb-pc .pc-today-summary{min-height:100px}.sb-pc .pc-today-summary-aside{flex-basis:150px}.sb-pc .pc-today-summary-main>b{margin-top:6px}.sb-pc .pc-today-content{grid-template-columns:1fr}.sb-pc .pc-today-right{grid-template-columns:1fr 1fr}.sb-pc .pc-today-alert-cta{gap:10px;padding:12px}.sb-pc .pc-today-alert-cta>b{padding:9px 12px}}
+html[data-sb-theme=dark] .sb-pc .pc-today-market .warm,html[data-sb-theme=dark] .sb-pc .pc-today-market .cool,html[data-sb-theme=dark] .sb-pc .pc-today-alert-cta{background:var(--pc-soft)}
+html[data-sb-theme=dark] .sb-pc .pc-today-market b,html[data-sb-theme=dark] .sb-pc .pc-today-market strong,html[data-sb-theme=dark] .sb-pc .pc-today-summary-aside strong{color:var(--pc-ink)}
