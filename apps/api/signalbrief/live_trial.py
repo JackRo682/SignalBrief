@@ -121,7 +121,7 @@ def safe_error(exc):
     return exc.code if isinstance(exc, ProviderError) else type(exc).__name__
 
 
-def analyze(settings, directory):
+def analyze(settings, directory, revision=None):
     if settings.environment != "production" or settings.demo_mode or settings.auto_publish_validated:
         raise ProviderError("production_manual_review_configuration_required")
     if not settings.openai_api_key or not settings.openai_model:
@@ -159,7 +159,11 @@ def analyze(settings, directory):
                 document_id, _ = persist_document(
                     factory, destination, company_id, descriptor, raw, item["content_type"]
                 )
-                event_id = process_document(settings, factory, document_id)
+                event_id = (
+                    process_document(settings, factory, document_id, revision=revision)
+                    if revision
+                    else process_document(settings, factory, document_id)
+                )
                 with factory() as session:
                     event = session.get(m.Event, event_id)
                     result["events"].append(
@@ -181,7 +185,8 @@ def analyze(settings, directory):
         outcome["errors"].append({"stage": "analysis", "code": safe_error(exc)})
     finally:
         engine.dispose()
-        (directory / "analysis.json").write_text(json.dumps(outcome, indent=2), encoding="utf-8")
+        filename = "analysis-sec-tables-v1.json" if revision == "sec-tables-v1" else "analysis.json"
+        (directory / filename).write_text(json.dumps(outcome, indent=2), encoding="utf-8")
     return outcome
 
 
@@ -190,6 +195,9 @@ def main(argv=None):
     parser.add_argument("phase", choices=["collect", "analyze"])
     parser.add_argument("--directory", type=Path, required=True)
     parser.add_argument("--pairs", type=int, choices=[1, 10], default=1)
+    parser.add_argument(
+        "--revision", choices=["sec-tables-v1"], help="Explicit scoped SEC table pilot; no automatic rollout"
+    )
     parser.add_argument(
         "--pilot-report", type=Path, help="Human-reviewed E2E report with pair_count=1 and status=PASS"
     )
@@ -200,7 +208,7 @@ def main(argv=None):
             pilot = json.loads(args.pilot_report.read_text(encoding="utf-8")) if args.pilot_report else None
             result = collect(settings, args.directory, args.pairs, pilot)
         else:
-            result = analyze(settings, args.directory)
+            result = analyze(settings, args.directory, revision=args.revision)
     except Exception as exc:
         result = {"status": "BLOCKED", "errors": [{"code": safe_error(exc)}]}
     print(json.dumps(result, ensure_ascii=False, indent=2))

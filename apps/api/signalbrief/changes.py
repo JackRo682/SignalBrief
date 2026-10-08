@@ -1,6 +1,7 @@
 """Deterministic comparison with accounting-context matching and two-sided evidence."""
 
 import re
+from datetime import date
 from decimal import Decimal
 
 from .ai.evidence import UNIT_SCALES as UNITS
@@ -34,6 +35,22 @@ def comparison_kind(previous, current):
         return "same_period_revision"
     if current.basis == "guidance":
         return None  # Guidance for different target periods is not a like-for-like revision.
+    if "/" in previous.period or "/" in current.period:
+        # Exact XBRL fiscal intervals. A six-month cumulative amount must never
+        # be compared to a nine-month cumulative amount as quarterly growth.
+        try:
+            ps, pe = map(date.fromisoformat, previous.period.split("/"))
+            cs, ce = map(date.fromisoformat, current.period.split("/"))
+        except ValueError:
+            return None
+        pd, cd = (pe - ps).days + 1, (ce - cs).days + 1
+        if min(pd, cd) <= 0 or abs(pd - cd) > 8:
+            return None
+        if 350 <= (ce - pe).days <= 378 and 350 <= (cs - ps).days <= 378:
+            return "year_over_year"
+        if 77 <= pd <= 100 and 77 <= cd <= 100 and (cs - pe).days == 1:
+            return "quarter_over_quarter"
+        return None
     p, c = re.fullmatch(r"FY(\d{4})", previous.period), re.fullmatch(r"FY(\d{4})", current.period)
     if p and c and int(c[1]) - int(p[1]) == 1:
         return "year_over_year"

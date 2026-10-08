@@ -1,0 +1,54 @@
+{
+  "checked_at": "2026-10-08T12:48:45.669371+00:00",
+  "full_release_suite": true,
+  "results": [
+    {
+      "check": "python_compile",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "backend_tests",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "openapi_export",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "backend_lint",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "frontend_lint",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "frontend_typecheck",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "frontend_unit_tests",
+      "status": "FAIL",
+      "returncode": 1
+    },
+    {
+      "check": "frontend_build",
+      "status": "FAIL",
+      "returncode": 1
+    }
+  ],
+  "backend_counts": {
+    "passed": 294,
+    "skipped_requires_disposable_postgres": 37
+  },
+  "local_web_failure": "Windows native path canonicalization EPERM; see exact-head Linux CI separately",
+  "new_tests": 27,
+  "new_paid_api_calls": 0,
+  "live_end_to_end": "FAIL_NOT_COMPLETED"
+}

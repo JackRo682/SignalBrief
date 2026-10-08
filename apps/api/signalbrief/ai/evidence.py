@@ -161,6 +161,10 @@ def validate_fact(fact: ExtractedFact, chunks: dict[str, str], key: str) -> Cita
     source = chunks.get(fact.chunk_id)
     if source is None:
         return verdict("missing_source", "Referenced chunk does not belong to this document")
+    from .sec_table_evidence import PREFIX, validate_sec_fact
+
+    if source.startswith(PREFIX):
+        return validate_sec_fact(fact, source, key)
     if fact.quote not in source:
         return verdict("unsupported", "Quotation is not an exact contiguous substring of the cited chunk")
     lowered = fact.quote.casefold()
