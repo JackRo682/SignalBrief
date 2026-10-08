@@ -1,7 +1,7 @@
 {
   "source_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm",
   "raw_sha256": "d54cffdda0bf920aa4c86be26586db24dbf6e048635f79e0940dc94c92e54b64",
-  "review_status": "agent_transcribed_from_original_table; independent_human_review_pending",
+  "review_status": "user_attested_original_source_comparison_complete_and_authorized_publication_on_2026-10-08",
   "unit": "USD million",
   "table": 12,
   "rows": {
@@ -28,5 +28,6 @@
       "72421"
     ]
   },
-  "provenance": "Complete original bytes, compressed losslessly. Expected values transcribed from displayed statement rows, not generated from parser output. Public SEC filing; not synthetic."
+  "provenance": "Complete original bytes, compressed losslessly. Expected values transcribed from displayed statement rows, not generated from parser output. Public SEC filing; not synthetic.",
+  "review_scope": "Eight values in the first filing checklist. User attestation; not a second independent agent review."
 }

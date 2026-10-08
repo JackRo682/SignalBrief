@@ -177,3 +177,33 @@ def test_exact_fiscal_intervals_do_not_compare_cumulative_to_quarter():
         comparison_kind(fact("2024-09-29/2025-03-29", "219659"), fact("2025-09-28/2026-03-28", "254940"))
         == "year_over_year"
     )
+
+
+def test_real_second_filing_reference_and_pair_arithmetic():
+    results = []
+    for stem in ("aapl-20260328", "aapl-20260627"):
+        raw = gzip.decompress((FIXTURES / (stem + ".htm.gz")).read_bytes())
+        ref = json.loads((FIXTURES / (stem + ".reference.json")).read_text())
+        result = parse_sec_tables(raw)
+        assert result.raw_sha256 == ref["raw_sha256"]
+        assert not result.errors and len(result.facts) == 8
+        for field, values in ref["expected"].items():
+            facts = [f for f in result.facts if f.field == field]
+            assert [str(f.value) for f in facts] == values
+            assert [f.period for f in facts] == ref["periods"]
+            assert all(f.unit == ref["unit"] for f in facts)
+        results.append(result)
+    for field, delta, percentage in (
+        ("revenue", "-1767", "-1.5893"),
+        ("operating_income", "-190", "-0.5295"),
+    ):
+        old, new = [[f for f in r.facts if f.field == field] for r in results]
+
+        def operand(f):
+            return SimpleNamespace(id=f.fact_id, **f.claim("source").model_dump())
+
+        change = compare(operand(old[0]), operand(new[0]))
+        assert change["comparison_kind"] == "quarter_over_quarter"
+        assert change["absolute_change"] == delta
+        assert change["percentage_change"] == percentage
+        assert comparison_kind(operand(old[2]), operand(new[2])) is None
