@@ -1,0 +1,60 @@
+{
+  "checked_at": "2026-10-08T11:18:38.819694+00:00",
+  "full_release_suite": true,
+  "results": [
+    {
+      "check": "python_compile",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "backend_tests",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "openapi_export",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "backend_lint",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "frontend_lint",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "frontend_typecheck",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "frontend_unit_tests",
+      "status": "FAIL",
+      "returncode": 1,
+      "detail": "Windows native realpath/canonicalization access denied before test/build execution; Linux CI required"
+    },
+    {
+      "check": "frontend_build",
+      "status": "FAIL",
+      "returncode": 1,
+      "detail": "Windows native realpath/canonicalization access denied before test/build execution; Linux CI required"
+    }
+  ],
+  "not_in_this_script": [
+    "Real provider credentials",
+    "Google OAuth redirects",
+    "Hosted deployment",
+    "Human-labeled financial Gold Dataset",
+    "Browser E2E (run Playwright separately)"
+  ],
+  "backend_counts": {
+    "passed": 262,
+    "skipped_requires_disposable_postgres": 37
+  },
+  "raw_logs": "Retained locally; excluded from public repository because they contain machine paths"
+}

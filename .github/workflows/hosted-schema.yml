@@ -2,6 +2,8 @@ name: Hosted schema replay
 on:
   push:
     branches: [main, codex/functional-ui-20261003]
+  pull_request:
+    paths: ['apps/api/**', 'supabase/**', 'tests/**', '.github/workflows/hosted-schema.yml']
   workflow_dispatch:
 permissions:
   contents: read

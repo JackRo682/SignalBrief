@@ -63,7 +63,9 @@ def test_sec_invalid_cik(value):
         SecProvider.cik(value)
 
 
-@pytest.mark.parametrize("path", ["../secret.htm", "https://evil.test/a", "x/y.html", "a..htm"])
+@pytest.mark.parametrize("path", ["../secret.htm", "https://evil.test/a", "x/y.html", "a..htm",
+    "xslF345X06/../a.xml", "xslF345X06/%2e%2e/a.xml", "xslF345X06/a/b.xml",
+    "xslF345X06/a.xml?token=secret", "//evil.test/a.xml"])
 def test_sec_traversal(settings, path):
     settings.sec_user_agent = "Test contact@example.invalid"
     data = fixture("sec-submissions.json")
@@ -71,6 +73,18 @@ def test_sec_traversal(settings, path):
     provider = SecProvider(settings, http(settings, lambda r: httpx.Response(200, json=data)))
     with pytest.raises(ProviderError):
         list(provider.list_documents("42", date(2026, 1, 1), date(2026, 12, 31)))
+    provider.close()
+
+
+@pytest.mark.parametrize("path", ["xslF345X06/form4.xml", "xsl144X01/primary_doc.xml",
+                                  "xslSCHEDULE_13G_X02/primary_doc.xml"])
+def test_sec_official_xsl_documents_do_not_block_issuer_collection(settings, path):
+    settings.sec_user_agent = "Test contact@example.invalid"
+    data = fixture("sec-submissions.json")
+    data["filings"]["recent"]["primaryDocument"] = [path]
+    provider = SecProvider(settings, http(settings, lambda r: httpx.Response(200, json=data)))
+    docs = list(provider.list_documents("42", date(2026, 1, 1), date(2026, 12, 31)))
+    assert docs[0].download_url.endswith("/000000004226000001/" + path)
     provider.close()
 
 

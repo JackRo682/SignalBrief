@@ -48,8 +48,11 @@ class SecProvider(Provider):
             if not re.fullmatch(r"\d{10}-\d{2}-\d{6}", accession):
                 raise ProviderError("sec_invalid_accession")
             filename = columns["primaryDocument"][index]
-            # Refuse slashes and traversal instead of downloading arbitrary provider-supplied paths.
-            if not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9._-]{0,199}", filename) or ".." in filename:
+            # SEC ownership/144 filings use a single official XSL directory.
+            # Reject arbitrary directories, traversal, query strings and external URLs.
+            if not isinstance(filename, str) or not re.fullmatch(
+                r"(?:xsl[A-Za-z0-9_]{1,40}/)?[a-zA-Z0-9][a-zA-Z0-9._-]{0,199}", filename
+            ) or ".." in filename:
                 raise ProviderError("sec_unsafe_primary_document")
             try:
                 filing_date = date.fromisoformat(columns["filingDate"][index])
