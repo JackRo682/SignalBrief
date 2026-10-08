@@ -53,7 +53,7 @@
     "Browser E2E (run Playwright separately)"
   ],
   "backend_counts": {
-    "passed": 262,
+    "passed": 263,
     "skipped_requires_disposable_postgres": 37
   },
   "raw_logs": "Retained locally; excluded from public repository because they contain machine paths"

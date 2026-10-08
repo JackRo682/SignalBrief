@@ -77,7 +77,7 @@ def test_sec_traversal(settings, path):
 
 
 @pytest.mark.parametrize("path", ["xslF345X06/form4.xml", "xsl144X01/primary_doc.xml",
-                                  "xslSCHEDULE_13G_X02/primary_doc.xml"])
+                                  "xslSCHEDULE_13G_X02/primary_doc.xml", "xslN-PX_X01/primary_doc.xml"])
 def test_sec_official_xsl_documents_do_not_block_issuer_collection(settings, path):
     settings.sec_user_agent = "Test contact@example.invalid"
     data = fixture("sec-submissions.json")

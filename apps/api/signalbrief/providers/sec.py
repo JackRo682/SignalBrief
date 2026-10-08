@@ -51,7 +51,7 @@ class SecProvider(Provider):
             # SEC ownership/144 filings use a single official XSL directory.
             # Reject arbitrary directories, traversal, query strings and external URLs.
             if not isinstance(filename, str) or not re.fullmatch(
-                r"(?:xsl[A-Za-z0-9_]{1,40}/)?[a-zA-Z0-9][a-zA-Z0-9._-]{0,199}", filename
+                r"(?:xsl[A-Za-z0-9_-]{1,40}/)?[a-zA-Z0-9][a-zA-Z0-9._-]{0,199}", filename
             ) or ".." in filename:
                 raise ProviderError("sec_unsafe_primary_document")
             try:
