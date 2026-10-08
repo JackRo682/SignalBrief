@@ -5,6 +5,7 @@ from signalbrief.settings import Settings
 
 def test_rate_limit_response_keeps_cors_and_retry_header(tmp_path):
     settings = Settings(
+        _env_file=None,
         database_url=f"sqlite:///{tmp_path / 'cors-test.db'}",
         environment="development",
         demo_mode=True,

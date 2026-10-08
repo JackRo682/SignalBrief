@@ -165,6 +165,8 @@ def analyze(settings, directory):
                     result["events"].append(
                         {"document_id": document_id, "event_id": event_id, "state": event.state}
                     )
+                    if event.state in {"blocked", "rejected", "duplicate", "superseded"}:
+                        raise ProviderError("pilot_event_not_approvable_" + event.state)
                     if event.state != "published":
                         # Resume after review in the existing console; do not create
                         # a current event with permanently insufficient history.
