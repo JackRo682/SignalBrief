@@ -1,0 +1,65 @@
+{
+  "checked_at": "2026-10-09T09:00:29.661605+00:00",
+  "full_release_suite": true,
+  "results": [
+    {
+      "check": "python_compile",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "backend_tests",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "openapi_export",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "backend_lint",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "frontend_lint",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "frontend_typecheck",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "frontend_unit_tests",
+      "status": "FAIL",
+      "returncode": 1
+    },
+    {
+      "check": "frontend_build",
+      "status": "FAIL",
+      "returncode": 1
+    }
+  ],
+  "not_in_this_script": [
+    "Real provider credentials",
+    "Google OAuth redirects",
+    "Hosted deployment",
+    "Human-labeled financial Gold Dataset",
+    "Browser E2E (run Playwright separately)"
+  ],
+  "environment": {
+    "python": "3.12.10",
+    "node": "22.23.3",
+    "platform": "Windows sandbox"
+  },
+  "backend_summary": {
+    "passed": 249,
+    "skipped": 75,
+    "failed": 0
+  },
+  "frontend_execution_failure": "Native filesystem realpath/canonicalization EPERM before test/build execution",
+  "scope": "Local synthetic checks. No production requests or adoption measurements."
+}
