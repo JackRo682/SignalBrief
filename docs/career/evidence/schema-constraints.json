@@ -1,0 +1,204 @@
+{
+  "audited_at": "2026-10-09",
+  "source": "read-only pg_constraint metadata for the ten tables used by these case studies; no customer rows",
+  "constraints": [
+    {
+      "table_name": "ai_runs",
+      "constraint_name": "ai_runs_document_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "ai_runs",
+      "constraint_name": "ai_runs_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "ai_runs",
+      "constraint_name": "ai_runs_user_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL"
+    },
+    {
+      "table_name": "changes",
+      "constraint_name": "changes_current_fact_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (current_fact_id) REFERENCES facts(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "changes",
+      "constraint_name": "changes_event_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "changes",
+      "constraint_name": "changes_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "changes",
+      "constraint_name": "changes_previous_fact_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (previous_fact_id) REFERENCES facts(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "changes",
+      "constraint_name": "uq_current_fact_change",
+      "type": "u",
+      "definition": "UNIQUE (current_fact_id)"
+    },
+    {
+      "table_name": "document_chunks",
+      "constraint_name": "document_chunks_document_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "document_chunks",
+      "constraint_name": "document_chunks_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "document_chunks",
+      "constraint_name": "uq_chunk",
+      "type": "u",
+      "definition": "UNIQUE (document_id, parser_version, ordinal)"
+    },
+    {
+      "table_name": "documents",
+      "constraint_name": "ck_document_source_url",
+      "type": "c",
+      "definition": "CHECK ((length(source_url) > 0))"
+    },
+    {
+      "table_name": "documents",
+      "constraint_name": "documents_company_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "documents",
+      "constraint_name": "documents_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "documents",
+      "constraint_name": "documents_raw_sha256_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (raw_sha256) REFERENCES raw_blobs(sha256) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "documents",
+      "constraint_name": "uq_document_provider_id",
+      "type": "u",
+      "definition": "UNIQUE (provider, external_id)"
+    },
+    {
+      "table_name": "facts",
+      "constraint_name": "facts_chunk_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (chunk_id) REFERENCES document_chunks(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "facts",
+      "constraint_name": "facts_event_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "facts",
+      "constraint_name": "facts_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "feedback",
+      "constraint_name": "feedback_event_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "feedback",
+      "constraint_name": "feedback_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "feedback",
+      "constraint_name": "feedback_user_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "feedback",
+      "constraint_name": "uq_feedback",
+      "type": "u",
+      "definition": "UNIQUE (user_id, event_id)"
+    },
+    {
+      "table_name": "user_events",
+      "constraint_name": "user_events_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "user_events",
+      "constraint_name": "user_events_user_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "users",
+      "constraint_name": "ck_user_density",
+      "type": "c",
+      "definition": "CHECK (((density)::text = ANY ((ARRAY['beginner'::character varying, 'advanced'::character varying])::text[])))"
+    },
+    {
+      "table_name": "users",
+      "constraint_name": "users_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "watchlist_items",
+      "constraint_name": "watchlist_items_company_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE RESTRICT"
+    },
+    {
+      "table_name": "watchlist_items",
+      "constraint_name": "watchlist_items_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (watchlist_id, company_id)"
+    },
+    {
+      "table_name": "watchlist_items",
+      "constraint_name": "watchlist_items_watchlist_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (watchlist_id) REFERENCES watchlists(id) ON DELETE CASCADE"
+    },
+    {
+      "table_name": "watchlists",
+      "constraint_name": "uq_watchlist_name",
+      "type": "u",
+      "definition": "UNIQUE (user_id, name)"
+    },
+    {
+      "table_name": "watchlists",
+      "constraint_name": "watchlists_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "table_name": "watchlists",
+      "constraint_name": "watchlists_user_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+    }
+  ]
+}
