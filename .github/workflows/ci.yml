@@ -31,6 +31,10 @@ jobs:
       - run: pip install -e '.[dev]'
       - working-directory: apps/web
         run: if [ -f package-lock.json ]; then npm ci; else npm install; fi
+      - uses: denoland/setup-deno@v2
+        with: {deno-version: v2.x}
+      - name: Check hosted API without deploying
+        run: deno check --no-lock --config supabase/functions/signalbrief-api/deno.json supabase/functions/signalbrief-api/index.ts
       - name: Full repository release checks
         run: python scripts/verify.py --full
       - working-directory: apps/web

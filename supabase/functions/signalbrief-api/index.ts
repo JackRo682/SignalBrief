@@ -2,6 +2,7 @@ import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.1
 
 // Production web API. Every private request verifies the bearer token with Auth;
 // all reads and mutations then execute under that user's PostgreSQL RLS identity.
+import { headlineFact } from "./card-evidence.ts";
 type Row = Record<string, unknown>;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const PUBLIC_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
@@ -44,11 +45,11 @@ async function memberships(db:SupabaseClient){
 }
 async function cards(db:SupabaseClient,events:Row[],member?:Awaited<ReturnType<typeof memberships>>){
   if(!events.length)return [];
-  const [companies,documents,briefs,changes,facts,m]=await Promise.all([getRows(db,"companies","id",events.map(e=>s(e.company_id)),COMPANY_FIELDS),getRows(db,"documents","id",events.map(e=>s(e.document_id)),DOC_FIELDS),getRows(db,"briefs","event_id",events.map(e=>s(e.id))),getRows(db,"changes","event_id",events.map(e=>s(e.id))),getRows(db,"facts","event_id",events.map(e=>s(e.id)),"id,event_id,quote,validation_status"),member??memberships(db)]);
+  const [companies,documents,briefs,changes,facts,m]=await Promise.all([getRows(db,"companies","id",events.map(e=>s(e.company_id)),COMPANY_FIELDS),getRows(db,"documents","id",events.map(e=>s(e.document_id)),DOC_FIELDS),getRows(db,"briefs","event_id",events.map(e=>s(e.id))),getRows(db,"changes","event_id",events.map(e=>s(e.id))),getRows(db,"facts","event_id",events.map(e=>s(e.id)),"id,event_id,quote,validation_status,field,period"),member??memberships(db)]);
   const cm=index(companies),dm=index(documents),bm=new Map(briefs.map(b=>[s(b.event_id),b]));
   return events.flatMap(e=>{const c=cm.get(s(e.company_id)),d=dm.get(s(e.document_id)),b=bm.get(s(e.id));if(!c||!d||!b||d.is_demo)return [];
     const changed=changes.filter(x=>x.event_id===e.id&&["increased","decreased","wording_changed"].includes(s(x.change_type))).length;
-    return [{id:e.id,company:c,event_type:e.event_type,state:e.state,headline:b.headline,what_happened:b.what_happened,confidence:number(e.confidence),materiality:number(e.materiality),published_at:e.published_at,publication_precision:d.publication_precision,is_demo:false,source_tier:1,source_provider:d.provider,source_url:d.source_url,ranking:ranking(e,m.watched.has(s(c.id)),m.held.has(s(c.id)),s(d.provider),changed>0),change_count:changed,fact_summary:facts.filter(f=>f.event_id===e.id&&f.validation_status==="supported").sort((a,b)=>s(a.id).localeCompare(s(b.id)))[0]?.quote??null,change_summary:changes.filter(x=>x.event_id===e.id).sort((a,b)=>s(a.id).localeCompare(s(b.id))).slice(0,2).map(x=>({field:x.field,previous_value:x.previous_value??null,current_value:x.current_value??null})),interpretation:b.interpretation??null,source_document:{id:d.id,title:d.title,provider:d.provider,source_url:d.source_url,published_at:d.published_at}}];});
+    return [{id:e.id,company:c,event_type:e.event_type,state:e.state,headline:b.headline,what_happened:b.what_happened,confidence:number(e.confidence),materiality:number(e.materiality),published_at:e.published_at,publication_precision:d.publication_precision,is_demo:false,source_tier:1,source_provider:d.provider,source_url:d.source_url,ranking:ranking(e,m.watched.has(s(c.id)),m.held.has(s(c.id)),s(d.provider),changed>0),change_count:changed,fact_summary:headlineFact(s(b.headline),facts.filter(f=>f.event_id===e.id),changes.filter(x=>x.event_id===e.id))?.quote??null,change_summary:changes.filter(x=>x.event_id===e.id).sort((a,b)=>s(a.id).localeCompare(s(b.id))).slice(0,2).map(x=>({field:x.field,previous_value:x.previous_value??null,current_value:x.current_value??null})),interpretation:b.interpretation??null,source_document:{id:d.id,title:d.title,provider:d.provider,source_url:d.source_url,published_at:d.published_at}}];});
 }
 async function detail(db:SupabaseClient,id:string){
   const e=rows(await unwrap(db.from("events").select("*").eq("id",identity(id)).limit(1)))[0];check(e,404,"event_not_found");
