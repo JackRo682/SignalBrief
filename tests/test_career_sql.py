@@ -85,7 +85,10 @@ def test_published_query(career_db, number):
 @pytest.mark.postgres
 @pytest.mark.parametrize("number", range(1, 19))
 def test_every_query_on_empty_data(career_db, number):
-    tables = career_db.exec_driver_sql("SELECT tablename FROM pg_tables WHERE schemaname LIKE 'pg_temp_%'").scalars()
+    tables = career_db.exec_driver_sql(
+        "SELECT tablename FROM pg_tables WHERE schemaname = "
+        "(SELECT nspname FROM pg_namespace WHERE oid=pg_my_temp_schema())"
+    ).scalars().all()
     for name in tables:
         career_db.exec_driver_sql('TRUNCATE TABLE pg_temp."' + name + '"')
     rows = run(career_db, number)
@@ -115,7 +118,10 @@ def test_time_boundaries_and_timezone_invariance(career_db):
 def test_fixture_projection_matches_audited_schema(career_db):
     columns = json.loads((ROOT / "docs/career/evidence/schema-snapshot.json").read_text())["columns"]
     audited = {(c["table_name"], c["column_name"]): c["data_type"] for c in columns}
-    projected = career_db.exec_driver_sql("SELECT table_name,column_name,data_type FROM information_schema.columns WHERE table_schema LIKE 'pg_temp_%'").all()
+    projected = career_db.exec_driver_sql(
+        "SELECT table_name,column_name,data_type FROM information_schema.columns WHERE table_schema = "
+        "(SELECT nspname FROM pg_namespace WHERE oid=pg_my_temp_schema())"
+    ).all()
     for table, column, datatype in projected:
         if table not in {"signup_attempts", "claim_reviews"}:
             assert audited[table, column] == datatype

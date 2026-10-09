@@ -29,9 +29,10 @@ export default function MobileEvent({id}:{id:string}){
 function EventContent({id}:{id:string}){
  const {token}=useAuth(),{text:t,date,value}=usePrefs();
  const [detail,setDetail]=useState<EventDetail|null>(null),[loading,setLoading]=useState(true),[error,setError]=useState(''),[revision,setRevision]=useState(0);
+ const [loadedToken,setLoadedToken]=useState<string|null>(null);
  const [saved,setSaved]=useState(false),[evidenceOpen,setEvidenceOpen]=useState(false),[askOpen,setAskOpen]=useState(false),[question,setQuestion]=useState(''),[answer,setAnswer]=useState<Answer|null>(null);
  const action=useMutation(),ask=useMutation(),evidenceRef=useRef<HTMLElement>(null);
- const engageEvidence=useEventAnalytics(detail?.event.id??null,evidenceOpen&&!!detail?.evidence.length);
+ const engageEvidence=useEventAnalytics(loadedToken===token?detail?.event.id??null:null,evidenceOpen&&!!detail?.evidence.length);
  const resource=useData({action:'resource',p:{kind:'event',id}},resourceSchema);
  useEffect(()=>{setSaved(false);setAnswer(null);setQuestion('');setAskOpen(false);setEvidenceOpen(new URLSearchParams(window.location.search).get('panel')==='evidence');},[id]);
  useEffect(()=>{if(resource.data)setSaved(resource.data.is_saved);},[resource.data]);
@@ -39,7 +40,7 @@ function EventContent({id}:{id:string}){
   setDetail(null);setError('');if(!token){setLoading(false);return;}
   const controller=new AbortController();let alive=true;setLoading(true);
   request(`/v1/events/${encodeURIComponent(id)}`,token,detailSchema,{signal:controller.signal})
-   .then(data=>{if(alive)setDetail(data);}).catch(reason=>{if(alive)setError(errorMessage(reason));}).finally(()=>{if(alive)setLoading(false);});
+   .then(data=>{if(alive){setLoadedToken(token);setDetail(data);}}).catch(reason=>{if(alive)setError(errorMessage(reason));}).finally(()=>{if(alive)setLoading(false);});
   return()=>{alive=false;controller.abort();};
  },[id,token,revision]);
  useEffect(()=>{if(detail&&value.history_enabled)void workspace(token,{action:'visit',p:{kind:'event',id:detail.event.id}},z.unknown()).catch(()=>{});},[detail,token,value.history_enabled]);

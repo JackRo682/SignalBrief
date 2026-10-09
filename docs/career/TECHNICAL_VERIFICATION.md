@@ -35,12 +35,12 @@ Eighteen executable SQL files and their fixture/tests cover joins, grouped aggre
 | Frontend ESLint / TypeScript | **Passed** | Static checks only |
 | Frontend Vitest / Next build | **Blocked by environment**; commands exited 1 | Native Windows realpath/canonicalization failed with EPERM/access denied before tests/build could run, even after specific workspace access was granted |
 | Full verification command | **Exit 1** | Not an all-green release gate because frontend execution failed |
-| Local PostgreSQL exercises | **Execution attempted; not yet verified in this record** | Windows disposable server reachability/init issues; no production database used |
+| Local PostgreSQL 17.6 | **39 passed, 8 deselected** | 18 query expectations + 18 empty-data cases + boundary/timezone + schema-projection checks + core migration/RLS test; [JUnit evidence](evidence/postgres-results.xml) |
 | Browser E2E | **Not locally verified** | Local Next build/server execution is blocked; Linux CI must provide independent execution evidence |
 
 The first local Python attempt failed during test setup because the Windows sandbox temporary directory was inaccessible. Redirecting TEMP/TMP into the task workspace resolved that failure; assertions were not weakened. Node 18 was initially on PATH; dependency installation was rerun successfully with Node 22.23.3. The tested Python runtime is 3.12.10. These setup failures are not represented as passing application tests.
 
-Fresh Linux CI results and any SQL corrections will be recorded below before completion. A CI configuration or a queued run is not a passed run.
+A local disposable PostgreSQL server and the tests were run within the same process context to resolve sandbox service reachability. Execution caught a psycopg percent-placeholder bug in the test harness catalog lookup; the corrected lookup restricts inspection to its own temporary schema. All 39 PostgreSQL checks then passed without relaxing any query expectations. Fresh Linux CI results are recorded below when available; queued runs do not count as passes.
 
 ## Security concerns and deployment blockers
 
