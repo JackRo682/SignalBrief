@@ -1,9 +1,14 @@
 {
   "commit": "d09dac977ea4882b7faa1dd7da9d3f59afc98d01",
+  "approved_updates": {
+    "apps/web/src/app/layout.tsx": "2026-10-10: mount the consent-only, nonvisual ResearchTracker inside existing AuthProvider; preserve rendered mobile components.",
+    "apps/web/e2e/mobile-fixture.ts": "2026-10-10: validate and serve only the new track action in the isolated fixture; all unexpected requests still fail.",
+    "apps/web/e2e/career-analytics.spec.ts": "2026-10-10: additionally assert research events require consent and exclude the event ID and non-allowlisted fields."
+  },
   "files": {
     "apps/web/e2e/mobile-authenticated.spec.ts": "4e53bce533bcf687f28738ffc9a52cd1df4aa07ced64427a6fd8af30989026c6",
     "apps/web/e2e/mobile-details.spec.ts": "96c19c63cac8f68147a75088118b7574128f3e7429ceca18904bf7551f36bad0",
-    "apps/web/e2e/mobile-fixture.ts": "781d49bff85113962e865031957313bbdc84b826ed993f550be99aed6c9395ae",
+    "apps/web/e2e/mobile-fixture.ts": "45da1d2899b542ad6d8cc82bef67acb0f443462d6d29c56c0cb8f2c2d5e1a5e1",
     "apps/web/public/reference-assets/logos/000660.webp": "f929f01b36db4e59075cf4eb7ad2ae5cc285bcf3febdf63d4986090eca547cf8",
     "apps/web/public/reference-assets/logos/005380.webp": "34b0302b033f9b8e5e4b0132905eb1f15835e15df624290df6b74168580a22e7",
     "apps/web/public/reference-assets/logos/005490.webp": "cef6cef4dc1fab0a48bd410370a8dbb14622629a7231e9fb345f10dff9a0ddc6",
@@ -19,7 +24,7 @@
     "apps/web/src/app/fonts/LICENSE.txt": "b04538c9abec39a3db75108cf0af0fd9c77032fe8aa2cf38345b4d250e98e38e",
     "apps/web/src/app/fonts/PretendardVariable.woff2": "9599f12fd42fc0bce1cd50b47a0c022e108d7aa64dd0d1bb0ed44f3282d900b4",
     "apps/web/src/app/globals.css": "622aab68e02a9ace329b78e2f4db2a800e328521ae2ec730512b4f2e8191392a",
-    "apps/web/src/app/layout.tsx": "f7a87aad7caa30b12b2dd0b5162c7ad731e7b7a1e67b0716a035681c9ac8a4ab",
+    "apps/web/src/app/layout.tsx": "ecb92c55c966da5ba05f7771e3753f8b61a34944f81b39333668fc7e081fa01a",
     "apps/web/src/app/release-layout.css": "4d25e2fb626d509c46dd5acec92fb8a67a9598913c6402f58fbde10df8ebf0e6",
     "apps/web/src/components/auth.tsx": "49ec91ec39b6d60521f02d8111b7738d5d1f895673e5b6ca66382b6cbeb58be4",
     "apps/web/src/components/icons.tsx": "1055609add54202a46ac34c9e9c1601f7e0b7a6b51215d530aa3f515139f8609",
@@ -91,7 +96,7 @@
     "apps/web/src/workspace/ui.tsx": "0dbf3f9bfbeedf8871cd55e9583d8d58d5556df275c2a65d86d257c9fff9ea81",
     "apps/web/src/workspace/workspace.css": "fb92ef82198e8d38a54142107b4f3828c7dbc9e11a63a45f13f784e5a5e5bfaf",
     "apps/web/src/lib/use-event-analytics.ts": "ba52aa863dcc5532e2244d36fac245b2f7fa754a6c51867ad32c35c6593e6b12",
-    "apps/web/e2e/career-analytics.spec.ts": "d69d1dff8dff1ae042a2cd2905a6adf21d108527a48946f9b5b727d72275581f",
+    "apps/web/e2e/career-analytics.spec.ts": "f751cb40c6d935d23c25a22efadca8f5f90b4d135111e0d22fdc0d1e8a99df04",
     "apps/web/tests/event-analytics.test.tsx": "1881c450f7cd9ae5c7a9189ca1ad0167ec9029f48c9a2adc4327b3dadfb071e6",
     "apps/web/tests/mobile-flow.test.tsx": "8fbe98ea0fa7af0f2379960b7b9af2662ebc39f24533d76af81217540e27a09f"
   },

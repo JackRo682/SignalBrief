@@ -4,11 +4,13 @@ import { WorkspaceShell } from "@/workspace/ui";
 import { AppShell } from "@/components/ui";
 import MobileShell from '@/mobile/shell';
 import {useMobileViewport} from '@/mobile/responsive';
+import ResearchShell from '@/research/shell';
 import {DesktopShell} from '@/desktop/shell';
 export default function WorkspaceLayout({children}:{children:React.ReactNode}){
  const path=usePathname();
  const mobile=useMobileViewport();
  if(mobile===null)return null;
+ if(path.startsWith('/ops/'))return <ResearchShell>{children}</ResearchShell>;
  if(mobile&&!path.startsWith('/ops'))return <MobileShell>{children}</MobileShell>;
  const desktop = ["/today","/explore","/search","/watchlist","/timeline","/questions"].includes(path)||/^\/(companies|events|documents)\/[^/]+$/.test(path)||/^\/companies\/[^/]+\/timeline$/.test(path);
  if(desktop)return <DesktopShell>{children}</DesktopShell>;

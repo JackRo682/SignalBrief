@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-10",
+  "full_repository_verification": {"passed_groups": 8, "total_groups": 8},
+  "backend_suite": {"passed": 290, "skipped": 40, "note": "Other legacy PostgreSQL suites were not configured in this run."},
+  "frontend_unit_suite": {"passed": 418, "files": 36},
+  "final_workspace_postgres_suite": {"passed": 43, "target": "isolated loopback PostgreSQL research_test"},
+  "research_browser_suite": {"passed": 8, "devices": ["desktop", "mobile"], "data": "synthetic local fixtures only"},
+  "deno_check": {"functions": ["signalbrief-api", "signalbrief-research"], "passed": true},
+  "production_data": "No synthetic participants, labels or evaluation results were inserted.",
+  "limitations": ["Paid model execution requires a positive budget and independently approved actual SEC cases.", "Python Worker heartbeat is not connected.", "PDF export uses the browser print dialog."]
+}

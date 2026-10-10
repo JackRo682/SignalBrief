@@ -66,7 +66,8 @@ def db():
     files = [*sorted((ROOT / 'supabase/hosted').glob('*.sql')),
              *sorted((ROOT / 'supabase/reference-migrations').glob('*.sql')),
              *sorted((ROOT / 'supabase/us-migrations').glob('*.sql')),
-             *sorted((ROOT / 'supabase/workspace-migrations').glob('*.sql'))]
+             *sorted((ROOT / 'supabase/workspace-migrations').glob('*.sql')),
+             *sorted((ROOT / 'supabase/research-migrations').glob('*.sql'))]
     for migration in files:
         if migration.name == 'BASELINE_GENERATED.sql':
             continue

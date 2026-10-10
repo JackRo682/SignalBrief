@@ -80,6 +80,7 @@ function json(value:unknown,status=200):Response{return new Response(status===20
 function calendarResponse(items:Row[]){return new Response(ics(items),{headers:{"Content-Type":"text/calendar; charset=utf-8","Content-Disposition":"attachment; filename=signalbrief.ics","Cache-Control":"private, no-store","Referrer-Policy":"no-referrer","X-Content-Type-Options":"nosniff"}});}
 
 Deno.serve(async(req:Request)=>{
+  const telemetryStarted=Date.now();
   const requestId=crypto.randomUUID();let response:Response;
   try{
     const url=new URL(req.url),prefix="/signalbrief-api",start=url.pathname.indexOf(prefix);
@@ -176,5 +177,11 @@ Deno.serve(async(req:Request)=>{
       }else throw new Fault(404,"route_not_found");
     }
   }catch(error){const fault=error instanceof Fault?error:new Fault(500,"internal_error");console.error(JSON.stringify({requestId,code:fault.code,status:fault.status}));response=json({error:{code:fault.code,request_id:requestId}},fault.status);}
+  const background=(globalThis as unknown as {EdgeRuntime?:{waitUntil:(p:Promise<unknown>)=>void}}).EdgeRuntime;
+  const serviceKey=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  if(background&&serviceKey&&!req.url.includes('/v1/config')&&req.method!=='OPTIONS'){
+    const metrics=createClient(SUPABASE_URL,serviceKey,{auth:{persistSession:false,autoRefreshToken:false}});
+    background.waitUntil(Promise.resolve(metrics.rpc('sb_research_observe',{status:response.status,latency:Math.min(300000,Date.now()-telemetryStarted)})).catch(()=>{}));
+  }
   response.headers.set("X-Request-Id",requestId);response.headers.set("Referrer-Policy","no-referrer");response.headers.set("Vary","Origin");const origin=req.headers.get("origin");if(origin&&ALLOWED_ORIGINS.has(origin))response.headers.set("Access-Control-Allow-Origin",origin);return response;
 });
