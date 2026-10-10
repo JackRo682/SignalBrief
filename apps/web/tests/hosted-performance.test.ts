@@ -9,7 +9,7 @@ function hosted() {
   const createClient = vi.fn();
   let handler!: (request: Request) => Promise<Response>;
   const source = readFileSync(new URL('../../../supabase/functions/signalbrief-api/index.ts', import.meta.url), 'utf8')
-    .replace(/^import .*\n/, '');
+    .replace(/^import .*\r?\n/, '');
   const sandbox = { createClient, Request, Response, Headers, URL, TextEncoder, crypto, console,
     Deno: { env: { get: (key: string) => key === 'SUPABASE_URL' ? 'https://test.supabase.co' : 'public-key' },
       serve: (fn: typeof handler) => { handler = fn; } },

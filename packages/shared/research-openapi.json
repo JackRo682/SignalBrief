@@ -1,0 +1,1095 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SignalBrief Research API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/research": {
+      "post": {
+        "summary": "Consented research and admin operations",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "experiments"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {},
+                        "required": [],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "experiment"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "experiment_create"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "minLength": 3,
+                            "maxLength": 120
+                          },
+                          "hypothesis": {
+                            "type": "string",
+                            "minLength": 10,
+                            "maxLength": 2000
+                          },
+                          "screen": {
+                            "type": "string",
+                            "enum": [
+                              "today",
+                              "event",
+                              "document"
+                            ]
+                          },
+                          "design": {
+                            "type": "string",
+                            "enum": [
+                              "between",
+                              "crossover"
+                            ]
+                          },
+                          "ratio": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99
+                          },
+                          "metric": {
+                            "type": "string",
+                            "enum": [
+                              "accuracy",
+                              "completion",
+                              "active_time",
+                              "evidence"
+                            ]
+                          },
+                          "consent_text": {
+                            "type": "string",
+                            "minLength": 20,
+                            "maxLength": 4000
+                          },
+                          "config": {
+                            "type": "object",
+                            "properties": {
+                              "A": {
+                                "type": "object",
+                                "properties": {
+                                  "content": {
+                                    "type": "string",
+                                    "minLength": 20,
+                                    "maxLength": 12000
+                                  },
+                                  "question": {
+                                    "type": "string",
+                                    "minLength": 3,
+                                    "maxLength": 1000
+                                  },
+                                  "answer": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 500
+                                  },
+                                  "source_url": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "maxLength": 2000,
+                                    "description": "Additional server-side validation applies; see research/contracts.ts."
+                                  }
+                                },
+                                "required": [
+                                  "content",
+                                  "question",
+                                  "answer",
+                                  "source_url"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "B": {
+                                "type": "object",
+                                "properties": {
+                                  "content": {
+                                    "type": "string",
+                                    "minLength": 20,
+                                    "maxLength": 12000
+                                  },
+                                  "question": {
+                                    "type": "string",
+                                    "minLength": 3,
+                                    "maxLength": 1000
+                                  },
+                                  "answer": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 500
+                                  },
+                                  "source_url": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "maxLength": 2000,
+                                    "description": "Additional server-side validation applies; see research/contracts.ts."
+                                  }
+                                },
+                                "required": [
+                                  "content",
+                                  "question",
+                                  "answer",
+                                  "source_url"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": [
+                              "A",
+                              "B"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "hypothesis",
+                          "screen",
+                          "design",
+                          "ratio",
+                          "metric",
+                          "consent_text",
+                          "config"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "experiment_status"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "running",
+                              "paused",
+                              "completed"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "status"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "study"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "join"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "consent": {
+                            "const": true
+                          },
+                          "consent_version": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "consent",
+                          "consent_version"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "withdraw"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "expose"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "phase": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 1
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "phase"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "study_event"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "phase": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "active_ms": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 3600000
+                          },
+                          "evidence_opened": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "phase",
+                          "active_ms",
+                          "evidence_opened"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "submit"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "phase": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "answer": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                          },
+                          "confidence": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 5
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "phase",
+                          "answer",
+                          "confidence"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "track"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "session_id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "page_id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "screen": {
+                            "type": "string",
+                            "enum": [
+                              "today",
+                              "explore",
+                              "search",
+                              "watchlist",
+                              "portfolio",
+                              "timeline",
+                              "questions",
+                              "calendar",
+                              "alerts",
+                              "saved",
+                              "settings",
+                              "onboarding",
+                              "company",
+                              "event",
+                              "document",
+                              "help"
+                            ]
+                          },
+                          "device": {
+                            "type": "string",
+                            "enum": [
+                              "mobile",
+                              "desktop"
+                            ]
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "view",
+                              "heartbeat",
+                              "click",
+                              "conversion"
+                            ]
+                          },
+                          "active_ms": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 15000
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "session_id",
+                          "page_id",
+                          "screen",
+                          "device",
+                          "kind",
+                          "active_ms"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "analytics"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "from": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "to": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "screen": {
+                            "type": "string",
+                            "maxLength": 30
+                          },
+                          "device": {
+                            "type": "string",
+                            "enum": [
+                              "",
+                              "mobile",
+                              "desktop"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "from",
+                          "to",
+                          "screen",
+                          "device"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "analytics_delete"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {},
+                        "required": [],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "datasets"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {},
+                        "required": [],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "dataset"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "dataset_create"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "minLength": 3,
+                            "maxLength": 120
+                          },
+                          "split": {
+                            "type": "string",
+                            "enum": [
+                              "review",
+                              "holdout"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "split"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "case_create"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "dataset_id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "filing_id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "previous_filing_id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "field": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "period": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "previous_period": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "unit": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "expected": {
+                            "type": "string",
+                            "maxLength": 80,
+                            "pattern": "^-?\\d+(\\.\\d+)?$|^$"
+                          },
+                          "previous_expected": {
+                            "type": "string",
+                            "maxLength": 80,
+                            "pattern": "^-?\\d+(\\.\\d+)?$|^$"
+                          },
+                          "answerable": {
+                            "type": "boolean"
+                          },
+                          "quote": {
+                            "type": "string",
+                            "minLength": 5,
+                            "maxLength": 8000
+                          },
+                          "previous_quote": {
+                            "type": "string",
+                            "minLength": 5,
+                            "maxLength": 8000
+                          }
+                        },
+                        "required": [
+                          "dataset_id",
+                          "filing_id",
+                          "previous_filing_id",
+                          "field",
+                          "period",
+                          "previous_period",
+                          "unit",
+                          "expected",
+                          "previous_expected",
+                          "answerable",
+                          "quote",
+                          "previous_quote"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "case_review"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "approved",
+                              "rejected",
+                              "held"
+                            ]
+                          },
+                          "reason": {
+                            "type": "string",
+                            "minLength": 5,
+                            "maxLength": 2000
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "status",
+                          "reason"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "evaluations"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {},
+                        "required": [],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "evaluation"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "evaluation_create"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "dataset_id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "method": {
+                            "type": "string",
+                            "enum": [
+                              "A",
+                              "B",
+                              "C"
+                            ]
+                          },
+                          "idempotency_key": {
+                            "type": "string",
+                            "format": "uuid"
+                          }
+                        },
+                        "required": [
+                          "dataset_id",
+                          "method",
+                          "idempotency_key"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "evaluation_execute"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "evaluation_budget"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "usd": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 10
+                          }
+                        },
+                        "required": [
+                          "usd"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "quality"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {},
+                        "required": [],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "reliability"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {},
+                        "required": [],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "reports"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {},
+                        "required": [],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "action": {
+                        "const": "check_record"
+                      },
+                      "p": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "passed",
+                              "failed",
+                              "blocked"
+                            ]
+                          },
+                          "environment": {
+                            "type": "string",
+                            "enum": [
+                              "local",
+                              "preview",
+                              "production"
+                            ]
+                          },
+                          "evidence": {
+                            "type": "string",
+                            "minLength": 10,
+                            "maxLength": 4000
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "status",
+                          "environment",
+                          "evidence"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "action",
+                      "p"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Validated result; unknown metrics are null"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Admin, ownership, consent or MFA denied"
+          },
+          "409": {
+            "description": "State, frozen version or split conflict"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "429": {
+            "description": "Rate or cost budget exceeded"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

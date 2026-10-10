@@ -9,6 +9,13 @@ ROOT = Path(__file__).resolve().parents[1]
 BASELINE = ROOT / "docs/desktop-mobile-baseline.json"
 
 
+def source_digest(path: Path) -> str:
+    data = path.read_bytes()
+    if path.suffix in {".ts", ".tsx", ".css", ".txt", ".json"}:
+        data = data.replace(b"\r\n", b"\n")
+    return hashlib.sha256(data).hexdigest()
+
+
 def mobile_expression(source: str) -> str:
     match = re.search(r"mobile=(\{.*?\})\s+desktop=", source, re.DOTALL)
     return match.group(1) if match else ""
@@ -43,7 +50,7 @@ def verify() -> dict:
     failures = []
     for path, digest in baseline["files"].items():
         file = ROOT / path
-        if not file.is_file() or hashlib.sha256(file.read_bytes()).hexdigest() != digest:
+        if not file.is_file() or source_digest(file) != digest:
             failures.append(f"Mobile dependency changed: {path}")
     for path, expression in baseline["route_mobile_expressions"].items():
         if mobile_expression((ROOT / path).read_text()) != expression:

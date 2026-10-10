@@ -1,5 +1,6 @@
 {
   "commit": "d09dac977ea4882b7faa1dd7da9d3f59afc98d01",
+  "approved_updates": {"apps/web/src/app/layout.tsx": "2026-10-10: mount the consent-only, nonvisual ResearchTracker inside existing AuthProvider; preserve rendered mobile components."},
   "files": {
     "apps/web/e2e/mobile-authenticated.spec.ts": "4e53bce533bcf687f28738ffc9a52cd1df4aa07ced64427a6fd8af30989026c6",
     "apps/web/e2e/mobile-details.spec.ts": "96c19c63cac8f68147a75088118b7574128f3e7429ceca18904bf7551f36bad0",
@@ -19,7 +20,7 @@
     "apps/web/src/app/fonts/LICENSE.txt": "b04538c9abec39a3db75108cf0af0fd9c77032fe8aa2cf38345b4d250e98e38e",
     "apps/web/src/app/fonts/PretendardVariable.woff2": "9599f12fd42fc0bce1cd50b47a0c022e108d7aa64dd0d1bb0ed44f3282d900b4",
     "apps/web/src/app/globals.css": "622aab68e02a9ace329b78e2f4db2a800e328521ae2ec730512b4f2e8191392a",
-    "apps/web/src/app/layout.tsx": "f7a87aad7caa30b12b2dd0b5162c7ad731e7b7a1e67b0716a035681c9ac8a4ab",
+    "apps/web/src/app/layout.tsx": "ecb92c55c966da5ba05f7771e3753f8b61a34944f81b39333668fc7e081fa01a",
     "apps/web/src/app/release-layout.css": "4d25e2fb626d509c46dd5acec92fb8a67a9598913c6402f58fbde10df8ebf0e6",
     "apps/web/src/components/auth.tsx": "49ec91ec39b6d60521f02d8111b7738d5d1f895673e5b6ca66382b6cbeb58be4",
     "apps/web/src/components/icons.tsx": "1055609add54202a46ac34c9e9c1601f7e0b7a6b51215d530aa3f515139f8609",
