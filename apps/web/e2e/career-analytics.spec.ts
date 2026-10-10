@@ -21,8 +21,14 @@ for (const consent of [false, true]) {
         {event_name:'brief_opened',properties:{event_id:eventId,screen:'mobile_detail'}},
         {event_name:'evidence_opened',properties:{event_id:eventId,screen:'mobile_detail'}},
       ]);
+      await expect.poll(()=>fixture.state.researchCalls.some(c=>c.p.kind==='view'&&c.p.screen==='event')).toBe(true);
+      expect(JSON.stringify(fixture.state.researchCalls)).not.toContain(eventId);
+      for(const call of fixture.state.researchCalls) {
+        expect(Object.keys(call.p).sort()).toEqual(['active_ms','device','id','kind','page_id','screen','session_id']);
+      }
     } else {
       expect(events).toEqual([]);
+      expect(fixture.state.researchCalls).toEqual([]);
     }
     expect(fixture.state.unexpected).toEqual([]);
     expect(fixture.state.runtimeErrors).toEqual([]);

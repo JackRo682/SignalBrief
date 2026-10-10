@@ -1,5 +1,6 @@
 import {type Page, type Route} from '@playwright/test';
 import {z} from 'zod';
+import {researchRequest} from '../src/research/contracts';
 import {answerSchema, calendarSchema, detailSchema, eventSchema, meSchema, notificationsSchema, portfolioSchema, type Company} from '../src/lib/contracts';
 import {companyDetailSchema, documentDetailSchema, defaults, preferenceSchema, resourceSchema, workspaceRequest, type Preferences, type Resource, type WorkspaceRequest} from '../src/workspace/contracts';
 
@@ -75,6 +76,7 @@ export async function mobileFixture(page: Page, options: Options = {}) {
     calendar: calendarSchema.parse(events.slice(0, 3).map((event, i) => ({id: uid(8, 200 + i), title: `${event.company.name} 공시 확인`, occurs_on: `2026-10-${String(6 + i * 4).padStart(2, '0')}`, company_id: event.company.id, event_id: event.id, origin: 'official', quote: 'Synthetic fixture: Review the published quarterly filing.', source_url: event.source_url, is_demo: false}))),
     calls: [] as WorkspaceRequest[],
     apiCalls: [] as {method: string; path: string; body: unknown}[],
+    researchCalls: [] as {action: string; p: Record<string, unknown>}[],
     unexpected: [] as string[], runtimeErrors: [] as string[],
   };
   await page.clock.setFixedTime(new Date(fixtureNow));
@@ -94,6 +96,14 @@ export async function mobileFixture(page: Page, options: Options = {}) {
     await route.fallback();
   });
   await page.route('**/api/auth-config', route => route.fulfill({json: {url: 'https://test-project.supabase.co', publishableKey: 'sb_publishable_isolated_fixture'}}));
+  await page.route('**/api/research', async route => {
+    const parsed=researchRequest.safeParse(route.request().postDataJSON());
+    if(route.request().method()!=='POST'||!parsed.success||parsed.data.action!=='track') {
+      await unknown(route,'invalid or unexpected research action');return;
+    }
+    state.researchCalls.push(parsed.data);
+    await route.fulfill({json:{recorded:state.profile.analytics_consent}});
+  });
   await page.route('https://test-project.supabase.co/auth/v1/**', route => {
     const path = new URL(route.request().url()).pathname;
     state.authCalls.push({method:route.request().method(),path});
