@@ -14,11 +14,28 @@ import {pageDataCache} from '@/lib/page-data-cache';
 import './workspace.css';
 export {Icon};
 export function useData<T>(req:WorkspaceRequest|null,schema:z.ZodType<T>){
- const {token}=useAuth(),[data,setData]=useState<T|null>(null),[loading,setLoading]=useState(true),[error,setError]=useState(''),[seq,setSeq]=useState(0);
- const serialized=JSON.stringify(req);const scope=useRef(token);useEffect(()=>{scope.current=token;},[token]);
- useEffect(()=>{if(!token||serialized==='null'){setLoading(false);setData(null);return;}let live=true;const ctrl=new AbortController();setLoading(true);setError('');setData(null);
-  workspace(token,JSON.parse(serialized) as WorkspaceRequest,schema,ctrl.signal).then(x=>{if(live&&scope.current===token)setData(x);}).catch(e=>{if(live)setError(e instanceof Error?e.message:'요청 오류');}).finally(()=>{if(live)setLoading(false);});return()=>{live=false;ctrl.abort();};},[token,serialized,schema,seq]);
- const reload=useCallback(()=>setSeq(x=>x+1),[]);return {data,loading,error,reload};
+ const {token}=useAuth(),[seq,setSeq]=useState(0);
+ const [state,setState]=useState<{key:string;scope:string|null;data:T|null;loading:boolean;error:string}>({key:'',scope:null,data:null,loading:true,error:''});
+ const serialized=JSON.stringify(req),key='workspace:'+serialized;
+ const snapshot=token&&req?pageDataCache.peek<T>(token,key):undefined;
+ const current=state.key===key&&state.scope===token;
+ const data=current&&state.data!==null?state.data:snapshot??null;
+ const loading=Boolean(token&&req&&!data&&(!current||state.loading));
+ useEffect(()=>{
+  if(!token||serialized==='null'){setState({key,scope:token,data:null,loading:false,error:''});return;}
+  let alive=true;
+  const saved=pageDataCache.peek<T>(token,key);
+  setState({key,scope:token,data:saved??null,loading:saved===undefined,error:''});
+  void Promise.resolve().then(()=>{
+   if(!alive)return;
+   return pageDataCache.request(token,key,'GET',()=>workspace(token,JSON.parse(serialized) as WorkspaceRequest,schema,AbortSignal.timeout(25000)))
+     .then(value=>{if(alive)setState({key,scope:token,data:value,loading:false,error:''});})
+     .catch(e=>{if(alive)setState({key,scope:token,data:pageDataCache.peek<T>(token,key)??null,loading:false,error:e instanceof Error?e.message:'요청 오류'});});
+  });
+  return()=>{alive=false;};
+ },[token,key,serialized,schema,seq]);
+ const reload=useCallback(()=>{pageDataCache.reset(token);setSeq(x=>x+1);},[token]);
+ return {data,loading,error:current?state.error:'',reload};
 }
 export function useMutation(){const [busy,setBusy]=useState(false),[error,setError]=useState(''),[success,setSuccess]=useState('');const lock=useRef(false),alive=useRef(true);
  useEffect(()=>{alive.current=true;return()=>{alive.current=false;};},[]);

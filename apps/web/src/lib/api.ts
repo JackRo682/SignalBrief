@@ -1,4 +1,5 @@
 import { z } from "zod";
+import {pageDataCache} from "./page-data-cache";
 export const API_URL = (process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === "production" ? "/api" : "http://localhost:8000")).replace(/\/$/, "");
 export class APIError extends Error {
   constructor(public status:number, public code:string, public requestId:string|null = null) { super(code); this.name="APIError"; }
@@ -29,8 +30,8 @@ export async function request<T>(path:string, token:string|null, schema:z.ZodTyp
     if (!response.ok) {
       const payload = data && typeof data==="object" ? data as Record<string,unknown> : {};
       const detail = payload.error && typeof payload.error==="object" ? payload.error as Record<string,unknown> : {};
-      if (response.status===401 && typeof window!=="undefined") window.dispatchEvent(new Event("signalbrief:unauthorized"));
-      if (response.status===403 && detail.code==="mfa_required" && typeof window!=="undefined") window.dispatchEvent(new Event("signalbrief:mfa-required"));
+      if (response.status===401 && pageDataCache.isCurrent(token) && typeof window!=="undefined") window.dispatchEvent(new Event("signalbrief:unauthorized"));
+      if (response.status===403 && detail.code==="mfa_required" && pageDataCache.isCurrent(token) && typeof window!=="undefined") window.dispatchEvent(new Event("signalbrief:mfa-required"));
       throw new APIError(response.status, String(detail.code ?? payload.detail ?? `http_${response.status}`), response.headers.get("x-request-id"));
     }
     return schema.parse(data);

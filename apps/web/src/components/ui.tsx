@@ -4,21 +4,40 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useCallback, useRef, type ReactNode } from "react";
 import { z } from "zod";
 import { request,errorMessage,externalUrl,body } from "@/lib/api";
+import {pageDataCache} from "@/lib/page-data-cache";
 import { meSchema, companiesSchema, type EventCard } from "@/lib/contracts";
 import { dateText,score,typeLabels } from "@/lib/format";
 import { useAuth } from "./auth";
 import WorkspaceLoading from "./workspace-loading";
 import { BrandMark, Icon, type IconName } from "./icons";
 export function useResource<T>(path:string|null,schema:z.ZodType<T>) {
-  const {token}=useAuth();const [data,setData]=useState<T|null>(null),[loading,setLoading]=useState(true),[error,setError]=useState<string|null>(null),[revision,setRevision]=useState(0);
-  const reload=useCallback(()=>setRevision(v=>v+1),[]);
-  useEffect(()=>{if(!token||!path){setLoading(false);setData(null);return;}const ctrl=new AbortController();let active=true;
-    setLoading(true);setError(null);request(path,token,schema,{signal:ctrl.signal}).then(value=>{if(active)setData(value);}).catch(e=>{if(active)setError(errorMessage(e));}).finally(()=>{if(active)setLoading(false);});
-    return ()=>{active=false;ctrl.abort();};},[token,path,schema,revision]);
-  return {data,loading,error,reload};
+  const {token}=useAuth();
+  const [revision,setRevision]=useState(0);
+  const [state,setState]=useState<{path:string|null;scope:string|null;data:T|null;loading:boolean;error:string|null}>({path:null,scope:null,data:null,loading:true,error:null});
+  const cached=token&&path?pageDataCache.peek<T>(token,path):undefined;
+  const current=state.path===path&&state.scope===token;
+  const data=current&&state.data!==null?state.data:cached??null;
+  const loading=Boolean(token&&path&&!data&&(!current||state.loading));
+  const reload=useCallback(()=>{pageDataCache.reset(token);setRevision(v=>v+1);},[token]);
+  useEffect(()=>{
+    if(!token||!path){setState({path,scope:token,data:null,loading:false,error:null});return;}
+    let active=true;const controller=new AbortController();
+    const snapshot=pageDataCache.peek<T>(token,path);
+    setState({path,scope:token,data:snapshot??null,loading:snapshot===undefined,error:null});
+    const share=/^\/v1\/(feed|companies|watchlist|portfolio|calendar|notifications)([/?]|$)/.test(path) || path.startsWith('/market?');
+    // Delay until after Strict Mode cleanup; an abandoned reader must not issue a request.
+    void Promise.resolve().then(()=>{
+      if(!active)return;
+      return pageDataCache.request(token,path,'GET',()=>request(path,token,schema,share?{}:{signal:controller.signal}))
+        .then(value=>{if(active)setState({path,scope:token,data:value,loading:false,error:null});})
+        .catch(e=>{if(active)setState({path,scope:token,data:pageDataCache.peek<T>(token,path)??null,loading:false,error:errorMessage(e)});});
+    });
+    return()=>{active=false;controller.abort();};
+  },[token,path,schema,revision]);
+  return {data,loading,error:current?state.error:null,reload};
 }
 export function useAction(){const [busy,setBusy]=useState(false),[error,setError]=useState<string|null>(null),[message,setMessage]=useState<string|null>(null);
-  async function run(action:()=>Promise<unknown>,success?:string){setBusy(true);setError(null);setMessage(null);try{await action();if(success)setMessage(success);return true;}catch(e){setError(errorMessage(e));return false;}finally{setBusy(false);}}
+  async function run(action:()=>Promise<unknown>,success?:string){setBusy(true);setError(null);setMessage(null);try{await action();pageDataCache.reset();if(success)setMessage(success);return true;}catch(e){setError(errorMessage(e));return false;}finally{setBusy(false);}}
   return {busy,error,message,run};
 }
 export function Loading({label="데이터를 불러오고 있습니다."}:{label?:string}){return <div className="loading" role="status"><span className="spinner"/>{label}<div className="skeleton"/><div className="skeleton narrow"/></div>;}

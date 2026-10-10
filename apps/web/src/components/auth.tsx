@@ -39,6 +39,7 @@ export function AuthProvider({children}:{children:ReactNode}) {
       .finally(()=>{if(alive)setInitializing(false);});
     return ()=>{alive=false;unsubscribe?.();};
   },[]);
+  useEffect(()=>{pageDataCache.reset(token);},[token]);
   const refresh=useCallback(async()=>{if(!token){setMe(null);return;}const user=await request("/v1/me",token,meSchema);setMe(user);},[token]);
   useEffect(()=>{let alive=true;if(!token){setMe(null);setMfaRequired(false);return;}setProfileLoading(true);setError(null);
     request("/v1/me",token,meSchema).then(user=>{if(alive){setMe(user);setMfaRequired(false);}}).catch(e=>{if(alive){setMe(null);if(e instanceof APIError && e.code === "mfa_required"){setMfaRequired(true);setError(null);}else setError(errorMessage(e));}}).finally(()=>{if(alive)setProfileLoading(false);});return ()=>{alive=false;};
