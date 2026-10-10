@@ -1,9 +1,9 @@
 # Desktop reference screens — 2026-10-07
 
 This release continues the latest GitHub main revision
-`f680feab8bee13996e71210c566e2cc4da3d2339`. It implements the ten supplied
+`d09dac977ea4882b7faa1dd7da9d3f59afc98d01`. It implements the ten supplied
 1448 × 1086 PC references in a dedicated desktop render branch. The deployed
-mobile implementation remains the baseline: 89 mobile source files, assets and
+mobile implementation remains the baseline: 93 mobile source files, assets and
 shared dependencies retain their SHA-256 hashes, and all 21 mobile page expressions
 remain unchanged. `scripts/verify_desktop_isolation.py` checks this boundary and
 rejects desktop styles that are not scoped beneath `.sb-pc`.
@@ -162,9 +162,10 @@ fails unexpected external calls. It captures all ten screens at 1448 × 1086 and
 1280 × 900, exercises persisted research/watchlist/question flows, and reopens the
 same mobile routes at 432 and 390 pixels. Fixtures never mutate production data.
 
-The current local workspace has frontend dependencies but no installed browser
-or Python test environment. A local full verification report must therefore not
-be described as an all-gates pass. GitHub Actions runs the complete release suite,
+The repair workspace has frontend and Python dependencies, but Windows sandbox
+permissions prevent local native web tests/builds and default temporary-directory
+backend tests. Local lint and type checking pass; this is not an all-gates pass.
+GitHub Actions runs the complete release suite,
 browser checks and disposable PostgreSQL tests before merge. Final CI run links,
 the merged commit and the production deployment identity are reported with the
 release. Browser artifacts are visually inspected before publication.

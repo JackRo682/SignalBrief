@@ -1,4 +1,5 @@
 import {cleanup,renderHook,waitFor,act} from '@testing-library/react';
+import {StrictMode} from 'react';
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {z} from 'zod';
 import {usePcResource} from '../src/desktop/data';
@@ -10,6 +11,16 @@ const schema=z.object({owner:z.string(),value:z.string()});
 beforeEach(()=>{mock.token='owner-a';vi.clearAllMocks();pageDataCache.reset();mock.request.mockResolvedValue({owner:'owner-a',value:'Persisted collection'});});
 afterEach(cleanup);
 describe('desktop primary data cache preserves authentication and navigation guarantees',()=>{
+ it.each(['/v1/events/event-a','/v1/watchlist'])('sends one request under Strict Mode for %s',async path=>{
+  const view=renderHook(()=>usePcResource(path,schema),{wrapper:StrictMode});
+  await waitFor(()=>expect(view.result.current.data?.value).toBe('Persisted collection'));
+  expect(mock.request).toHaveBeenCalledTimes(1);
+ });
+ it('does not start a detail request after immediate unmount',async()=>{
+  const view=renderHook(()=>usePcResource('/v1/events/event-a',schema));view.unmount();
+  await act(async()=>{await Promise.resolve();});
+  expect(mock.request).not.toHaveBeenCalled();
+ });
  it('coalesces simultaneous readers and reuses a primary collection across remounts',async()=>{
   const first=renderHook(()=>usePcResource('/v1/watchlist',schema));const second=renderHook(()=>usePcResource('/v1/watchlist',schema));
   await waitFor(()=>expect(first.result.current.data?.value).toBe('Persisted collection'));

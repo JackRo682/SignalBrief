@@ -16,9 +16,14 @@ export function usePcResource<T>(path:string|null,schema:z.ZodType<T>){
   // A primary GET promise is shared for the existing 15-second, token-scoped TTL.
   // Unmounting one reader must not cancel another reader's shared request.
   const shared=/^\/v1\/(feed|companies|watchlist|portfolio|calendar)([/?]|$)/.test(path);
-  pageDataCache.request(token,path,'GET',()=>request(path,token,schema,shared?{}:{signal:controller.signal})).then(value=>{
+  // Strict Mode replays setup/cleanup before this microtask. Do not send a
+  // request for an effect that has already been disposed (including details).
+  void Promise.resolve().then(()=>{
+   if(!active)return;
+   return pageDataCache.request(token,path,'GET',()=>request(path,token,schema,shared?{}:{signal:controller.signal})).then(value=>{
    if(active)setState({path,scope:token,data:schema.parse(value),loading:false,error:null});
-  }).catch(error=>{if(active)setState({path,scope:token,data:null,loading:false,error:errorMessage(error)});});
+   }).catch(error=>{if(active)setState({path,scope:token,data:null,loading:false,error:errorMessage(error)});});
+  });
   return()=>{active=false;controller.abort();};
  },[path,token,schema,revision]);
  const reload=useCallback(()=>{pageDataCache.reset(token);setRevision(value=>value+1);},[token]);
