@@ -46,8 +46,8 @@ async function verifyMobileProgressiveNavigation(page: Page, summaryOnly: boolea
   expect(fixture.state.apiCalls.filter(call => call.path === '/v1/config')).toHaveLength(1);
   expect(fixture.state.apiCalls.filter(call => call.method === 'GET' && call.path === '/v1/me')).toHaveLength(1);
   expect(fixture.state.apiCalls.filter(call => call.method === 'PATCH' && call.path === '/v1/me')).toHaveLength(0);
-  // Mobile hooks refresh owned collections on mount; auth remains shared across routes.
-  expect(fixture.state.apiCalls.filter(call => call.path === '/v1/watchlist').length).toBeGreaterThan(initialWatchReads);
+  // Previously loaded watchlists stay available when navigating between categories.
+  expect(fixture.state.apiCalls.filter(call => call.path === '/v1/watchlist').length).toBe(initialWatchReads);
   expect(fixture.state.apiCalls.some(call => call.path.startsWith('/v1/events/'))).toBe(false);
   await page.locator('.m-timeline-item').first().getByRole('link').first().click();
   await expect(page).toHaveURL(new RegExp(`/events/${eventId}$`));
