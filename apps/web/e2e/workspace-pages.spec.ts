@@ -38,7 +38,7 @@ async function fixture(page:Page,stepUp=false){
  return {calls,failSave:()=>{failSave=true;},failSearch:()=>{failSearch=true;},recover:()=>{failSave=false;failSearch=false;}};
 }
 
-function workspaceMain(page:Page){return page.locator('main.ws-main,main#mobile-main');}
+function workspaceMain(page:Page){return page.locator('main.ws-main,main#mobile-main,main#pc-main');}
 function mobileViewport(page:Page){return (page.viewportSize()?.width??1280)<768;}
 
 test('all nine pages render real-DOM controls with mobile-safe layout',async({page},info)=>{
@@ -65,15 +65,15 @@ test('all nine pages render real-DOM controls with mobile-safe layout',async({pa
 test('search links exact sources and persists save/un-save across navigation',async({page})=>{
  const f=await fixture(page),mobile=mobileViewport(page);
  await page.goto('/explore');
- await page.getByLabel(mobile?'기업명 또는 키워드 검색':'검색어',{exact:true}).fill('10-K');
- await page.locator(mobile?'.m-search-input':'.ws-search-form').getByRole('button',{name:'검색',exact:true}).click();
+ await page.getByLabel(mobile?'기업명 또는 키워드 검색':'기업, 키워드 또는 산업 검색',{exact:true}).fill('10-K');
+ await page.locator(mobile?'.m-search-input':'.pc-discovery-form').getByRole('button',{name:'검색',exact:true}).click();
  await expect(page).toHaveURL(/q=10-K/);
- const source=mobile?page.locator('.m-search-result-resource').filter({hasText:filing.title}):page.locator('.ws-resource').getByRole('link',{name:filing.title,exact:true});
+ const source=mobile?page.locator('.m-search-result-resource').filter({hasText:filing.title}):page.locator('.pc-search-result').getByRole('link',{name:filing.title,exact:true});
  await expect(source).toHaveAttribute('href',`/documents/${filingId}?kind=filing`);
  await source.click();
  await expect(page).toHaveURL(new RegExp(`/documents/${filingId}`));
- await page.getByRole('button',{name:mobile?'문서 저장':/10-K 저장$/,exact:true}).click();
- await expect(page.getByRole('button',{name:mobile?'문서 저장 취소':/10-K 저장 취소$/,exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'문서 저장',exact:true}).click();
+ await expect(page.getByRole('button',{name:'문서 저장 취소',exact:true})).toBeVisible();
  await page.goto('/saved');
  await page.getByRole('navigation',{name:'저장 유형'}).getByRole('button',{name:mobile?'북마크한 문서':'북마크한 자료',exact:true}).click();
  const cards=page.locator(mobile?'.m-saved-card':'.ws-resource');
@@ -132,10 +132,10 @@ test('MFA never reports enabled before Auth verification',async({page})=>{
 test('data outages show retry rather than fabricated empty success',async({page})=>{
  const f=await fixture(page),mobile=mobileViewport(page);
  f.failSearch();await page.goto('/search');
- const alerts=workspaceMain(page).getByRole('alert'),expectedRequests=mobile?4:1;
+ const alerts=workspaceMain(page).getByRole('alert'),expectedRequests=mobile?4:5;
  await expect(alerts).toHaveCount(expectedRequests);
  for(const alert of await alerts.all())await expect(alert).toBeVisible();
- const resources=page.locator(mobile?'.m-search-result-company,.m-search-result-resource':'.ws-resource');
+ const resources=page.locator(mobile?'.m-search-result-company,.m-search-result-resource':'.pc-search-result');
  await expect(resources).toHaveCount(0);
  f.recover();
  for(let remaining=expectedRequests;remaining>0;remaining--){
