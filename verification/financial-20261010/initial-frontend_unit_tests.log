@@ -1,0 +1,376 @@
+
+> signalbrief-web@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 C:/Users/hanss/Documents/Codex/2026-10-10/files-pasted-by-the-user-act/work/SignalBrief/apps/web
+
+ ❯ tests/us-providers.test.ts (0 test)
+ ❯ tests/oauth-us.test.ts (0 test)
+ ❯ tests/workspace.test.ts (0 test)
+ ❯ tests/mobile-portfolio.test.ts (0 test)
+ ❯ tests/hosted-performance.test.ts (0 test)
+ ❯ tests/proxy.test.ts (0 test)
+ ❯ tests/mobile-appearance.test.tsx (0 test)
+ ❯ tests/mobile-market.test.ts (0 test)
+ ❯ tests/mobile-research.test.tsx (0 test)
+ ❯ tests/publication.test.ts (0 test)
+ ❯ tests/login-form.test.tsx (0 test)
+ ❯ tests/mobile-search-company.test.tsx (0 test)
+ ❯ tests/reference.test.ts (0 test)
+ ❯ tests/mobile-onboarding.test.tsx (0 test)
+ ❯ tests/product.test.ts (0 test)
+ ❯ tests/mobile-flow.test.tsx (0 test)
+ ❯ tests/feed-performance.test.ts (0 test)
+ ❯ tests/navigation-performance.test.ts (0 test)
+ ❯ tests/mobile-notification-calendar.test.tsx (0 test)
+ ❯ tests/mobile-account-security.test.tsx (0 test)
+ ❯ tests/mobile-help.test.tsx (0 test)
+ ❯ tests/auth-runtime.test.ts (0 test)
+ ❯ tests/site-proxy.test.ts (0 test)
+ ❯ tests/api.test.ts (0 test)
+ ❯ tests/legacy-summaries.test.ts (0 test)
+ ❯ tests/auth-policy.test.ts (0 test)
+ ❯ tests/decimal-input.test.ts (0 test)
+ ❯ tests/runtime-config.test.ts (0 test)
+ ❯ tests/card-evidence.test.ts (0 test)
+ ❯ tests/format.test.ts (0 test)
+
+ Test Files  30 failed (30)
+      Tests  no tests
+   Start at  10:00:55
+   Duration  27.46s (transform 0ms, setup 0ms, import 0ms, tests 0ms, environment 310.92s)
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 30 ⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/api.test.ts [ tests/api.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/30]⎯
+
+ FAIL  tests/auth-policy.test.ts [ tests/auth-policy.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/30]⎯
+
+ FAIL  tests/auth-runtime.test.ts [ tests/auth-runtime.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/30]⎯
+
+ FAIL  tests/card-evidence.test.ts [ tests/card-evidence.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/30]⎯
+
+ FAIL  tests/decimal-input.test.ts [ tests/decimal-input.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/30]⎯
+
+ FAIL  tests/feed-performance.test.ts [ tests/feed-performance.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/30]⎯
+
+ FAIL  tests/format.test.ts [ tests/format.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/30]⎯
+
+ FAIL  tests/hosted-performance.test.ts [ tests/hosted-performance.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/30]⎯
+
+ FAIL  tests/legacy-summaries.test.ts [ tests/legacy-summaries.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/30]⎯
+
+ FAIL  tests/login-form.test.tsx [ tests/login-form.test.tsx ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/30]⎯
+
+ FAIL  tests/mobile-account-security.test.tsx [ tests/mobile-account-security.test.tsx ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/30]⎯
+
+ FAIL  tests/mobile-appearance.test.tsx [ tests/mobile-appearance.test.tsx ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/30]⎯
+
+ FAIL  tests/mobile-flow.test.tsx [ tests/mobile-flow.test.tsx ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/30]⎯
+
+ FAIL  tests/mobile-help.test.tsx [ tests/mobile-help.test.tsx ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/30]⎯
+
+ FAIL  tests/mobile-market.test.ts [ tests/mobile-market.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/30]⎯
+
+ FAIL  tests/mobile-notification-calendar.test.tsx [ tests/mobile-notification-calendar.test.tsx ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/30]⎯
+
+ FAIL  tests/mobile-onboarding.test.tsx [ tests/mobile-onboarding.test.tsx ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/30]⎯
+
+ FAIL  tests/mobile-portfolio.test.ts [ tests/mobile-portfolio.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/30]⎯
+
+ FAIL  tests/mobile-research.test.tsx [ tests/mobile-research.test.tsx ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/30]⎯
+
+ FAIL  tests/mobile-search-company.test.tsx [ tests/mobile-search-company.test.tsx ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/30]⎯
+
+ FAIL  tests/navigation-performance.test.ts [ tests/navigation-performance.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/30]⎯
+
+ FAIL  tests/oauth-us.test.ts [ tests/oauth-us.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/30]⎯
+
+ FAIL  tests/product.test.ts [ tests/product.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/30]⎯
+
+ FAIL  tests/proxy.test.ts [ tests/proxy.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/30]⎯
+
+ FAIL  tests/publication.test.ts [ tests/publication.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/30]⎯
+
+ FAIL  tests/reference.test.ts [ tests/reference.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/30]⎯
+
+ FAIL  tests/runtime-config.test.ts [ tests/runtime-config.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/30]⎯
+
+ FAIL  tests/site-proxy.test.ts [ tests/site-proxy.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/30]⎯
+
+ FAIL  tests/us-providers.test.ts [ tests/us-providers.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/30]⎯
+
+ FAIL  tests/workspace.test.ts [ tests/workspace.test.ts ]
+Error: EPERM: operation not permitted, realpath '<local-path>
+ ❯ getRealPath node_modules/vite/dist/node/chunks/config.js:33013:36
+ ❯ tryResolveRealFileOrType node_modules/vite/dist/node/chunks/config.js:33007:9
+ ❯ tryCleanFsResolve node_modules/vite/dist/node/chunks/config.js:32731:21
+ ❯ tryFsResolve node_modules/vite/dist/node/chunks/config.js:32724:14
+ ❯ ResolveIdContext.handler node_modules/vite/dist/node/chunks/config.js:32598:16
+ ❯ EnvironmentPluginContainer.resolveId node_modules/vite/dist/node/chunks/config.js:28797:56
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/30]⎯
+

@@ -1,0 +1,52 @@
+{
+  "release": "BLOCKED",
+  "main": "f680feab8bee13996e71210c566e2cc4da3d2339",
+  "pr13": "8ddd1e89ed4f9a0baea847d53981a6ad64faab56",
+  "dataset": {
+    "development_pairs": 10,
+    "held_out_pairs": 20,
+    "held_out_evaluated": 0,
+    "originals": 48
+  },
+  "backend": {
+    "passed": 332,
+    "skipped": 37
+  },
+  "adversarial_subset": {
+    "passed": 40,
+    "cases": 40
+  },
+  "postgres": {
+    "core_hosted_passed": 2,
+    "workspace_passed": 35,
+    "separate_runs": true
+  },
+  "read_only_live_checks_passed": 8,
+  "python_audit": "PASS",
+  "npm_production_vulnerabilities": 0,
+  "npm_all_high": 5,
+  "B_development": {
+    "counts": {
+      "numeric_correct": 16,
+      "numeric_slots": 40,
+      "citation_correct": 16,
+      "citation_slots": 40,
+      "comparison_correct": 8,
+      "comparison_slots": 20,
+      "unsupported_claims": 0,
+      "total_claims": 24,
+      "interpretation_claims": 0,
+      "useful_completion": 4
+    },
+    "latency_ms_median": 537.9135999828577,
+    "latency_ms_p95_nearest_rank": 927.2189000039361,
+    "paid_requests": 0
+  },
+  "A_and_C": "BLOCKED_NOT_RUN",
+  "human_verified_accuracy": null,
+  "billed_cost_per_AI_brief_usd": null,
+  "human_participants": 0,
+  "local_web_unit_build_browser": "BLOCKED_WINDOWS_NATIVE_PATH_ACCESS",
+  "merged": false,
+  "production_deployed": false
+}

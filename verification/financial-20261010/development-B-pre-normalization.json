@@ -1,0 +1,1131 @@
+{
+  "code_sha256": {
+    "scripts/run_financial_benchmark.py": "eb926fad25648bd5c09d9452a29d796ed34ea65a4a090b3c0d49c30e5ac25311",
+    "apps/api/signalbrief/financial_benchmark.py": "c6da22960c1b541f6330ed9d85ec7c301ec63062f660a351407420172d4ac900",
+    "apps/api/signalbrief/sec_tables.py": "02a24954c10de0c0ff67d110b6ac1559fdc1ccb8a0234ac311f8b0f16d11775a",
+    "apps/api/signalbrief/changes.py": "748313c6442dd642c57259d8ceb1f5a3c4c761fd2eb9a10383ce5de84c36a1ee",
+    "apps/api/signalbrief/prompts/benchmark-direct-v1.txt": "5b21cb5f21907175f68f531da04ec36b4a161dad98609f15e7994274d82a0242",
+    "apps/api/signalbrief/prompts/benchmark-linked-v1.txt": "4d134d513ea496913cb111cf4b398e06a518301a8b37dc36e941f4f3d8bcb5ef"
+  },
+  "configuration": {
+    "requested_model": null,
+    "input_usd_per_million": null,
+    "output_usd_per_million": null,
+    "max_output_tokens": null,
+    "max_retries": 0,
+    "source_download_in_latency": false
+  },
+  "run_at": "2026-10-10T01:08:59.037741+00:00",
+  "code_base_sha": "8ddd1e89ed4f9a0baea847d53981a6ad64faab56",
+  "working_tree_dirty": true,
+  "manifest_sha256": "f56a948807e8e9a4f04cb7197a66808e6fb1bfe343d309b1b36577d06fe67fb5",
+  "method": "B",
+  "split": "development",
+  "pairs": 10,
+  "human_verified_accuracy": null,
+  "actual_billed_cost_per_brief_usd": null,
+  "safe_abstention_accuracy": null,
+  "limitations": [
+    "No independent human labels; scores are machine-reference agreement only",
+    "Latency includes parsing/method execution, excludes source download and reference creation",
+    "A/C unexecuted without explicit budget; B is not an AI response",
+    "Historical held-out filings may be in model pretraining; not contamination-free"
+  ],
+  "counts": {
+    "numeric_correct": 16,
+    "numeric_slots": 40,
+    "citation_correct": 16,
+    "citation_slots": 40,
+    "comparison_correct": 8,
+    "comparison_slots": 20,
+    "unsupported_claims": 0,
+    "total_claims": 24,
+    "interpretation_claims": 0,
+    "useful_completion": 4
+  },
+  "latency_ms_median": 514.9886500148568,
+  "latency_ms_p95_nearest_rank": 781.0574999894015,
+  "paid_requests": 0,
+  "records": [
+    {
+      "pair_id": "development-AAPL-01",
+      "method": "B",
+      "split": "development",
+      "status": "COMPLETED",
+      "reference_status": "human_review_pending",
+      "actual_billed_cost_usd": null,
+      "api_usage_cost_estimate_usd": "0",
+      "model": null,
+      "usage": null,
+      "scores": {
+        "numeric_correct": 4,
+        "numeric_slots": 4,
+        "citation_correct": 4,
+        "citation_slots": 4,
+        "comparison_correct": 2,
+        "comparison_slots": 2,
+        "unsupported_claims": 0,
+        "total_claims": 6,
+        "interpretation_claims": 0,
+        "useful_completion": true,
+        "reference_status": "automated_candidate_not_human_ground_truth"
+      },
+      "references": [
+        {
+          "field": "revenue",
+          "value": "94036000000",
+          "unit": "USD",
+          "period": "2025-03-30/2025-06-28",
+          "accession": "0000320193-25-000073",
+          "fact_id": "f-59",
+          "quote": "94,036",
+          "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "context": "c-19",
+          "scale": "6",
+          "entity": "0000320193",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "28202000000",
+          "unit": "USD",
+          "period": "2025-03-30/2025-06-28",
+          "accession": "0000320193-25-000073",
+          "fact_id": "f-91",
+          "quote": "28,202",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "c-19",
+          "scale": "6",
+          "entity": "0000320193",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "revenue",
+          "value": "109417000000",
+          "unit": "USD",
+          "period": "2026-03-29/2026-06-27",
+          "accession": "0000320193-26-000020",
+          "fact_id": "f-56",
+          "quote": "109,417",
+          "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "context": "c-18",
+          "scale": "6",
+          "entity": "0000320193",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "35695000000",
+          "unit": "USD",
+          "period": "2026-03-29/2026-06-27",
+          "accession": "0000320193-26-000020",
+          "fact_id": "f-88",
+          "quote": "35,695",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "c-18",
+          "scale": "6",
+          "entity": "0000320193",
+          "status": "machine_candidate_human_review_pending"
+        }
+      ],
+      "output": {
+        "facts": [
+          {
+            "field": "revenue",
+            "value": "94036000000",
+            "unit": "USD",
+            "period": "2025-03-30/2025-06-28",
+            "accession": "0000320193-25-000073",
+            "fact_id": "f-59",
+            "quote": "94,036"
+          },
+          {
+            "field": "operating_income",
+            "value": "28202000000",
+            "unit": "USD",
+            "period": "2025-03-30/2025-06-28",
+            "accession": "0000320193-25-000073",
+            "fact_id": "f-91",
+            "quote": "28,202"
+          },
+          {
+            "field": "revenue",
+            "value": "109417000000",
+            "unit": "USD",
+            "period": "2026-03-29/2026-06-27",
+            "accession": "0000320193-26-000020",
+            "fact_id": "f-56",
+            "quote": "109,417"
+          },
+          {
+            "field": "operating_income",
+            "value": "35695000000",
+            "unit": "USD",
+            "period": "2026-03-29/2026-06-27",
+            "accession": "0000320193-26-000020",
+            "fact_id": "f-88",
+            "quote": "35,695"
+          }
+        ],
+        "changes": [
+          {
+            "field": "revenue",
+            "previous_fact_id": "f-59",
+            "current_fact_id": "f-56",
+            "comparison_kind": "year_over_year",
+            "absolute_change": "15381000000",
+            "percentage_change": "16.3565"
+          },
+          {
+            "field": "operating_income",
+            "previous_fact_id": "f-91",
+            "current_fact_id": "f-88",
+            "comparison_kind": "year_over_year",
+            "absolute_change": "7493000000",
+            "percentage_change": "26.569"
+          }
+        ],
+        "interpretations": [],
+        "abstain": false,
+        "reason": ""
+      },
+      "offline_end_to_end_ms": 747.5358999799937
+    },
+    {
+      "pair_id": "development-AAPL-02",
+      "method": "B",
+      "split": "development",
+      "status": "COMPLETED",
+      "reference_status": "human_review_pending",
+      "actual_billed_cost_usd": null,
+      "api_usage_cost_estimate_usd": "0",
+      "model": null,
+      "usage": null,
+      "scores": {
+        "numeric_correct": 4,
+        "numeric_slots": 4,
+        "citation_correct": 4,
+        "citation_slots": 4,
+        "comparison_correct": 2,
+        "comparison_slots": 2,
+        "unsupported_claims": 0,
+        "total_claims": 6,
+        "interpretation_claims": 0,
+        "useful_completion": true,
+        "reference_status": "automated_candidate_not_human_ground_truth"
+      },
+      "references": [
+        {
+          "field": "revenue",
+          "value": "95359000000",
+          "unit": "USD",
+          "period": "2024-12-29/2025-03-29",
+          "accession": "0000320193-25-000057",
+          "fact_id": "f-62",
+          "quote": "95,359",
+          "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "context": "c-20",
+          "scale": "6",
+          "entity": "0000320193",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "29589000000",
+          "unit": "USD",
+          "period": "2024-12-29/2025-03-29",
+          "accession": "0000320193-25-000057",
+          "fact_id": "f-94",
+          "quote": "29,589",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "c-20",
+          "scale": "6",
+          "entity": "0000320193",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "revenue",
+          "value": "111184000000",
+          "unit": "USD",
+          "period": "2025-12-28/2026-03-28",
+          "accession": "0000320193-26-000013",
+          "fact_id": "f-56",
+          "quote": "111,184",
+          "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "context": "c-18",
+          "scale": "6",
+          "entity": "0000320193",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "35885000000",
+          "unit": "USD",
+          "period": "2025-12-28/2026-03-28",
+          "accession": "0000320193-26-000013",
+          "fact_id": "f-88",
+          "quote": "35,885",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "c-18",
+          "scale": "6",
+          "entity": "0000320193",
+          "status": "machine_candidate_human_review_pending"
+        }
+      ],
+      "output": {
+        "facts": [
+          {
+            "field": "revenue",
+            "value": "95359000000",
+            "unit": "USD",
+            "period": "2024-12-29/2025-03-29",
+            "accession": "0000320193-25-000057",
+            "fact_id": "f-62",
+            "quote": "95,359"
+          },
+          {
+            "field": "operating_income",
+            "value": "29589000000",
+            "unit": "USD",
+            "period": "2024-12-29/2025-03-29",
+            "accession": "0000320193-25-000057",
+            "fact_id": "f-94",
+            "quote": "29,589"
+          },
+          {
+            "field": "revenue",
+            "value": "111184000000",
+            "unit": "USD",
+            "period": "2025-12-28/2026-03-28",
+            "accession": "0000320193-26-000013",
+            "fact_id": "f-56",
+            "quote": "111,184"
+          },
+          {
+            "field": "operating_income",
+            "value": "35885000000",
+            "unit": "USD",
+            "period": "2025-12-28/2026-03-28",
+            "accession": "0000320193-26-000013",
+            "fact_id": "f-88",
+            "quote": "35,885"
+          }
+        ],
+        "changes": [
+          {
+            "field": "revenue",
+            "previous_fact_id": "f-62",
+            "current_fact_id": "f-56",
+            "comparison_kind": "year_over_year",
+            "absolute_change": "15825000000",
+            "percentage_change": "16.5952"
+          },
+          {
+            "field": "operating_income",
+            "previous_fact_id": "f-94",
+            "current_fact_id": "f-88",
+            "comparison_kind": "year_over_year",
+            "absolute_change": "6296000000",
+            "percentage_change": "21.2782"
+          }
+        ],
+        "interpretations": [],
+        "abstain": false,
+        "reason": ""
+      },
+      "offline_end_to_end_ms": 777.5872999918647
+    },
+    {
+      "pair_id": "development-AAPL-03",
+      "method": "B",
+      "split": "development",
+      "status": "COMPLETED",
+      "reference_status": "human_review_pending",
+      "actual_billed_cost_usd": null,
+      "api_usage_cost_estimate_usd": "0",
+      "model": null,
+      "usage": null,
+      "scores": {
+        "numeric_correct": 4,
+        "numeric_slots": 4,
+        "citation_correct": 4,
+        "citation_slots": 4,
+        "comparison_correct": 2,
+        "comparison_slots": 2,
+        "unsupported_claims": 0,
+        "total_claims": 6,
+        "interpretation_claims": 0,
+        "useful_completion": true,
+        "reference_status": "automated_candidate_not_human_ground_truth"
+      },
+      "references": [
+        {
+          "field": "revenue",
+          "value": "124300000000",
+          "unit": "USD",
+          "period": "2024-09-29/2024-12-28",
+          "accession": "0000320193-25-000008",
+          "fact_id": "f-58",
+          "quote": "124,300",
+          "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "context": "c-1",
+          "scale": "6",
+          "entity": "0000320193",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "42832000000",
+          "unit": "USD",
+          "period": "2024-09-29/2024-12-28",
+          "accession": "0000320193-25-000008",
+          "fact_id": "f-74",
+          "quote": "42,832",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "c-1",
+          "scale": "6",
+          "entity": "0000320193",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "revenue",
+          "value": "143756000000",
+          "unit": "USD",
+          "period": "2025-09-28/2025-12-27",
+          "accession": "0000320193-26-000006",
+          "fact_id": "f-52",
+          "quote": "143,756",
+          "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "context": "c-1",
+          "scale": "6",
+          "entity": "0000320193",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "50852000000",
+          "unit": "USD",
+          "period": "2025-09-28/2025-12-27",
+          "accession": "0000320193-26-000006",
+          "fact_id": "f-68",
+          "quote": "50,852",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "c-1",
+          "scale": "6",
+          "entity": "0000320193",
+          "status": "machine_candidate_human_review_pending"
+        }
+      ],
+      "output": {
+        "facts": [
+          {
+            "field": "revenue",
+            "value": "124300000000",
+            "unit": "USD",
+            "period": "2024-09-29/2024-12-28",
+            "accession": "0000320193-25-000008",
+            "fact_id": "f-58",
+            "quote": "124,300"
+          },
+          {
+            "field": "operating_income",
+            "value": "42832000000",
+            "unit": "USD",
+            "period": "2024-09-29/2024-12-28",
+            "accession": "0000320193-25-000008",
+            "fact_id": "f-74",
+            "quote": "42,832"
+          },
+          {
+            "field": "revenue",
+            "value": "143756000000",
+            "unit": "USD",
+            "period": "2025-09-28/2025-12-27",
+            "accession": "0000320193-26-000006",
+            "fact_id": "f-52",
+            "quote": "143,756"
+          },
+          {
+            "field": "operating_income",
+            "value": "50852000000",
+            "unit": "USD",
+            "period": "2025-09-28/2025-12-27",
+            "accession": "0000320193-26-000006",
+            "fact_id": "f-68",
+            "quote": "50,852"
+          }
+        ],
+        "changes": [
+          {
+            "field": "revenue",
+            "previous_fact_id": "f-58",
+            "current_fact_id": "f-52",
+            "comparison_kind": "year_over_year",
+            "absolute_change": "19456000000",
+            "percentage_change": "15.6525"
+          },
+          {
+            "field": "operating_income",
+            "previous_fact_id": "f-74",
+            "current_fact_id": "f-68",
+            "comparison_kind": "year_over_year",
+            "absolute_change": "8020000000",
+            "percentage_change": "18.7243"
+          }
+        ],
+        "interpretations": [],
+        "abstain": false,
+        "reason": ""
+      },
+      "offline_end_to_end_ms": 668.3881999924779
+    },
+    {
+      "pair_id": "development-AAPL-04",
+      "method": "B",
+      "split": "development",
+      "status": "COMPLETED",
+      "reference_status": "human_review_pending",
+      "actual_billed_cost_usd": null,
+      "api_usage_cost_estimate_usd": "0",
+      "model": null,
+      "usage": null,
+      "scores": {
+        "numeric_correct": 4,
+        "numeric_slots": 4,
+        "citation_correct": 4,
+        "citation_slots": 4,
+        "comparison_correct": 2,
+        "comparison_slots": 2,
+        "unsupported_claims": 0,
+        "total_claims": 6,
+        "interpretation_claims": 0,
+        "useful_completion": true,
+        "reference_status": "automated_candidate_not_human_ground_truth"
+      },
+      "references": [
+        {
+          "field": "revenue",
+          "value": "85777000000",
+          "unit": "USD",
+          "period": "2024-03-31/2024-06-29",
+          "accession": "0000320193-24-000081",
+          "fact_id": "f-62",
+          "quote": "85,777",
+          "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "context": "c-20",
+          "scale": "6",
+          "entity": "0000320193",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "25352000000",
+          "unit": "USD",
+          "period": "2024-03-31/2024-06-29",
+          "accession": "0000320193-24-000081",
+          "fact_id": "f-94",
+          "quote": "25,352",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "c-20",
+          "scale": "6",
+          "entity": "0000320193",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "revenue",
+          "value": "94036000000",
+          "unit": "USD",
+          "period": "2025-03-30/2025-06-28",
+          "accession": "0000320193-25-000073",
+          "fact_id": "f-59",
+          "quote": "94,036",
+          "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "context": "c-19",
+          "scale": "6",
+          "entity": "0000320193",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "28202000000",
+          "unit": "USD",
+          "period": "2025-03-30/2025-06-28",
+          "accession": "0000320193-25-000073",
+          "fact_id": "f-91",
+          "quote": "28,202",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "c-19",
+          "scale": "6",
+          "entity": "0000320193",
+          "status": "machine_candidate_human_review_pending"
+        }
+      ],
+      "output": {
+        "facts": [
+          {
+            "field": "revenue",
+            "value": "85777000000",
+            "unit": "USD",
+            "period": "2024-03-31/2024-06-29",
+            "accession": "0000320193-24-000081",
+            "fact_id": "f-62",
+            "quote": "85,777"
+          },
+          {
+            "field": "operating_income",
+            "value": "25352000000",
+            "unit": "USD",
+            "period": "2024-03-31/2024-06-29",
+            "accession": "0000320193-24-000081",
+            "fact_id": "f-94",
+            "quote": "25,352"
+          },
+          {
+            "field": "revenue",
+            "value": "94036000000",
+            "unit": "USD",
+            "period": "2025-03-30/2025-06-28",
+            "accession": "0000320193-25-000073",
+            "fact_id": "f-59",
+            "quote": "94,036"
+          },
+          {
+            "field": "operating_income",
+            "value": "28202000000",
+            "unit": "USD",
+            "period": "2025-03-30/2025-06-28",
+            "accession": "0000320193-25-000073",
+            "fact_id": "f-91",
+            "quote": "28,202"
+          }
+        ],
+        "changes": [
+          {
+            "field": "revenue",
+            "previous_fact_id": "f-62",
+            "current_fact_id": "f-59",
+            "comparison_kind": "year_over_year",
+            "absolute_change": "8259000000",
+            "percentage_change": "9.6285"
+          },
+          {
+            "field": "operating_income",
+            "previous_fact_id": "f-94",
+            "current_fact_id": "f-91",
+            "comparison_kind": "year_over_year",
+            "absolute_change": "2850000000",
+            "percentage_change": "11.2417"
+          }
+        ],
+        "interpretations": [],
+        "abstain": false,
+        "reason": ""
+      },
+      "offline_end_to_end_ms": 781.0574999894015
+    },
+    {
+      "pair_id": "development-MSFT-01",
+      "method": "B",
+      "split": "development",
+      "status": "ABSTAIN",
+      "reference_status": "human_review_pending",
+      "actual_billed_cost_usd": null,
+      "api_usage_cost_estimate_usd": "0",
+      "model": null,
+      "usage": null,
+      "scores": {
+        "numeric_correct": 0,
+        "numeric_slots": 4,
+        "citation_correct": 0,
+        "citation_slots": 4,
+        "comparison_correct": 0,
+        "comparison_slots": 2,
+        "unsupported_claims": 0,
+        "total_claims": 0,
+        "interpretation_claims": 0,
+        "useful_completion": false,
+        "reference_status": "automated_candidate_not_human_ground_truth"
+      },
+      "references": [
+        {
+          "field": "revenue",
+          "value": "70066000000",
+          "unit": "USD",
+          "period": "2025-01-01/2025-03-31",
+          "accession": "0000950170-25-061046",
+          "fact_id": "F_3e5e0b47-4cb8-4895-bd93-1fa2edfe8db0",
+          "quote": "70,066",
+          "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "context": "C_f5d91e16-4fa6-44d0-96d4-472f3551cf38",
+          "scale": "6",
+          "entity": "0000789019",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "32000000000",
+          "unit": "USD",
+          "period": "2025-01-01/2025-03-31",
+          "accession": "0000950170-25-061046",
+          "fact_id": "F_d93ffcb5-8224-436f-9594-9b9e9b6151b6",
+          "quote": "32,000",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "C_f5d91e16-4fa6-44d0-96d4-472f3551cf38",
+          "scale": "6",
+          "entity": "0000789019",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "revenue",
+          "value": "82886000000",
+          "unit": "USD",
+          "period": "2026-01-01/2026-03-31",
+          "accession": "0001193125-26-191507",
+          "fact_id": "F_3d73e726-8508-4605-87a7-ae4fbcdbc622",
+          "quote": "82,886",
+          "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "context": "C_c2ccc5b0-c925-4f23-934c-ae4c5790d1f6",
+          "scale": "6",
+          "entity": "0000789019",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "38398000000",
+          "unit": "USD",
+          "period": "2026-01-01/2026-03-31",
+          "accession": "0001193125-26-191507",
+          "fact_id": "F_ff3be5fb-8efa-4d93-9311-a16871947489",
+          "quote": "38,398",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "C_c2ccc5b0-c925-4f23-934c-ae4c5790d1f6",
+          "scale": "6",
+          "entity": "0000789019",
+          "status": "machine_candidate_human_review_pending"
+        }
+      ],
+      "reason": "sec_table_document_limit",
+      "offline_end_to_end_ms": 0.0475000124424696
+    },
+    {
+      "pair_id": "development-MSFT-02",
+      "method": "B",
+      "split": "development",
+      "status": "ABSTAIN",
+      "reference_status": "human_review_pending",
+      "actual_billed_cost_usd": null,
+      "api_usage_cost_estimate_usd": "0",
+      "model": null,
+      "usage": null,
+      "scores": {
+        "numeric_correct": 0,
+        "numeric_slots": 4,
+        "citation_correct": 0,
+        "citation_slots": 4,
+        "comparison_correct": 0,
+        "comparison_slots": 2,
+        "unsupported_claims": 0,
+        "total_claims": 0,
+        "interpretation_claims": 0,
+        "useful_completion": false,
+        "reference_status": "automated_candidate_not_human_ground_truth"
+      },
+      "references": [
+        {
+          "field": "revenue",
+          "value": "69632000000",
+          "unit": "USD",
+          "period": "2024-10-01/2024-12-31",
+          "accession": "0000950170-25-010491",
+          "fact_id": "F_8c97f232-e6a2-46b5-8852-06244e52ffc0",
+          "quote": "69,632",
+          "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "context": "C_260c7ff0-ff30-4842-9c1d-bb65f8e57f70",
+          "scale": "6",
+          "entity": "0000789019",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "31653000000",
+          "unit": "USD",
+          "period": "2024-10-01/2024-12-31",
+          "accession": "0000950170-25-010491",
+          "fact_id": "F_8421c0a0-7d66-4df2-826c-77ec71a733b3",
+          "quote": "31,653",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "C_260c7ff0-ff30-4842-9c1d-bb65f8e57f70",
+          "scale": "6",
+          "entity": "0000789019",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "revenue",
+          "value": "81273000000",
+          "unit": "USD",
+          "period": "2025-10-01/2025-12-31",
+          "accession": "0001193125-26-027207",
+          "fact_id": "F_98b2de65-42c6-4ae5-a372-805a791b90dc",
+          "quote": "81,273",
+          "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "context": "C_0641e570-0e18-4add-8c73-cc64b54d1f88",
+          "scale": "6",
+          "entity": "0000789019",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "38275000000",
+          "unit": "USD",
+          "period": "2025-10-01/2025-12-31",
+          "accession": "0001193125-26-027207",
+          "fact_id": "F_405d6f43-ddb5-4496-aa2c-7e761d67ead9",
+          "quote": "38,275",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "C_0641e570-0e18-4add-8c73-cc64b54d1f88",
+          "scale": "6",
+          "entity": "0000789019",
+          "status": "machine_candidate_human_review_pending"
+        }
+      ],
+      "reason": "sec_table_document_limit",
+      "offline_end_to_end_ms": 0.049099966417998075
+    },
+    {
+      "pair_id": "development-MSFT-03",
+      "method": "B",
+      "split": "development",
+      "status": "ABSTAIN",
+      "reference_status": "human_review_pending",
+      "actual_billed_cost_usd": null,
+      "api_usage_cost_estimate_usd": "0",
+      "model": null,
+      "usage": null,
+      "scores": {
+        "numeric_correct": 0,
+        "numeric_slots": 4,
+        "citation_correct": 0,
+        "citation_slots": 4,
+        "comparison_correct": 0,
+        "comparison_slots": 2,
+        "unsupported_claims": 0,
+        "total_claims": 0,
+        "interpretation_claims": 0,
+        "useful_completion": false,
+        "reference_status": "automated_candidate_not_human_ground_truth"
+      },
+      "references": [
+        {
+          "field": "revenue",
+          "value": "65585000000",
+          "unit": "USD",
+          "period": "2024-07-01/2024-09-30",
+          "accession": "0000950170-24-118967",
+          "fact_id": "F_9fbcc289-fc6d-4304-946e-c96a8058e717",
+          "quote": "65,585",
+          "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "context": "C_d3ddc11e-6dbd-479e-bbe6-c539e2f4c163",
+          "scale": "6",
+          "entity": "0000789019",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "30552000000",
+          "unit": "USD",
+          "period": "2024-07-01/2024-09-30",
+          "accession": "0000950170-24-118967",
+          "fact_id": "F_03d922e7-75d9-4994-912d-c7376a5fb98e",
+          "quote": "30,552",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "C_d3ddc11e-6dbd-479e-bbe6-c539e2f4c163",
+          "scale": "6",
+          "entity": "0000789019",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "revenue",
+          "value": "77673000000",
+          "unit": "USD",
+          "period": "2025-07-01/2025-09-30",
+          "accession": "0001193125-25-256321",
+          "fact_id": "F_3149e777-9a9e-40ad-9bbf-597ef75c0b4d",
+          "quote": "77,673",
+          "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+          "context": "C_77513f4d-d996-497e-8795-6472b2325bfb",
+          "scale": "6",
+          "entity": "0000789019",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "37961000000",
+          "unit": "USD",
+          "period": "2025-07-01/2025-09-30",
+          "accession": "0001193125-25-256321",
+          "fact_id": "F_08bdb9da-6694-442c-b679-e6f8cbe0d50e",
+          "quote": "37,961",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "C_77513f4d-d996-497e-8795-6472b2325bfb",
+          "scale": "6",
+          "entity": "0000789019",
+          "status": "machine_candidate_human_review_pending"
+        }
+      ],
+      "reason": "sec_table_document_limit",
+      "offline_end_to_end_ms": 0.04930002614855766
+    },
+    {
+      "pair_id": "development-NVDA-01",
+      "method": "B",
+      "split": "development",
+      "status": "ABSTAIN",
+      "reference_status": "human_review_pending",
+      "actual_billed_cost_usd": null,
+      "api_usage_cost_estimate_usd": "0",
+      "model": null,
+      "usage": null,
+      "scores": {
+        "numeric_correct": 0,
+        "numeric_slots": 4,
+        "citation_correct": 0,
+        "citation_slots": 4,
+        "comparison_correct": 0,
+        "comparison_slots": 2,
+        "unsupported_claims": 0,
+        "total_claims": 0,
+        "interpretation_claims": 0,
+        "useful_completion": false,
+        "reference_status": "automated_candidate_not_human_ground_truth"
+      },
+      "references": [
+        {
+          "field": "revenue",
+          "value": "46743000000",
+          "unit": "USD",
+          "period": "2025-04-28/2025-07-27",
+          "accession": "0001045810-25-000209",
+          "fact_id": "f-30",
+          "quote": "46,743",
+          "concept": "us-gaap:Revenues",
+          "context": "c-3",
+          "scale": "6",
+          "entity": "0001045810",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "28440000000",
+          "unit": "USD",
+          "period": "2025-04-28/2025-07-27",
+          "accession": "0001045810-25-000209",
+          "fact_id": "f-54",
+          "quote": "28,440",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "c-3",
+          "scale": "6",
+          "entity": "0001045810",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "revenue",
+          "value": "96221000000",
+          "unit": "USD",
+          "period": "2026-04-27/2026-07-26",
+          "accession": "0001045810-26-000075",
+          "fact_id": "f-30",
+          "quote": "96,221",
+          "concept": "us-gaap:Revenues",
+          "context": "c-3",
+          "scale": "6",
+          "entity": "0001045810",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "63734000000",
+          "unit": "USD",
+          "period": "2026-04-27/2026-07-26",
+          "accession": "0001045810-26-000075",
+          "fact_id": "f-54",
+          "quote": "63,734",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "c-3",
+          "scale": "6",
+          "entity": "0001045810",
+          "status": "machine_candidate_human_review_pending"
+        }
+      ],
+      "reason": "table_errors:html_xbrl_period_mismatch",
+      "offline_end_to_end_ms": 522.8245999896899
+    },
+    {
+      "pair_id": "development-NVDA-02",
+      "method": "B",
+      "split": "development",
+      "status": "ABSTAIN",
+      "reference_status": "human_review_pending",
+      "actual_billed_cost_usd": null,
+      "api_usage_cost_estimate_usd": "0",
+      "model": null,
+      "usage": null,
+      "scores": {
+        "numeric_correct": 0,
+        "numeric_slots": 4,
+        "citation_correct": 0,
+        "citation_slots": 4,
+        "comparison_correct": 0,
+        "comparison_slots": 2,
+        "unsupported_claims": 0,
+        "total_claims": 0,
+        "interpretation_claims": 0,
+        "useful_completion": false,
+        "reference_status": "automated_candidate_not_human_ground_truth"
+      },
+      "references": [
+        {
+          "field": "revenue",
+          "value": "44062000000",
+          "unit": "USD",
+          "period": "2025-01-27/2025-04-27",
+          "accession": "0001045810-25-000116",
+          "fact_id": "f-30",
+          "quote": "44,062",
+          "concept": "us-gaap:Revenues",
+          "context": "c-1",
+          "scale": "6",
+          "entity": "0001045810",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "21638000000",
+          "unit": "USD",
+          "period": "2025-01-27/2025-04-27",
+          "accession": "0001045810-25-000116",
+          "fact_id": "f-42",
+          "quote": "21,638",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "c-1",
+          "scale": "6",
+          "entity": "0001045810",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "revenue",
+          "value": "81615000000",
+          "unit": "USD",
+          "period": "2026-01-26/2026-04-26",
+          "accession": "0001045810-26-000052",
+          "fact_id": "f-30",
+          "quote": "81,615",
+          "concept": "us-gaap:Revenues",
+          "context": "c-1",
+          "scale": "6",
+          "entity": "0001045810",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "53536000000",
+          "unit": "USD",
+          "period": "2026-01-26/2026-04-26",
+          "accession": "0001045810-26-000052",
+          "fact_id": "f-42",
+          "quote": "53,536",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "c-1",
+          "scale": "6",
+          "entity": "0001045810",
+          "status": "machine_candidate_human_review_pending"
+        }
+      ],
+      "reason": "table_errors:html_xbrl_period_mismatch",
+      "offline_end_to_end_ms": 500.718199997209
+    },
+    {
+      "pair_id": "development-NVDA-03",
+      "method": "B",
+      "split": "development",
+      "status": "ABSTAIN",
+      "reference_status": "human_review_pending",
+      "actual_billed_cost_usd": null,
+      "api_usage_cost_estimate_usd": "0",
+      "model": null,
+      "usage": null,
+      "scores": {
+        "numeric_correct": 0,
+        "numeric_slots": 4,
+        "citation_correct": 0,
+        "citation_slots": 4,
+        "comparison_correct": 0,
+        "comparison_slots": 2,
+        "unsupported_claims": 0,
+        "total_claims": 0,
+        "interpretation_claims": 0,
+        "useful_completion": false,
+        "reference_status": "automated_candidate_not_human_ground_truth"
+      },
+      "references": [
+        {
+          "field": "revenue",
+          "value": "35082000000",
+          "unit": "USD",
+          "period": "2024-07-29/2024-10-27",
+          "accession": "0001045810-24-000316",
+          "fact_id": "f-30",
+          "quote": "35,082",
+          "concept": "us-gaap:Revenues",
+          "context": "c-3",
+          "scale": "6",
+          "entity": "0001045810",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "21869000000",
+          "unit": "USD",
+          "period": "2024-07-29/2024-10-27",
+          "accession": "0001045810-24-000316",
+          "fact_id": "f-54",
+          "quote": "21,869",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "c-3",
+          "scale": "6",
+          "entity": "0001045810",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "revenue",
+          "value": "57006000000",
+          "unit": "USD",
+          "period": "2025-07-28/2025-10-26",
+          "accession": "0001045810-25-000230",
+          "fact_id": "f-30",
+          "quote": "57,006",
+          "concept": "us-gaap:Revenues",
+          "context": "c-3",
+          "scale": "6",
+          "entity": "0001045810",
+          "status": "machine_candidate_human_review_pending"
+        },
+        {
+          "field": "operating_income",
+          "value": "36010000000",
+          "unit": "USD",
+          "period": "2025-07-28/2025-10-26",
+          "accession": "0001045810-25-000230",
+          "fact_id": "f-54",
+          "quote": "36,010",
+          "concept": "us-gaap:OperatingIncomeLoss",
+          "context": "c-3",
+          "scale": "6",
+          "entity": "0001045810",
+          "status": "machine_candidate_human_review_pending"
+        }
+      ],
+      "reason": "table_errors:html_xbrl_period_mismatch",
+      "offline_end_to_end_ms": 507.1527000400238
+    }
+  ]
+}

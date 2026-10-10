@@ -1,0 +1,13 @@
+{
+  "passed": [
+    "live_edge_and_database_ready",
+    "live_config_no_demo_auth",
+    "unauthenticated_private_routes_denied",
+    "invalid_bearer_denied",
+    "untrusted_origin_denied",
+    "invalid_calendar_capability_denied",
+    "google_provider_enabled",
+    "google_authorization_redirect_and_callback_configured"
+  ],
+  "google_interactive_signin": "not_tested"
+}
