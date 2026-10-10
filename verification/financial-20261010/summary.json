@@ -48,5 +48,13 @@
   "human_participants": 0,
   "local_web_unit_build_browser": "BLOCKED_WINDOWS_NATIVE_PATH_ACCESS",
   "merged": false,
-  "production_deployed": false
+  "production_deployed": false,
+  "linux_ci": {
+    "tested_commit": "3017318019c906d4e8cd2f1e5e7c92bbef0eaea8",
+    "all_four_workflows": "PASS",
+    "web_unit_passed": 363,
+    "product_browser_passed": 76,
+    "product_browser_intentional_skips": 16,
+    "study_browser_passed": 4
+  }
 }

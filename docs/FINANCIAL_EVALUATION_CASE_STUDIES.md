@@ -42,7 +42,7 @@ Eight production **read-only** health/auth/config checks passed. The checks use 
 
 Fresh npm audit: production dependencies have **0 vulnerabilities**; full dependencies retain **5 high findings**, traced through braces/micromatch/fast-glob/Next lint tooling. The [upstream advisory](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) lists the affected range through 3.0.3. No unsafe major downgrade, advisory suppression or undocumented risk acceptance was performed. The first local Python audit was blocked because the embedded interpreter lacks `venv`. A separate complete Python audit environment then audited the actual application site-packages: no known vulnerabilities were found. The original failure and successful workaround are distinct.
 
-Release decision: **BLOCKED for merge/release approval and production deployment**. Remaining gates include independent financial review, actual isolated two-user authentication/access checks, development dependency remediation or explicit accountable risk acceptance, new-branch CI and a deployment approval. This PR does not merge PR #13 or deploy the Edge API.
+Release decision: **BLOCKED for merge/release approval and production deployment**. Remaining gates include independent financial review, actual isolated two-user authentication/access checks, development dependency remediation or explicit accountable risk acceptance, a final review of branch status and a deployment approval. This PR does not merge PR #13 or deploy the Edge API.
 
 ## 4. Experiment status table
 
@@ -67,3 +67,20 @@ Release decision: **BLOCKED for merge/release approval and production deployment
 | Real usability participants | 0 | BLOCKED | Protocol/harness ready; real stimuli/review/recruitment pending |
 
 Machine-readable results and per-case outcomes live in `verification/financial-20261010/`. CI results and any later amendments must retain their exact commit references. Screenshots of automated fixture sessions, if available, must be identified as such.
+
+## 5. Fresh Linux verification on PR #15
+
+[Draft PR #15](https://github.com/JackRo682/SignalBrief/pull/15) is stacked on PR #13. All four workflows passed for code commit `3017318019c906d4e8cd2f1e5e7c92bbef0eaea8` (tree `bdf1960e8a5ffdf17e8d72e792100c071b600408`). A subsequent evidence-only commit adds these results and screenshots without changing executable code.
+
+The [full verification workflow](https://github.com/JackRo682/SignalBrief/actions/runs/38014203354) passed Python checks, 332 backend tests (37 database exclusions), 363 web unit tests across 30 files, type/lint checks, the production build, and 76 desktop/mobile product browser tests. Sixteen desktop instances of dedicated mobile reference tests were intentionally skipped; their mobile cases ran. These are controlled local CI sessions, not real production users or OAuth proof. The earlier Windows failures remain preserved.
+
+The [financial workflow](https://github.com/JackRo682/SignalBrief/actions/runs/38014203363) passed the 40-case adversarial replay and all four consent/withdrawal study browser checks. B reproduced 4/10 completions and 16/40 required fact/citation agreement. Its CI run is preserved separately from the local latency report. [Hosted schema replay](https://github.com/JackRo682/SignalBrief/actions/runs/38014203343) and [workspace security replay](https://github.com/JackRo682/SignalBrief/actions/runs/38014203329) also passed.
+
+| Additional actual experiment | n | Status |
+|---|---:|---|
+| Linux web unit regression | 363 tests / 30 files | PASS |
+| Linux product browser suite | 76 passed / 16 intentional project skips | PASS with exclusions |
+| Linux study browser suite | 4 software tests / 0 people | PASS |
+| Linux B reproduction | 10 attempted / 4 complete | PASS for reproducibility, coverage still 40% |
+
+Evidence: `verification/financial-20261010/remote-status.json`, `ci-checks.json`, `ci-frontend_unit_tests.log`, `ci-frontend_build.log`, `development-B-ci.json`, `adversarial-ci.json`. Screenshots `usability-study-desktop.png` and `usability-study-mobile.png` capture the consent screen before any participant input in automated software sessions. No real participant results are implied. CI success does not resolve the human-label, real-account, dependency or production-approval gates.
