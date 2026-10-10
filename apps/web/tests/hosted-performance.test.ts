@@ -3,14 +3,15 @@ import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import ts from 'typescript';
 import { describe, it, expect, vi } from 'vitest';
+import { headlineFact } from '../../../supabase/functions/signalbrief-api/card-evidence';
 
 type Row = Record<string, unknown>;
 function hosted() {
   const createClient = vi.fn();
   let handler!: (request: Request) => Promise<Response>;
   const source = readFileSync(new URL('../../../supabase/functions/signalbrief-api/index.ts', import.meta.url), 'utf8')
-    .replace(/^import .*\n/, '');
-  const sandbox = { createClient, Request, Response, Headers, URL, TextEncoder, crypto, console,
+    .replace(/^import .*\r?\n/gm, '');
+  const sandbox = { createClient, headlineFact, Request, Response, Headers, URL, TextEncoder, crypto, console,
     Deno: { env: { get: (key: string) => key === 'SUPABASE_URL' ? 'https://test.supabase.co' : 'public-key' },
       serve: (fn: typeof handler) => { handler = fn; } },
     cards: undefined as unknown as (db: unknown, events: Row[], member: unknown) => Promise<Row[]> };
@@ -36,9 +37,9 @@ describe('hosted startup and batched cards', () => {
     const tables: Record<string, Row[]> = {
       companies: events.map(e => ({ id: e.company_id })),
       documents: events.map((e, i) => ({ id: e.document_id, title: 'Original', provider: 'sec', is_demo: i === 11, source_url: 'https://sec.gov/filing' })),
-      briefs: events.map(e => ({ event_id: e.id, headline: 'Change', interpretation: 'Reviewed meaning' })),
-      changes: events.map(e => ({ id: 'change', event_id: e.id, field: 'revenue', previous_value: '10', current_value: '12', change_type: 'increased' })),
-      facts: events.flatMap(e => [{ id: '0', event_id: e.id, quote: 'Unsupported claim', validation_status: 'unsupported' }, { id: '1', event_id: e.id, quote: 'Persisted evidence', validation_status: 'supported' }]),
+      briefs: events.map(e => ({ event_id: e.id, headline: '매출 증가 20%', interpretation: 'Reviewed meaning' })),
+      changes: events.map(e => ({ id: 'change', event_id: e.id, field: 'revenue', previous_value: '10', current_value: '12', percentage_change: '20', current_fact_id: '1', change_type: 'increased' })),
+      facts: events.flatMap(e => [{ id: '0', event_id: e.id, field: 'revenue', period: '2026-Q2', quote: 'Unsupported claim', validation_status: 'unsupported' }, { id: '1', event_id: e.id, field: 'revenue', period: '2026-Q2', quote: 'Persisted evidence', validation_status: 'supported' }]),
     };
     const from = vi.fn((table: string) => ({ select: () => ({ in: (field: string, ids: string[]) => Promise.resolve({ data: tables[table].filter(x => ids.includes(x[field] as string)), error: null }) }) }));
     const result = await cards({ from }, events, { watched: new Set(), held: new Set() });

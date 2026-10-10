@@ -1,0 +1,203 @@
+{
+  "new_paid_calls": 0,
+  "sources": [
+    {
+      "name": "aapl-20260328",
+      "status": "PASS",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm",
+      "raw_sha256": "d54cffdda0bf920aa4c86be26586db24dbf6e048635f79e0940dc94c92e54b64",
+      "matched_facts": 8,
+      "input_token_upper_bound": 18259,
+      "max_output_tokens": 5000,
+      "per_attempt_reservation_usd": "0.0153036",
+      "facts": [
+        {
+          "field": "revenue",
+          "value": "111184",
+          "period": "2025-12-28/2026-03-28",
+          "unit": "USD million",
+          "table": 12,
+          "row": 6,
+          "column": 3,
+          "context": "c-18"
+        },
+        {
+          "field": "revenue",
+          "value": "95359",
+          "period": "2024-12-29/2025-03-29",
+          "unit": "USD million",
+          "table": 12,
+          "row": 6,
+          "column": 9,
+          "context": "c-19"
+        },
+        {
+          "field": "revenue",
+          "value": "254940",
+          "period": "2025-09-28/2026-03-28",
+          "unit": "USD million",
+          "table": 12,
+          "row": 6,
+          "column": 15,
+          "context": "c-1"
+        },
+        {
+          "field": "revenue",
+          "value": "219659",
+          "period": "2024-09-29/2025-03-29",
+          "unit": "USD million",
+          "table": 12,
+          "row": 6,
+          "column": 21,
+          "context": "c-20"
+        },
+        {
+          "field": "operating_income",
+          "value": "35885",
+          "period": "2025-12-28/2026-03-28",
+          "unit": "USD million",
+          "table": 12,
+          "row": 19,
+          "column": 3,
+          "context": "c-18"
+        },
+        {
+          "field": "operating_income",
+          "value": "29589",
+          "period": "2024-12-29/2025-03-29",
+          "unit": "USD million",
+          "table": 12,
+          "row": 19,
+          "column": 9,
+          "context": "c-19"
+        },
+        {
+          "field": "operating_income",
+          "value": "86737",
+          "period": "2025-09-28/2026-03-28",
+          "unit": "USD million",
+          "table": 12,
+          "row": 19,
+          "column": 15,
+          "context": "c-1"
+        },
+        {
+          "field": "operating_income",
+          "value": "72421",
+          "period": "2024-09-29/2025-03-29",
+          "unit": "USD million",
+          "table": 12,
+          "row": 19,
+          "column": 21,
+          "context": "c-20"
+        }
+      ]
+    },
+    {
+      "name": "aapl-20260627",
+      "status": "PASS",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/aapl-20260627.htm",
+      "raw_sha256": "906ef0a0bc771267e9f7b8748d5711bae79f74ebcf96ef37f12f29883987767d",
+      "matched_facts": 8,
+      "input_token_upper_bound": 18255,
+      "max_output_tokens": 5000,
+      "per_attempt_reservation_usd": "0.015302",
+      "facts": [
+        {
+          "field": "revenue",
+          "value": "109417",
+          "period": "2026-03-29/2026-06-27",
+          "unit": "USD million",
+          "table": 12,
+          "row": 6,
+          "column": 3,
+          "context": "c-18"
+        },
+        {
+          "field": "revenue",
+          "value": "94036",
+          "period": "2025-03-30/2025-06-28",
+          "unit": "USD million",
+          "table": 12,
+          "row": 6,
+          "column": 9,
+          "context": "c-19"
+        },
+        {
+          "field": "revenue",
+          "value": "364357",
+          "period": "2025-09-28/2026-06-27",
+          "unit": "USD million",
+          "table": 12,
+          "row": 6,
+          "column": 15,
+          "context": "c-1"
+        },
+        {
+          "field": "revenue",
+          "value": "313695",
+          "period": "2024-09-29/2025-06-28",
+          "unit": "USD million",
+          "table": 12,
+          "row": 6,
+          "column": 21,
+          "context": "c-20"
+        },
+        {
+          "field": "operating_income",
+          "value": "35695",
+          "period": "2026-03-29/2026-06-27",
+          "unit": "USD million",
+          "table": 12,
+          "row": 19,
+          "column": 3,
+          "context": "c-18"
+        },
+        {
+          "field": "operating_income",
+          "value": "28202",
+          "period": "2025-03-30/2025-06-28",
+          "unit": "USD million",
+          "table": 12,
+          "row": 19,
+          "column": 9,
+          "context": "c-19"
+        },
+        {
+          "field": "operating_income",
+          "value": "122432",
+          "period": "2025-09-28/2026-06-27",
+          "unit": "USD million",
+          "table": 12,
+          "row": 19,
+          "column": 15,
+          "context": "c-1"
+        },
+        {
+          "field": "operating_income",
+          "value": "100623",
+          "period": "2024-09-29/2025-06-28",
+          "unit": "USD million",
+          "table": 12,
+          "row": 19,
+          "column": 21,
+          "context": "c-20"
+        }
+      ]
+    }
+  ],
+  "human_review": "BLOCKED_PENDING_ATTESTATION",
+  "cost": {
+    "model": "gpt-4.1-mini-2025-04-14",
+    "input_usd_per_million": "0.4",
+    "output_usd_per_million": "1.6",
+    "prior_observed_pair_input_tokens": 8416,
+    "prior_observed_pair_output_tokens": 3656,
+    "prior_observed_pair_cost_usd": "0.009216",
+    "ten_new_pairs_baseline_usd": "0.092160",
+    "nine_additional_pairs_baseline_usd": "0.082944",
+    "ten_pairs_one_full_retry_usd": "0.184320",
+    "ten_pairs_three_attempts_usd": "0.276480",
+    "caveat": "Extrapolation from one Apple pair; excludes tax, FX, hosting and human review. Actual inputs vary."
+  }
+}

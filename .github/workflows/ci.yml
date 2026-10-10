@@ -3,6 +3,19 @@ on: [push, pull_request]
 permissions:
   contents: read
 jobs:
+  python-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install -e '.[dev]' pip-audit
+      - run: pip-audit --progress-spinner off --format json --output python-audit.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: python-dependency-audit
+          path: python-audit.json
   backend:
     runs-on: ubuntu-latest
     steps:
@@ -31,6 +44,10 @@ jobs:
       - run: pip install -e '.[dev]'
       - working-directory: apps/web
         run: if [ -f package-lock.json ]; then npm ci; else npm install; fi
+      - uses: denoland/setup-deno@v2
+        with: {deno-version: v2.x}
+      - name: Check hosted API without deploying
+        run: deno check --no-lock --config supabase/functions/signalbrief-api/deno.json supabase/functions/signalbrief-api/index.ts
       - name: Full repository release checks
         run: python scripts/verify.py --full
       - working-directory: apps/web

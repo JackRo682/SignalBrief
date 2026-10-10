@@ -10,7 +10,7 @@ from pydantic import ValidationError
 
 from ..errors import EvidenceError, ProviderError
 from ..http_client import retry_after_seconds
-from ..limits import consume_budget
+from ..limits import consume_budget, reserve_ai_cost
 from .schemas import ExtractionBatch, ExtractiveAnswer, SemanticComparison
 
 PROMPTS = Path(__file__).resolve().parents[1] / "prompts"
@@ -69,11 +69,26 @@ class StructuredLLM:
             },
             "max_output_tokens": 5000,
         }
+        input_rate = self.settings.openai_input_usd_per_million
+        output_rate = self.settings.openai_output_usd_per_million
+        if not input_rate or not output_rate or self.settings.ai_total_budget_usd <= 0:
+            raise ProviderError("ai_budget_and_positive_price_rates_required")
+        # Text-only request: UTF-8 bytes conservatively bound byte-token input,
+        # including the schema and prompt, plus an envelope allowance. Operators
+        # must configure current rates for the selected model; this is a reservation,
+        # not a claim about actual billing. There are no paid tools in this request.
+        input_bound = len(json.dumps(payload, ensure_ascii=False).encode("utf-8")) + 4096
+        reservation = (
+            Decimal(input_bound) * Decimal(str(input_rate))
+            + Decimal(payload["max_output_tokens"]) * Decimal(str(output_rate))
+        ) / 1_000_000
         for attempt in range(self.settings.max_retries + 1):
             if not consume_budget(
                 self.factory, "openai-global-daily", self.settings.ai_daily_requests, 86400
             ):
                 raise ProviderError("ai_daily_request_budget_exhausted", True, 3600)
+            if not reserve_ai_cost(self.factory, reservation, self.settings.ai_total_budget_usd):
+                raise ProviderError("ai_total_cost_budget_exhausted")
             self.usage.requests += 1
             try:
                 response = self.client.post(

@@ -10,6 +10,13 @@ or unavailable keys fail closed. A run records input/output usage when actually 
 Price coefficients are operator configuration, not hard-coded claims about current API prices.
 
 ## Fact checks
+
+The opt-in `sec-tables-v1` pilot uses replayable original HTML/XBRL table evidence instead of the prose
+rule below. It explicitly covers consolidated revenue and operating income only; excluded concepts
+are recorded. Reconstructed quotations identify the original cells/headers and never claim to be a
+continuous source sentence. The original raw hash, namespaces, labels, currency/scale, exact fiscal
+intervals, sign, complete selected-cell coverage and every returned field are rechecked before approval.
+See [scope, real-source checks and remaining release gates](SEC_TABLE_REPAIR_20261008.md).
 Quotes must be exact substrings of the claimed document chunk, with the chunk owned by that document.
 The numeric token must exist in the quote and satisfy boundaries/context; field keywords, unit scaling, period/scope/basis are
 checked conservatively. Missing numbers stay null. Validators return supported / partially_supported / unsupported /

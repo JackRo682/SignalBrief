@@ -24,3 +24,7 @@ build/
 playwright-report/
 test-results/
 .DS_Store
+
+# Keep raw local logs (which include machine paths) off the public PR.
+verification/live-20261008/*.log
+verification/live-20261008/*.xml

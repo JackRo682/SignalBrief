@@ -1,3 +1,4 @@
+from decimal import Decimal
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -36,6 +37,8 @@ class Settings(BaseSettings):
     openai_input_usd_per_million: float | None = Field(None, ge=0)
     openai_output_usd_per_million: float | None = Field(None, ge=0)
     ai_daily_requests: int = Field(1000, ge=1)
+    # Lifetime ceiling for this database, not a daily budget that resets overnight.
+    ai_total_budget_usd: Decimal = Field(Decimal("0"), ge=0, le=1000)
     max_llm_chunks: int = Field(60, ge=1, le=300)
     auto_publish_validated: bool = False
     posthog_project_key: str = ""
