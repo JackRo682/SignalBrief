@@ -20,6 +20,7 @@ async function proxy(req: NextRequest, context: { params: Promise<{ path: string
   upstream.pathname = `/functions/v1/signalbrief-api/${route}`;
   upstream.search = req.nextUrl.search;
   const headers = new Headers({ apikey: key });
+  headers.set("x-region", "ap-northeast-1");
   const authorization = req.headers.get("authorization");
   const publicConfig = req.method === "GET" && route === "v1/config";
   if (authorization && !publicConfig) headers.set("Authorization", authorization);
