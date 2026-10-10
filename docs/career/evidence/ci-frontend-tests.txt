@@ -1,0 +1,58 @@
+
+> signalbrief-web@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /home/runner/work/SignalBrief/SignalBrief/apps/web
+
+ ✓ tests/mobile-research.test.tsx (10 tests) 1718ms
+     ✓ keeps exact decimal facts, unmodified evidence, and truthful unknown file metadata  405ms
+     ✓ persists document save state and does not claim success after a denied mutation  318ms
+ ✓ tests/mobile-account-security.test.tsx (16 tests) 2158ms
+ ✓ tests/mobile-flow.test.tsx (17 tests) 2126ms
+     ✓ saves and restores an event bookmark without recording disabled history  396ms
+ ✓ tests/workspace.test.ts (51 tests) 120ms
+ ✓ tests/mobile-search-company.test.tsx (6 tests) 1266ms
+     ✓ deletes one recent search and clears searches without deleting visits  705ms
+ ✓ tests/mobile-notification-calendar.test.tsx (18 tests) 2544ms
+     ✓ only persists explicitly applied sliders and retains them after remount  309ms
+ ✓ tests/mobile-help.test.tsx (10 tests) 2372ms
+     ✓ opens the first of six authored FAQ entries and searches through real help content  518ms
+     ✓ retries a lost create response with the same idempotency key  409ms
+     ✓ keeps the saved request when upload fails and retries with its existing request key  314ms
+     ✓ retries attachment linking without uploading an already uploaded file again  308ms
+ ✓ tests/us-providers.test.ts (34 tests) 65ms
+ ✓ tests/mobile-portfolio.test.ts (17 tests) 39ms
+ ✓ tests/login-form.test.tsx (7 tests) 750ms
+ ✓ tests/mobile-appearance.test.tsx (8 tests) 693ms
+ ✓ tests/mobile-onboarding.test.tsx (11 tests) 1933ms
+     ✓ prefills exact stored holdings but sends no unedited positions  428ms
+     ✓ submits explicit watchlist additions/removals without deleting held positions  333ms
+ ✓ tests/oauth-us.test.ts (12 tests) 43ms
+ ✓ tests/reference.test.ts (41 tests) 17ms
+ ✓ tests/navigation-performance.test.ts (7 tests) 43ms
+ ✓ tests/proxy.test.ts (9 tests) 47ms
+ ✓ tests/hosted-performance.test.ts (2 tests) 558ms
+     ✓ serves public config without Auth or a database health round trip  319ms
+ ✓ tests/publication.test.ts (7 tests) 91ms
+ ✓ tests/feed-performance.test.ts (2 tests) 352ms
+ ✓ tests/product.test.ts (31 tests) 18ms
+ ✓ tests/mobile-market.test.ts (4 tests) 19ms
+ ✓ tests/event-analytics.test.tsx (3 tests) 41ms
+ ✓ tests/auth-runtime.test.ts (4 tests) 49ms
+ ✓ tests/api.test.ts (11 tests) 25ms
+ ✓ tests/legacy-summaries.test.ts (3 tests) 17ms
+ ✓ tests/site-proxy.test.ts (2 tests) 11ms
+ ✓ tests/auth-policy.test.ts (8 tests) 10ms
+ ✓ tests/decimal-input.test.ts (4 tests) 7ms
+ ✓ tests/runtime-config.test.ts (2 tests) 26ms
+ ✓ tests/format.test.ts (8 tests) 23ms
+
+ Test Files  30 passed (30)
+      Tests  365 passed (365)
+   Start at  11:49:14
+   Duration  14.63s (transform 2.61s, setup 0ms, import 7.46s, tests 17.18s, environment 12.72s)
+
+stderr | tests/hosted-performance.test.ts > hosted startup and batched cards > serves public config without Auth or a database health round trip
+{"requestId":"1f451bd0-3564-4846-90fe-ca9bec25e5f7","code":"internal_error","status":500}
+
