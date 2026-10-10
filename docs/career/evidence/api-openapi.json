@@ -1,0 +1,1240 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SignalBrief API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/v1/watchlist/{company_id}": {
+      "put": {
+        "summary": "Add Watchlist",
+        "operationId": "add_watchlist_v1_watchlist__company_id__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Company Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/{event_id}": {
+      "get": {
+        "summary": "Event Detail",
+        "operationId": "event_detail_v1_events__event_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventDetailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/events/{event_id}/questions": {
+      "post": {
+        "summary": "Ask",
+        "operationId": "ask_v1_events__event_id__questions_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnswerOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnswerEvidence": {
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "title": "Source Id"
+          },
+          "quote": {
+            "type": "string",
+            "title": "Quote"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source_id",
+          "quote",
+          "source_url",
+          "location"
+        ],
+        "title": "AnswerEvidence"
+      },
+      "AnswerOut": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "answered",
+              "abstained",
+              "unavailable",
+              "policy_blocked"
+            ],
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/AnswerEvidence"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "extractive",
+              "demo"
+            ],
+            "title": "Mode"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "message",
+          "evidence",
+          "run_id",
+          "mode"
+        ],
+        "title": "AnswerOut"
+      },
+      "BriefOut": {
+        "properties": {
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "what_happened": {
+            "type": "string",
+            "title": "What Happened"
+          },
+          "interpretation": {
+            "type": "string",
+            "title": "Interpretation"
+          },
+          "uncertainty": {
+            "type": "string",
+            "title": "Uncertainty"
+          },
+          "monitor_next": {
+            "type": "string",
+            "title": "Monitor Next"
+          },
+          "template_version": {
+            "type": "string",
+            "title": "Template Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "headline",
+          "what_happened",
+          "interpretation",
+          "uncertainty",
+          "monitor_next",
+          "template_version"
+        ],
+        "title": "BriefOut"
+      },
+      "ChangeOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "current_fact_id": {
+            "type": "string",
+            "title": "Current Fact Id"
+          },
+          "previous_fact_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Fact Id"
+          },
+          "change_type": {
+            "type": "string",
+            "title": "Change Type"
+          },
+          "comparison_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comparison Kind"
+          },
+          "previous_value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Value"
+          },
+          "current_value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Value"
+          },
+          "absolute_change": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Absolute Change"
+          },
+          "percentage_change": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentage Change"
+          },
+          "materiality": {
+            "type": "number",
+            "title": "Materiality"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "field",
+          "current_fact_id",
+          "previous_fact_id",
+          "change_type",
+          "comparison_kind",
+          "previous_value",
+          "current_value",
+          "absolute_change",
+          "percentage_change",
+          "materiality",
+          "confidence"
+        ],
+        "title": "ChangeOut"
+      },
+      "ChangeSummary": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "previous_value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Value"
+          },
+          "current_value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Value"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "field",
+          "previous_value",
+          "current_value"
+        ],
+        "title": "ChangeSummary"
+      },
+      "CompanyOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "market": {
+            "type": "string",
+            "title": "Market"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "title": "Is Demo"
+          },
+          "last_ingested_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Ingested At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "ticker",
+          "market",
+          "provider",
+          "is_demo",
+          "last_ingested_at"
+        ],
+        "title": "CompanyOut"
+      },
+      "DocumentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "download_url": {
+            "type": "string",
+            "title": "Download Url"
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Published At"
+          },
+          "publication_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Publication Date"
+          },
+          "publication_precision": {
+            "type": "string",
+            "title": "Publication Precision"
+          },
+          "publication_timezone": {
+            "type": "string",
+            "title": "Publication Timezone"
+          },
+          "ingested_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ingested At"
+          },
+          "raw_sha256": {
+            "type": "string",
+            "title": "Raw Sha256"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "title": "Is Demo"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "provider",
+          "source_url",
+          "download_url",
+          "published_at",
+          "publication_date",
+          "publication_precision",
+          "publication_timezone",
+          "ingested_at",
+          "raw_sha256",
+          "is_demo"
+        ],
+        "title": "DocumentOut"
+      },
+      "EventCard": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "company": {
+            "$ref": "#/components/schemas/CompanyOut"
+          },
+          "event_type": {
+            "type": "string",
+            "title": "Event Type"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "what_happened": {
+            "type": "string",
+            "title": "What Happened"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "materiality": {
+            "type": "number",
+            "title": "Materiality"
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Published At"
+          },
+          "publication_precision": {
+            "type": "string",
+            "title": "Publication Precision"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "title": "Is Demo"
+          },
+          "source_tier": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Tier"
+          },
+          "source_provider": {
+            "type": "string",
+            "title": "Source Provider"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "ranking": {
+            "$ref": "#/components/schemas/RankingOut"
+          },
+          "change_count": {
+            "type": "integer",
+            "title": "Change Count"
+          },
+          "fact_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fact Summary"
+          },
+          "change_summary": {
+            "items": {
+              "$ref": "#/components/schemas/ChangeSummary"
+            },
+            "type": "array",
+            "title": "Change Summary"
+          },
+          "interpretation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interpretation"
+          },
+          "source_document": {
+            "$ref": "#/components/schemas/SourceDocumentSummary"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "company",
+          "event_type",
+          "state",
+          "headline",
+          "what_happened",
+          "confidence",
+          "materiality",
+          "published_at",
+          "publication_precision",
+          "is_demo",
+          "source_tier",
+          "source_provider",
+          "source_url",
+          "ranking",
+          "change_count",
+          "fact_summary",
+          "change_summary",
+          "interpretation",
+          "source_document"
+        ],
+        "title": "EventCard"
+      },
+      "EventDetailOut": {
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/EventCard"
+          },
+          "document": {
+            "$ref": "#/components/schemas/DocumentOut"
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/FactOut"
+            },
+            "type": "array",
+            "title": "Facts"
+          },
+          "changes": {
+            "items": {
+              "$ref": "#/components/schemas/ChangeOut"
+            },
+            "type": "array",
+            "title": "Changes"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceOut"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "brief": {
+            "$ref": "#/components/schemas/BriefOut"
+          },
+          "validations": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationOut"
+            },
+            "type": "array",
+            "title": "Validations"
+          },
+          "run": {
+            "$ref": "#/components/schemas/RunOut"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "event",
+          "document",
+          "facts",
+          "changes",
+          "evidence",
+          "brief",
+          "validations",
+          "run"
+        ],
+        "title": "EventDetailOut"
+      },
+      "EvidenceOut": {
+        "properties": {
+          "fact_id": {
+            "type": "string",
+            "title": "Fact Id"
+          },
+          "chunk_id": {
+            "type": "string",
+            "title": "Chunk Id"
+          },
+          "document_id": {
+            "type": "string",
+            "title": "Document Id"
+          },
+          "quote": {
+            "type": "string",
+            "title": "Quote"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "source_name": {
+            "type": "string",
+            "title": "Source Name"
+          },
+          "source_tier": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Tier"
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Published At"
+          },
+          "publication_precision": {
+            "type": "string",
+            "title": "Publication Precision"
+          },
+          "is_demo": {
+            "type": "boolean",
+            "title": "Is Demo"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "current",
+              "previous"
+            ],
+            "title": "Role"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "fact_id",
+          "chunk_id",
+          "document_id",
+          "quote",
+          "location",
+          "source_url",
+          "source_name",
+          "source_tier",
+          "published_at",
+          "publication_precision",
+          "is_demo",
+          "role"
+        ],
+        "title": "EvidenceOut"
+      },
+      "FactOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "quote": {
+            "type": "string",
+            "title": "Quote"
+          },
+          "chunk_id": {
+            "type": "string",
+            "title": "Chunk Id"
+          },
+          "value_raw": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value Raw"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "period": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Period"
+          },
+          "scope": {
+            "type": "string",
+            "title": "Scope"
+          },
+          "basis": {
+            "type": "string",
+            "title": "Basis"
+          },
+          "validation_status": {
+            "type": "string",
+            "title": "Validation Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "field",
+          "quote",
+          "chunk_id",
+          "value_raw",
+          "unit",
+          "period",
+          "scope",
+          "basis",
+          "validation_status"
+        ],
+        "title": "FactOut"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "QuestionIn": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 2,
+            "title": "Question"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "title": "QuestionIn"
+      },
+      "RankingOut": {
+        "properties": {
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "components": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Components"
+          },
+          "effective_weights": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Effective Weights"
+          },
+          "missing_components": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Components"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "portfolio_weight_method": {
+            "type": "string",
+            "title": "Portfolio Weight Method"
+          },
+          "market_reaction": {
+            "type": "string",
+            "title": "Market Reaction"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "score",
+          "version",
+          "components",
+          "effective_weights",
+          "missing_components",
+          "reason",
+          "portfolio_weight_method",
+          "market_reaction"
+        ],
+        "title": "RankingOut"
+      },
+      "RunOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Version"
+          },
+          "prompt_version": {
+            "type": "string",
+            "title": "Prompt Version"
+          },
+          "pipeline_version": {
+            "type": "string",
+            "title": "Pipeline Version"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "latency_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latency Ms"
+          },
+          "input_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Tokens"
+          },
+          "output_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Tokens"
+          },
+          "cost_usd": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Usd"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "validation_result": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Validation Result"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "stage",
+          "model",
+          "model_version",
+          "prompt_version",
+          "pipeline_version",
+          "status",
+          "latency_ms",
+          "input_tokens",
+          "output_tokens",
+          "cost_usd",
+          "error_code",
+          "created_at",
+          "finished_at",
+          "validation_result"
+        ],
+        "title": "RunOut"
+      },
+      "SourceDocumentSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Published At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "provider",
+          "source_url",
+          "published_at"
+        ],
+        "title": "SourceDocumentSummary"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "ValidationOut": {
+        "properties": {
+          "claim_key": {
+            "type": "string",
+            "title": "Claim Key"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "supported",
+              "partially_supported",
+              "unsupported",
+              "conflicting_sources",
+              "numeric_mismatch",
+              "missing_source"
+            ],
+            "title": "Status"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "validator_version": {
+            "type": "string",
+            "title": "Validator Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "claim_key",
+          "status",
+          "reason",
+          "validator_version"
+        ],
+        "title": "ValidationOut"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

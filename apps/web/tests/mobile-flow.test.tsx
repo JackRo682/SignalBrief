@@ -8,8 +8,8 @@ import CompanyOverview,{DocumentView} from '../src/workspace/company';
 import {defaults} from '../src/workspace/contracts';
 import {type Answer,type EventDetail} from '../src/lib/contracts';
 
-const mocks=vi.hoisted(()=>({request:vi.fn(),workspace:vi.fn(),push:vi.fn(),replace:vi.fn(),historyEnabled:false,saved:false,failSave:false,failHolding:false,failHistory:false,history:[] as {id:string;event_id:string;question:string;answer:Answer;created_at:string}[],text:(ko:string)=>ko,date:(value:string|null)=>value??'—'}));
-vi.mock('../src/components/auth',()=>({useAuth:()=>({token:'isolated-synthetic-token',me:{id:'10000000-0000-4000-8000-000000000001'}})}));
+const mocks=vi.hoisted(()=>({request:vi.fn(),workspace:vi.fn(),track:vi.fn(),analyticsConsent:false,push:vi.fn(),replace:vi.fn(),historyEnabled:false,saved:false,failSave:false,failHolding:false,failHistory:false,history:[] as {id:string;event_id:string;question:string;answer:Answer;created_at:string}[],text:(ko:string)=>ko,date:(value:string|null)=>value??'—'}));
+vi.mock('../src/components/auth',()=>({useAuth:()=>({token:'isolated-synthetic-token',track:mocks.track,me:{id:'10000000-0000-4000-8000-000000000001',analytics_consent:mocks.analyticsConsent}})}));
 vi.mock('../src/workspace/preferences',()=>({usePrefs:()=>({value:{...defaults,history_enabled:mocks.historyEnabled},text:mocks.text,date:mocks.date})}));
 vi.mock('../src/workspace/client',()=>({workspace:mocks.workspace}));
 vi.mock('../src/workspace/market',()=>({useQuotes:()=>({quotes:[],loading:false,reason:'provider_not_configured'})}));
@@ -35,7 +35,7 @@ const otherEventId='30000000-0000-4000-8000-000000000002',otherCompanyId='200000
 const returnedAnswer:Answer={status:'abstained',message:'Synthetic evidence is insufficient for this question.',evidence:[],run_id:null,mode:'extractive'};
 
 beforeEach(()=>{
- vi.clearAllMocks();mocks.historyEnabled=false;mocks.saved=false;mocks.failSave=false;mocks.failHolding=false;mocks.failHistory=false;mocks.history=[];
+ vi.clearAllMocks();mocks.analyticsConsent=false;mocks.historyEnabled=false;mocks.saved=false;mocks.failSave=false;mocks.failHolding=false;mocks.failHistory=false;mocks.history=[];
  window.history.replaceState({},'',`/events/${eventId}`);
  Object.defineProperty(HTMLElement.prototype,'scrollIntoView',{configurable:true,value:vi.fn()});
  Object.defineProperty(HTMLDialogElement.prototype,'showModal',{configurable:true,value:function(this:HTMLDialogElement){this.setAttribute('open','');}});
@@ -216,5 +216,26 @@ describe('mobile timeline route and period scoping',()=>{
   page.rerender(<MobileTimeline id={otherCompanyId}/>);
   expect(screen.queryByRole('link',{name:'Synthetic Company TEST · NASDAQ'})).toBeNull();
   expect(screen.queryByRole('heading',{name:detail.event.headline})).toBeNull();
+ });
+});
+
+
+describe('mobile analytics uses loaded evidence',()=>{
+ it('records one loaded view and one evidence engagement without content properties',async()=>{
+  mocks.analyticsConsent=true;const page=render(<MobileEvent id={eventId}/>);
+  await screen.findByRole('heading',{level:1,name:resource.title});
+  await waitFor(()=>expect(mocks.track).toHaveBeenCalledTimes(1));
+  fireEvent.click(document.querySelector<HTMLButtonElement>('.m-event-citations-button')!);
+  await waitFor(()=>expect(mocks.track).toHaveBeenCalledTimes(2));
+  page.rerender(<MobileEvent id={eventId}/>);
+  expect(mocks.track.mock.calls).toEqual([
+   ['brief_opened',{event_id:eventId,screen:'mobile_detail'}],
+   ['evidence_opened',{event_id:eventId,screen:'mobile_detail'}],
+  ]);
+ });
+ it('does not record an event when the detail API rejects access',async()=>{
+  mocks.analyticsConsent=true;mocks.request.mockRejectedValue(new Error('Synthetic detail denied'));
+  render(<MobileEvent id={eventId}/>);
+  await screen.findByRole('alert');expect(mocks.track).not.toHaveBeenCalled();
  });
 });

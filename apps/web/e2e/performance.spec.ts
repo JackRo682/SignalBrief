@@ -91,6 +91,15 @@ async function verifyDesktopProgressiveNavigation(page: Page, summaryOnly: boole
   await expect(page.locator('[data-screen="setup"]')).toBeVisible();
   await page.locator('.nav [data-route="calendar"]').click();
   await expect(page.locator('[data-screen="calendar"]')).toBeVisible();
+  // Calendar intentionally resolves its linked events for company/type filters.
+  // Account for exactly those reads before checking that later feed/timeline
+  // navigation performs no extra event-detail requests.
+  const calendarDetailPaths = [...new Set(fixture.state.calendar.map(item => item.event_id).filter(Boolean))]
+    .map(id => `/v1/events/${id}`).sort();
+  const detailReads = () => fixture.state.apiCalls.filter(call => call.method === 'GET' && call.path.startsWith('/v1/events/')).map(call => call.path).sort();
+  await expect(page.locator('#calendar .calGrid')).toBeVisible();
+  await expect.poll(detailReads).toEqual(calendarDetailPaths);
+  await expect.poll(() => completedRequests.filter(path => path.startsWith('/v1/events/')).sort()).toEqual(calendarDetailPaths);
   await page.locator('.nav [data-route="watch"]').click();
   await expect(page.locator('.pc-watch-table tbody tr')).toHaveCount(4);
   await page.getByRole('navigation', {name:'주 메뉴',exact:true}).getByRole('link', {name:'홈',exact:true}).click();
@@ -107,14 +116,15 @@ async function verifyDesktopProgressiveNavigation(page: Page, summaryOnly: boole
   expect(fixture.state.apiCalls.filter(call => call.method === 'PATCH' && call.path === '/v1/me')).toHaveLength(0);
   expect(initialWatchReads).toBe(1);
   expect(fixture.state.apiCalls.filter(call => call.path === '/v1/watchlist')).toHaveLength(1);
-  expect(fixture.state.apiCalls.some(call => call.path.startsWith('/v1/events/'))).toBe(false);
+  expect(detailReads()).toEqual(calendarDetailPaths);
   await page.locator('.pc-timeline-event-title').first().click();
   await expect(page).toHaveURL(new RegExp(`/events/${eventId}$`));
   await expect(page.locator('.pc-event')).toContainText(events[0].interpretation!);
   await page.getByRole('link', {name:'근거 전체 보기',exact:true}).click();
   await expect(page.locator('.pc-evidence-source-quote blockquote')).toHaveCount(4);
   await expect(page.locator('.pc-evidence-source')).toContainText('Synthetic fixture: Revenue was USD 45,000 million');
-  await expect.poll(() => completedRequests.filter(path => path === `/v1/events/${eventId}`).length).toBe(1);
+  await expect.poll(() => completedRequests.filter(path => path === `/v1/events/${eventId}`).length).toBe(calendarDetailPaths.filter(path => path === `/v1/events/${eventId}`).length + 1);
+  expect(detailReads()).toEqual([...calendarDetailPaths, `/v1/events/${eventId}`].sort());
   expect(navigationDocuments).toHaveLength(initialDocuments);
   expect(fixture.state.unexpected).toEqual([]);
   expect(fixture.state.runtimeErrors).toEqual([]);

@@ -1,5 +1,5 @@
 {
-  "commit": "f680feab8bee13996e71210c566e2cc4da3d2339",
+  "commit": "d09dac977ea4882b7faa1dd7da9d3f59afc98d01",
   "files": {
     "apps/web/e2e/mobile-authenticated.spec.ts": "4e53bce533bcf687f28738ffc9a52cd1df4aa07ced64427a6fd8af30989026c6",
     "apps/web/e2e/mobile-details.spec.ts": "96c19c63cac8f68147a75088118b7574128f3e7429ceca18904bf7551f36bad0",
@@ -51,7 +51,7 @@
     "apps/web/src/mobile/detail-shell.css": "602e80b15cfc413a25ed1aacd4e5ac0ba2aea8e0fe23fefb168f99424bce6773",
     "apps/web/src/mobile/document.tsx": "87763c4fecf5176117c87ac4be3b7cca1acccdd597657ffff7bac92728e908a4",
     "apps/web/src/mobile/event.css": "2bdafb81de253b86ec4e5d52f529f715138175b1fc4c9b4f3588afacb5be8865",
-    "apps/web/src/mobile/event.tsx": "189d2f7f212f40c58f1bc88539e94c055fb9c7a41da9b049abade8ffb45d1778",
+    "apps/web/src/mobile/event.tsx": "aff23ee686b7a53faf82b483f0732fb6bf07697f38253701092ba767be816ce1",
     "apps/web/src/mobile/help.css": "c30076ff6f55565f809ce5b6c9cf1d2686526ce8c372f15c3c38cf16ebd61443",
     "apps/web/src/mobile/help.tsx": "4df150d9c493691802f6dbe51c9d2dd01a70d852f9425b1f0ad4a996c00e6f9f",
     "apps/web/src/mobile/mobile.css": "663adf3bd74aec9a4a783ba97a991277f70de9b1c54aad8d7ef763b459c07e12",
@@ -89,7 +89,11 @@
     "apps/web/src/workspace/search.tsx": "6a083599261d73b5a3b02611e12a20fd075fe3c37c2580f20de3d048458a7a66",
     "apps/web/src/workspace/security.tsx": "aa8fe4e360938eeefd4102e3b7ebe3a7824dc3f96d57c26612adda4d61120ba5",
     "apps/web/src/workspace/ui.tsx": "0dbf3f9bfbeedf8871cd55e9583d8d58d5556df275c2a65d86d257c9fff9ea81",
-    "apps/web/src/workspace/workspace.css": "fb92ef82198e8d38a54142107b4f3828c7dbc9e11a63a45f13f784e5a5e5bfaf"
+    "apps/web/src/workspace/workspace.css": "fb92ef82198e8d38a54142107b4f3828c7dbc9e11a63a45f13f784e5a5e5bfaf",
+    "apps/web/src/lib/use-event-analytics.ts": "ba52aa863dcc5532e2244d36fac245b2f7fa754a6c51867ad32c35c6593e6b12",
+    "apps/web/e2e/career-analytics.spec.ts": "d69d1dff8dff1ae042a2cd2905a6adf21d108527a48946f9b5b727d72275581f",
+    "apps/web/tests/event-analytics.test.tsx": "1881c450f7cd9ae5c7a9189ca1ad0167ec9029f48c9a2adc4327b3dadfb071e6",
+    "apps/web/tests/mobile-flow.test.tsx": "8fbe98ea0fa7af0f2379960b7b9af2662ebc39f24533d76af81217540e27a09f"
   },
   "route_mobile_expressions": {
     "apps/web/src/app/(workspace)/alerts/page.tsx": "{<MobileAlerts/>}",
