@@ -1,0 +1,1894 @@
+{
+  "audited_at": "2026-10-09",
+  "source": "read-only information_schema.columns; no customer rows queried",
+  "base_commit": "f680feab8bee13996e71210c566e2cc4da3d2339",
+  "postgres_major": 17,
+  "columns": [
+    {
+      "table_name": "ai_runs",
+      "column_name": "document_id",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "ai_runs",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "ai_runs",
+      "column_name": "stage",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "ai_runs",
+      "column_name": "model",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "ai_runs",
+      "column_name": "model_version",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "ai_runs",
+      "column_name": "prompt_version",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "ai_runs",
+      "column_name": "pipeline_version",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "ai_runs",
+      "column_name": "status",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "ai_runs",
+      "column_name": "latency_ms",
+      "data_type": "integer",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "ai_runs",
+      "column_name": "input_tokens",
+      "data_type": "integer",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "ai_runs",
+      "column_name": "output_tokens",
+      "data_type": "integer",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "ai_runs",
+      "column_name": "cost_usd",
+      "data_type": "numeric",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "ai_runs",
+      "column_name": "error_code",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "ai_runs",
+      "column_name": "validation_result",
+      "data_type": "json",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "ai_runs",
+      "column_name": "finished_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "ai_runs",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "ai_runs",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "alembic_version",
+      "column_name": "version_num",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "alerts",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "alerts",
+      "column_name": "name",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "alerts",
+      "column_name": "event_types",
+      "data_type": "json",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "alerts",
+      "column_name": "min_score",
+      "data_type": "double precision",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "alerts",
+      "column_name": "enabled",
+      "data_type": "boolean",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "alerts",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "alerts",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "audit_logs",
+      "column_name": "actor_id",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "audit_logs",
+      "column_name": "action",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "audit_logs",
+      "column_name": "target_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "audit_logs",
+      "column_name": "details",
+      "data_type": "json",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "audit_logs",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "audit_logs",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "brief_sources",
+      "column_name": "brief_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "brief_sources",
+      "column_name": "fact_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "briefs",
+      "column_name": "event_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "briefs",
+      "column_name": "headline",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "briefs",
+      "column_name": "what_happened",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "briefs",
+      "column_name": "interpretation",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "briefs",
+      "column_name": "uncertainty",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "briefs",
+      "column_name": "monitor_next",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "briefs",
+      "column_name": "template_version",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "briefs",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "briefs",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "calendar_items",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "calendar_items",
+      "column_name": "company_id",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "calendar_items",
+      "column_name": "event_id",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "calendar_items",
+      "column_name": "title",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "calendar_items",
+      "column_name": "occurs_on",
+      "data_type": "date",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "calendar_items",
+      "column_name": "origin",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "calendar_items",
+      "column_name": "chunk_id",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "calendar_items",
+      "column_name": "quote",
+      "data_type": "text",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "calendar_items",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "calendar_items",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "calendar_reminders",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "calendar_reminders",
+      "column_name": "calendar_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "calendar_reminders",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "changes",
+      "column_name": "event_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "changes",
+      "column_name": "current_fact_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "changes",
+      "column_name": "previous_fact_id",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "changes",
+      "column_name": "field",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "changes",
+      "column_name": "change_type",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "changes",
+      "column_name": "comparison_kind",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "changes",
+      "column_name": "previous_value",
+      "data_type": "text",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "changes",
+      "column_name": "current_value",
+      "data_type": "text",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "changes",
+      "column_name": "absolute_change",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "changes",
+      "column_name": "percentage_change",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "changes",
+      "column_name": "materiality",
+      "data_type": "double precision",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "changes",
+      "column_name": "confidence",
+      "data_type": "double precision",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "changes",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "changes",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "companies",
+      "column_name": "name",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "companies",
+      "column_name": "ticker",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "companies",
+      "column_name": "market",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "companies",
+      "column_name": "provider",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "companies",
+      "column_name": "provider_company_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "companies",
+      "column_name": "is_demo",
+      "data_type": "boolean",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "companies",
+      "column_name": "last_ingested_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "companies",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "companies",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "document_chunks",
+      "column_name": "document_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "document_chunks",
+      "column_name": "ordinal",
+      "data_type": "integer",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "document_chunks",
+      "column_name": "parser_version",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "document_chunks",
+      "column_name": "text",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "document_chunks",
+      "column_name": "text_sha256",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "document_chunks",
+      "column_name": "char_start",
+      "data_type": "integer",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "document_chunks",
+      "column_name": "char_end",
+      "data_type": "integer",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "document_chunks",
+      "column_name": "location",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "document_chunks",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "document_chunks",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "company_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "provider",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "external_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "title",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "form_type",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "source_url",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "download_url",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "published_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "publication_date",
+      "data_type": "date",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "publication_precision",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "publication_timezone",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "ingested_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "provider_metadata",
+      "data_type": "json",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "raw_sha256",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "state",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "is_demo",
+      "data_type": "boolean",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "documents",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "eval_results",
+      "column_name": "dataset_name",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "eval_results",
+      "column_name": "dataset_sha256",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "eval_results",
+      "column_name": "model_version",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "eval_results",
+      "column_name": "prompt_version",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "eval_results",
+      "column_name": "metrics",
+      "data_type": "json",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "eval_results",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "eval_results",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "event_sources",
+      "column_name": "event_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "event_sources",
+      "column_name": "chunk_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "event_sources",
+      "column_name": "role",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "events",
+      "column_name": "company_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "events",
+      "column_name": "document_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "events",
+      "column_name": "run_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "events",
+      "column_name": "revision",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "events",
+      "column_name": "title",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "events",
+      "column_name": "event_type",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "events",
+      "column_name": "state",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "events",
+      "column_name": "confidence",
+      "data_type": "double precision",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "events",
+      "column_name": "materiality",
+      "data_type": "double precision",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "events",
+      "column_name": "published_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "events",
+      "column_name": "duplicate_of",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "events",
+      "column_name": "published_to_users_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "events",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "events",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "experiments",
+      "column_name": "name",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "experiments",
+      "column_name": "hypothesis",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "experiments",
+      "column_name": "config",
+      "data_type": "json",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "experiments",
+      "column_name": "enabled",
+      "data_type": "boolean",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "experiments",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "experiments",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "facts",
+      "column_name": "event_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "facts",
+      "column_name": "chunk_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "facts",
+      "column_name": "field",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "facts",
+      "column_name": "quote",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "facts",
+      "column_name": "value_raw",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "facts",
+      "column_name": "unit",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "facts",
+      "column_name": "period",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "facts",
+      "column_name": "scope",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "facts",
+      "column_name": "basis",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "facts",
+      "column_name": "validation_status",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "facts",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "facts",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "feedback",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "feedback",
+      "column_name": "event_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "feedback",
+      "column_name": "rating",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "feedback",
+      "column_name": "comment",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "feedback",
+      "column_name": "state",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "feedback",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "feedback",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "jobs",
+      "column_name": "kind",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "jobs",
+      "column_name": "dedupe_key",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "jobs",
+      "column_name": "payload",
+      "data_type": "json",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "jobs",
+      "column_name": "state",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "jobs",
+      "column_name": "attempts",
+      "data_type": "integer",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "jobs",
+      "column_name": "max_attempts",
+      "data_type": "integer",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "jobs",
+      "column_name": "available_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "jobs",
+      "column_name": "lease_until",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "jobs",
+      "column_name": "lease_token",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "jobs",
+      "column_name": "worker_id",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "jobs",
+      "column_name": "last_error",
+      "data_type": "character varying",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "jobs",
+      "column_name": "finished_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "jobs",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "jobs",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "notifications",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "notifications",
+      "column_name": "alert_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "notifications",
+      "column_name": "event_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "notifications",
+      "column_name": "read_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "notifications",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "notifications",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "portfolios",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "portfolios",
+      "column_name": "name",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "portfolios",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "portfolios",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "positions",
+      "column_name": "portfolio_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "positions",
+      "column_name": "company_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "positions",
+      "column_name": "quantity",
+      "data_type": "numeric",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "positions",
+      "column_name": "average_cost",
+      "data_type": "numeric",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "positions",
+      "column_name": "currency",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "positions",
+      "column_name": "updated_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "positions",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "positions",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "provider_limits",
+      "column_name": "provider",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "provider_limits",
+      "column_name": "next_request_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "question_history",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "question_history",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "question_history",
+      "column_name": "event_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "question_history",
+      "column_name": "question",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "question_history",
+      "column_name": "answer",
+      "data_type": "jsonb",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "question_history",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "ranked_events",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "ranked_events",
+      "column_name": "event_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "ranked_events",
+      "column_name": "score",
+      "data_type": "double precision",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "ranked_events",
+      "column_name": "breakdown",
+      "data_type": "json",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "ranked_events",
+      "column_name": "scoring_version",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "ranked_events",
+      "column_name": "updated_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "ranked_events",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "ranked_events",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "rate_buckets",
+      "column_name": "key",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "rate_buckets",
+      "column_name": "hits",
+      "data_type": "integer",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "rate_buckets",
+      "column_name": "expires_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "raw_blobs",
+      "column_name": "sha256",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "raw_blobs",
+      "column_name": "object_key",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "raw_blobs",
+      "column_name": "byte_length",
+      "data_type": "integer",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "raw_blobs",
+      "column_name": "content_type",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "raw_blobs",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_analyses",
+      "column_name": "filing_id",
+      "data_type": "uuid",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_analyses",
+      "column_name": "status",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_analyses",
+      "column_name": "model",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_analyses",
+      "column_name": "source_sha256",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_analyses",
+      "column_name": "result",
+      "data_type": "jsonb",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_analyses",
+      "column_name": "input_tokens",
+      "data_type": "integer",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "us_analyses",
+      "column_name": "output_tokens",
+      "data_type": "integer",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "us_analyses",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_filings",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_filings",
+      "column_name": "company_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_filings",
+      "column_name": "accession",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_filings",
+      "column_name": "form",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_filings",
+      "column_name": "filing_date",
+      "data_type": "date",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_filings",
+      "column_name": "report_date",
+      "data_type": "date",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "us_filings",
+      "column_name": "document_url",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_filings",
+      "column_name": "source_url",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_filings",
+      "column_name": "source_sha256",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_filings",
+      "column_name": "fetched_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_provider_checks",
+      "column_name": "provider",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_provider_checks",
+      "column_name": "status",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_provider_checks",
+      "column_name": "detail",
+      "data_type": "jsonb",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "us_provider_checks",
+      "column_name": "checked_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "user_events",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "user_events",
+      "column_name": "event_name",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "user_events",
+      "column_name": "properties",
+      "data_type": "json",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "user_events",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "user_events",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "user_preferences",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "user_preferences",
+      "column_name": "experience",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "user_preferences",
+      "column_name": "markets",
+      "data_type": "jsonb",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "user_preferences",
+      "column_name": "sectors",
+      "data_type": "jsonb",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "user_preferences",
+      "column_name": "alert_frequency",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "user_preferences",
+      "column_name": "updated_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "user_preferences",
+      "column_name": "browser_notifications",
+      "data_type": "boolean",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "user_preferences",
+      "column_name": "daily_digest",
+      "data_type": "boolean",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "user_preferences",
+      "column_name": "email_notifications",
+      "data_type": "boolean",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "user_preferences",
+      "column_name": "notify_min_score",
+      "data_type": "numeric",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "user_preferences",
+      "column_name": "has_holdings",
+      "data_type": "boolean",
+      "is_nullable": "YES"
+    },
+    {
+      "table_name": "user_preferences",
+      "column_name": "realtime_enabled",
+      "data_type": "boolean",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "users",
+      "column_name": "display_name",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "users",
+      "column_name": "density",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "users",
+      "column_name": "onboarding_completed",
+      "data_type": "boolean",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "users",
+      "column_name": "analytics_consent",
+      "data_type": "boolean",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "users",
+      "column_name": "updated_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "users",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "users",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "validations",
+      "column_name": "event_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "validations",
+      "column_name": "claim_key",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "validations",
+      "column_name": "status",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "validations",
+      "column_name": "reason",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "validations",
+      "column_name": "validator_version",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "validations",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "validations",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "watchlist_items",
+      "column_name": "watchlist_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "watchlist_items",
+      "column_name": "company_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "watchlist_items",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "watchlists",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "watchlists",
+      "column_name": "name",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "watchlists",
+      "column_name": "id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "watchlists",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_attachments",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_attachments",
+      "column_name": "ticket_id",
+      "data_type": "uuid",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_attachments",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_attachments",
+      "column_name": "object_path",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_attachments",
+      "column_name": "filename",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_attachments",
+      "column_name": "mime_type",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_attachments",
+      "column_name": "size_bytes",
+      "data_type": "integer",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_attachments",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_history",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_history",
+      "column_name": "kind",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_history",
+      "column_name": "resource_id",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_history",
+      "column_name": "viewed_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_preferences",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_preferences",
+      "column_name": "value",
+      "data_type": "jsonb",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_preferences",
+      "column_name": "version",
+      "data_type": "integer",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_preferences",
+      "column_name": "updated_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_saved",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_saved",
+      "column_name": "kind",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_saved",
+      "column_name": "resource_id",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_saved",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_searches",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_searches",
+      "column_name": "query",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_searches",
+      "column_name": "searched_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_tickets",
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_tickets",
+      "column_name": "user_id",
+      "data_type": "character varying",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_tickets",
+      "column_name": "request_key",
+      "data_type": "uuid",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_tickets",
+      "column_name": "category",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_tickets",
+      "column_name": "title",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_tickets",
+      "column_name": "message",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_tickets",
+      "column_name": "state",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "table_name": "workspace_tickets",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO"
+    }
+  ],
+  "migrations": [
+    {
+      "version": "20261003001942",
+      "name": "signalbrief_v1_schema_and_rls"
+    },
+    {
+      "version": "20261003003202",
+      "name": "signalbrief_web_rls_and_profiles"
+    },
+    {
+      "version": "20261003003242",
+      "name": "signalbrief_atomic_user_mutations"
+    },
+    {
+      "version": "20261003005619",
+      "name": "signalbrief_web_audit_and_answers"
+    },
+    {
+      "version": "20261003022928",
+      "name": "signalbrief_release_hardening"
+    },
+    {
+      "version": "20261003033010",
+      "name": "signalbrief_web_workflow_completion"
+    },
+    {
+      "version": "20261003033301",
+      "name": "signalbrief_canonical_change_answers"
+    },
+    {
+      "version": "20261003035521",
+      "name": "signalbrief_reconcile_regex_literals"
+    },
+    {
+      "version": "20261003062827",
+      "name": "reference_screens_authenticated_interactions"
+    },
+    {
+      "version": "20261003092445",
+      "name": "us_provider_runtime"
+    },
+    {
+      "version": "20261003092813",
+      "name": "us_provider_network_extension"
+    },
+    {
+      "version": "20261003093321",
+      "name": "us_remove_unused_provisioning"
+    },
+    {
+      "version": "20261003093855",
+      "name": "us_analysis_review_and_lock"
+    },
+    {
+      "version": "20261006065220",
+      "name": "workspace_mfa_assurance"
+    },
+    {
+      "version": "20261006065502",
+      "name": "workspace_pages_and_private_state"
+    },
+    {
+      "version": "20261006065525",
+      "name": "workspace_realtime_and_upload_guards"
+    },
+    {
+      "version": "20261006095100",
+      "name": "mobile_search_history"
+    },
+    {
+      "version": "20261006135046",
+      "name": "mobile_document_detail"
+    }
+  ]
+}

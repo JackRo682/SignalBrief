@@ -1,0 +1,112 @@
+{
+  "checked_at": "2026-10-09T11:49:52.060297+00:00",
+  "full_release_suite": true,
+  "results": [
+    {
+      "check": "python_compile",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+        "-m",
+        "compileall",
+        "-q",
+        "apps/api",
+        "tests",
+        "scripts"
+      ],
+      "log": "verification/python_compile.log"
+    },
+    {
+      "check": "backend_tests",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "--junitxml=/home/runner/work/SignalBrief/SignalBrief/verification/pytest.xml"
+      ],
+      "log": "verification/backend_tests.log"
+    },
+    {
+      "check": "openapi_export",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+        "scripts/export_openapi.py"
+      ],
+      "log": "verification/openapi_export.log"
+    },
+    {
+      "check": "backend_lint",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "apps/api",
+        "tests",
+        "scripts"
+      ],
+      "log": "verification/backend_lint.log"
+    },
+    {
+      "check": "frontend_lint",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/hostedtoolcache/node/22.23.3/x64/bin/npm",
+        "run",
+        "lint"
+      ],
+      "log": "verification/frontend_lint.log"
+    },
+    {
+      "check": "frontend_typecheck",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/hostedtoolcache/node/22.23.3/x64/bin/npm",
+        "run",
+        "typecheck"
+      ],
+      "log": "verification/frontend_typecheck.log"
+    },
+    {
+      "check": "frontend_unit_tests",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/hostedtoolcache/node/22.23.3/x64/bin/npm",
+        "run",
+        "test"
+      ],
+      "log": "verification/frontend_unit_tests.log"
+    },
+    {
+      "check": "frontend_build",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/hostedtoolcache/node/22.23.3/x64/bin/npm",
+        "run",
+        "build"
+      ],
+      "log": "verification/frontend_build.log"
+    }
+  ],
+  "not_in_this_script": [
+    "Real provider credentials",
+    "Google OAuth redirects",
+    "Hosted deployment",
+    "Human-labeled financial Gold Dataset",
+    "Browser E2E (run Playwright separately)"
+  ],
+  "source_commit": "c4396233a7f980693c6621d61b8f45c84227947a",
+  "run_url": "https://github.com/JackRo682/SignalBrief/actions/runs/37925930182"
+}
