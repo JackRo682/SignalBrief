@@ -1,0 +1,49 @@
+name: Financial evidence benchmark
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  offline-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install -e '.[dev]'
+      - run: python scripts/run_financial_adversarial.py
+      - run: python scripts/run_financial_benchmark.py --method B --output verification/financial-ci/development-B.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: financial-benchmark-results
+          path: |
+            verification/financial-ci/
+            verification/financial-20261010/adversarial.*
+  study-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - working-directory: apps/web
+        run: npm ci --ignore-scripts && npx playwright install --with-deps chromium
+      - run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/study-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8765/tools/usability-study.html > /dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:8765/tools/usability-study.html > /dev/null
+          cd apps/web
+          SB_STUDY_TEST=1 npx playwright test usability-study.spec.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: study-software-tests-not-human-results
+          path: |
+            apps/web/test-results/
+            apps/web/playwright-report/
