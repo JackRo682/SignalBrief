@@ -60,6 +60,10 @@ DECLARE observed text;BEGIN
  CASE type WHEN 'email.complained' THEN 5 WHEN 'email.bounced' THEN 4 WHEN 'email.failed' THEN 4 WHEN 'email.suppressed' THEN 4 WHEN 'email.delivered' THEN 3 ELSE 1 END DESC,occurred_at DESC LIMIT 1;
  UPDATE app_private.email_outbox SET state=CASE observed WHEN 'email.delivered' THEN 'delivered' WHEN 'email.bounced' THEN 'bounced' WHEN 'email.complained' THEN 'complained' WHEN 'email.failed' THEN 'failed' WHEN 'email.suppressed' THEN 'suppressed' ELSE 'submitted' END,
  provider_id=message_id,updated_at=now() WHERE id=eid AND state='running';
+ IF observed IN ('email.bounced','email.complained','email.suppressed') THEN
+ INSERT INTO app_private.email_suppressions(address_hash,reason)
+ SELECT encode(extensions.digest(lower(recipient),'sha256'),'hex'),observed FROM app_private.email_outbox WHERE id=eid AND recipient IS NOT NULL ON CONFLICT DO NOTHING;
+ END IF;
  ELSE UPDATE app_private.email_outbox SET state=CASE WHEN sb_email_finish.error_code='consent_or_publication_changed' THEN 'suppressed' WHEN retryable AND attempts<3 THEN 'retry' ELSE 'failed' END,
  next_attempt_at=now()+interval '5 minutes',error_code=sb_email_finish.error_code,updated_at=now() WHERE id=eid AND state='running';END IF;
 END $$;

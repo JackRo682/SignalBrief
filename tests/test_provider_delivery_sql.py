@@ -130,6 +130,20 @@ def test_delivery_events_are_idempotent_and_cannot_downgrade_delivery(provider_d
     assert not provider_db.execute("SELECT sb_email_permitted(%s)", (task,)).fetchone()[0]
 
 
+def test_early_complaint_callback_still_suppresses_future_sends(provider_db):
+    task = provider_db.execute("""
+        INSERT INTO app_private.email_outbox(kind,recipient,subject,body)
+        VALUES('test','race@example.test','Synthetic race test','Synthetic body') RETURNING id
+    """).fetchone()[0]
+    provider_db.execute("SELECT sb_email_claim()")
+    provider_db.execute("SELECT sb_email_event('early-event','email.complained','early-message',now())")
+    provider_db.execute("SELECT sb_email_finish(%s,'early-message',NULL,false)", (task,))
+    assert provider_db.execute(
+        "SELECT state FROM app_private.email_outbox WHERE id=%s", (task,)
+    ).fetchone()[0] == "complained"
+    assert not provider_db.execute("SELECT sb_email_permitted(%s)", (task,)).fetchone()[0]
+
+
 def test_dart_claims_are_not_repeated_and_drafts_require_an_admin(provider_db):
     filing = uuid4()
     provider_db.execute(

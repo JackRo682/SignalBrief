@@ -23,3 +23,6 @@ FMP NASDAQ Composite and S&P 500 use ^IXIC and ^GSPC. Index endpoint entitlement
 - FMP: require actual fmp license proof/expiry. fmp_indices_display_enabled remains false until index access and rights are verified.
 - GNEWS_API_KEY: server credential plus actual permitted usage plan; gnews display reference and expiry are mandatory.
 - Paid vendor plans require a concrete quote and user approval; the existing $1/day OpenAI cap does not authorize unrelated subscriptions.
+
+## Live verification evidence
+The production application queue sent one authorized verification email. Resend reported delivery and both signed sent/delivered callbacks returned success; the private outbox recorded delivered after one attempt. No users were opted in automatically. SEC collection succeeded on the same run; DART lacked a key and a numerically invalid AI response was rejected rather than published. Private UI flows require signed-in browser verification; provider activation remains incomplete until the missing credentials and display agreements exist.
