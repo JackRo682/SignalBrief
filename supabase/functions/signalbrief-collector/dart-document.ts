@@ -3,7 +3,7 @@ import {SaxesParser} from 'npm:saxes@6.0.0';
 import type {SupabaseClient} from 'npm:@supabase/supabase-js@2.117.2';
 import {ProviderError,obj,str,analyzeEvidence,type Row} from '../signalbrief-api/us-core.ts';
 import {inspectDartZIP,crc32,validateDartXML} from './dart-document-core.ts';
-const sha=async(bytes:Uint8Array)=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(x=>x.toString(16).padStart(2,'0')).join('');
+const sha=async(bytes:Uint8Array)=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new Uint8Array(bytes).buffer))].map(x=>x.toString(16).padStart(2,'0')).join('');
 async function rpc(db:SupabaseClient,name:string,args:Row={}){const {data,error}=await db.rpc(name,args);if(error)throw new ProviderError('database','operation_failed');return data;}
 async function download(receipt:string,key:string):Promise<Uint8Array>{
  if(!/^\d{14}$/.test(receipt)||!/^[a-f0-9]{40}$/i.test(key))throw new ProviderError('dart','missing_or_invalid_key',503);

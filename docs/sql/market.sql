@@ -21,7 +21,7 @@ DECLARE claimed uuid;BEGIN
  IF release THEN UPDATE app_private.market_auth_lease SET expires_at=now() WHERE provider='kis' AND owner=lease;RETURN true;END IF;
  INSERT INTO app_private.market_auth_lease VALUES('kis',lease,now()+interval '90 seconds')
  ON CONFLICT(provider) DO UPDATE SET owner=EXCLUDED.owner,expires_at=EXCLUDED.expires_at WHERE market_auth_lease.expires_at<=now() RETURNING owner INTO claimed;
- RETURN claimed=lease;
+ RETURN coalesce(claimed=lease,false);
 END $$;
 REVOKE ALL ON FUNCTION public.sb_market_auth_lease(uuid,boolean),public.sb_us_reserve(text,numeric,boolean) FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.sb_market_auth_lease(uuid,boolean),public.sb_us_reserve(text,numeric,boolean) TO service_role;
