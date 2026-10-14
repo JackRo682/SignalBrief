@@ -1,11 +1,11 @@
 import {unzipSync} from 'npm:fflate@0.8.2';
 import {parseDartText} from './dart-parser.ts';
 import type {SupabaseClient} from 'npm:@supabase/supabase-js@2.117.2';
-import {ProviderError,obj,str,analyzeEvidence,transportCode,type Row} from '../signalbrief-api/us-core.ts';
+import {ProviderError,obj,str,analyzeEvidence,analysisReservation,transportCode,type Row} from '../signalbrief-api/us-core.ts';
 import {inspectDartZIP,crc32} from './dart-document-core.ts';
 import {dartRelay} from './dart-relay.ts';
 const sha=async(bytes:Uint8Array)=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new Uint8Array(bytes).buffer))].map(x=>x.toString(16).padStart(2,'0')).join('');
-async function rpc(db:SupabaseClient,name:string,args:Row={}){const {data,error}=await db.rpc(name,args);if(error)throw new ProviderError('database','operation_failed');return data;}
+async function rpc(db:SupabaseClient,name:string,args:Row={}){const {data,error}=await db.rpc(name,args);if(error)throw new ProviderError('database',/^PT/.test(error.code)&&/^[a-z_]+$/.test(error.message)?error.message:'operation_failed');return data;}
 async function download(receipt:string,key:string,relaySecret:string):Promise<Uint8Array>{
  if(!/^\d{14}$/.test(receipt)||!/^[a-f0-9]{40}$/i.test(key))throw new ProviderError('dart','missing_or_invalid_key',503);
  const url=new URL('https://opendart.fss.or.kr/api/document.xml');url.searchParams.set('rcept_no',receipt);url.searchParams.set('crtfc_key',key);
@@ -25,8 +25,20 @@ export async function processDartDocument(db:SupabaseClient,secrets:Row,config:R
  if(!secrets.DART_API_KEY)return {status:'blocked',code:'missing_key'};
  const filing=obj(await rpc(db,'sb_dart_document_claim'));if(!filing.id)return {status:'idle'};
  try{
+  let normalized:string,rawHash:string,normalizedHash:string;
+  const existing=await db.from('dart_documents').select('*').eq('filing_id',filing.id).maybeSingle();
+  if(existing.error)throw new ProviderError('database','document_read_failed');
+  if(existing.data){
+   const document=existing.data;rawHash=str(document.raw_sha256);normalizedHash=str(document.normalized_sha256);
+   if(!/^[a-f0-9]{64}$/.test(rawHash)||!/^[a-f0-9]{64}$/.test(normalizedHash)||document.normalized_object_key!=='dart/normalized/'+normalizedHash+'.txt')throw new ProviderError('storage','document_integrity_mismatch');
+   const stored=await db.storage.from('signalbrief-raw').download(str(document.normalized_object_key));
+   if(stored.error||!stored.data||stored.data.size>32_000_000)throw new ProviderError('storage','document_read_failed');
+   const bytes=new Uint8Array(await stored.data.arrayBuffer());
+   if(await sha(bytes)!==normalizedHash||bytes.length!==Number(document.normalized_bytes))throw new ProviderError('storage','document_integrity_mismatch');
+   normalized=new TextDecoder('utf-8',{fatal:true}).decode(bytes);
+  }else{
   await rpc(db,'sb_us_reserve',{p:'dart',amount:0,smoke:false});
-  const raw=await download(str(filing.receipt),str(secrets.DART_API_KEY),str(secrets.DART_RELAY_SECRET)),rawHash=await sha(raw),members=inspectDartZIP(raw);
+  const raw=await download(str(filing.receipt),str(secrets.DART_API_KEY),str(secrets.DART_RELAY_SECRET)),members=inspectDartZIP(raw);rawHash=await sha(raw);
   const rawPath='dart/documents/'+rawHash+'.zip';await archive(db,rawPath,raw,'application/zip');
   const expanded=unzipSync(raw);const texts:string[]=[];
   for(const member of members){
@@ -34,19 +46,25 @@ export async function processDartDocument(db:SupabaseClient,secrets:Row,config:R
    const xml=new TextDecoder('utf-8',{fatal:true}).decode(bytes),parsed=parseDartText(xml);
    texts.push('FILE '+member.name+' MODE '+parsed.mode+'\n'+parsed.text);
   }
-  const normalized=texts.join('\n\n'),bytes=new TextEncoder().encode(normalized),normalizedHash=await sha(bytes),normalizedPath='dart/normalized/'+normalizedHash+'.txt';
+  normalized=texts.join('\n\n');const bytes=new TextEncoder().encode(normalized);normalizedHash=await sha(bytes);const normalizedPath='dart/normalized/'+normalizedHash+'.txt';
+  if(bytes.length>32_000_000)throw new ProviderError('dart','normalized_size_limit');
   await archive(db,normalizedPath,bytes,'text/plain; charset=utf-8');
   const saved=await db.from('dart_documents').insert({filing_id:filing.id,raw_sha256:rawHash,normalized_sha256:normalizedHash,raw_object_key:rawPath,normalized_object_key:normalizedPath,raw_bytes:raw.length,normalized_bytes:bytes.length,member_count:members.length,parser_version:'saxes-6.0.0-htmlparser2-10.0.0-dart-v2'});
   if(saved.error)throw new ProviderError('database','document_save_failed');
+  }
   let analysis:Row={status:'not_requested'};
-  try{if(secrets.OPENAI_API_KEY&&Number(config.ai_daily_budget_usd)>0){
-   const source=normalized.slice(0,12000),amount=(new TextEncoder().encode(source).length+3000)*0.4/1e6+1800*1.6/1e6;
+  try{const previous=await db.from('dart_analyses').select('status').eq('filing_id',filing.id).maybeSingle();
+  if(previous.error)throw new ProviderError('database','analysis_read_failed');
+  if(previous.data)analysis={status:previous.data.status,cached:true};
+  else if(secrets.OPENAI_API_KEY&&Number(config.ai_daily_budget_usd)>0){
+   const source=normalized.slice(0,12000),amount=analysisReservation(source);
    await rpc(db,'sb_us_reserve',{p:'openai',amount,smoke:false});
    const answer=await analyzeEvidence(source,str(secrets.OPENAI_API_KEY)),usage=obj(answer.usage);
    const result=await db.from('dart_analyses').insert({filing_id:filing.id,status:'needs_review',model:answer.model,source_sha256:rawHash,normalized_sha256:normalizedHash,result:{...answer,source_url:filing.source_url,normalized_excerpt:source,source_characters:normalized.length,excerpt_characters:source.length},input_tokens:usage.prompt_tokens,output_tokens:usage.completion_tokens});
    if(result.error)throw new ProviderError('database','analysis_save_failed');analysis={status:'needs_review'};
   }
   }catch(error){analysis={status:'blocked',code:error instanceof ProviderError?error.code:'analysis_failed'};}
-  await rpc(db,'sb_dart_document_finish',{fid:filing.id,status:'parsed',error_code:null});return {status:'parsed',receipt:filing.receipt,analysis,raw_sha256:rawHash};
+  const deferred=analysis.status==='not_requested'||['daily_request_limit','ai_budget_not_approved'].includes(str(analysis.code));
+  await rpc(db,'sb_dart_document_finish',{fid:filing.id,status:deferred?'analysis_pending':'parsed',error_code:analysis.status==='blocked'?analysis.code:null});return {status:'parsed',receipt:filing.receipt,analysis,raw_sha256:rawHash};
  }catch(error){const code=error instanceof ProviderError?error.code:'document_processing_failed';await rpc(db,'sb_dart_document_finish',{fid:filing.id,status:'blocked',error_code:code});return {status:'blocked',code};}
 }

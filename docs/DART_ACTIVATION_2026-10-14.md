@@ -10,7 +10,7 @@ Some official DART files contain misnested tags and unescaped quotation marks in
 
 AI selects a passage ID rather than copying a quote. The server resolves exact quotes and character offsets, then validates each claim. Numeric mismatches are omitted and their counts/reasons recorded explicitly; no unsupported number is repaired or published. If every candidate fails, the attempt fails. Cited completed acquisitions/disposals are distinguished from trading recommendations. Every surviving draft still requires semantic review.
 
-Parsed documents remain parsed if a later AI request fails. Failed parsing can be queued explicitly by an authenticated administrator, at most twice, with the original failure preserved in a private retry history. Retrying a saved document is refused. Requests are serialized by the existing database lease.
+Parsed documents remain preserved if a later AI request fails. A missing AI key or budget/call limit defers analysis until the next UTC budget day, reusing the archived normalized document after size and SHA-256 checks; it does not download or overwrite the source again. Failed parsing can be queued explicitly by an authenticated administrator, at most twice, with the original failure preserved in a private retry history. A retry of a saved document reuses its verified archive for failed analysis; an existing draft prevents another paid generation. Requests are serialized by the existing database lease.
 
 ## Operator review
 

@@ -1,6 +1,6 @@
 // @vitest-environment node
 import {describe,it,expect,vi} from 'vitest';
-import {providerFetch,fmpQuote,fmpHistory,frankfurter,secSubmissions,validateFilingURL,normalizeFiling,validateAnalysis,websitePermission,gnewsSearch,sendVerifiedEmail,ProviderError,openaiSmoke,evidencePassages,resolveEvidence,transportDiagnostic} from '../../../supabase/functions/signalbrief-api/us-core';
+import {providerFetch,fmpQuote,fmpHistory,frankfurter,secSubmissions,validateFilingURL,normalizeFiling,validateAnalysis,websitePermission,gnewsSearch,sendVerifiedEmail,ProviderError,openaiSmoke,evidencePassages,resolveEvidence,transportDiagnostic,analysisReservation} from '../../../supabase/functions/signalbrief-api/us-core';
 const response=(v:unknown,status=200)=>vi.fn().mockResolvedValue(new Response(JSON.stringify(v),{status}));
 describe('server provider boundaries',()=>{
  it.each([
@@ -69,4 +69,9 @@ describe('partial candidate validation',()=>{
 describe('transaction facts versus recommendations',()=>{
  it('permits a cited disclosure of a completed disposal',()=>{const source='삼성생명은 보통주식을 장내거래로 매도하였습니다. 이번 공시는 완료된 거래 사실입니다.';expect(validateAnalysis({claims:[{text:'삼성생명은 보통주식을 매도하였습니다.',quote:source}]},source)).toMatchObject({requires_human_review:true});});
  it.each(['매수하세요','매도하십시오','이 주식은 매수 추천입니다.','You should buy this stock.','We recommend selling this stock.','This stock is a buy.'])('blocks actual trading recommendation %s',text=>{const source='Synthetic quotation contains enough characters for testing.';expect(()=>validateAnalysis({claims:[{text,quote:source}]},source)).toThrow('investment_advice_blocked');});
+});
+
+
+describe('budget reservation includes source serialization',()=>{
+ it('includes serialized passages, prompt overhead and capped output',()=>{const source='A cited paragraph with \"quotes\" and line breaks.\n'.repeat(100);const bytes=new TextEncoder().encode(JSON.stringify(evidencePassages(source))).length;expect(analysisReservation(source)).toBe((bytes+6000)*0.4/1e6+1800*1.6/1e6);});
 });

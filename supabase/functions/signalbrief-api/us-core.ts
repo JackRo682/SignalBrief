@@ -101,6 +101,9 @@ export function evidencePassages(source:string):Array<{id:number;quote:string;st
   if(quote.length>=20)passages.push({id:passages.length,quote,start,end:start+quote.length});offset=end;
  }return passages;
 }
+export function analysisReservation(source:string):number {
+ return (new TextEncoder().encode(JSON.stringify(evidencePassages(source))).length+6000)*0.4/1e6+1800*1.6/1e6;
+}
 export function resolveEvidence(value:unknown,passages:ReturnType<typeof evidencePassages>,source:string):Row {
  const d=obj(value);if(!Array.isArray(d.claims))throw new ProviderError('openai','no_supported_claims');
  const candidates=arr(d.claims);if(candidates.length<1||candidates.length>6)throw new ProviderError('openai','no_supported_claims');

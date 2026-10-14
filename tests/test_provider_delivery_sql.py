@@ -198,3 +198,14 @@ def test_dart_retry_preserves_errors_and_requires_admin(provider_db):
     assert provider_db.execute("SELECT public.sb_dart_document_claim()").fetchone()[0]["id"] == str(filing)
     assert provider_db.execute("SELECT previous_error FROM app_private.dart_document_retries").fetchone()[0] == "malformed_xml"
     assert provider_db.execute("SELECT public.sb_dart_document_claim()").fetchone()[0] is None
+
+
+def test_deferred_dart_analysis_waits_until_next_budget_day(provider_db):
+    filing = uuid4()
+    provider_db.execute("INSERT INTO public.dart_filings VALUES(%s,current_date,'20261014000001','https://dart.fss.or.kr/')", (filing,))
+    provider_db.execute("SELECT public.sb_dart_document_claim()")
+    provider_db.execute("SELECT public.sb_dart_document_finish(%s,'analysis_pending','daily_request_limit')", (filing,))
+    assert provider_db.execute("SELECT public.sb_dart_document_claim()").fetchone()[0] is None
+    provider_db.execute("UPDATE app_private.dart_document_attempts SET attempted_at=now()-interval '1 day' WHERE filing_id=%s", (filing,))
+    assert provider_db.execute("SELECT public.sb_dart_document_claim()").fetchone()[0]["id"] == str(filing)
+    assert provider_db.execute("SELECT public.sb_dart_document_claim()").fetchone()[0] is None
