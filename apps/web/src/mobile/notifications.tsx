@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import {z} from 'zod';
 import {useEffect,useState,type ReactNode} from 'react';
 import {useAuth} from '@/components/auth';
 import {workspace} from '@/workspace/client';
@@ -22,16 +23,20 @@ function SettingCard({icon,tone,title,description,children,wide=false,headingCon
 export default function MobileNotifications(){
  const {token}=useAuth(),prefs=usePrefs(),{text:t,value}=prefs,action=useMutation();
  const settings=useData({action:'notifications',p:{}},notificationsSettingsSchema),companies=useData({action:'catalog',p:{kind:'company',limit:50}},catalogSchema);
- const [mute,setMute]=useState(false),[reset,setReset]=useState(false),[query,setQuery]=useState(''),[start,setStart]=useState(value.quiet_start),[end,setEnd]=useState(value.quiet_end),[threshold,setThreshold]=useState(.75),[cap,setCap]=useState(value.daily_cap);
+ const [email,setEmail]=useState({available:false,enabled:false}),[mute,setMute]=useState(false),[reset,setReset]=useState(false),[query,setQuery]=useState(''),[start,setStart]=useState(value.quiet_start),[end,setEnd]=useState(value.quiet_end),[threshold,setThreshold]=useState(.75),[cap,setCap]=useState(value.daily_cap);
  const search=useData(mute&&query.trim()?{action:'catalog',p:{kind:'company',q:query.trim(),limit:50}}:null,catalogSchema),catalog=query.trim()?search:companies;
  useEffect(()=>{setStart(value.quiet_start);setEnd(value.quiet_end);setCap(value.daily_cap);},[value.quiet_start,value.quiet_end,value.daily_cap]);
  useEffect(()=>{if(settings.data)setThreshold(settings.data.notify_min_score);},[settings.data]);
+ useEffect(()=>{if(!token)return;let live=true;fetch('/api/us/email-preferences',{headers:{Authorization:'Bearer '+token},cache:'no-store'}).then(async r=>{if(!r.ok)throw new Error();return z.object({available:z.boolean(),enabled:z.boolean()}).parse(await r.json());}).then(data=>{if(live)setEmail(data);}).catch(()=>{if(live)setEmail({available:false,enabled:false});});return()=>{live=false;};},[token]);
+ async function saveEmail(enabled:boolean){const r=await fetch('/api/us/email-preferences',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({enabled})});if(!r.ok)throw new Error('Email preferences could not be saved');setEmail(z.object({available:z.boolean(),enabled:z.boolean()}).parse(await r.json()));}
+ const emailChange=()=>void action.run(()=>saveEmail(!email.enabled),t('이메일 알림 설정을 저장했습니다.','Email notification preferences saved.'));
  const busy=action.busy||prefs.busy,ready=prefs.loaded&&!busy;
  const savedMessage=t('알림 설정을 저장했습니다.','Notification preferences saved.');
  const change=(patch:Parameters<typeof prefs.save>[0])=>void action.run(()=>prefs.save(patch),savedMessage);
  const baseChange=(p:{realtime_enabled?:boolean;notify_min_score?:number})=>void action.run(async()=>{await workspace(token,{action:'notification_save',p},notificationsSettingsSchema);settings.reload();},savedMessage);
  const thresholdText=(score:number)=>`${Math.round(score*100)} / 100 ${t('이상','or higher')}`;
  async function resetPolicy(){
+  if(email.enabled)await saveEmail(false);
   // Two existing stores have separate transactions. Reload the base policy even
   // if the preferences write fails, and never acknowledge an incomplete reset.
   await workspace(token,{action:'notification_save',p:{realtime_enabled:false,notify_min_score:.75}},notificationsSettingsSchema);
@@ -42,7 +47,7 @@ export default function MobileNotifications(){
  }
  const summary=[
   {icon:'bell',tone:'blue',name:t('앱 내 알림','In-app alerts'),value:settings.data?(settings.data.realtime_enabled?t('사용 중','On'):t('꺼짐','Off')):'—'},
-  {icon:'mail',tone:'purple',name:t('이메일 알림','Email alerts'),value:t('미제공','Unavailable')},
+  {icon:'mail',tone:'purple',name:t('이메일 알림','Email alerts'),value:email.available?email.enabled?t('사용 중','On'):t('꺼짐','Off'):t('미제공','Unavailable')},
   {icon:'file',tone:'green',name:t('일간 요약 리포트','Daily digest'),value:t('미제공','Unavailable')},
   {icon:'shield',tone:'red',name:t('정정 / 철회 안내','Corrections'),value:t('분석 화면','On analysis')},
   {icon:'minus',tone:'red',name:t('알림 제외 기업','Muted companies'),value:prefs.loaded?`${value.muted_companies.length}${t('개','')}`:'—'},
@@ -53,7 +58,7 @@ export default function MobileNotifications(){
  return <div className="m-notification-settings"><h1 className="m-visually-hidden">{t('알림 설정','Notification settings')}</h1><p className="mn-intro">{t('관심 있는 소식을 더 빠르고 정확하게 받아보세요.','Receive the updates that matter to you.')}</p><ActionNotice action={action}/><LoadState loading={settings.loading||!prefs.loaded&&!prefs.error} error={settings.error||prefs.error} retry={()=>{settings.reload();prefs.reload();}}/>
   <div className="mn-settings-list">
    <SettingCard icon="bell" tone="blue" title={t('앱 내 알림','In-app alerts')} description={t('검토된 이벤트가 게시되면 앱 내 알림을 생성합니다.','Generate in-app alerts for reviewed events.')}><PolicySwitch label={t('앱 내 알림','In-app alerts')} checked={settings.data?.realtime_enabled??false} disabled={!settings.data||busy} onChange={()=>baseChange({realtime_enabled:!settings.data?.realtime_enabled})}/></SettingCard>
-   <SettingCard icon="mail" tone="purple" title={t('이메일 알림','Email alerts')} description={t('메일 발송 서비스가 연결되면 제공됩니다.','Available when email delivery is connected.')}><PolicySwitch label={t('이메일 알림 — 미제공','Email alerts — unavailable')} checked={false} disabled onChange={()=>{}}/><small className="mn-unavailable">{t('현재 미제공','Unavailable')}</small></SettingCard>
+   <SettingCard icon="mail" tone="purple" title={t('이메일 알림','Email alerts')} description={t('검토된 앱 알림을 이메일로 전송하며 앱 알림·기업 규칙·방해 금지 설정을 따릅니다. 최대 15분 지연될 수 있습니다.','Email reviewed app alerts, respecting app alerts, rules and quiet hours. Delivery may take up to 15 minutes.')}><PolicySwitch label={email.available?t('이메일 알림','Email alerts'):t('이메일 알림 — 미제공','Email alerts — unavailable')} checked={email.enabled} disabled={!email.available||busy} onChange={emailChange}/><small className="mn-unavailable">{email.available?email.enabled?t('사용 중','On'):t('꺼짐','Off'):t('현재 미제공','Unavailable')}</small></SettingCard>
    <SettingCard icon="file" tone="green" title={t('일간 요약 리포트','Daily digest')} description={t('예약 요약 발송은 현재 제공되지 않습니다.','Scheduled digests are not available.')}><div className="mn-segment" aria-label={t('일간 요약 발송 — 미제공','Daily digest — unavailable')}>{[t('안함','Off'),t('매일','Daily'),t('주 1회','Weekly')].map((label,i)=><button type="button" disabled aria-pressed={i===0} key={label}>{label}</button>)}</div></SettingCard>
    <SettingCard icon="shield" tone="red" title={t('정정 / 철회 안내','Corrections / withdrawals')} description={t('알림 설정과 관계없이 분석 화면에 표시됩니다.','Notices remain visible on the analysis screen.')}><span className="mn-status">{t('분석 화면에서 확인','On analysis')}</span></SettingCard>
    <SettingCard icon="minus" tone="red" title={t('알림 제외 기업','Muted companies')} description={t('선택 기업의 새 일반 알림을 생성하지 않습니다.','Do not generate new ordinary alerts for these companies.')} wide><div className="mn-chips">{value.muted_companies.map(id=>{const c=companies.data?.items.find(item=>item.id===id);return <button type="button" key={id} disabled={!ready} aria-label={`${c?.title??id} ${t('알림 제외 해제','unmute')}`} onClick={()=>change({muted_companies:value.muted_companies.filter(x=>x!==id)})}>{c?.ticker&&<CompanyLogo ticker={c.ticker} size={17}/>}<span>{c?.title??t('기업','Company')}</span><MIcon name="close" size={12}/></button>;})}<button type="button" className="mn-add" disabled={!ready||value.muted_companies.length>=50} onClick={()=>setMute(true)}><MIcon name="plus" size={14}/>{t('기업 추가하기','Add company')}</button></div></SettingCard>
