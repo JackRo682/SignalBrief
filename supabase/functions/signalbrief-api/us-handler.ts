@@ -2,7 +2,7 @@ import {sendNotification} from '../signalbrief-delivery/core.ts';
 import {kisToken,kisQuote,fmpIndex,indexSymbols} from './market-core.ts';
 import {verificationPlan,runVerification} from './verification.ts';
 import {createClient, type SupabaseClient} from 'npm:@supabase/supabase-js@2.117.2';
-import {ProviderError,obj,arr,str,providerFetch,jsonFetch,websitePermission,usSymbol,fmpQuote,fmpHistory,frankfurter,secSubmissions,validateFilingURL,normalizeFiling,analyzeEvidence,openaiSmoke,resendDomains,sendVerifiedEmail,gnewsSearch,type Row} from './us-core.ts';
+import {ProviderError,obj,arr,str,providerFetch,jsonFetch,websitePermission,usSymbol,fmpQuote,fmpHistory,frankfurter,secSubmissions,validateFilingURL,normalizeFiling,analyzeEvidence,analysisReservation,openaiSmoke,resendDomains,sendVerifiedEmail,gnewsSearch,type Row} from './us-core.ts';
 const env=(k:string)=>Deno.env.get(k)??'';
 const admin=()=>createClient(env('SUPABASE_URL'),env('SUPABASE_SERVICE_ROLE_KEY'),{auth:{persistSession:false,autoRefreshToken:false}});
 async function rpc(db:SupabaseClient,name:string,args:Row={}){const {data,error}=await db.rpc(name,args);if(error)throw new ProviderError('database',/^PT/.test(error.code)&&/^[a-z_]+$/.test(error.message)?error.message:'operation_failed',500);return data;}
@@ -36,7 +36,7 @@ async function analyzeClaimed(db:SupabaseClient,s:Row,id:string){
  const contact=str(s.SEC_CONTACT_EMAIL);if(!contact)throw new ProviderError('sec','contact_email_required',503);
  await reserve(db,'sec');const raw=await providerFetch(validateFilingURL(f.document_url),'sec',{headers:{'User-Agent':`SignalBrief/0.2 ${contact}`}},fetch,3_000_000),normalized=normalizeFiling(raw),source=normalized.slice(0,12000),sha=await hash(raw);
  // Reserve a conservative bound for UTF-8 input bytes plus capped output; no automatic retries.
- const amount=(new TextEncoder().encode(source).length+3000)*0.4/1e6+1800*1.6/1e6;
+ const amount=analysisReservation(source);
  const archive=await db.storage.from('signalbrief-raw').upload(`us/sec/filings/${sha}.html`,raw,{contentType:'text/html',upsert:false});if(archive.error&&!/already exists|duplicate/i.test(archive.error.message))throw new ProviderError('storage','archive_failed');
  await reserve(db,'openai',amount);const answer=await analyzeEvidence(source,str(s.OPENAI_API_KEY));
  const saved=await db.from('us_analyses').insert({filing_id:id,status:'needs_review',model:answer.model,source_sha256:sha,result:{...answer,source_url:f.document_url,normalized_excerpt:source},input_tokens:obj(answer.usage).prompt_tokens,output_tokens:obj(answer.usage).completion_tokens});if(saved.error)throw new ProviderError('database','analysis_save_failed');
@@ -79,6 +79,7 @@ export async function handleUS(req:Request):Promise<Response>{
    const id=url.searchParams.get('filing_id')??'';if(!/^[a-f0-9-]{36}$/.test(id))throw new ProviderError('api','invalid_filing_id',422);
    const result=await actor.db.from('dart_analyses').select('*').eq('filing_id',id).maybeSingle();if(result.error)throw new ProviderError('database','dart_analysis_read_failed');return reply(result.data??{status:'not_available_or_pending_review'});
   }
+  if(path==='/dart-retry'&&req.method==='POST'){const p=await body(req);return reply(await rpc(actor.db,'sb_dart_document_retry',{fid:p.filing_id}));}
   if(path==='/dart-review'&&req.method==='POST'){
    const p=await body(req);return reply(await rpc(actor.db,'sb_dart_review',{fid:p.filing_id,decision:p.status,reason:p.reason}));
   }

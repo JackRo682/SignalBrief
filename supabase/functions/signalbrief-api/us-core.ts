@@ -85,7 +85,7 @@ export function normalizeFiling(html:string):string {
 export function validateAnalysis(value:unknown,source:string):Row {
  const d=obj(value),claims=arr(d.claims);if(!claims.length||claims.length>6)throw new ProviderError('openai','no_supported_claims');
  for(const c of claims){const quote=str(c.quote),text=str(c.text);if(quote.length<20||quote.length>1200||!source.includes(quote)||!text||text.length>600)throw new ProviderError('openai','citation_mismatch');
-  if(/\b(buy|sell|price target|guaranteed return)\b|매수|매도|목표주가/i.test(text))throw new ProviderError('openai','investment_advice_blocked');
+  if(/\b(price target|guaranteed return)\b|^(buy|sell)\b|\b(?:should|recommend|recommended|suggest)\b.{0,40}\b(?:buy|sell|buying|selling)\b|\bis a (?:buy|sell)\b|목표주가|(?:매수|매도)\s*(?:추천|권고|하(?:세요|십시오|라)|해(?:라|야))|(?:사세요|파세요|투자하세요)/i.test(text))throw new ProviderError('openai','investment_advice_blocked');
   const numericTokens=(value:string)=>value.match(/[-+]?\d+(?:[,.]\d+)*(?:%)?/g)??[];
   const cited=new Set(numericTokens(quote));if(numericTokens(text).some(n=>!cited.has(n)))throw new ProviderError('openai','numeric_citation_mismatch');
  }
@@ -101,13 +101,22 @@ export function evidencePassages(source:string):Array<{id:number;quote:string;st
   if(quote.length>=20)passages.push({id:passages.length,quote,start,end:start+quote.length});offset=end;
  }return passages;
 }
+export function analysisReservation(source:string):number {
+ return (new TextEncoder().encode(JSON.stringify(evidencePassages(source))).length+6000)*0.4/1e6+1800*1.6/1e6;
+}
 export function resolveEvidence(value:unknown,passages:ReturnType<typeof evidencePassages>,source:string):Row {
  const d=obj(value);if(!Array.isArray(d.claims))throw new ProviderError('openai','no_supported_claims');
- const claims=arr(d.claims).map(c=>{
+ const candidates=arr(d.claims);if(candidates.length<1||candidates.length>6)throw new ProviderError('openai','no_supported_claims');
+ const claims:Row[]=[],omitted:string[]=[];
+ for(const c of candidates){
   if(!Number.isInteger(c.evidence_id))throw new ProviderError('openai','invalid_evidence_reference');
   const passage=passages[Number(c.evidence_id)];if(!passage)throw new ProviderError('openai','invalid_evidence_reference');
-  return {text:c.text,quote:passage.quote,evidence_id:passage.id,start:passage.start,end:passage.end};
- });return {...validateAnalysis({claims,uncertainty:d.uncertainty},source),citation_method:'server_resolved_passage_v1'};
+  const claim={text:c.text,quote:passage.quote,evidence_id:passage.id,start:passage.start,end:passage.end};
+  try{validateAnalysis({claims:[claim]},source);claims.push(claim);}
+  catch(error){if(!(error instanceof ProviderError)||error.code!=='numeric_citation_mismatch')throw error;omitted.push(error.code);}
+ }
+ if(!claims.length)throw new ProviderError('openai',omitted[0]??'no_supported_claims');
+ return {...validateAnalysis({claims,uncertainty:d.uncertainty},source),citation_method:'server_resolved_passage_v1',candidate_claim_count:candidates.length,omitted_claim_count:omitted.length,omitted_claim_reasons:omitted};
 }
 const schema={type:'object',additionalProperties:false,required:['claims','uncertainty'],properties:{claims:{type:'array',minItems:1,maxItems:6,items:{type:'object',additionalProperties:false,required:['text','evidence_id'],properties:{text:{type:'string'},evidence_id:{type:'integer'}}}},uncertainty:{type:'string'}}};
 export async function analyzeEvidence(source:string,key:string,fetcher:Fetcher=fetch):Promise<Row>{

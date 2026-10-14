@@ -53,6 +53,7 @@ def provider_db():
         connection.execute((directory / "delivery.sql").read_text())
         connection.execute((directory / "dart-documents.sql").read_text())
         connection.execute((directory / "dart-relay.sql").read_text())
+        connection.execute((directory / "dart-retry.sql").read_text())
         yield connection
     finally:
         connection.close()
@@ -180,3 +181,31 @@ def test_dart_relay_requires_fresh_signature_and_rejects_replay(provider_db):
     with pytest.raises(psycopg.errors.InsufficientPrivilege):
         provider_db.execute("SELECT * FROM app_private.dart_relay_nonces")
     provider_db.execute("RESET ROLE")
+
+
+def test_dart_retry_preserves_errors_and_requires_admin(provider_db):
+    filing = uuid4()
+    provider_db.execute("INSERT INTO public.dart_filings VALUES(%s,current_date,'20261014000001','https://dart.fss.or.kr/')", (filing,))
+    provider_db.execute("SELECT public.sb_dart_document_claim()")
+    provider_db.execute("SELECT public.sb_dart_document_finish(%s,'blocked','malformed_xml')", (filing,))
+    provider_db.execute("SET ROLE authenticated")
+    with pytest.raises(psycopg.ProgrammingError) as denied:
+        provider_db.execute("SELECT public.sb_dart_document_retry(%s)", (filing,))
+    assert denied.value.sqlstate == "PT403"
+    provider_db.execute("RESET ROLE")
+    provider_db.execute("SELECT set_config('test.user_id','aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa',false)")
+    assert provider_db.execute("SELECT public.sb_dart_document_retry(%s)", (filing,)).fetchone()[0]["status"] == "queued"
+    assert provider_db.execute("SELECT public.sb_dart_document_claim()").fetchone()[0]["id"] == str(filing)
+    assert provider_db.execute("SELECT previous_error FROM app_private.dart_document_retries").fetchone()[0] == "malformed_xml"
+    assert provider_db.execute("SELECT public.sb_dart_document_claim()").fetchone()[0] is None
+
+
+def test_deferred_dart_analysis_waits_until_next_budget_day(provider_db):
+    filing = uuid4()
+    provider_db.execute("INSERT INTO public.dart_filings VALUES(%s,current_date,'20261014000001','https://dart.fss.or.kr/')", (filing,))
+    provider_db.execute("SELECT public.sb_dart_document_claim()")
+    provider_db.execute("SELECT public.sb_dart_document_finish(%s,'analysis_pending','daily_request_limit')", (filing,))
+    assert provider_db.execute("SELECT public.sb_dart_document_claim()").fetchone()[0] is None
+    provider_db.execute("UPDATE app_private.dart_document_attempts SET attempted_at=now()-interval '1 day' WHERE filing_id=%s", (filing,))
+    assert provider_db.execute("SELECT public.sb_dart_document_claim()").fetchone()[0]["id"] == str(filing)
+    assert provider_db.execute("SELECT public.sb_dart_document_claim()").fetchone()[0] is None

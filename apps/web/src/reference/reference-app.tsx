@@ -73,7 +73,7 @@ export default function ReferenceApp({screen,id}:{screen:Screen;id?:string}){
   const unmount = mountReference(target,screen,context);
   const unpolish = polishReference(target,screen,context);
   if(screen!=="landing"){
-    const banner=document.createElement("div");banner.className="usLaunchNotice";banner.innerHTML='<strong>US 주식 초기 버전</strong> · OpenDART·KRX는 보류되어 한국 공시·시세는 제공하지 않습니다. <a href="/us">미국 공시·연결 상태 보기 →</a>';
+    const banner=document.createElement("div");banner.className="usLaunchNotice";banner.innerHTML='<strong>공시·시세 연결 상태</strong> · 공식 공시는 수집 결과를, 주식·지수 시세는 공급자 사용 권한을 확인해 제공합니다. <a href="/us">미국 공시·연결 상태 보기 →</a>';
     (target.querySelector(".main")??target).prepend(banner);
   }
   return ()=>{target.removeEventListener("click",navigate);unpolish();unmount();};
