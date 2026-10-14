@@ -1,5 +1,5 @@
 // Server-side route adapter. Never forwards cookies or arbitrary destinations.
-const methods:Record<string,string[]>={health:['GET'],status:['GET'],'reference-rate':['GET'],verify:['POST'],'auth-diagnostic':['GET'],filings:['GET'],'dart-filings':['GET'],analysis:['GET'],quotes:['GET'],fx:['GET'],news:['GET'],ingest:['POST'],analyze:['POST'],review:['POST'],'email-test':['POST']};
+const methods:Record<string,string[]>={health:['GET'],status:['GET'],'reference-rate':['GET'],verify:['POST'],'auth-diagnostic':['GET'],filings:['GET'],indices:['GET'],'email-preferences':['GET','POST'],'dart-analysis':['GET'],'dart-review':['POST'],'dart-filings':['GET'],analysis:['GET'],quotes:['GET'],fx:['GET'],news:['GET'],ingest:['POST'],analyze:['POST'],review:['POST'],'email-test':['POST']};
 export async function proxyUS(req:Request,path:string):Promise<Response>{
  const fail=(code:string,status:number)=>Response.json({error:{code}},{status,headers:{'Cache-Control':'no-store'}});
  if(!methods[path]?.includes(req.method))return fail('route_not_found',404);

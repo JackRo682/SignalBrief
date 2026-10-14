@@ -1,3 +1,5 @@
+import {dispatchEmail} from '../signalbrief-delivery/index.ts';
+import {processDartDocument} from './dart-document.ts';
 import {createClient} from 'npm:@supabase/supabase-js@2.117.2';
 import {ingest,analyze} from '../signalbrief-api/us-handler.ts';
 import {ProviderError,obj,str,type Row} from '../signalbrief-api/us-core.ts';
@@ -46,7 +48,7 @@ export async function handleCollector(req:Request):Promise<Response>{
   const config=obj(await rpc('sb_us_config'));
   if(config.scheduled_ingestion_enabled!==true)throw new ProviderError('collector','schedule_disabled',409);
   const secrets=obj(await rpc('sb_us_secrets'));
-  for(const key of ['OPENAI_API_KEY','FMP_API_KEY','RESEND_API_KEY','GNEWS_API_KEY','SEC_CONTACT_EMAIL','DART_API_KEY'])if(env(key))secrets[key]=env(key);
+  for(const key of ['OPENAI_API_KEY','FMP_API_KEY','RESEND_API_KEY','GNEWS_API_KEY','SEC_CONTACT_EMAIL','DART_API_KEY','RESEND_WEBHOOK_SECRET','KIS_APP_KEY','KIS_APP_SECRET'])if(env(key))secrets[key]=env(key);
   const result:Row={};
   const selected=await db.from('companies').select('id,ticker,provider,provider_company_id').eq('is_demo',false).in('provider',['sec','dart']).order('last_ingested_at',{ascending:true,nullsFirst:true});
   if(selected.error)throw new ProviderError('database','company_read_failed');
@@ -70,6 +72,8 @@ export async function handleCollector(req:Request):Promise<Response>{
     await check('openai','blocked',{code:code(error)});
    }else result.openai={status:'idle',reason:'no_unattempted_filings_in_90_day_window'};
   }else {result.openai={status:'blocked',code:secrets.OPENAI_API_KEY?'ai_budget_not_approved':'missing_key'};}
+  result.dart_documents=await processDartDocument(db,secrets,config);
+  result.email=await dispatchEmail(db,secrets,config);
   await rpc('sb_collector_finish',{h:taskHash,summary:result,failed:false});
   return reply(result);
  }catch(error){
