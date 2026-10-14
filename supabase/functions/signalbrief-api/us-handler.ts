@@ -1,3 +1,5 @@
+import {sendNotification} from '../signalbrief-delivery/core.ts';
+import {kisToken,kisQuote,fmpIndex,indexSymbols} from './market-core.ts';
 import {verificationPlan,runVerification} from './verification.ts';
 import {createClient, type SupabaseClient} from 'npm:@supabase/supabase-js@2.117.2';
 import {ProviderError,obj,arr,str,providerFetch,jsonFetch,websitePermission,usSymbol,fmpQuote,fmpHistory,frankfurter,secSubmissions,validateFilingURL,normalizeFiling,analyzeEvidence,openaiSmoke,resendDomains,sendVerifiedEmail,gnewsSearch,type Row} from './us-core.ts';
@@ -6,7 +8,7 @@ const admin=()=>createClient(env('SUPABASE_URL'),env('SUPABASE_SERVICE_ROLE_KEY'
 async function rpc(db:SupabaseClient,name:string,args:Row={}){const {data,error}=await db.rpc(name,args);if(error)throw new ProviderError('database',/^PT/.test(error.code)&&/^[a-z_]+$/.test(error.message)?error.message:'operation_failed',500);return data;}
 const reply=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'}});
 const hash=async(text:string)=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text)))].map(b=>b.toString(16).padStart(2,'0')).join('');
-async function settings(db:SupabaseClient){const s=obj(await rpc(db,'sb_us_secrets'));for(const k of ['OPENAI_API_KEY','FMP_API_KEY','RESEND_API_KEY','GNEWS_API_KEY','SEC_CONTACT_EMAIL','DART_API_KEY'])if(env(k))s[k]=env(k);return s;}
+async function settings(db:SupabaseClient){const s=obj(await rpc(db,'sb_us_secrets'));for(const k of ['OPENAI_API_KEY','FMP_API_KEY','RESEND_API_KEY','GNEWS_API_KEY','SEC_CONTACT_EMAIL','DART_API_KEY','KIS_APP_KEY','KIS_APP_SECRET'])if(env(k))s[k]=env(k);return s;}
 async function recordCheck(db:SupabaseClient,provider:string,action:()=>Promise<Row>){let result:Row;try{result={status:'verified',detail:await action()};}catch(e){result={status:'blocked',detail:{code:e instanceof ProviderError?e.code:'operation_failed'}};}await db.from('us_provider_checks').upsert({provider,...result,checked_at:new Date().toISOString()});return result;}
 async function reserve(db:SupabaseClient,p:string,amount=0){await rpc(db,'sb_us_reserve',{p,amount,smoke:false});}
 async function cached(db:SupabaseClient,k:string,fn:()=>Promise<unknown>,ttl=900){const stored=await rpc(db,'sb_us_cache',{k});if(stored!==null)return stored;const v=await fn();await rpc(db,'sb_us_cache',{k,v,ttl});return v;}
@@ -50,13 +52,19 @@ async function body(req:Request):Promise<Row>{
  const bytes=new Uint8Array(count);let offset=0;for(const part of chunks){bytes.set(part,offset);offset+=part.length;}
  try{const value=JSON.parse(new TextDecoder().decode(bytes));if(!value||typeof value!=='object'||Array.isArray(value))throw new Error();return value;}catch{throw new ProviderError('api','invalid_json',422);}
 }
+async function kisAccess(db:SupabaseClient,secrets:Row):Promise<string>{
+ const stored=obj(await rpc(db,'sb_us_cache',{k:'kis:token'}));if(str(stored.access_token))return str(stored.access_token);
+ const lease=crypto.randomUUID();if(!await rpc(db,'sb_market_auth_lease',{lease,release:false}))throw new ProviderError('kis','authentication_busy',429);
+ try{const token=await kisToken(str(secrets.KIS_APP_KEY),str(secrets.KIS_APP_SECRET));await rpc(db,'sb_us_cache',{k:'kis:token',v:token,ttl:Math.max(1,Number(token.expires_in)-300)});return str(token.access_token);}
+ finally{await rpc(db,'sb_market_auth_lease',{lease,release:true});}
+}
 export async function handleUS(req:Request):Promise<Response>{
  const url=new URL(req.url),i=url.pathname.indexOf('/signalbrief-us'),path=i>=0?url.pathname.slice(i+15):url.pathname;const db=admin();
  try{
   if(path==='/health'&&req.method==='GET')return reply({status:'ready',release:'us-providers-v1',selective_verification:true,korean_data:'market_feed_not_connected'});
   if(path==='/status'&&req.method==='GET'){
    const config=obj(await rpc(db,'sb_us_config')),s=await settings(db),checks=await db.from('us_provider_checks').select('provider,status,checked_at,detail');
-   return reply({release:'us-providers-v1',market:'US',credentials:{sec_contact:!!s.SEC_CONTACT_EMAIL,fmp:!!s.FMP_API_KEY,openai:!!s.OPENAI_API_KEY,resend:!!s.RESEND_API_KEY,gnews:!!s.GNEWS_API_KEY},korea:{available:false,reason:'KIS_KRX_market_feed_not_connected',filings_endpoint:'/api/us/dart-filings',dart_credentials:!!s.DART_API_KEY},fmp_display:websitePermission(config,'fmp'),gnews_deployed:websitePermission(config,'gnews'),ai_budget_enabled:Number(config.ai_daily_budget_usd)>0,scheduled_ingestion:config.scheduled_ingestion_enabled===true,checks:arr(checks.data).map(c=>({provider:c.provider,status:c.status,checked_at:c.checked_at,code:obj(c.detail).code??null}))});
+   return reply({release:'us-providers-v1',market:'US',credentials:{sec_contact:!!s.SEC_CONTACT_EMAIL,fmp:!!s.FMP_API_KEY,openai:!!s.OPENAI_API_KEY,resend:!!s.RESEND_API_KEY,gnews:!!s.GNEWS_API_KEY},korea:{available:false,reason:'KIS_KRX_market_feed_not_connected',filings_endpoint:'/api/us/dart-filings',dart_credentials:!!s.DART_API_KEY},fmp_display:websitePermission(config,'fmp'),gnews_deployed:websitePermission(config,'gnews'),email_enabled:config.email_enabled===true,resend_domain_verified:config.resend_domain_verified===true,kis_display:websitePermission(config,'kis'),indices_enabled:config.fmp_indices_display_enabled===true,ai_budget_enabled:Number(config.ai_daily_budget_usd)>0,scheduled_ingestion:config.scheduled_ingestion_enabled===true,checks:arr(checks.data).map(c=>({provider:c.provider,status:c.status,checked_at:c.checked_at,code:obj(c.detail).code??null}))});
   }
   if(path==='/auth-diagnostic'&&req.method==='GET'){return reply(await cached(db,'auth:diagnostic',async()=>{
    const base=env('SUPABASE_URL'),key=env('SUPABASE_ANON_KEY');const r=await fetch(`${base}/auth/v1/settings`,{headers:{apikey:key},signal:AbortSignal.timeout(10000)}),d=obj(await r.json());
@@ -65,6 +73,27 @@ export async function handleUS(req:Request):Promise<Response>{
   },300));}
   if(path==='/reference-rate'&&req.method==='GET')return reply(await cached(db,'fx:USD:KRW',async()=>{await reserve(db,'fx');return frankfurter('USD','KRW');},21600));
   const actor=await user(req),config=obj(await rpc(db,'sb_us_config'));
+  if(path==='/email-preferences'&&req.method==='GET')return reply(await rpc(actor.db,'sb_email_preferences'));
+  if(path==='/email-preferences'&&req.method==='POST'){const p=await body(req);if(typeof p.enabled!=='boolean'||Object.keys(p).length!==1)throw new ProviderError('api','invalid_preferences',422);return reply(await rpc(actor.db,'sb_email_preferences',{enabled:p.enabled}));}
+  if(path==='/dart-analysis'&&req.method==='GET'){
+   const id=url.searchParams.get('filing_id')??'';if(!/^[a-f0-9-]{36}$/.test(id))throw new ProviderError('api','invalid_filing_id',422);
+   const result=await actor.db.from('dart_analyses').select('*').eq('filing_id',id).maybeSingle();if(result.error)throw new ProviderError('database','dart_analysis_read_failed');return reply(result.data??{status:'not_available_or_pending_review'});
+  }
+  if(path==='/dart-review'&&req.method==='POST'){
+   const p=await body(req);return reply(await rpc(actor.db,'sb_dart_review',{fid:p.filing_id,decision:p.status,reason:p.reason}));
+  }
+  if(path==='/indices'&&req.method==='GET'){
+   const s=await settings(db),indices:Row[]=[],unavailable:Row[]=[];
+   for(const name of Object.keys(indexSymbols))try{
+    const quote=await cached(db,'index:'+name,async()=>{
+     if(['KOSPI','KOSDAQ'].includes(name)){if(!websitePermission(config,'kis'))throw new ProviderError('kis','kis_display_license_unverified',409);
+      const token=await kisAccess(db,s);await reserve(db,'kis');return kisQuote(name,s,config,token,true);
+     }
+     if(!websitePermission(config,'fmp')||config.fmp_indices_display_enabled!==true)throw new ProviderError('fmp','index_entitlement_unverified',409);await reserve(db,'fmp');return fmpIndex(name,str(s.FMP_API_KEY),config);
+    },60);indices.push(obj(quote));
+   }catch(error){unavailable.push({symbol:name,reason:error instanceof ProviderError?error.code:'provider_unavailable'});}
+   return reply({indices,unavailable,available:indices.length>0});
+  }
   if(path==='/dart-filings'&&req.method==='GET'){
    const result=await actor.db.from('dart_filings').select('*,companies!inner(name,ticker,provider)').eq('companies.provider','dart').order('filing_date',{ascending:false}).limit(60);
    if(result.error)throw new ProviderError('database','dart_filings_read_failed');
@@ -78,14 +107,22 @@ export async function handleUS(req:Request):Promise<Response>{
   if(path==='/quotes'&&req.method==='GET'){
    const symbols=[...new Set((url.searchParams.get('symbols')??'').split(',').filter(Boolean))];if(symbols.length>40)throw new ProviderError('market','max_forty_symbols',422);
    const period=url.searchParams.get('period')??'1y',periodDays:Record<string,number>={'1d':1,'1w':7,'1m':31,'3m':93,'6m':186,'1y':370,'3y':370};if(!(period in periodDays))throw new ProviderError('market','invalid_period',422);
-   if(!websitePermission(config,'fmp'))return reply({quotes:[],available:false,reason:'fmp_display_license_unverified',korean_data:'deferred'});
    const s=await settings(db),quotes:Row[]=[],unavailable:Row[]=[];
-   for(const [position,symbol] of symbols.entries()){try{if(position>=8)throw new ProviderError('market','per_request_provider_limit',429);const name=usSymbol(symbol),company=await db.from('companies').select('id').eq('ticker',name).eq('provider','sec').eq('is_demo',false).maybeSingle();if(!company.data)throw new ProviderError('market','unsupported_company',422);
+   for(const [position,symbol] of symbols.entries()){try{if(/^\d{6}$/.test(symbol)){
+    if(position>=8)throw new ProviderError('market','per_request_provider_limit',429);
+    if(!websitePermission(config,'kis'))throw new ProviderError('kis','kis_display_license_unverified',409);
+    const company=await db.from('companies').select('id').eq('ticker',symbol).eq('provider','dart').eq('is_demo',false).maybeSingle();
+    if(!company.data)throw new ProviderError('market','unsupported_company',422);
+    const token=await kisAccess(db,s);
+    const quote=obj(await cached(db,'kis:q:'+symbol,async()=>{await reserve(db,'kis');return kisQuote(symbol,s,config,token);},60));quotes.push(quote);continue;
+   }
+   if(!websitePermission(config,'fmp'))throw new ProviderError('fmp','fmp_display_license_unverified',409);
+if(position>=8)throw new ProviderError('market','per_request_provider_limit',429);const name=usSymbol(symbol),company=await db.from('companies').select('id').eq('ticker',name).eq('provider','sec').eq('is_demo',false).maybeSingle();if(!company.data)throw new ProviderError('market','unsupported_company',422);
     const q=obj(await cached(db,`fmp:q:${name}`,async()=>{await reserve(db,'fmp');return fmpQuote(name,str(s.FMP_API_KEY));}));
     let history:unknown=[];try{history=await cached(db,`fmp:h:${name}`,async()=>{await reserve(db,'fmp');return fmpHistory(name,str(s.FMP_API_KEY));},21600);}catch{}
     const cutoff=new Date(Date.now()-periodDays[period]*864e5).toISOString().slice(0,10);quotes.push({...q,history:arr(history).filter(x=>str(x.date)>=cutoff),history_resolution:'daily',history_coverage:period==='3y'?'up_to_one_year':'requested_daily_window'});
    }catch(e){unavailable.push({symbol,reason:e instanceof ProviderError?e.code:'provider_unavailable'});}}
-   return reply({quotes,unavailable,available:quotes.length>0,korean_data:'deferred'});
+   return reply({quotes,unavailable,available:quotes.length>0,reason:quotes.length?'':str(unavailable[0]?.reason),korean_data:websitePermission(config,'kis')?'configured':'license_or_credentials_required'});
   }
   if(path==='/fx'&&req.method==='GET'){const base=(url.searchParams.get('base')??'USD').toUpperCase(),quote=(url.searchParams.get('quote')??'KRW').toUpperCase();if(!['USD','KRW','EUR','JPY','GBP','CAD','AUD'].includes(base)||!['USD','KRW','EUR','JPY','GBP','CAD','AUD'].includes(quote))throw new ProviderError('fx','unsupported_currency',422);return reply(await cached(db,`fx:${base}:${quote}`,async()=>{await reserve(db,'fx');return frankfurter(base,quote);},21600));}
   if(path==='/news'&&req.method==='GET'){if(!websitePermission(config,'gnews'))return reply({articles:[],available:false,reason:'gnews_deployed_plan_unverified'});const s=await settings(db);return reply({articles:await cached(db,`news:${(url.searchParams.get('q')??'').slice(0,100)}`,async()=>{await reserve(db,'gnews');return gnewsSearch(url.searchParams.get('q')??'',str(s.GNEWS_API_KEY),config);}),available:true});}
@@ -97,7 +134,7 @@ export async function handleUS(req:Request):Promise<Response>{
      fx:()=>recordCheck(db,'fx',async()=>{await reserve(db,'fx');return frankfurter('USD','KRW');}),
      fmp:()=>recordCheck(db,'fmp',async()=>{if(!s.FMP_API_KEY)throw new ProviderError('fmp','missing_key',503);await reserve(db,'fmp');const q=await fmpQuote('AAPL',str(s.FMP_API_KEY));return {quote_received:true,as_of:q.as_of,display_permitted:websitePermission(config,'fmp')};}),
      openai:()=>recordCheck(db,'openai',async()=>{if(!s.OPENAI_API_KEY)throw new ProviderError('openai','missing_key',503);await reserve(db,'openai',0.0005);return openaiSmoke(str(s.OPENAI_API_KEY));}),
-     resend:()=>recordCheck(db,'resend',async()=>{await reserve(db,'resend');const domains=await resendDomains(str(s.RESEND_API_KEY));return {verified_sender:domains.some(d=>d.status==='verified'),email_sent:false};}),
+     resend:()=>recordCheck(db,'resend',async()=>{if(!s.RESEND_API_KEY||config.resend_domain_verified!==true)throw new ProviderError('resend','verified_sender_required',409);return {verified_sender:true,email_sent:false,delivery_verification:config.email_delivery_verified===true};}),
      sec:()=>recordCheck(db,'sec',async()=>{const c=await db.from('companies').select('provider_company_id').eq('ticker','AAPL').eq('provider','sec').single();if(!c.data)throw new ProviderError('sec','company_missing');await reserve(db,'sec');const f=await secSubmissions(c.data.provider_company_id,str(s.SEC_CONTACT_EMAIL));return {records:f.filings.length};}),
      gnews:async()=>({status:'not_called',reason:websitePermission(config,'gnews')?'run_news_query_separately':'deployed_plan_unverified'}),
     });
@@ -106,7 +143,7 @@ export async function handleUS(req:Request):Promise<Response>{
    if(path==='/ingest')return reply(await ingest(db,s,str(p.symbol)));
    if(path==='/analyze')return reply(await analyze(db,s,str(p.filing_id)));
    if(path==='/review'){if(!['approved','rejected'].includes(str(p.status))||str(p.reason).trim().length<5)throw new ProviderError('api','review_reason_required',422);return reply(await rpc(actor.db,'sb_us_review',{fid:str(p.filing_id),decision:p.status,reason:str(p.reason)}));}
-   const from=str(config.resend_from),domains=await resendDomains(str(s.RESEND_API_KEY));if(!actor.identity.email)throw new ProviderError('resend','recipient_missing',422);await reserve(db,'resend');return reply(await sendVerifiedEmail(str(s.RESEND_API_KEY),from,actor.identity.email,'SignalBrief connection test','This is the explicitly requested SignalBrief sender-verification test.',domains));
+   if(config.resend_domain_verified!==true)throw new ProviderError('resend','verified_sender_required',409);if(!actor.identity.email)throw new ProviderError('resend','recipient_missing',422);await reserve(db,'resend');return reply({id:await sendNotification(str(s.RESEND_API_KEY),str(config.resend_from),actor.identity.email,'SignalBrief connection test','This is the explicitly requested SignalBrief sender-verification test.','sb-email-test-'+actor.identity.id+'-'+Math.floor(Date.now()/60000))});
   }
   return reply({error:{code:'route_not_found'}},404);
  }catch(e){const status=e instanceof ProviderError?e.status:500;return reply({error:{code:e instanceof ProviderError?e.code:'internal_error'}},[401,403,404,409,413,422,429,503].includes(status)?status:502);}

@@ -7,9 +7,9 @@ export class ProviderError extends Error {
 export const obj = (v: unknown): Row => v && typeof v === 'object' && !Array.isArray(v) ? v as Row : {};
 export const arr = (v: unknown): Row[] => Array.isArray(v) ? v.map(obj) : [];
 export const str = (v: unknown): string => typeof v === 'string' ? v : '';
-const hosts = new Set(['data.sec.gov','www.sec.gov','financialmodelingprep.com','api.openai.com','api.frankfurter.dev','api.resend.com','gnews.io','opendart.fss.or.kr']);
+const hosts = new Set(['data.sec.gov','www.sec.gov','financialmodelingprep.com','api.openai.com','api.frankfurter.dev','api.resend.com','gnews.io','opendart.fss.or.kr','openapi.koreainvestment.com']);
 export async function providerFetch(url: URL, provider: string, init: RequestInit = {}, fetcher: Fetcher = fetch, maxBytes = 2_000_000): Promise<string> {
-  if (url.protocol !== 'https:' || !hosts.has(url.hostname) || url.username || url.password || url.port) throw new ProviderError(provider,'invalid_endpoint');
+  if (url.protocol !== 'https:' || !hosts.has(url.hostname) || url.username || url.password || url.port && !(url.hostname==='openapi.koreainvestment.com'&&url.port==='9443')) throw new ProviderError(provider,'invalid_endpoint');
   try {
     const r = await fetcher(url, {...init, redirect:'error', signal: AbortSignal.timeout(provider === 'openai' ? 40000 : 12000)});
     if (!r.ok) { await r.body?.cancel(); throw new ProviderError(provider, r.status===401?'invalid_key':r.status===402||r.status===403?'access_or_plan_denied':r.status===429?'quota_exceeded':`http_${r.status}`,r.status); }
@@ -23,7 +23,7 @@ export async function providerFetch(url: URL, provider: string, init: RequestIni
 export async function jsonFetch(url:URL,provider:string,init:RequestInit={},fetcher:Fetcher=fetch,maxBytes=2_000_000):Promise<unknown>{
   const text=await providerFetch(url,provider,init,fetcher,maxBytes);try{return JSON.parse(text);}catch{throw new ProviderError(provider,'invalid_json');}
 }
-export function websitePermission(config:Row,provider:'fmp'|'gnews',now=Date.now()):boolean {
+export function websitePermission(config:Row,provider:'fmp'|'gnews'|'kis',now=Date.now()):boolean {
  return config[`${provider}_display_enabled`]===true && str(config[`${provider}_license_reference`]).trim().length>=5 && Date.parse(str(config[`${provider}_license_until`]))>now;
 }
 export function usSymbol(v:unknown):string {const symbol=str(v).toUpperCase();if(!/^[A-Z][A-Z0-9.-]{0,14}$/.test(symbol))throw new ProviderError('market','unsupported_us_symbol',422);return symbol;}
