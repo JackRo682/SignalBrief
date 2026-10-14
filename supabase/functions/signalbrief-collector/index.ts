@@ -18,11 +18,11 @@ async function check(provider:string,status:string,detail:Row){
  const result=await db.from('us_provider_checks').upsert({provider,status,detail,checked_at:new Date().toISOString()});
  if(result.error)throw new ProviderError('database','check_save_failed');
 }
-async function dartIngest(company:Row,key:string){
+async function dartIngest(company:Row,key:string,relaySecret:string){
  let pages=1,total=0;
  for(let page=1;page<=pages;page++){
   await rpc('sb_us_reserve',{p:'dart',amount:0,smoke:false});
-  const raw=await dartList(str(company.provider_company_id),key,page),parsed=dartPage(raw,str(company.provider_company_id)),sha=await hash(raw);
+  const raw=await dartList(str(company.provider_company_id),key,page,fetch,relaySecret),parsed=dartPage(raw,str(company.provider_company_id)),sha=await hash(raw);
   if(page===1)pages=parsed.pages;
   else if(parsed.pages!==pages)throw new ProviderError('dart','pagination_changed_retry_later');
   const path=`dart/lists/${sha}.json`,archive=await db.storage.from('signalbrief-raw').upload(path,raw,{contentType:'application/json',upsert:false});
@@ -35,7 +35,7 @@ async function dartIngest(company:Row,key:string){
  }
  const updated=await db.from('companies').update({last_ingested_at:new Date().toISOString()}).eq('id',company.id);
  if(updated.error)throw new ProviderError('database','ingestion_timestamp_failed');
- return {symbol:company.ticker,filings:total,coverage:'previous_seven_days_metadata',document_analysis:'not_implemented'};
+ return {symbol:company.ticker,filings:total,coverage:'previous_seven_days_metadata',document_analysis:'separate_document_stage'};
 }
 export async function handleCollector(req:Request):Promise<Response>{
  if(req.method!=='POST')return reply({error:{code:'method_not_allowed'}},405);
@@ -56,7 +56,7 @@ export async function handleCollector(req:Request):Promise<Response>{
   for(const provider of ['sec','dart']){
    const company=companies.find(c=>c.provider===provider);if(!company)continue;
    try{
-    const detail=provider==='sec'?await ingest(db,secrets,company.ticker):await dartIngest(company,str(secrets.DART_API_KEY));
+    const detail=provider==='sec'?await ingest(db,secrets,company.ticker):await dartIngest(company,str(secrets.DART_API_KEY),str(secrets.DART_RELAY_SECRET));
     result[provider]={status:'verified',...detail};await check(provider,'verified',detail);
    }catch(error){result[provider]={status:'blocked',code:code(error)};await check(provider,'blocked',{code:code(error)});}
   }
