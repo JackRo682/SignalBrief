@@ -73,7 +73,8 @@ export function validateAnalysis(value:unknown,source:string):Row {
  const d=obj(value),claims=arr(d.claims);if(!claims.length||claims.length>6)throw new ProviderError('openai','no_supported_claims');
  for(const c of claims){const quote=str(c.quote),text=str(c.text);if(quote.length<20||quote.length>1200||!source.includes(quote)||!text||text.length>600)throw new ProviderError('openai','citation_mismatch');
   if(/\b(buy|sell|price target|guaranteed return)\b|매수|매도|목표주가/i.test(text))throw new ProviderError('openai','investment_advice_blocked');
-  const nums=text.match(/[-+]?\d[\d,.]*(?:%|\b)/g)??[];if(nums.some(n=>!quote.includes(n)))throw new ProviderError('openai','numeric_citation_mismatch');
+  const numericTokens=(value:string)=>value.match(/[-+]?\d+(?:[,.]\d+)*(?:%)?/g)??[];
+  const cited=new Set(numericTokens(quote));if(numericTokens(text).some(n=>!cited.has(n)))throw new ProviderError('openai','numeric_citation_mismatch');
  }
  // A quote substring check does not establish semantic truth. Always require review.
  return {claims,uncertainty:str(d.uncertainty).slice(0,1000),validation:'quote_substring_and_numeric_check',requires_human_review:true,coverage:'bounded_normalized_excerpt'};
