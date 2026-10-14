@@ -73,4 +73,4 @@ export async function handleCollector(req:Request):Promise<Response>{
   return reply({error:{code:code(error)}},error instanceof ProviderError&&[401,409,503].includes(error.status)?error.status:502);
  }
 }
-if(import.meta.main)Deno.serve(handleCollector);
+Deno.serve(handleCollector);
