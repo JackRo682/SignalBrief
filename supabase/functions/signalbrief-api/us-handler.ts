@@ -79,6 +79,7 @@ export async function handleUS(req:Request):Promise<Response>{
    const id=url.searchParams.get('filing_id')??'';if(!/^[a-f0-9-]{36}$/.test(id))throw new ProviderError('api','invalid_filing_id',422);
    const result=await actor.db.from('dart_analyses').select('*').eq('filing_id',id).maybeSingle();if(result.error)throw new ProviderError('database','dart_analysis_read_failed');return reply(result.data??{status:'not_available_or_pending_review'});
   }
+  if(path==='/dart-retry'&&req.method==='POST'){const p=await body(req);return reply(await rpc(actor.db,'sb_dart_document_retry',{fid:p.filing_id}));}
   if(path==='/dart-review'&&req.method==='POST'){
    const p=await body(req);return reply(await rpc(actor.db,'sb_dart_review',{fid:p.filing_id,decision:p.status,reason:p.reason}));
   }

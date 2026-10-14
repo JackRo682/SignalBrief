@@ -1,8 +1,8 @@
 import {unzipSync} from 'npm:fflate@0.8.2';
-import {SaxesParser} from 'npm:saxes@6.0.0';
+import {parseDartText} from './dart-parser.ts';
 import type {SupabaseClient} from 'npm:@supabase/supabase-js@2.117.2';
 import {ProviderError,obj,str,analyzeEvidence,transportCode,type Row} from '../signalbrief-api/us-core.ts';
-import {inspectDartZIP,crc32,validateDartXML} from './dart-document-core.ts';
+import {inspectDartZIP,crc32} from './dart-document-core.ts';
 import {dartRelay} from './dart-relay.ts';
 const sha=async(bytes:Uint8Array)=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new Uint8Array(bytes).buffer))].map(x=>x.toString(16).padStart(2,'0')).join('');
 async function rpc(db:SupabaseClient,name:string,args:Row={}){const {data,error}=await db.rpc(name,args);if(error)throw new ProviderError('database','operation_failed');return data;}
@@ -31,24 +31,22 @@ export async function processDartDocument(db:SupabaseClient,secrets:Row,config:R
   const expanded=unzipSync(raw);const texts:string[]=[];
   for(const member of members){
    const bytes=expanded[member.name];if(!bytes||bytes.length!==member.size||crc32(bytes)!==member.crc)throw new ProviderError('dart','archive_integrity_mismatch');
-   const xml=new TextDecoder('utf-8',{fatal:true}).decode(bytes);validateDartXML(xml);
-   const parser=new SaxesParser({xmlns:false});let text='';
-   parser.on('error',()=>{throw new ProviderError('dart','malformed_xml');});
-   parser.on('text',value=>{text+=value;});parser.on('cdata',value=>{text+=value;});parser.on('closetag',()=>{text+=' ';});
-   parser.write(xml).close();texts.push('FILE '+member.name+'\n'+text.replace(/\s+/g,' ').trim());
+   const xml=new TextDecoder('utf-8',{fatal:true}).decode(bytes),parsed=parseDartText(xml);
+   texts.push('FILE '+member.name+' MODE '+parsed.mode+'\n'+parsed.text);
   }
   const normalized=texts.join('\n\n'),bytes=new TextEncoder().encode(normalized),normalizedHash=await sha(bytes),normalizedPath='dart/normalized/'+normalizedHash+'.txt';
   await archive(db,normalizedPath,bytes,'text/plain; charset=utf-8');
-  const saved=await db.from('dart_documents').insert({filing_id:filing.id,raw_sha256:rawHash,normalized_sha256:normalizedHash,raw_object_key:rawPath,normalized_object_key:normalizedPath,raw_bytes:raw.length,normalized_bytes:bytes.length,member_count:members.length,parser_version:'saxes-6.0.0-dart-v1'});
+  const saved=await db.from('dart_documents').insert({filing_id:filing.id,raw_sha256:rawHash,normalized_sha256:normalizedHash,raw_object_key:rawPath,normalized_object_key:normalizedPath,raw_bytes:raw.length,normalized_bytes:bytes.length,member_count:members.length,parser_version:'saxes-6.0.0-htmlparser2-10.0.0-dart-v2'});
   if(saved.error)throw new ProviderError('database','document_save_failed');
   let analysis:Row={status:'not_requested'};
-  if(secrets.OPENAI_API_KEY&&Number(config.ai_daily_budget_usd)>0){
+  try{if(secrets.OPENAI_API_KEY&&Number(config.ai_daily_budget_usd)>0){
    const source=normalized.slice(0,12000),amount=(new TextEncoder().encode(source).length+3000)*0.4/1e6+1800*1.6/1e6;
    await rpc(db,'sb_us_reserve',{p:'openai',amount,smoke:false});
    const answer=await analyzeEvidence(source,str(secrets.OPENAI_API_KEY)),usage=obj(answer.usage);
    const result=await db.from('dart_analyses').insert({filing_id:filing.id,status:'needs_review',model:answer.model,source_sha256:rawHash,normalized_sha256:normalizedHash,result:{...answer,source_url:filing.source_url,normalized_excerpt:source,source_characters:normalized.length,excerpt_characters:source.length},input_tokens:usage.prompt_tokens,output_tokens:usage.completion_tokens});
    if(result.error)throw new ProviderError('database','analysis_save_failed');analysis={status:'needs_review'};
   }
+  }catch(error){analysis={status:'blocked',code:error instanceof ProviderError?error.code:'analysis_failed'};}
   await rpc(db,'sb_dart_document_finish',{fid:filing.id,status:'parsed',error_code:null});return {status:'parsed',receipt:filing.receipt,analysis,raw_sha256:rawHash};
  }catch(error){const code=error instanceof ProviderError?error.code:'document_processing_failed';await rpc(db,'sb_dart_document_finish',{fid:filing.id,status:'blocked',error_code:code});return {status:'blocked',code};}
 }

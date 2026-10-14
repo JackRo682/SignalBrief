@@ -55,3 +55,18 @@ describe('server-resolved citations',()=>{
  it('still rejects unsupported numbers',()=>expect(()=>resolveEvidence({claims:[{text:'Revenue was $999 million.',evidence_id:0}]},evidencePassages(source),source)).toThrow('numeric_citation_mismatch'));
  it('redacts credential-bearing diagnostics',()=>expect(transportDiagnostic(new Error('https://opendart.fss.or.kr/api/list.json?crtfc_key='+ 'b'.repeat(40)))).not.toContain('b'.repeat(40)));
 });
+
+describe('partial candidate validation',()=>{
+ it('withholds every unsupported claim and reports omissions explicitly',()=>{
+  const source='Revenue was $100 million for the year ended December 31, 2025. The figure is in USD.';
+  const result=resolveEvidence({claims:[{text:'Revenue was $100 million.',evidence_id:0},{text:'Revenue was $999 million.',evidence_id:0}],uncertainty:'Excerpt only'},evidencePassages(source),source);
+  expect(result.claims).toHaveLength(1);expect(JSON.stringify(result.claims)).not.toContain('999');
+  expect(result).toMatchObject({candidate_claim_count:2,omitted_claim_count:1,omitted_claim_reasons:['numeric_citation_mismatch'],requires_human_review:true});
+ });
+});
+
+
+describe('transaction facts versus recommendations',()=>{
+ it('permits a cited disclosure of a completed disposal',()=>{const source='삼성생명은 보통주식을 장내거래로 매도하였습니다. 이번 공시는 완료된 거래 사실입니다.';expect(validateAnalysis({claims:[{text:'삼성생명은 보통주식을 매도하였습니다.',quote:source}]},source)).toMatchObject({requires_human_review:true});});
+ it.each(['매수하세요','매도하십시오','이 주식은 매수 추천입니다.','You should buy this stock.','We recommend selling this stock.','This stock is a buy.'])('blocks actual trading recommendation %s',text=>{const source='Synthetic quotation contains enough characters for testing.';expect(()=>validateAnalysis({claims:[{text,quote:source}]},source)).toThrow('investment_advice_blocked');});
+});
