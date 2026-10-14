@@ -1,5 +1,11 @@
 name: Release QA
 on:
+  pull_request:
+    paths:
+      - apps/web/package.json
+      - apps/web/package-lock.json
+      - apps/web/tests/lint-root-glob.test.ts
+      - .github/workflows/release-qa.yml
   push:
     branches: [main, codex/functional-ui-20261003, codex/reference-publish-20261003]
   workflow_dispatch:
