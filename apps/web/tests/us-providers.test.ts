@@ -27,6 +27,8 @@ describe('financial observations',()=>{
 describe('evidence and outbound email',()=>{
  const source='Revenue was $100 million for the year ended December 31, 2025. The figure is in USD.';
  it('accepts exact cited evidence but still requires human review',()=>{expect(validateAnalysis({claims:[{text:'Revenue was $100 million.',quote:source}],uncertainty:'Excerpt only'},source)).toMatchObject({requires_human_review:true});});
+ it('does not count sentence punctuation as part of a cited number',()=>expect(validateAnalysis({claims:[{text:'The period ended in 2025.',quote:source}]},source)).toMatchObject({requires_human_review:true}));
+ it('rejects partial numeric token matches',()=>expect(()=>validateAnalysis({claims:[{text:'Revenue was $10 million.',quote:source}]},source)).toThrow('numeric_citation_mismatch'));
  it('blocks invented figures',()=>expect(()=>validateAnalysis({claims:[{text:'Revenue was $999 million.',quote:source}]},source)).toThrow('numeric_citation_mismatch'));
  it('blocks unsupported quotes',()=>expect(()=>validateAnalysis({claims:[{text:'Revenue rose',quote:'This is not an original quote.'}]},source)).toThrow('citation_mismatch'));
  it('blocks investment advice',()=>expect(()=>validateAnalysis({claims:[{text:'Buy this stock',quote:source}]},source)).toThrow('investment_advice_blocked'));

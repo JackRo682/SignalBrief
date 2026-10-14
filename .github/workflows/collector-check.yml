@@ -1,0 +1,17 @@
+name: Collector Edge verification
+on:
+  push:
+    paths: ['supabase/functions/**', 'docs/sql/collector.sql', '.github/workflows/collector-check.yml']
+  pull_request:
+    paths: ['supabase/functions/**', 'docs/sql/collector.sql', '.github/workflows/collector-check.yml']
+permissions:
+  contents: read
+jobs:
+  edge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with: {persist-credentials: false}
+      - uses: denoland/setup-deno@v2
+        with: {deno-version: v2.x}
+      - run: deno check --no-lock --config supabase/functions/signalbrief-collector/deno.json supabase/functions/signalbrief-collector/index.ts
