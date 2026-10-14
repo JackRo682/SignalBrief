@@ -147,7 +147,7 @@ describe('persisted mobile question conversations',()=>{
   window.history.replaceState({},'',`/questions?event=${otherEventId}&question=history-b`);page.rerender(<MobileQuestions eventId={otherEventId}/>);
   expect(await screen.findByText('Stored answer B')).toBeVisible();expect(screen.queryByText('Stored answer A')).toBeNull();
   expect(document.getElementById('mobile-question-history-b')).toHaveClass('is-selected');
-  expect(HTMLElement.prototype.scrollIntoView).toHaveBeenCalled();
+  await waitFor(()=>expect(HTMLElement.prototype.scrollIntoView).toHaveBeenCalled());
  });
  it('does not duplicate a returned answer after history refresh or collapse separate repeated questions',async()=>{
   const page=render(<MobileQuestions eventId={eventId}/>);

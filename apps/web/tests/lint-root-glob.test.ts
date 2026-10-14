@@ -4,6 +4,7 @@ import {mkdtempSync,mkdirSync,rmSync,writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join,dirname,resolve} from 'node:path';
 import {afterEach,describe,expect,it} from 'vitest';
+import {Linter} from 'eslint';
 const require=createRequire(import.meta.url);
 const pluginRequire=createRequire(require.resolve('@next/eslint-plugin-next'));
 const {getRootDirs}=require(join(dirname(require.resolve('@next/eslint-plugin-next')),'utils/get-root-dirs.js'));
@@ -15,5 +16,5 @@ describe('Next lint root glob compatibility',()=>{
  it('keeps the default root when no override is configured',()=>expect(getRootDirs({cwd:'/repository',settings:{}})).toEqual(['/repository']));
  it('expands directory globs without including files',()=>{const root=fixture();const dirs=getRootDirs({cwd:root,settings:{next:{rootDir:join(root,'*')}}});expect(dirs.map((dir:string)=>resolve(dir).replaceAll('\\','/')).sort()).toEqual([join(root,'admin'),join(root,'web')].map(dir=>resolve(dir).replaceAll('\\','/')).sort());});
  it('supports literal root arrays and brace alternatives',()=>{const root=fixture();const dirs=getRootDirs({cwd:root,settings:{next:{rootDir:[join(root,'web'),join(root,'{admin,missing}')]}}});expect(dirs.map((dir:string)=>resolve(dir).replaceAll('\\','/')).sort()).toEqual([join(root,'admin'),join(root,'web')].map(dir=>resolve(dir).replaceAll('\\','/')).sort());});
- it('keeps lint rules active with the replacement',async()=>{const {ESLint}=await import('eslint');const eslint=new ESLint({cwd:process.cwd()});const results=await eslint.lintText('export default function BadImage(){return <img src="/photo.png" alt="photo"/>;}',{filePath:'src/lint-regression-fixture.tsx'});expect(results.flatMap(result=>result.messages).some(message=>message.ruleId==='@next/next/no-img-element')).toBe(true);},20000);
+ it('keeps lint rules active with the replacement',()=>{const plugin=require('@next/eslint-plugin-next').default;const messages=new Linter().verify('export default function BadImage(){return <img src="/photo.png" alt="photo"/>;}',[{languageOptions:{parserOptions:{ecmaFeatures:{jsx:true}}},plugins:{'@next/next':plugin},rules:{'@next/next/no-img-element':'error'}}]);expect(messages.some(message=>message.ruleId==='@next/next/no-img-element')).toBe(true);});
 });
