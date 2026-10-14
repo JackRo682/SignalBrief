@@ -75,7 +75,6 @@ DECLARE token text;run_id uuid;http_id bigint;BEGIN
   body:='{}'::jsonb,timeout_milliseconds:=120000
  ) INTO http_id;
  UPDATE app_private.collector_runs SET request_id=http_id WHERE id=run_id;
- DELETE FROM app_private.collector_runs WHERE created_at<now()-interval '30 days' AND state IN ('done','error');
  RETURN http_id;
 END $$;
 REVOKE ALL ON FUNCTION public.sb_us_secrets(),public.sb_us_reserve(text,numeric,boolean),
@@ -84,3 +83,5 @@ REVOKE ALL ON FUNCTION public.sb_us_secrets(),public.sb_us_reserve(text,numeric,
 GRANT EXECUTE ON FUNCTION public.sb_us_secrets(),public.sb_us_reserve(text,numeric,boolean),
  public.sb_collector_claim(text),public.sb_collector_finish(text,jsonb,boolean) TO service_role;
 NOTIFY pgrst,'reload schema';
+
+-- pg_net's queue is internal and must not be exposed through Data API schemas.
