@@ -189,8 +189,9 @@ def test_dart_retry_preserves_errors_and_requires_admin(provider_db):
     provider_db.execute("SELECT public.sb_dart_document_claim()")
     provider_db.execute("SELECT public.sb_dart_document_finish(%s,'blocked','malformed_xml')", (filing,))
     provider_db.execute("SET ROLE authenticated")
-    with pytest.raises(psycopg.errors.RaiseException):
+    with pytest.raises(psycopg.ProgrammingError) as denied:
         provider_db.execute("SELECT public.sb_dart_document_retry(%s)", (filing,))
+    assert denied.value.sqlstate == "PT403"
     provider_db.execute("RESET ROLE")
     provider_db.execute("SELECT set_config('test.user_id','aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa',false)")
     assert provider_db.execute("SELECT public.sb_dart_document_retry(%s)", (filing,)).fetchone()[0]["status"] == "queued"
