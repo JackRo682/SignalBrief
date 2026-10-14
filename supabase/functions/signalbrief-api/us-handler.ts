@@ -85,6 +85,9 @@ export async function handleUS(req:Request):Promise<Response>{
   if(path==='/indices'&&req.method==='GET'){
    const s=await settings(db),indices:Row[]=[],unavailable:Row[]=[];
    for(const name of Object.keys(indexSymbols))try{
+    // Recheck display permission before reading a previously authorized cache entry.
+    if(['KOSPI','KOSDAQ'].includes(name)){if(!websitePermission(config,'kis'))throw new ProviderError('kis','kis_display_license_unverified',409);}
+    else if(!websitePermission(config,'fmp')||config.fmp_indices_display_enabled!==true)throw new ProviderError('fmp','index_entitlement_unverified',409);
     const quote=await cached(db,'index:'+name,async()=>{
      if(['KOSPI','KOSDAQ'].includes(name)){if(!websitePermission(config,'kis'))throw new ProviderError('kis','kis_display_license_unverified',409);
       const token=await kisAccess(db,s);await reserve(db,'kis');return kisQuote(name,s,config,token,true);
@@ -97,7 +100,7 @@ export async function handleUS(req:Request):Promise<Response>{
   if(path==='/dart-filings'&&req.method==='GET'){
    const result=await actor.db.from('dart_filings').select('*,companies!inner(name,ticker,provider)').eq('companies.provider','dart').order('filing_date',{ascending:false}).limit(60);
    if(result.error)throw new ProviderError('database','dart_filings_read_failed');
-   return reply({items:result.data,market:'KR',coverage:'tracked_issuers_previous_seven_days_metadata',document_analysis:'not_implemented'});
+   return reply({items:result.data,market:'KR',coverage:'tracked_issuers_previous_seven_days_metadata',document_analysis:'archive_complete_document_then_review_cited_excerpt'});
   }
   if(path==='/filings'&&req.method==='GET'){
    const symbol=url.searchParams.get('symbol')??'';let q=actor.db.from('us_filings').select('*,companies!inner(name,ticker,provider)').eq('companies.provider','sec').order('filing_date',{ascending:false}).limit(60);
