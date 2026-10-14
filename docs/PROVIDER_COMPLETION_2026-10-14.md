@@ -20,3 +20,5 @@ User approved an OpenAI reservation cap of $1 per UTC day. The existing 20-call 
 
 ## Rollback
 Set app_private.us_config scheduled_ingestion_enabled to false and cron.unschedule('signalbrief-official-filings'). Existing collected records remain intact. Set ai_daily_budget_usd to 0 to disable further paid calls.
+
+Failed model drafts are recorded as blocked attempts; the schedule never retries the same filing automatically. A numeric-citation rejection was observed in production and was not bypassed.

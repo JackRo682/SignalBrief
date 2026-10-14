@@ -85,3 +85,29 @@ GRANT EXECUTE ON FUNCTION public.sb_us_secrets(),public.sb_us_reserve(text,numer
 NOTIFY pgrst,'reload schema';
 
 -- pg_net's queue is internal and must not be exposed through Data API schemas.
+
+CREATE TABLE IF NOT EXISTS app_private.collector_analysis_attempts(
+ filing_id uuid PRIMARY KEY REFERENCES public.us_filings(id),
+ attempted_at timestamptz NOT NULL DEFAULT now(),status text NOT NULL DEFAULT 'running',code text
+);
+REVOKE ALL ON app_private.collector_analysis_attempts FROM PUBLIC,anon,authenticated;
+CREATE OR REPLACE FUNCTION public.sb_collector_analysis_pick() RETURNS uuid
+LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
+DECLARE selected uuid;BEGIN
+ PERFORM pg_catalog.pg_advisory_xact_lock(20261014,2);
+ SELECT f.id INTO selected FROM public.us_filings f
+ WHERE f.filing_date>=current_date-90
+ AND NOT EXISTS(SELECT 1 FROM public.us_analyses a WHERE a.filing_id=f.id)
+ AND NOT EXISTS(SELECT 1 FROM app_private.collector_analysis_attempts t WHERE t.filing_id=f.id)
+ ORDER BY f.filing_date DESC,f.id LIMIT 1;
+ IF selected IS NOT NULL THEN INSERT INTO app_private.collector_analysis_attempts(filing_id) VALUES(selected);END IF;
+ RETURN selected;
+END $$;
+CREATE OR REPLACE FUNCTION public.sb_collector_analysis_finish(fid uuid,result_status text,result_code text DEFAULT NULL) RETURNS void
+LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
+BEGIN
+ UPDATE app_private.collector_analysis_attempts SET status=result_status,code=result_code WHERE filing_id=fid;
+END $$;
+REVOKE ALL ON FUNCTION public.sb_collector_analysis_pick(),public.sb_collector_analysis_finish(uuid,text,text) FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.sb_collector_analysis_pick(),public.sb_collector_analysis_finish(uuid,text,text) TO service_role;
+NOTIFY pgrst,'reload schema';

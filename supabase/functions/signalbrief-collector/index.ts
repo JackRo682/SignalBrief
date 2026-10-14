@@ -59,12 +59,16 @@ export async function handleCollector(req:Request):Promise<Response>{
    }catch(error){result[provider]={status:'blocked',code:code(error)};await check(provider,'blocked',{code:code(error)});}
   }
   if(Number(config.ai_daily_budget_usd)>0&&secrets.OPENAI_API_KEY){
-   const pending=await db.from('us_filings').select('id,us_analyses(filing_id)').gte('filing_date',new Date(Date.now()-90*86400_000).toISOString().slice(0,10)).order('filing_date',{ascending:false}).limit(30);
-   if(pending.error)throw new ProviderError('database','analysis_queue_read_failed');
-   const filing=(pending.data??[]).find(f=>!f.us_analyses||(Array.isArray(f.us_analyses)&&f.us_analyses.length===0));
-   if(filing)try{result.openai=await analyze(db,secrets,filing.id);await check('openai','verified',{analysis_saved:true,requires_human_review:true});}
-   catch(error){result.openai={status:'blocked',code:code(error)};await check('openai','blocked',{code:code(error)});}
-   else result.openai={status:'idle',reason:'no_unanalyzed_filings_in_90_day_window'};
+   const filing=await rpc('sb_collector_analysis_pick');
+   if(filing)try{
+    result.openai=await analyze(db,secrets,str(filing));
+    await rpc('sb_collector_analysis_finish',{fid:filing,result_status:'needs_review',result_code:null});
+    await check('openai','verified',{analysis_saved:true,requires_human_review:true});
+   }catch(error){
+    result.openai={status:'blocked',code:code(error)};
+    await rpc('sb_collector_analysis_finish',{fid:filing,result_status:'blocked',result_code:code(error)});
+    await check('openai','blocked',{code:code(error)});
+   }else result.openai={status:'idle',reason:'no_unattempted_filings_in_90_day_window'};
   }else {result.openai={status:'blocked',code:secrets.OPENAI_API_KEY?'ai_budget_not_approved':'missing_key'};}
   await rpc('sb_collector_finish',{h:taskHash,summary:result,failed:false});
   return reply(result);
