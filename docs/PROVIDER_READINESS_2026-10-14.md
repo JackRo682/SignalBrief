@@ -1,11 +1,10 @@
 # Provider connection preparation — 2026-10-14
 
-The live `https://signalbrief.online/api/us/status` response reports an FMP
-credential present, but display permission false and no FMP verification record.
-The names-only Vault query finds no `signalbrief::FMP_API_KEY`; the Edge runtime
-can also load `FMP_API_KEY` from environment variables. Vault absence therefore
-does not prove that the deployed application lacks a key. A presence flag does
-not establish that a key is valid or that its plan covers an endpoint.
+Credential presence does not establish that a key is valid or that its plan
+covers an endpoint. The Edge runtime supports both environment variables and
+Vault, so absence from one store alone does not prove the deployed application
+has no key. Use the public readiness response locally to determine next actions;
+do not publish operational configuration snapshots in issues or pull requests.
 
 ## Changes
 
@@ -67,7 +66,7 @@ interactive login, KIS, OpenDART and automated workers remain unverified.
 ## Validation boundary
 
 Eleven Node regression tests passed. All 422 frontend tests passed, including 48 provider/OAuth/proxy tests.
-Type checking and lint passed (five existing navigation warnings).
+Type checking, production web build and lint passed (five existing navigation warnings).
 The full repository verification command was attempted; the local Python 3.10
 does not meet the project's Python >=3.12 requirement and lacks pytest and
 backend dependencies. These backend checks are not passed. Browser E2E and a
