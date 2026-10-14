@@ -7,7 +7,7 @@ export class ProviderError extends Error {
 export const obj = (v: unknown): Row => v && typeof v === 'object' && !Array.isArray(v) ? v as Row : {};
 export const arr = (v: unknown): Row[] => Array.isArray(v) ? v.map(obj) : [];
 export const str = (v: unknown): string => typeof v === 'string' ? v : '';
-const hosts = new Set(['data.sec.gov','www.sec.gov','financialmodelingprep.com','api.openai.com','api.frankfurter.dev','api.resend.com','gnews.io']);
+const hosts = new Set(['data.sec.gov','www.sec.gov','financialmodelingprep.com','api.openai.com','api.frankfurter.dev','api.resend.com','gnews.io','opendart.fss.or.kr']);
 export async function providerFetch(url: URL, provider: string, init: RequestInit = {}, fetcher: Fetcher = fetch, maxBytes = 2_000_000): Promise<string> {
   if (url.protocol !== 'https:' || !hosts.has(url.hostname) || url.username || url.password || url.port) throw new ProviderError(provider,'invalid_endpoint');
   try {

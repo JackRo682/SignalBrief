@@ -10,7 +10,7 @@ async function settings(db:SupabaseClient){const s=obj(await rpc(db,'sb_us_secre
 async function recordCheck(db:SupabaseClient,provider:string,action:()=>Promise<Row>){let result:Row;try{result={status:'verified',detail:await action()};}catch(e){result={status:'blocked',detail:{code:e instanceof ProviderError?e.code:'operation_failed'}};}await db.from('us_provider_checks').upsert({provider,...result,checked_at:new Date().toISOString()});return result;}
 async function reserve(db:SupabaseClient,p:string,amount=0){await rpc(db,'sb_us_reserve',{p,amount,smoke:false});}
 async function cached(db:SupabaseClient,k:string,fn:()=>Promise<unknown>,ttl=900){const stored=await rpc(db,'sb_us_cache',{k});if(stored!==null)return stored;const v=await fn();await rpc(db,'sb_us_cache',{k,v,ttl});return v;}
-async function ingest(db:SupabaseClient,s:Row,symbol:string){
+export async function ingest(db:SupabaseClient,s:Row,symbol:string){
  const {data:company,error}=await db.from('companies').select('id,ticker,provider_company_id').eq('provider','sec').eq('ticker',usSymbol(symbol)).eq('is_demo',false).maybeSingle();if(error||!company)throw new ProviderError('sec','unsupported_company',422);
  await reserve(db,'sec');const result=await secSubmissions(company.provider_company_id,str(s.SEC_CONTACT_EMAIL)),sha=await hash(result.raw);
  if(!result.tickers.includes(symbol))throw new ProviderError('sec','ticker_cik_mismatch');
@@ -18,11 +18,11 @@ async function ingest(db:SupabaseClient,s:Row,symbol:string){
  const object=`us/sec/submissions/${sha}.json`,upload=await db.storage.from('signalbrief-raw').upload(object,result.raw,{contentType:'application/json',upsert:false});
  if(upload.error&&!/already exists|duplicate/i.test(upload.error.message))throw new ProviderError('storage','archive_failed');
  const records=result.filings.map(f=>({...f,company_id:company.id,source_sha256:sha,fetched_at:new Date().toISOString()}));
- if(records.length){const saved=await db.from('us_filings').upsert(records,{onConflict:'company_id,accession'});if(saved.error)throw new ProviderError('database','filing_save_failed');}
+ if(records.length){const saved=await db.from('us_filings').upsert(records,{onConflict:'company_id,accession',ignoreDuplicates:true});if(saved.error)throw new ProviderError('database','filing_save_failed');}
  const checked=await db.from('companies').update({last_ingested_at:new Date().toISOString()}).eq('id',company.id);if(checked.error)throw new ProviderError('database','ingestion_timestamp_failed');
  return {symbol,filings:records.length,source_sha256:sha,source:'SEC submissions',analysis:'not_yet_reviewed'};
 }
-async function analyze(db:SupabaseClient,s:Row,id:string){
+export async function analyze(db:SupabaseClient,s:Row,id:string){
  if(!/^[a-f0-9-]{36}$/.test(id))throw new ProviderError('api','invalid_filing_id',422);
  if(!s.OPENAI_API_KEY)throw new ProviderError('openai','missing_key',503);
  const claim=crypto.randomUUID();if(!await rpc(db,'sb_us_claim_analysis',{fid:id,lease:claim}))throw new ProviderError('openai','analysis_running_or_complete',409);
