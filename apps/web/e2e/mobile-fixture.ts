@@ -68,6 +68,8 @@ export async function mobileFixture(page: Page, options: Options = {}) {
     searches: options.empty ? [] : [{query: '엔비디아', searched_at: published(1)}, {query: '테슬라', searched_at: published(2)}, {query: 'AI', searched_at: published(3)}, {query: '실적', searched_at: published(4)}],
     questions: [] as Question[],
     notificationSettings: {realtime_enabled: true, notify_min_score: .75},
+    emailPreferences: {available: false, enabled: false},
+    emailCalls: [] as {method:string;enabled?:boolean}[],
     reminders: new Set<string>(),
     authCalls: [] as {method:string;path:string}[],
     reminderCalls: [] as {action:string;calendar_id?:string;enabled?:boolean}[],
@@ -119,6 +121,19 @@ export async function mobileFixture(page: Page, options: Options = {}) {
     await route.fulfill({json:{saved:true,delivery:'saved_interest_only'},headers:{'Access-Control-Allow-Origin':'*'}});
   });
   await page.route('**/api/release', route => route.fulfill({json: {release: 'mobile-e2e-fixture', commit: 'synthetic-mobile-20261006', branch: 'isolated-test'}}));
+  await page.route('**/api/us/email-preferences', async route => {
+    const req=route.request(),method=req.method();
+    if(req.headers().authorization!=='Bearer '+token){await unknown(route,'invalid email preferences authorization');return;}
+    if(method==='GET'){state.emailCalls.push({method});await route.fulfill({json:state.emailPreferences});return;}
+    if(method==='POST'){
+      const parsed=z.object({enabled:z.boolean()}).strict().safeParse(req.postDataJSON());
+      if(!parsed.success){await unknown(route,'invalid email preferences payload');return;}
+      state.emailCalls.push({method,enabled:parsed.data.enabled});
+      if(parsed.data.enabled&&!state.emailPreferences.available){await route.fulfill({status:409,json:{error:{code:'email_unavailable'}}});return;}
+      state.emailPreferences.enabled=parsed.data.enabled;await route.fulfill({json:state.emailPreferences});return;
+    }
+    await unknown(route,'unexpected email preferences method');
+  });
   await page.route('**/api/us/reference-rate', route => route.fulfill({json: {base: 'USD', quote: 'KRW', rate: 1350, date: '2026-10-06', source: 'Synthetic E2E reference rate', kind: 'daily_reference'}}));
   await page.route('**/api/market?**', route => {
     const symbols = new URL(route.request().url()).searchParams.get('symbols')?.split(',') ?? [];

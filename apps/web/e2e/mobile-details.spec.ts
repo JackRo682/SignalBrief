@@ -88,6 +88,18 @@ for(const viewport of [{width:432,height:768},{width:390,height:844}]){
    expect(fixture.state.authCalls.filter(call=>call.method!=='GET'),'Gallery never mutates authentication').toEqual([]);
   });
 
+  test('explicit email consent persists after reload without contacting an email service',async({page})=>{
+   const fixture=await mobileFixture(page);fixture.state.emailPreferences.available=true;
+   await page.goto('/settings/notifications');
+   const toggle=page.getByRole('switch',{name:'이메일 알림',exact:true});
+   await expect(toggle).toHaveAttribute('aria-checked','false');await expect(toggle).toBeEnabled();
+   await toggle.click();await expect(toggle).toHaveAttribute('aria-checked','true');
+   expect(fixture.state.emailPreferences.enabled).toBe(true);
+   await page.reload();await expect(toggle).toHaveAttribute('aria-checked','true');
+   expect(fixture.state.emailCalls.filter(call=>call.method==='POST')).toEqual([{method:'POST',enabled:true}]);
+   await healthy(page,fixture);
+  });
+
   test('source sections, exact citations, persistent questions and timeline filters work through their routes',async({page},info)=>{
    const fixture=await mobileFixture(page);seedConversation(fixture);
    await page.goto(`/documents/${documents[0].id}?kind=document`);

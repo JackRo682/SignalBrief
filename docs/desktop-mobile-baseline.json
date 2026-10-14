@@ -2,7 +2,7 @@
   "commit": "d09dac977ea4882b7faa1dd7da9d3f59afc98d01",
   "approved_updates": {
     "apps/web/src/app/layout.tsx": "2026-10-10: mount the consent-only, nonvisual ResearchTracker inside existing AuthProvider; preserve rendered mobile components.",
-    "apps/web/e2e/mobile-fixture.ts": "2026-10-10: validate and serve only the new track action in the isolated fixture; all unexpected requests still fail.",
+    "apps/web/e2e/mobile-fixture.ts": "2026-10-14: strictly validate and serve the new authenticated email-preferences endpoint in isolated synthetic tests, preserving unexpected-request rejection and adding persisted opt-in browser regression.",
     "apps/web/e2e/career-analytics.spec.ts": "2026-10-10: additionally assert research events require consent and exclude the event ID and non-allowlisted fields.",
     "apps/web/src/components/auth.tsx": "2026-10-11: reviewed authenticated navigation performance release PR #17; session-scoped data reuse and auth-safe reads. Mobile UI/route contract regression tests and production build passed.",
     "apps/web/src/components/ui.tsx": "2026-10-11: reviewed authenticated navigation performance release PR #17; session-scoped data reuse and auth-safe reads. Mobile UI/route contract regression tests and production build passed.",
@@ -11,12 +11,13 @@
     "apps/web/src/workspace/client.ts": "2026-10-11: reviewed authenticated navigation performance release PR #17; session-scoped data reuse and auth-safe reads. Mobile UI/route contract regression tests and production build passed.",
     "apps/web/src/workspace/ui.tsx": "2026-10-11: reviewed authenticated navigation performance release PR #17; session-scoped data reuse and auth-safe reads. Mobile UI/route contract regression tests and production build passed.",
     "apps/web/src/mobile/notifications.tsx": "2026-10-14: user-requested production email notifications; persist explicit opt-in through authenticated endpoint and retain unavailable/failed-write behavior. Preserve layout, route expressions and CSS.",
-    "apps/web/src/workspace/notifications.tsx": "2026-10-14: user-requested production email notifications; persist explicit opt-in through authenticated endpoint and retain unavailable/failed-write behavior. Preserve layout, route expressions and CSS."
+    "apps/web/src/workspace/notifications.tsx": "2026-10-14: user-requested production email notifications; persist explicit opt-in through authenticated endpoint and retain unavailable/failed-write behavior. Preserve layout, route expressions and CSS.",
+    "apps/web/e2e/mobile-details.spec.ts": "2026-10-14: strictly validate and serve the new authenticated email-preferences endpoint in isolated synthetic tests, preserving unexpected-request rejection and adding persisted opt-in browser regression."
   },
   "files": {
     "apps/web/e2e/mobile-authenticated.spec.ts": "4e53bce533bcf687f28738ffc9a52cd1df4aa07ced64427a6fd8af30989026c6",
-    "apps/web/e2e/mobile-details.spec.ts": "96c19c63cac8f68147a75088118b7574128f3e7429ceca18904bf7551f36bad0",
-    "apps/web/e2e/mobile-fixture.ts": "45da1d2899b542ad6d8cc82bef67acb0f443462d6d29c56c0cb8f2c2d5e1a5e1",
+    "apps/web/e2e/mobile-details.spec.ts": "8d8ccb5d2d333b7d6f151ddf1dce768a6847fcf225952f9218959d6ab8b32f9c",
+    "apps/web/e2e/mobile-fixture.ts": "222a20d334c5c07a650153d87c48babff69499c6f88a64eb91dce3f542b637ba",
     "apps/web/public/reference-assets/logos/000660.webp": "f929f01b36db4e59075cf4eb7ad2ae5cc285bcf3febdf63d4986090eca547cf8",
     "apps/web/public/reference-assets/logos/005380.webp": "34b0302b033f9b8e5e4b0132905eb1f15835e15df624290df6b74168580a22e7",
     "apps/web/public/reference-assets/logos/005490.webp": "cef6cef4dc1fab0a48bd410370a8dbb14622629a7231e9fb345f10dff9a0ddc6",
