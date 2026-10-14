@@ -1,9 +1,9 @@
 // Server-side route adapter. Never forwards cookies or arbitrary destinations.
-const methods:Record<string,string[]>={status:['GET'],'reference-rate':['GET'],verify:['POST'],'auth-diagnostic':['GET'],filings:['GET'],analysis:['GET'],quotes:['GET'],fx:['GET'],news:['GET'],ingest:['POST'],analyze:['POST'],review:['POST'],'email-test':['POST']};
+const methods:Record<string,string[]>={health:['GET'],status:['GET'],'reference-rate':['GET'],verify:['POST'],'auth-diagnostic':['GET'],filings:['GET'],analysis:['GET'],quotes:['GET'],fx:['GET'],news:['GET'],ingest:['POST'],analyze:['POST'],review:['POST'],'email-test':['POST']};
 export async function proxyUS(req:Request,path:string):Promise<Response>{
  const fail=(code:string,status:number)=>Response.json({error:{code}},{status,headers:{'Cache-Control':'no-store'}});
  if(!methods[path]?.includes(req.method))return fail('route_not_found',404);
- const publicRoute=['status','auth-diagnostic','reference-rate'].includes(path),authorization=req.headers.get('authorization');if(!publicRoute&&!authorization)return fail('authentication_required',401);
+ const publicRoute=['health','status','auth-diagnostic','reference-rate'].includes(path),authorization=req.headers.get('authorization');if(!publicRoute&&!authorization)return fail('authentication_required',401);
  const base=process.env.NEXT_PUBLIC_SUPABASE_URL||process.env.SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY||process.env.SUPABASE_PUBLISHABLE_KEY;
  if(!base||!key)return fail('supabase_configuration_missing',503);
  try{

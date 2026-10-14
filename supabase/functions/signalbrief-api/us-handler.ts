@@ -1,3 +1,4 @@
+import {verificationPlan,runVerification} from './verification.ts';
 import {createClient, type SupabaseClient} from 'npm:@supabase/supabase-js@2.117.2';
 import {ProviderError,obj,arr,str,providerFetch,jsonFetch,websitePermission,usSymbol,fmpQuote,fmpHistory,frankfurter,secSubmissions,validateFilingURL,normalizeFiling,analyzeEvidence,openaiSmoke,resendDomains,sendVerifiedEmail,gnewsSearch,type Row} from './us-core.ts';
 const env=(k:string)=>Deno.env.get(k)??'';
@@ -52,7 +53,7 @@ async function body(req:Request):Promise<Row>{
 export async function handleUS(req:Request):Promise<Response>{
  const url=new URL(req.url),i=url.pathname.indexOf('/signalbrief-us'),path=i>=0?url.pathname.slice(i+15):url.pathname;const db=admin();
  try{
-  if(path==='/health'&&req.method==='GET')return reply({status:'ready',release:'us-providers-v1',korean_data:'deferred'});
+  if(path==='/health'&&req.method==='GET')return reply({status:'ready',release:'us-providers-v1',selective_verification:true,korean_data:'deferred'});
   if(path==='/status'&&req.method==='GET'){
    const config=obj(await rpc(db,'sb_us_config')),s=await settings(db),checks=await db.from('us_provider_checks').select('provider,status,checked_at,detail');
    return reply({release:'us-providers-v1',market:'US',credentials:{sec_contact:!!s.SEC_CONTACT_EMAIL,fmp:!!s.FMP_API_KEY,openai:!!s.OPENAI_API_KEY,resend:!!s.RESEND_API_KEY,gnews:!!s.GNEWS_API_KEY},korea:{available:false,reason:'OpenDART_and_KRX_deferred'},fmp_display:websitePermission(config,'fmp'),gnews_deployed:websitePermission(config,'gnews'),ai_budget_enabled:Number(config.ai_daily_budget_usd)>0,scheduled_ingestion:config.scheduled_ingestion_enabled===true,checks:arr(checks.data).map(c=>({provider:c.provider,status:c.status,checked_at:c.checked_at,code:obj(c.detail).code??null}))});
@@ -86,13 +87,15 @@ export async function handleUS(req:Request):Promise<Response>{
   if(req.method==='POST'&&['/ingest','/analyze','/review','/email-test','/verify'].includes(path)){
    if(!await rpc(actor.db,'sb_is_admin'))throw new ProviderError('auth','admin_required',403);const p=await body(req),s=await settings(db);
    if(path==='/verify'){
-    const result:Row={};
-    result.fx=await recordCheck(db,'fx',async()=>{await reserve(db,'fx');return frankfurter('USD','KRW');});
-    result.fmp=await recordCheck(db,'fmp',async()=>{await reserve(db,'fmp');const q=await fmpQuote('AAPL',str(s.FMP_API_KEY));return {quote_received:true,as_of:q.as_of,display_permitted:websitePermission(config,'fmp')};});
-    result.openai=await recordCheck(db,'openai',async()=>{if(!s.OPENAI_API_KEY)throw new ProviderError('openai','missing_key',503);await reserve(db,'openai',0.0005);return openaiSmoke(str(s.OPENAI_API_KEY));});
-    result.resend=await recordCheck(db,'resend',async()=>{await reserve(db,'resend');const domains=await resendDomains(str(s.RESEND_API_KEY));return {verified_sender:domains.some(d=>d.status==='verified'),email_sent:false};});
-    result.sec=await recordCheck(db,'sec',async()=>{const c=await db.from('companies').select('provider_company_id').eq('ticker','AAPL').eq('provider','sec').single();if(!c.data)throw new ProviderError('sec','company_missing');await reserve(db,'sec');const f=await secSubmissions(c.data.provider_company_id,str(s.SEC_CONTACT_EMAIL));return {records:f.filings.length};});
-    result.gnews={status:'not_called',reason:websitePermission(config,'gnews')?'run_news_query_separately':'deployed_plan_unverified'};
+    let plan;try{plan=verificationPlan(p.providers);}catch{throw new ProviderError('api','invalid_verification_providers',422);}
+    const result=await runVerification<Row>(plan,{
+     fx:()=>recordCheck(db,'fx',async()=>{await reserve(db,'fx');return frankfurter('USD','KRW');}),
+     fmp:()=>recordCheck(db,'fmp',async()=>{if(!s.FMP_API_KEY)throw new ProviderError('fmp','missing_key',503);await reserve(db,'fmp');const q=await fmpQuote('AAPL',str(s.FMP_API_KEY));return {quote_received:true,as_of:q.as_of,display_permitted:websitePermission(config,'fmp')};}),
+     openai:()=>recordCheck(db,'openai',async()=>{if(!s.OPENAI_API_KEY)throw new ProviderError('openai','missing_key',503);await reserve(db,'openai',0.0005);return openaiSmoke(str(s.OPENAI_API_KEY));}),
+     resend:()=>recordCheck(db,'resend',async()=>{await reserve(db,'resend');const domains=await resendDomains(str(s.RESEND_API_KEY));return {verified_sender:domains.some(d=>d.status==='verified'),email_sent:false};}),
+     sec:()=>recordCheck(db,'sec',async()=>{const c=await db.from('companies').select('provider_company_id').eq('ticker','AAPL').eq('provider','sec').single();if(!c.data)throw new ProviderError('sec','company_missing');await reserve(db,'sec');const f=await secSubmissions(c.data.provider_company_id,str(s.SEC_CONTACT_EMAIL));return {records:f.filings.length};}),
+     gnews:async()=>({status:'not_called',reason:websitePermission(config,'gnews')?'run_news_query_separately':'deployed_plan_unverified'}),
+    });
     return reply(result);
    }
    if(path==='/ingest')return reply(await ingest(db,s,str(p.symbol)));
