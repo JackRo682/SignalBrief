@@ -52,6 +52,7 @@ def provider_db():
         directory = Path(__file__).resolve().parents[1] / "docs" / "sql"
         connection.execute((directory / "delivery.sql").read_text())
         connection.execute((directory / "dart-documents.sql").read_text())
+        connection.execute((directory / "dart-relay.sql").read_text())
         yield connection
     finally:
         connection.close()
@@ -154,3 +155,28 @@ def test_dart_claims_are_not_repeated_and_drafts_require_an_admin(provider_db):
     assert provider_db.execute("SELECT sb_dart_document_claim()").fetchone()[0] is None
     with pytest.raises(psycopg.Error, match="admin_required"):
         provider_db.execute("SELECT sb_dart_review(%s,'approved','Synthetic test review')", (filing,))
+
+
+def test_dart_relay_requires_fresh_signature_and_rejects_replay(provider_db):
+    import hashlib
+    import hmac
+    import json
+    import time
+
+    secret = "a" * 64
+    provider_db.execute("INSERT INTO vault.decrypted_secrets VALUES(%s,%s)",
+                        ("signalbrief::DART_RELAY_SECRET", secret))
+    body = json.dumps({"nonce": "b" * 64, "kind": "list"})
+    timestamp = str(int(time.time() * 1000))
+    signature = hmac.new(secret.encode(), (timestamp + "\n" + body).encode(), hashlib.sha256).hexdigest()
+    provider_db.execute("SET ROLE anon")
+    query = "SELECT public.sb_dart_relay_claim(%s,%s,%s)"
+    assert provider_db.execute(query, (body, timestamp, "0" * 64)).fetchone()[0] is False
+    assert provider_db.execute(query, (body, timestamp, signature)).fetchone()[0] is True
+    assert provider_db.execute(query, (body, timestamp, signature)).fetchone()[0] is False
+    assert provider_db.execute(query, (body, "1000000000000", signature)).fetchone()[0] is False
+    with pytest.raises(psycopg.errors.InsufficientPrivilege):
+        provider_db.execute("SELECT public.sb_us_secrets()")
+    with pytest.raises(psycopg.errors.InsufficientPrivilege):
+        provider_db.execute("SELECT * FROM app_private.dart_relay_nonces")
+    provider_db.execute("RESET ROLE")

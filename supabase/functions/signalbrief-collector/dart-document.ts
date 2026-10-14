@@ -1,13 +1,15 @@
 import {unzipSync} from 'npm:fflate@0.8.2';
 import {SaxesParser} from 'npm:saxes@6.0.0';
 import type {SupabaseClient} from 'npm:@supabase/supabase-js@2.117.2';
-import {ProviderError,obj,str,analyzeEvidence,type Row} from '../signalbrief-api/us-core.ts';
+import {ProviderError,obj,str,analyzeEvidence,transportCode,type Row} from '../signalbrief-api/us-core.ts';
 import {inspectDartZIP,crc32,validateDartXML} from './dart-document-core.ts';
+import {dartRelay} from './dart-relay.ts';
 const sha=async(bytes:Uint8Array)=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new Uint8Array(bytes).buffer))].map(x=>x.toString(16).padStart(2,'0')).join('');
 async function rpc(db:SupabaseClient,name:string,args:Row={}){const {data,error}=await db.rpc(name,args);if(error)throw new ProviderError('database','operation_failed');return data;}
-async function download(receipt:string,key:string):Promise<Uint8Array>{
+async function download(receipt:string,key:string,relaySecret:string):Promise<Uint8Array>{
  if(!/^\d{14}$/.test(receipt)||!/^[a-f0-9]{40}$/i.test(key))throw new ProviderError('dart','missing_or_invalid_key',503);
  const url=new URL('https://opendart.fss.or.kr/api/document.xml');url.searchParams.set('rcept_no',receipt);url.searchParams.set('crtfc_key',key);
+ if(relaySecret)return dartRelay({kind:'document',key,receipt},relaySecret);
  try{
   const response=await fetch(url,{redirect:'error',signal:AbortSignal.timeout(20000)});if(!response.ok)throw new ProviderError('dart','document_http_error');
   if(Number(response.headers.get('content-length')??0)>20_000_000)throw new ProviderError('dart','archive_size_limit');
@@ -16,7 +18,7 @@ async function download(receipt:string,key:string):Promise<Uint8Array>{
   const bytes=new Uint8Array(length);let offset=0;for(const part of chunks){bytes.set(part,offset);offset+=part.length;}
   if(bytes[0]!==80||bytes[1]!==75){const error=new TextDecoder().decode(bytes.slice(0,2000));throw new ProviderError('dart',/<status>020<\/status>/.test(error)?'quota_exceeded':'invalid_document_response');}
   return bytes;
- }catch(error){if(error instanceof ProviderError)throw error;throw new ProviderError('dart','network_or_timeout');}
+ }catch(error){if(error instanceof ProviderError)throw error;throw new ProviderError('dart',transportCode(error));}
 }
 async function archive(db:SupabaseClient,path:string,bytes:Uint8Array,type:string){const result=await db.storage.from('signalbrief-raw').upload(path,bytes,{contentType:type,upsert:false});if(result.error&&!/duplicate|already exists/i.test(result.error.message))throw new ProviderError('storage','archive_failed');}
 export async function processDartDocument(db:SupabaseClient,secrets:Row,config:Row):Promise<Row>{
@@ -24,7 +26,7 @@ export async function processDartDocument(db:SupabaseClient,secrets:Row,config:R
  const filing=obj(await rpc(db,'sb_dart_document_claim'));if(!filing.id)return {status:'idle'};
  try{
   await rpc(db,'sb_us_reserve',{p:'dart',amount:0,smoke:false});
-  const raw=await download(str(filing.receipt),str(secrets.DART_API_KEY)),rawHash=await sha(raw),members=inspectDartZIP(raw);
+  const raw=await download(str(filing.receipt),str(secrets.DART_API_KEY),str(secrets.DART_RELAY_SECRET)),rawHash=await sha(raw),members=inspectDartZIP(raw);
   const rawPath='dart/documents/'+rawHash+'.zip';await archive(db,rawPath,raw,'application/zip');
   const expanded=unzipSync(raw);const texts:string[]=[];
   for(const member of members){

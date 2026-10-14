@@ -1,4 +1,5 @@
 import {ProviderError,obj,arr,str,providerFetch,type Row,type Fetcher} from '../signalbrief-api/us-core.ts';
+import {dartRelay} from './dart-relay.ts';
 
 export function taskToken(value:string):string {
  if(!/^[a-f0-9]{64}$/.test(value))throw new ProviderError('auth','invalid_task',401);
@@ -20,12 +21,13 @@ export function dartPage(raw:string,corpCode:string):{items:Row[];pages:number} 
  });
  return {items,pages};
 }
-export async function dartList(corpCode:string,key:string,page:number,fetcher:Fetcher=fetch):Promise<string>{
+export async function dartList(corpCode:string,key:string,page:number,fetcher:Fetcher=fetch,relaySecret=''):Promise<string>{
  if(!/^[0-9]{8}$/.test(corpCode))throw new ProviderError('dart','invalid_corp_code',422);
  if(!/^[a-f0-9]{40}$/i.test(key))throw new ProviderError('dart','missing_or_invalid_key',503);
  if(!Number.isInteger(page)||page<1||page>5)throw new ProviderError('dart','invalid_page',422);
  const url=new URL('https://opendart.fss.or.kr/api/list.json');
  const start=koreaDate(new Date(Date.now()-7*86400_000));
  for(const [k,v] of Object.entries({crtfc_key:key,corp_code:corpCode,bgn_de:start,end_de:koreaDate(),page_no:String(page),page_count:'100',sort:'date',sort_mth:'desc'}))url.searchParams.set(k,v);
+ if(relaySecret)return new TextDecoder().decode(await dartRelay({kind:'list',key,corp_code:corpCode,page,bgn_de:start,end_de:koreaDate()},relaySecret));
  return providerFetch(url,'dart',{},fetcher,2_000_000);
 }

@@ -1,8 +1,16 @@
 // @vitest-environment node
 import {describe,it,expect,vi} from 'vitest';
-import {providerFetch,fmpQuote,fmpHistory,frankfurter,secSubmissions,validateFilingURL,normalizeFiling,validateAnalysis,websitePermission,gnewsSearch,sendVerifiedEmail,ProviderError,openaiSmoke} from '../../../supabase/functions/signalbrief-api/us-core';
+import {providerFetch,fmpQuote,fmpHistory,frankfurter,secSubmissions,validateFilingURL,normalizeFiling,validateAnalysis,websitePermission,gnewsSearch,sendVerifiedEmail,ProviderError,openaiSmoke,evidencePassages,resolveEvidence,transportDiagnostic} from '../../../supabase/functions/signalbrief-api/us-core';
 const response=(v:unknown,status=200)=>vi.fn().mockResolvedValue(new Response(JSON.stringify(v),{status}));
 describe('server provider boundaries',()=>{
+ it.each([
+  [new DOMException('secret URL','TimeoutError'),'request_timeout'],
+  [new Error('invalid peer certificate: UnknownIssuer key=SECRET'),'tls_verification_failed'],
+  [new Error('dns lookup failed key=SECRET'),'dns_resolution_failed'],
+  [new Error('connection refused key=SECRET'),'connection_failed'],
+ ])('reports safe transport categories',async(error,code)=>{
+  await expect(providerFetch(new URL('https://opendart.fss.or.kr/api/list.json?crtfc_key=SECRET'),'dart',{},vi.fn().mockRejectedValue(error))).rejects.toThrow(`dart:${code}`);
+ });
  it.each(['http://data.sec.gov/a','https://untrusted.example/a','https://secret@data.sec.gov/a','https://data.sec.gov:8443/a'])('rejects %s before networking',async url=>{const f=vi.fn();await expect(providerFetch(new URL(url),'sec',{},f)).rejects.toThrow('invalid_endpoint');expect(f).not.toHaveBeenCalled();});
  it('does not reflect provider errors or secret URLs',async()=>{const f=vi.fn().mockRejectedValue(new Error('key=SUPERSECRET'));await expect(providerFetch(new URL('https://financialmodelingprep.com/stable/quote?apikey=SUPERSECRET'),'fmp',{},f)).rejects.toThrow('fmp:network_or_timeout');});
  it('bounds chunked response bytes',async()=>{const f=vi.fn().mockResolvedValue(new Response('x'.repeat(201)));await expect(providerFetch(new URL('https://data.sec.gov/a'),'sec',{},f,200)).rejects.toThrow('response_too_large');});
@@ -37,4 +45,13 @@ describe('evidence and outbound email',()=>{
  it('rejects header injection',async()=>{const f=vi.fn();await expect(sendVerifiedEmail('private','ops@example.com','test@example.com','Test\nBcc: attacker','Test',[{name:'example.com',status:'verified'}],f)).rejects.toThrow();expect(f).not.toHaveBeenCalled();});
  it('passes OpenAI keys only as server Authorization headers',async()=>{const f=response({model:'gpt-4.1-mini',choices:[{message:{content:'OK'}}],usage:{prompt_tokens:8,completion_tokens:1}});const r=await openaiSmoke('private',f);expect(JSON.stringify(r)).not.toContain('private');expect(f.mock.calls[0][1].headers.Authorization).toBe('Bearer private');expect(JSON.parse(f.mock.calls[0][1].body).store).toBe(false);});
  it('history never substitutes unsupported market data',async()=>{await expect(fmpHistory('AAPL','private',response({error:'Upgrade'}))).rejects.toThrow('invalid_history');});
+});
+
+describe('server-resolved citations',()=>{
+ const source='Revenue was $100 million for the year ended December 31, 2025. The figure is in USD. '.repeat(30);
+ it('preserves exact offsets and bounded source quotes',()=>{for(const p of evidencePassages(source)){expect(source.slice(p.start,p.end)).toBe(p.quote);expect(p.quote.length).toBeLessThanOrEqual(1000);}});
+ it('attaches citations from the source instead of model-copied text',()=>expect(resolveEvidence({claims:[{text:'Revenue was $100 million.',evidence_id:0}],uncertainty:'Excerpt'},evidencePassages(source),source)).toMatchObject({citation_method:'server_resolved_passage_v1',requires_human_review:true}));
+ it.each([-1,99,0.1,'0',null])('rejects invented evidence IDs %s',evidence_id=>expect(()=>resolveEvidence({claims:[{text:'Claim',evidence_id}]},evidencePassages(source),source)).toThrow('invalid_evidence_reference'));
+ it('still rejects unsupported numbers',()=>expect(()=>resolveEvidence({claims:[{text:'Revenue was $999 million.',evidence_id:0}]},evidencePassages(source),source)).toThrow('numeric_citation_mismatch'));
+ it('redacts credential-bearing diagnostics',()=>expect(transportDiagnostic(new Error('https://opendart.fss.or.kr/api/list.json?crtfc_key='+ 'b'.repeat(40)))).not.toContain('b'.repeat(40)));
 });
