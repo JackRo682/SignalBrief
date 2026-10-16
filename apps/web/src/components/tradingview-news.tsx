@@ -19,7 +19,7 @@ export function TradingViewNews() {
     script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-timeline.js';
     script.async = true;
     script.textContent = JSON.stringify({feedMode: 'all_symbols', colorTheme: 'light',
-      isTransparent: false, displayMode: 'regular', width: '100%', height: 520, locale: 'kr'});
+      isTransparent: false, displayMode: 'regular', width: '100%', height: 520, locale: 'en'});
     const timer = window.setTimeout(() => {if (active) setState('error');}, 20000);
     const observer = new MutationObserver(() => {
       const frame = container.querySelector('iframe');
@@ -44,7 +44,7 @@ export function TradingViewNews() {
 
   return <section className="sb-news" aria-label="TradingView 주요 뉴스">
     <header><h2>주요 뉴스</h2><a href="/news">뉴스 페이지 ↗</a></header>
-    <p>한국어 설정으로 제공됩니다. 기사 제목과 제공 범위는 TradingView에 따라 달라질 수 있습니다.</p>
+    <p>TradingView Top Stories는 현재 영어로 제공됩니다. 한국어 뉴스는 별도 공급자 연결이 필요합니다.</p>
     {state === 'loading' && <p role="status">뉴스 위젯을 불러오는 중…</p>}
     {state === 'error' && <div role="status"><p>뉴스를 표시하지 못했습니다. 아래 TradingView 링크에서 확인할 수 있습니다.</p>
       <button type="button" onClick={() => {setState('loading'); setRevision(n => n + 1);}}>다시 시도</button></div>}

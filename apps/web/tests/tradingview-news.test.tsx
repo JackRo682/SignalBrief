@@ -9,7 +9,7 @@ describe('TradingView embed lifecycle', () => {
     const view = render(<StrictMode><TradingViewNews/></StrictMode>);
     expect(view.container.querySelectorAll('script')).toHaveLength(1);
     const script = view.container.querySelector('script')!;
-    expect(JSON.parse(script.textContent!)).toMatchObject({locale: 'kr', feedMode: 'all_symbols'});
+    expect(JSON.parse(script.textContent!)).toMatchObject({locale: 'en', feedMode: 'all_symbols'});
     const host = view.container.querySelector('.sb-news-widget')!;
     await act(async () => {host.appendChild(document.createElement('iframe'));});
     expect(screen.queryByText('뉴스 위젯을 불러오는 중…')).toBeNull();

@@ -2,9 +2,11 @@
 
 ## Shipped scope
 
-TradingView Top Stories is embedded with `locale: kr` on desktop/mobile Today and `/news`.
-The provider owns article availability and language; this setting is not a promise
-that all titles will be Korean. Attribution and direct source navigation remain visible.
+TradingView Top Stories is embedded on desktop/mobile Today and `/news`.
+A live preview and the provider script both confirm that the timeline widget forces
+`locale: en` (`o.locale="en"` in `_replaceScript`), even when `kr` is requested.
+The UI therefore explicitly says that this feed is English. Korean headlines need
+a separately authorized provider such as NAVER API HUB. Attribution and direct source navigation remain visible.
 External news is separate from reviewed filing evidence. No scraping, translation,
 article storage or new GNews subscription is introduced.
 
@@ -31,7 +33,8 @@ API HUB is temporarily free, with a future paid policy announced separately.
 Current application-specific display terms must be reviewed before activation;
 the legacy FAQ is insufficient to establish API HUB commercial rights.
 Cloud console sign-in is required to register the requested application.
-No application or key has been issued by this change.
+No application or key has been issued by this change. The observed legacy
+registration form omits Search API entirely, consistent with the migration notice.
 
 ### Korean company profiles: FSC public data
 
