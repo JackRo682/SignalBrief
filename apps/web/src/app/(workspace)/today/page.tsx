@@ -2,4 +2,4 @@ import {TradingViewNews} from '@/components/tradingview-news';
 import {DesktopToday} from '@/desktop/today';
 import ResponsiveScreen from '@/mobile/responsive';
 import MobileToday from '@/mobile/today';
-export default function Page(){return <><ResponsiveScreen mobile={<MobileToday/>} desktop={<DesktopToday/>}/><TradingViewNews/></>;}
+export default function Page(){return <><ResponsiveScreen mobile={<MobileToday/>} desktop={<DesktopToday/>}/><TradingViewNews autoLoad={false}/></>;}

@@ -7,7 +7,9 @@ A live preview and the provider script both confirm that the timeline widget for
 `locale: en` (`o.locale="en"` in `_replaceScript`), even when `kr` is requested.
 The UI therefore explicitly says that this feed is English. Korean headlines need
 a separately authorized provider such as NAVER API HUB. Attribution and direct source navigation remain visible.
-External news is separate from reviewed filing evidence. No scraping, translation,
+Today loads the external widget only after an explicit Load news action; `/news`
+auto-loads it. This avoids unsolicited third-party requests during ordinary account
+navigation. External news is separate from reviewed filing evidence. No scraping, translation,
 article storage or new GNews subscription is introduced.
 
 CSP permits only the timeline embed script and TradingView's widget frame origin.
@@ -53,3 +55,10 @@ was saved, and no live company profile API success is claimed.
 After authentication and approval, wire the actual issued keys server-side,
 validate real provider responses, and only then activate news/profile UI.
 Never use `NEXT_PUBLIC_` for secrets or commit keys to Git.
+
+## Observed Naver account blocker
+
+Naver sign-in completed, but the API HUB console reports that the account cannot
+use the service and directs the account holder to support. It lists unregistered
+payment information as a possible cause, not a confirmed diagnosis. No payment
+method, paid service, new account, or subscription was configured.

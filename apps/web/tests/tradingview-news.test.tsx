@@ -5,6 +5,13 @@ import {TradingViewNews} from '../src/components/tradingview-news';
 
 afterEach(() => {cleanup(); vi.useRealTimers();});
 describe('TradingView embed lifecycle', () => {
+  it('makes no third-party request on Today until news is explicitly opened', () => {
+    const view = render(<TradingViewNews autoLoad={false}/>);
+    expect(view.container.querySelector('script')).toBeNull();
+    expect(screen.queryByText('뉴스 위젯을 불러오는 중…')).toBeNull();
+    fireEvent.click(screen.getByRole('button', {name: '뉴스 불러오기'}));
+    expect(view.container.querySelectorAll('script')).toHaveLength(1);
+  });
   it('keeps one embed in Strict Mode and cleans it up on unmount', async () => {
     const view = render(<StrictMode><TradingViewNews/></StrictMode>);
     expect(view.container.querySelectorAll('script')).toHaveLength(1);
