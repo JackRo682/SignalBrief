@@ -6,10 +6,11 @@ export async function dispatchEmail(db:SupabaseClient,secrets:Row,config:Row):Pr
  if(config.email_enabled!==true||config.resend_domain_verified!==true||!secrets.RESEND_API_KEY)return {status:'blocked',code:'email_configuration_missing'};
  const task=obj(await rpc(db,'sb_email_claim'));if(!task.id)return {status:'idle'};
  try{
+  if(await rpc(db,'sb_email_defer_if_quiet',{eid:task.id}))return {status:'deferred'};
   const permitted=await rpc(db,'sb_email_permitted',{eid:task.id});
   if(!permitted){await rpc(db,'sb_email_finish',{eid:task.id,message_id:null,error_code:'consent_or_publication_changed',retryable:false});return {status:'suppressed'};}
   await rpc(db,'sb_us_reserve',{p:'resend',amount:0,smoke:false});
-  const message=await sendNotification(str(secrets.RESEND_API_KEY),str(config.resend_from),str(task.recipient),str(task.subject),str(task.body),'sb-email-'+str(task.id));
+  const message=await sendNotification(str(secrets.RESEND_API_KEY),str(config.resend_from),str(task.recipient),str(task.subject),str(task.body),'sb-email-'+str(task.id),fetch,str(task.unsubscribe_url)||undefined);
   await rpc(db,'sb_email_finish',{eid:task.id,message_id:message,error_code:null,retryable:false});
   return {status:'submitted',email_id:message};
  }catch(error){

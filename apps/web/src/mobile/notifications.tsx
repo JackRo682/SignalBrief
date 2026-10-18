@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import DailyDigestSettings from '@/workspace/daily-digest';
 import {z} from 'zod';
 import {useEffect,useState,type ReactNode} from 'react';
 import {useAuth} from '@/components/auth';
@@ -48,7 +49,7 @@ export default function MobileNotifications(){
  const summary=[
   {icon:'bell',tone:'blue',name:t('앱 내 알림','In-app alerts'),value:settings.data?(settings.data.realtime_enabled?t('사용 중','On'):t('꺼짐','Off')):'—'},
   {icon:'mail',tone:'purple',name:t('이메일 알림','Email alerts'),value:email.available?email.enabled?t('사용 중','On'):t('꺼짐','Off'):t('미제공','Unavailable')},
-  {icon:'file',tone:'green',name:t('일간 요약 리포트','Daily digest'),value:t('미제공','Unavailable')},
+  {icon:'file',tone:'green',name:t('일간 요약 리포트','Daily digest'),value:t('아래에서 설정','Configure below')},
   {icon:'shield',tone:'red',name:t('정정 / 철회 안내','Corrections'),value:t('분석 화면','On analysis')},
   {icon:'minus',tone:'red',name:t('알림 제외 기업','Muted companies'),value:prefs.loaded?`${value.muted_companies.length}${t('개','')}`:'—'},
   {icon:'bars',tone:'purple',name:t('중요도 임계값','Importance'),value:settings.data?thresholdText(settings.data.notify_min_score):'—'},
@@ -59,7 +60,7 @@ export default function MobileNotifications(){
   <div className="mn-settings-list">
    <SettingCard icon="bell" tone="blue" title={t('앱 내 알림','In-app alerts')} description={t('검토된 이벤트가 게시되면 앱 내 알림을 생성합니다.','Generate in-app alerts for reviewed events.')}><PolicySwitch label={t('앱 내 알림','In-app alerts')} checked={settings.data?.realtime_enabled??false} disabled={!settings.data||busy} onChange={()=>baseChange({realtime_enabled:!settings.data?.realtime_enabled})}/></SettingCard>
    <SettingCard icon="mail" tone="purple" title={t('이메일 알림','Email alerts')} description={t('검토된 앱 알림을 이메일로 전송하며 앱 알림·기업 규칙·방해 금지 설정을 따릅니다. 최대 15분 지연될 수 있습니다.','Email reviewed app alerts, respecting app alerts, rules and quiet hours. Delivery may take up to 15 minutes.')}><PolicySwitch label={email.available?t('이메일 알림','Email alerts'):t('이메일 알림 — 미제공','Email alerts — unavailable')} checked={email.enabled} disabled={!email.available||busy} onChange={emailChange}/><small className="mn-unavailable">{email.available?email.enabled?t('사용 중','On'):t('꺼짐','Off'):t('현재 미제공','Unavailable')}</small></SettingCard>
-   <SettingCard icon="file" tone="green" title={t('일간 요약 리포트','Daily digest')} description={t('예약 요약 발송은 현재 제공되지 않습니다.','Scheduled digests are not available.')}><div className="mn-segment" aria-label={t('일간 요약 발송 — 미제공','Daily digest — unavailable')}>{[t('안함','Off'),t('매일','Daily'),t('주 1회','Weekly')].map((label,i)=><button type="button" disabled aria-pressed={i===0} key={label}>{label}</button>)}</div></SettingCard>
+   <SettingCard icon="file" tone="green" title={t('일간 요약 리포트','Daily digest')} description={t('수신 여부와 발송 시각을 설정하세요.','Choose your email schedule.')} wide><DailyDigestSettings/></SettingCard>
    <SettingCard icon="shield" tone="red" title={t('정정 / 철회 안내','Corrections / withdrawals')} description={t('알림 설정과 관계없이 분석 화면에 표시됩니다.','Notices remain visible on the analysis screen.')}><span className="mn-status">{t('분석 화면에서 확인','On analysis')}</span></SettingCard>
    <SettingCard icon="minus" tone="red" title={t('알림 제외 기업','Muted companies')} description={t('선택 기업의 새 일반 알림을 생성하지 않습니다.','Do not generate new ordinary alerts for these companies.')} wide><div className="mn-chips">{value.muted_companies.map(id=>{const c=companies.data?.items.find(item=>item.id===id);return <button type="button" key={id} disabled={!ready} aria-label={`${c?.title??id} ${t('알림 제외 해제','unmute')}`} onClick={()=>change({muted_companies:value.muted_companies.filter(x=>x!==id)})}>{c?.ticker&&<CompanyLogo ticker={c.ticker} size={17}/>}<span>{c?.title??t('기업','Company')}</span><MIcon name="close" size={12}/></button>;})}<button type="button" className="mn-add" disabled={!ready||value.muted_companies.length>=50} onClick={()=>setMute(true)}><MIcon name="plus" size={14}/>{t('기업 추가하기','Add company')}</button></div></SettingCard>
    <SettingCard icon="bars" tone="purple" title={t('중요도 임계값','Importance threshold')} description={t('관련도 점수가 기준 이상인 알림을 생성합니다.','Generate alerts meeting the relevance threshold.')} wide><div className="mn-range"><label htmlFor="mn-threshold">{thresholdText(threshold)}</label><input id="mn-threshold" aria-label={t('중요도 임계값','Importance threshold')} aria-valuetext={thresholdText(threshold)} type="range" min="0" max="1" step="0.01" value={threshold} disabled={!settings.data||busy} style={{'--mn-fill':`${threshold*100}%`} as React.CSSProperties} onChange={e=>setThreshold(Number(e.target.value))}/><div className="mn-range-labels"><span>{t('낮음','Low')}</span><span>{t('보통','Medium')}</span><span>{t('높음','High')}</span><span>{t('매우 높음','Very high')}</span></div><button type="button" className="mn-apply" disabled={!settings.data||busy||threshold===settings.data.notify_min_score} onClick={()=>baseChange({notify_min_score:threshold})}>{t('기준 적용','Apply threshold')}</button></div></SettingCard>
