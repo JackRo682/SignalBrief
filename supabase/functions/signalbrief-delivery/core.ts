@@ -17,10 +17,10 @@ export async function verifyDeliveryWebhook(raw:string,headers:Headers,secret:st
   return {event_id:id,type:event.type,email_id:data.email_id,occurred_at:event.created_at};
  }catch{throw new ProviderError('auth','invalid_webhook',401);}
 }
-export async function sendNotification(key:string,from:string,to:string,subject:string,text:string,id:string,fetcher:Fetcher=fetch):Promise<string>{
+export async function sendNotification(key:string,from:string,to:string,subject:string,text:string,id:string,fetcher:Fetcher=fetch,unsubscribeURL?:string):Promise<string>{
  const email=/^[A-Za-z0-9.!#$%&'*+/=?^_{|}~-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
  if(!key||!email.test(from)||!email.test(to)||/[\r\n]/.test(subject)||!/^sb-email-[a-zA-Z0-9-]{1,100}$/.test(id))throw new ProviderError('resend','invalid_email_request',422);
- const response=obj(await jsonFetch(new URL('https://api.resend.com/emails'),'resend',{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json','Idempotency-Key':id},body:JSON.stringify({from,to:[to],subject:subject.slice(0,150),text:text.slice(0,20000)})},fetcher));
+ const response=obj(await jsonFetch(new URL('https://api.resend.com/emails'),'resend',{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json','Idempotency-Key':id},body:JSON.stringify({from,to:[to],subject:subject.slice(0,150),text:(text.slice(0,19000)+(unsubscribeURL&&!text.includes(unsubscribeURL)?'\n\n이메일 수신 거부 / Unsubscribe: '+unsubscribeURL:'')).slice(0,20000),...(unsubscribeURL?{headers:{'List-Unsubscribe':'<'+unsubscribeURL+'>','List-Unsubscribe-Post':'List-Unsubscribe=One-Click'}}:{})})},fetcher));
  if(!str(response.id))throw new ProviderError('resend','missing_email_id');
  return str(response.id);
 }
