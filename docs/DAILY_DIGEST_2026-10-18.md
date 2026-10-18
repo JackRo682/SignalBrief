@@ -33,3 +33,7 @@ Disable only this schedule with `select cron.unschedule('signalbrief-notificatio
 
 Scheduling reference: https://supabase.com/docs/guides/functions/schedule-functions
 Idempotency reference: https://resend.com/docs/dashboard/emails/idempotency-keys
+
+## Production web verification
+
+Deployment `dpl_7B4ndHE6SPeEk91Up9FAq8bLZu9C` is READY and aliased to https://signalbrief.online. `/api/release` reports implementation commit `3cdddd015c7c736907cee8a4ddc7c8ab6cf835e3`. `/email/unsubscribe` serves a no-login HTML confirmation with no-store/no-referrer headers; malformed links and unknown POST tokens return 400 without a success message. Supabase rewrites HTML responses to text/plain, so its GET unsubscribe endpoint uses a 303 redirect to the website confirmation; POST continues to implement provider one-click unsubscribe directly. The final route tests passed (4 tests) and the final Next build passed. No new real inbox-delivery result or signed-in production account mutation is claimed.

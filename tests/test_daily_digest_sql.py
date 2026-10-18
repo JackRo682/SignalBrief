@@ -7,6 +7,7 @@ import pytest
 from test_provider_delivery_sql import seed
 
 pytest_plugins = ['test_provider_delivery_sql']
+pytestmark = pytest.mark.postgres
 
 
 @pytest.fixture
