@@ -1,5 +1,5 @@
-import {TradingViewNews} from '@/components/tradingview-news';
+import {KoreanNews} from '@/components/korean-news';
 import {DesktopToday} from '@/desktop/today';
 import ResponsiveScreen from '@/mobile/responsive';
 import MobileToday from '@/mobile/today';
-export default function Page(){return <><ResponsiveScreen mobile={<MobileToday/>} desktop={<DesktopToday/>}/><TradingViewNews autoLoad={false}/></>;}
+export default function Page(){return <><ResponsiveScreen mobile={<MobileToday/>} desktop={<DesktopToday/>}/><KoreanNews/></>;}
