@@ -9,4 +9,6 @@ describe('private official DART relay',()=>{
  it('never accepts a configurable upstream host',()=>expect(dartEndpoint({...payload,host:'https://attacker.test'} as typeof payload).origin).toBe('https://opendart.fss.or.kr'));
  it.each([{...payload,page:6},{...payload,kind:'other'},{...payload,corp_code:'../../x'},{kind:'document',receipt:'bad'}])('rejects invalid upstream identifiers',p=>expect(()=>dartEndpoint(p as typeof payload)).toThrow());
  it('uses exact document receipt IDs',()=>expect(dartEndpoint({kind:'document',key:payload.key,nonce:payload.nonce,receipt:'20261014000001'}).searchParams.get('rcept_no')).toBe('20261014000001'));
+ it('routes company lookups only to the fixed official company endpoint',()=>{const url=dartEndpoint({...payload,kind:'company'});expect(url.origin+url.pathname).toBe('https://opendart.fss.or.kr/api/company.json');expect(url.searchParams.get('corp_code')).toBe(payload.corp_code);expect(url.searchParams.has('page_no')).toBe(false);});
+ it('rejects a malformed company code',()=>expect(()=>dartEndpoint({...payload,kind:'company',corp_code:'../../x'})).toThrow('relay_invalid_request'));
 });

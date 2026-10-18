@@ -108,6 +108,35 @@ def rpc(db, action, payload=None):
                       {'action': action, 'payload': json.dumps(payload or {})}).scalar()
 
 
+def test_dart_company_profile_is_discoverable_without_exposing_demo_companies(own):
+    korean = '20000000-0000-4000-8000-000000000081'
+    hidden = '20000000-0000-4000-8000-000000000082'
+    own.exec_driver_sql('RESET ROLE')
+    own.execute(text("""INSERT INTO public.companies
+        (id,name,ticker,market,provider,provider_company_id,is_demo,created_at)
+        VALUES (:k,'Synthetic Korean Company','123456','KOSPI','dart','12345678',false,now()),
+               (:h,'Synthetic Korean Demo','654321','KOSPI','dart','87654321',true,now())"""),
+                {'k': korean, 'h': hidden})
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+    detail = rpc(own, 'company', {'id': korean})
+    assert detail['company']['ticker'] == '123456'
+    assert detail['company']['market'] == 'KOSPI'
+    assert detail['events'] == detail['documents'] == detail['facts'] == []
+    matches = rpc(own, 'catalog', {'q': 'Synthetic Korean'})
+    assert [item['id'] for item in matches['items']] == [korean]
+    point = own.begin_nested()
+    with pytest.raises(Exception) as caught:
+        rpc(own, 'company', {'id': hidden})
+    point.rollback()
+    assert caught.value.orig.sqlstate == 'PT404'
+    point = own.begin_nested()
+    own.exec_driver_sql('SET LOCAL ROLE anon')
+    with pytest.raises(Exception) as caught:
+        rpc(own, 'company', {'id': korean})
+    point.rollback()
+    assert caught.value.orig.sqlstate == '42501'
+
+
 def document_rpc(db, payload):
     return db.execute(text('SELECT public.sb_document_detail(cast(:payload AS jsonb))'),
                       {'payload': json.dumps(payload)}).scalar()

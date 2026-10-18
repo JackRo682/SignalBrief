@@ -1,7 +1,7 @@
 import {createHmac,timingSafeEqual} from 'node:crypto';
 import {request as httpsRequest} from 'node:https';
 
-export type DartRelayPayload={kind:'list'|'document';key:string;nonce:string;corp_code?:string;page?:number;receipt?:string;bgn_de?:string;end_de?:string};
+export type DartRelayPayload={kind:'list'|'document'|'company';key:string;nonce:string;corp_code?:string;page?:number;receipt?:string;bgn_de?:string;end_de?:string};
 export function relaySignature(body:string,timestamp:string,secret:string):string {
  return createHmac('sha256',secret).update(timestamp+'\n'+body).digest('hex');
 }
@@ -13,8 +13,11 @@ export function verifyRelay(body:string,timestamp:string,signature:string,secret
  dartEndpoint(value);return value;
 }
 export function dartEndpoint(p:DartRelayPayload):URL {
- const url=new URL('https://opendart.fss.or.kr/api/'+(p.kind==='list'?'list.json':'document.xml'));
- if(p.kind==='list'){
+ const url=new URL('https://opendart.fss.or.kr/api/'+(p.kind==='list'?'list.json':p.kind==='company'?'company.json':'document.xml'));
+ if(p.kind==='company'){
+  if(!/^\d{8}$/.test(p.corp_code??''))throw new Error('relay_invalid_request');
+  url.searchParams.set('corp_code',p.corp_code!);
+ }else if(p.kind==='list'){
   if(!/^\d{8}$/.test(p.corp_code??'')||!Number.isInteger(p.page)||Number(p.page)<1||Number(p.page)>5||!/^\d{8}$/.test(p.bgn_de??'')||!/^\d{8}$/.test(p.end_de??''))throw new Error('relay_invalid_request');
   for(const [k,v] of Object.entries({corp_code:p.corp_code,page_no:String(p.page),bgn_de:p.bgn_de,end_de:p.end_de,page_count:'100',sort:'date',sort_mth:'desc'}))url.searchParams.set(k,v??'');
  }else if(p.kind==='document'&&/^\d{14}$/.test(p.receipt??''))url.searchParams.set('rcept_no',p.receipt!);

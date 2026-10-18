@@ -1,0 +1,8 @@
+.sb-company-profile { padding: 22px; border: 1px solid var(--border, #dbe1e8); border-radius: 14px; margin: 20px 0; background: var(--panel, transparent); }
+.sb-company-profile h2 { font-size: 17px; margin: 0 0 16px; }
+.sb-company-profile dl { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,220px),1fr)); gap: 16px 24px; margin: 0; }
+.sb-company-profile dt { font-size: 12px; opacity: .65; margin-bottom: 5px; }
+.sb-company-profile dd { margin: 0; font-size: 14px; overflow-wrap: anywhere; }
+.sb-company-profile a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.sb-company-profile-source { font-size: 12px; line-height: 1.8; opacity: .7; margin-bottom: 0; }
+.sb-company-profile button { border: 1px solid currentColor; border-radius: 5px; padding: 4px 8px; background: transparent; color: inherit; cursor: pointer; }

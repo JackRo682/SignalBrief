@@ -12,7 +12,8 @@
     "apps/web/src/workspace/ui.tsx": "2026-10-11: reviewed authenticated navigation performance release PR #17; session-scoped data reuse and auth-safe reads. Mobile UI/route contract regression tests and production build passed.",
     "apps/web/src/mobile/notifications.tsx": "2026-10-14: user-requested production email notifications; persist explicit opt-in through authenticated endpoint and retain unavailable/failed-write behavior. Preserve layout, route expressions and CSS.",
     "apps/web/src/workspace/notifications.tsx": "2026-10-14: user-requested production email notifications; persist explicit opt-in through authenticated endpoint and retain unavailable/failed-write behavior. Preserve layout, route expressions and CSS.",
-    "apps/web/e2e/mobile-details.spec.ts": "2026-10-14: strictly validate and serve the new authenticated email-preferences endpoint in isolated synthetic tests, preserving unexpected-request rejection and adding persisted opt-in browser regression."
+    "apps/web/e2e/mobile-details.spec.ts": "2026-10-14: strictly validate and serve the new authenticated email-preferences endpoint in isolated synthetic tests, preserving unexpected-request rejection and adding persisted opt-in browser regression.",
+    "apps/web/src/mobile/company.tsx": "2026-10-18: user-requested Korean company profiles through existing OpenDART credentials; sourced profile section with desktop/mobile retry, missing data and source-link regressions."
   },
   "files": {
     "apps/web/e2e/mobile-authenticated.spec.ts": "4e53bce533bcf687f28738ffc9a52cd1df4aa07ced64427a6fd8af30989026c6",
@@ -61,7 +62,7 @@
     "apps/web/src/mobile/calendar.tsx": "c87515c518983ebbd3d66ad9f779c5ceb9fb2ce3977e3d70c11ef9cd12ee577f",
     "apps/web/src/mobile/collections.css": "826a05d0b46c1eff4b8bcfd0446229fffc85c3c8bc3b90e5af109ab05f754c30",
     "apps/web/src/mobile/company.css": "7e7146168412b5384442c17e6e247458bf1abf6d614aa12b44b9c6c3be6c8813",
-    "apps/web/src/mobile/company.tsx": "95b8eafea6c2c2e9fed9fe0ad025f18a53c6d694973eedbc286cfa788237d9e6",
+    "apps/web/src/mobile/company.tsx": "fde6e6960337c5c013e6f18013ab221bcce62cd7319d0b74484ef8ec509baddd",
     "apps/web/src/mobile/detail-shell.css": "602e80b15cfc413a25ed1aacd4e5ac0ba2aea8e0fe23fefb168f99424bce6773",
     "apps/web/src/mobile/document.tsx": "87763c4fecf5176117c87ac4be3b7cca1acccdd597657ffff7bac92728e908a4",
     "apps/web/src/mobile/event.css": "2bdafb81de253b86ec4e5d52f529f715138175b1fc4c9b4f3588afacb5be8865",

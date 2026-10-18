@@ -12,7 +12,7 @@ export async function POST(req:Request):Promise<Response>{
   const db=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,{auth:{persistSession:false,autoRefreshToken:false}});
   const claim=await db.rpc('sb_dart_relay_claim',{body_text:body,request_timestamp:timestamp,signature});
   if(claim.error||claim.data!==true)return Response.json({error:'relay_unauthorized'},{status:401,headers});
-  const result=await downloadDart(dartEndpoint(payload),payload.kind==='list'?2_000_000:20_000_000);
+  const result=await downloadDart(dartEndpoint(payload),payload.kind==='company'?128_000:payload.kind==='list'?2_000_000:20_000_000);
   return new Response(new Uint8Array(result.bytes),{headers:{...headers,'Content-Type':result.type}});
  }catch(error){
   const code=error instanceof Error?error.message:'';

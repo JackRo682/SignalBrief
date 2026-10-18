@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {useEffect, useState} from 'react';
 import {z} from 'zod';
 import {useAuth} from '@/components/auth';
+import CompanyProfile from '@/components/company-profile';
 import {body, emptySchema, errorMessage, request} from '@/lib/api';
 import {portfolioSchema} from '@/lib/contracts';
 import {decimalInput} from '@/lib/decimal-input';
@@ -140,6 +141,7 @@ export default function MobileCompany({id}: {id: string}) {
         </div>
       </section>
 
+      <CompanyProfile id={id} ticker={company.ticker}/>
       <section className="m-company-section m-company-metrics-section"><SectionTitle title={t('핵심 지표', 'Key metrics')} action={<button onClick={() => setMetricsOpen(true)}>{t('전체 보기', 'View all')}<MIcon name="chevron" size={13}/></button>}/>
         <div className="m-company-metrics">{data.facts.length ? data.facts.slice(0, 4).map((fact, index) => <SourcedMetric key={fact.id} fact={fact} index={index}/>) : noMetrics.map((metric, index) => <div className={`m-card m-company-metric m-company-metric-${index}`} key={metric.en}>
           <div><span className="m-company-metric-icon"><MIcon name={metric.icon} size={16}/></span><span>{t(metric.ko, metric.en)}</span></div><strong>—</strong><p>{t('자료 확인 전', 'Not available')}</p>
