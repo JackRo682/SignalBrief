@@ -58,27 +58,35 @@ Unsigned and replayed operations requests are refused.
 
 ## Verification
 
-Production commit `0af03db4c5c9a3d58a026c4caa3712e7f455c562` was explicitly
-approved by the user and deployed to https://signalbrief.online (Vercel
-`dpl_w9fkY7uwjRZw4pphQGaZ42VAGai4`). The initial profile Edge function is active.
-Anonymous profile requests return HTTP 401 and existing DART credentials are
-configured. Live signed company refresh requests currently return HTTP 502;
-no verified live profile or populated cache is claimed yet. A signed direct relay
-probe successfully reached the official DART API and returned its expected invalid
-key response for an explicitly synthetic key. The remaining failing boundary is
-the profile function's relay call. Only fixed allowlisted relay codes are added
-to diagnose this without reflecting credentials or arbitrary exception text.
+Production commit `7aa9ed486367dd06174ebe1936ce2d50f3066e16` is READY at
+https://signalbrief.online (`dpl_GcActARqa6qJoqVWzLmUHs4nE8jw`). It incorporates
+the existing daily-digest release without changing that feature. The user approved
+follow-up backend fixes, production SQL and deployment through actual verification.
+The `signalbrief-profiles` Edge function v2 is active and the Korean company resource
+migration is applied. Anonymous profile requests return HTTP 401.
 
-Local full verification: all eight checks passed, backend 251 passed / 91
-environment-gated skips, frontend 557 passed. Additional profile-function tests,
-Deno typecheck and desktop/mobile profile E2E passed. A separate disposable
-loopback PostgreSQL migration/RLS test passed. All 36 workspace PostgreSQL tests
-passed after adding the Korean company lookup regression. Lint has zero errors
-and five pre-existing internal-navigation warnings. New
-regressions cover mismatched companies, invalid dates/links, missing values,
-provider quota/key errors, authentication, operation replay rejection, archival,
-cache reuse, retry and navigation. Browser regressions use clearly synthetic
-records and run on desktop and mobile. Synthetic test data is not provider evidence.
+Real signed production requests for Samsung Electronics (005930), SK hynix (000660)
+and Hyundai Motor (005380) all returned HTTP 200 / `verified` on 2026-10-18.
+DART corp codes and stock codes match the stored companies. All three original
+responses are archived by SHA-256 in private Storage. Repeat requests returned the
+same source hashes and `fetched_at` values, confirming cache reuse. No synthetic
+record or synthetic API key is used as evidence of successful provider access.
+
+Local verification on the integrated release: backend 251 passed / 103
+environment-gated skips; frontend 573 passed across 51 files with two workers;
+compile, export, lint, typecheck and production build passed. The default parallel
+frontend run encountered existing timing failures; no assertions were weakened.
+Deno typecheck, profile-specific tests and desktop/mobile profile E2E passed.
+Signed-in production browser verification confirmed all three companies display
+company name, CEO, establishment date, industry code, fiscal month, address,
+OpenDART attribution and retrieval time. Desktop/mobile layout and retry behavior
+also passed isolated E2E checks.
+
+All 36 disposable-loopback PostgreSQL workspace tests passed, including Korean
+company lookup, demo exclusion and anonymous-access regression checks. Regressions
+also cover mismatched companies, invalid dates/links, missing values, authentication,
+operation replay rejection, archival, cache reuse and retry. Browser fixtures are
+clearly synthetic and are not provider evidence.
 
 ## Rollback
 
@@ -90,3 +98,4 @@ collection continues with its list/document relay modes. Archived sources are
 retained. Profile-cache entries expire within one day.
 
 Official schema: https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS001&apiId=2019002
+
