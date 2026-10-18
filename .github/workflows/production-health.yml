@@ -1,0 +1,22 @@
+name: Production health
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+  deployment_status:
+permissions:
+  contents: read
+concurrency:
+  group: signalbrief-production-health
+  cancel-in-progress: false
+jobs:
+  health:
+    if: github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Read-only HTTPS, proxy, database and authentication checks
+        run: python scripts/check_production.py
