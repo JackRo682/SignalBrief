@@ -25,7 +25,7 @@ Production scheduler invocation returned HTTP 200 with `queued:0`, `status:idle`
 
 Browser background push is not implemented by this release. Browser notification permission alone is not background push. That requires a service worker, push subscriptions and server push credentials/delivery. This feature must remain described as unavailable.
 
-Desktop and mobile Playwright E2E: 2 passed with isolated synthetic accounts, including opt-in, saved time, reload and opt-out. Initial attempts exposed missing test API/CSP settings and the controlled switch's asynchronous save behavior; the test environment was corrected and asserts the actual persisted response. Production settings UI deployment remains pending explicit permission: automatic approval review rejected exporting code to the public GitHub remote. No GitHub push, PR, or Vercel web deployment was performed in this task. Backend scheduler runs at 05:30 and 05:35 UTC succeeded.
+Desktop and mobile Playwright E2E: 2 passed with isolated synthetic accounts, including opt-in, saved time, reload and opt-out. Initial attempts exposed missing test API/CSP settings and the controlled switch's asynchronous save behavior; the test environment was corrected and asserts the actual persisted response. The user subsequently explicitly approved GitHub upload and production deployment. PR #29 contains this release; production deployment is tracked in Vercel. The multi-provider collector remains unchanged. Backend scheduler runs at 05:30 and 05:35 UTC succeeded.
 
 ## Recovery
 
