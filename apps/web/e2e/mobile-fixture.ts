@@ -69,6 +69,7 @@ export async function mobileFixture(page: Page, options: Options = {}) {
     questions: [] as Question[],
     notificationSettings: {realtime_enabled: true, notify_min_score: .75},
     emailPreferences: {available: false, enabled: false},
+    digestPreferences: {available:true,enabled:false,time:'09:00'},
     emailCalls: [] as {method:string;enabled?:boolean}[],
     reminders: new Set<string>(),
     authCalls: [] as {method:string;path:string}[],
@@ -98,6 +99,13 @@ export async function mobileFixture(page: Page, options: Options = {}) {
     await route.fallback();
   });
   await page.route('**/api/auth-config', route => route.fulfill({json: {url: 'https://test-project.supabase.co', publishableKey: 'sb_publishable_isolated_fixture'}}));
+  await page.route('https://test-project.supabase.co/rest/v1/rpc/sb_digest_preferences',async route=>{
+    const headers={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Allow-Headers':route.request().headers()['access-control-request-headers']??'authorization,apikey,content-type,x-client-info'};
+    if(route.request().method()==='OPTIONS'){await route.fulfill({status:204,headers});return;}
+    const payload=z.object({p:z.object({enabled:z.boolean().optional(),time:z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).optional()}).strict()}).strict().parse(route.request().postDataJSON()).p;
+    state.digestPreferences={...state.digestPreferences,...payload};
+    await route.fulfill({json:state.digestPreferences,headers});
+  });
   await page.route('**/api/research', async route => {
     const parsed=researchRequest.safeParse(route.request().postDataJSON());
     if(route.request().method()!=='POST'||!parsed.success||parsed.data.action!=='track') {

@@ -7,6 +7,7 @@ import MobileCalendar,{calendarDateKey} from '../src/mobile/calendar';
 import MobileNotifications from '../src/mobile/notifications';
 import MobileAlerts,{notificationDateGroup} from '../src/mobile/alerts';
 import {defaults} from '../src/workspace/contracts';
+vi.mock('@/workspace/daily-digest',()=>({default:()=>null}));
 
 const mocks=vi.hoisted(()=>({request:vi.fn(),workspace:vi.fn(),rpc:vi.fn(),prefSave:vi.fn(),badge:vi.fn(),text:(ko:string)=>ko,resource:vi.fn(),prefs:{} as Record<string,unknown>}));
 vi.mock('next/link',()=>({default:({children,href,...rest}:AnchorHTMLAttributes<HTMLAnchorElement>)=><a href={href} {...rest}>{children}</a>}));
