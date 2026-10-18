@@ -41,8 +41,13 @@ Original immutable JSON bytes are archived in private `signalbrief-raw` under
 `dart/profiles/<sha256>.json` before a normalized result becomes visible. The
 existing private `sb_us_cache` stores verified results for 86,400 seconds and
 explicit no-data for 600 seconds. Cache identity includes the company UUID, DART
-identity and stock code. Failures are not cached. No schema migration is needed.
+identity and stock code. Failures are not cached. No new cache table is needed.
 `fetched_at` is retrieval time, not a provider publication/update timestamp.
+
+Live verification found an older SEC-only company resource predicate. The
+`20261018054538_korean_company_profiles.sql` workspace migration adds non-demo
+DART company rows to the existing private resource function. Its private schema,
+caller grants, per-user saved state and reviewed-evidence predicates are preserved.
 
 Operations may warm the same cache with `POST` directly to the Edge function using
 `{kind:"company-profile-refresh",company_id,nonce}`, signed using the existing
@@ -53,7 +58,23 @@ Unsigned and replayed operations requests are refused.
 
 ## Verification
 
-Results and deployment identity will be recorded after live verification. New
+Production commit `0af03db4c5c9a3d58a026c4caa3712e7f455c562` was explicitly
+approved by the user and deployed to https://signalbrief.online (Vercel
+`dpl_w9fkY7uwjRZw4pphQGaZ42VAGai4`). The initial profile Edge function is active.
+Anonymous profile requests return HTTP 401 and existing DART credentials are
+configured. Live signed company refresh requests currently return HTTP 502;
+no verified live profile or populated cache is claimed yet. A signed direct relay
+probe successfully reached the official DART API and returned its expected invalid
+key response for an explicitly synthetic key. The remaining failing boundary is
+the profile function's relay call. Only fixed allowlisted relay codes are added
+to diagnose this without reflecting credentials or arbitrary exception text.
+
+Local full verification: all eight checks passed, backend 251 passed / 91
+environment-gated skips, frontend 557 passed. Additional profile-function tests,
+Deno typecheck and desktop/mobile profile E2E passed. A separate disposable
+loopback PostgreSQL migration/RLS test passed. All 36 workspace PostgreSQL tests
+passed after adding the Korean company lookup regression. Lint has zero errors
+and five pre-existing internal-navigation warnings. New
 regressions cover mismatched companies, invalid dates/links, missing values,
 provider quota/key errors, authentication, operation replay rejection, archival,
 cache reuse, retry and navigation. Browser regressions use clearly synthetic
@@ -63,7 +84,8 @@ records and run on desktop and mobile. Synthetic test data is not provider evide
 
 Remove the profile components and proxy route from the web release and redeploy
 the previous web commit. The new function may remain inaccessible to anonymous
-GETs; no existing Edge function or schema has been replaced. Existing filing
+GETs. Restore the prior SEC-only company resource function to roll back Korean
+discovery if needed. Existing filing
 collection continues with its list/document relay modes. Archived sources are
 retained. Profile-cache entries expire within one day.
 

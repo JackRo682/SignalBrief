@@ -47,6 +47,11 @@ export async function handleProfiles(req:Request):Promise<Response>{
   if(archive.error&&!/already exists|duplicate/i.test(archive.error.message))throw new ProfileError('archive_failed',500);
   await rpc('sb_us_cache',{k:cacheKey,v:profile,ttl:profile.status==='verified'?86400:600});
   return reply(profile);
- }catch(error){return reply({error:{code:error instanceof ProfileError?error.code:'profile_unavailable'}},error instanceof ProfileError?error.status:502);}
+ }catch(error){
+  // Only fixed transport codes are surfaced; never an exception message or URL.
+  const relayCodes=new Set(['relay_not_configured','relay_unauthorized','relay_upstream_failed','relay_network_failed','empty_response','response_too_large']);
+  const code=typeof error==='object'&&error!==null&&'code' in error&&typeof error.code==='string'&&relayCodes.has(error.code)?error.code:'profile_unavailable';
+  return reply({error:{code:error instanceof ProfileError?error.code:code}},error instanceof ProfileError?error.status:502);
+ }
 }
 Deno.serve(handleProfiles);
