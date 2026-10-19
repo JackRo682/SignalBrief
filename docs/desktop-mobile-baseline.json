@@ -2,7 +2,7 @@
   "commit": "d09dac977ea4882b7faa1dd7da9d3f59afc98d01",
   "approved_updates": {
     "apps/web/src/app/layout.tsx": "2026-10-10: mount the consent-only, nonvisual ResearchTracker inside existing AuthProvider; preserve rendered mobile components.",
-    "apps/web/e2e/mobile-fixture.ts": "2026-10-14: strictly validate and serve the new authenticated email-preferences endpoint in isolated synthetic tests, preserving unexpected-request rejection and adding persisted opt-in browser regression.",
+    "apps/web/e2e/mobile-fixture.ts": "2026-10-19: serve the authenticated indices endpoint with explicit unavailable-provider reasons in isolated browser tests; preserve unexpected-request rejection.",
     "apps/web/e2e/career-analytics.spec.ts": "2026-10-10: additionally assert research events require consent and exclude the event ID and non-allowlisted fields.",
     "apps/web/src/components/auth.tsx": "2026-10-11: reviewed authenticated navigation performance release PR #17; session-scoped data reuse and auth-safe reads. Mobile UI/route contract regression tests and production build passed.",
     "apps/web/src/components/ui.tsx": "2026-10-11: reviewed authenticated navigation performance release PR #17; session-scoped data reuse and auth-safe reads. Mobile UI/route contract regression tests and production build passed.",
@@ -13,12 +13,13 @@
     "apps/web/src/mobile/notifications.tsx": "2026-10-14: user-requested production email notifications; persist explicit opt-in through authenticated endpoint and retain unavailable/failed-write behavior. Preserve layout, route expressions and CSS.",
     "apps/web/src/workspace/notifications.tsx": "2026-10-14: user-requested production email notifications; persist explicit opt-in through authenticated endpoint and retain unavailable/failed-write behavior. Preserve layout, route expressions and CSS.",
     "apps/web/e2e/mobile-details.spec.ts": "2026-10-14: strictly validate and serve the new authenticated email-preferences endpoint in isolated synthetic tests, preserving unexpected-request rejection and adding persisted opt-in browser regression.",
-    "apps/web/src/mobile/company.tsx": "2026-10-18: user-requested Korean company profiles through existing OpenDART credentials; sourced profile section with desktop/mobile retry, missing data and source-link regressions."
+    "apps/web/src/mobile/company.tsx": "2026-10-18: user-requested Korean company profiles through existing OpenDART credentials; sourced profile section with desktop/mobile retry, missing data and source-link regressions.",
+    "apps/web/src/mobile/today.tsx": "2026-10-19: user-requested homepage market-index repair; replace fixed placeholders with authenticated, validated provider responses and explicit coverage states; add S&P 500."
   },
   "files": {
     "apps/web/e2e/mobile-authenticated.spec.ts": "4e53bce533bcf687f28738ffc9a52cd1df4aa07ced64427a6fd8af30989026c6",
     "apps/web/e2e/mobile-details.spec.ts": "8d8ccb5d2d333b7d6f151ddf1dce768a6847fcf225952f9218959d6ab8b32f9c",
-    "apps/web/e2e/mobile-fixture.ts": "eed0d43915dbf26af664cf31e47587b7c57721cd7a4245d122e97f306aad0f76",
+    "apps/web/e2e/mobile-fixture.ts": "f4e86fcde747ebf7ddd80d6d8697bb946b411e239cbc605af41217457307c6c9",
     "apps/web/public/reference-assets/logos/000660.webp": "f929f01b36db4e59075cf4eb7ad2ae5cc285bcf3febdf63d4986090eca547cf8",
     "apps/web/public/reference-assets/logos/005380.webp": "34b0302b033f9b8e5e4b0132905eb1f15835e15df624290df6b74168580a22e7",
     "apps/web/public/reference-assets/logos/005490.webp": "cef6cef4dc1fab0a48bd410370a8dbb14622629a7231e9fb345f10dff9a0ddc6",
@@ -87,7 +88,7 @@
     "apps/web/src/mobile/shell.tsx": "48c44b3d2778cbc4793d1c510c237569b6f7edec6901e14bfa17a028f55d1d99",
     "apps/web/src/mobile/timeline.tsx": "3fef6b328cd25d5813f787909901b704fd2fb423b95aa71bde0f19fc074d3428",
     "apps/web/src/mobile/today.css": "495a3595b362a686b90a796c5840d7a71f21aaa6900abb3f920780cec1f660ca",
-    "apps/web/src/mobile/today.tsx": "cef597fdcf4805a0a26acdb771b386d313281710368e50ddbbaf11b2f2b712b2",
+    "apps/web/src/mobile/today.tsx": "5aad71e767d0f9e37c790eea9d62de916e87e38ee6964c62f1c015161968a1ad",
     "apps/web/src/mobile/ui.tsx": "882ab3a49e5584df5c43c961bd1c57f633881736352f974424e2c767602399c7",
     "apps/web/src/mobile/watchlist.tsx": "ba22a90f3618c63b48ec26ec4f18f2f0c936bd3076f77a9f49f71a6b8a9fb272",
     "apps/web/src/workspace/account.tsx": "5c81a5c80572a21e49ddd856601b4a3a8c51c2eff17b390ce12df0d1b6df3e47",

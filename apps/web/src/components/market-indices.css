@@ -1,0 +1,5 @@
+.market-indices-status{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-9px 5px 17px;font-size:11px;color:var(--muted);overflow-wrap:anywhere}
+.market-indices-status button{margin-left:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface);padding:6px 10px;min-height:36px;color:var(--primary)}
+.sb-mobile .m-market-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sb-mobile .m-market-index>span{overflow-wrap:anywhere}
+.sb-mobile .m-market-index>span,.sb-pc .pc-today-market span{line-height:1.5}

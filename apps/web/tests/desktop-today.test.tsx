@@ -19,7 +19,7 @@ beforeEach(()=>{
  vi.clearAllMocks();vi.useFakeTimers({toFake:['Date']});vi.setSystemTime(new Date(fixtureNow));failFeed=false;watched=companies.slice(0,2);mocks.reason='';
  mocks.quotes=[{symbol:'NVDA',price:146.76,currency:'USD',change_pct:3.47,as_of:fixtureNow,source:'Synthetic quote',history:[]},{symbol:'AAPL',price:231.48,currency:'USD',change_pct:-1.23,as_of:fixtureNow,source:'Synthetic quote',history:[]}];
  calendar=[{id:'calendar-event',title:'Synthetic dated event',occurs_on:'2026-10-06',company_id:companies[0].id,event_id:events[0].id,origin:'official',quote:'Synthetic date evidence',source_url:events[0].source_url,is_demo:false}];
- vi.stubGlobal('fetch',vi.fn().mockResolvedValue({ok:true,json:async()=>({base:'USD',quote:'KRW',rate:1350,date:'2026-10-06',source:'Synthetic daily reference',kind:'daily_reference'})}));
+ vi.stubGlobal('fetch',vi.fn().mockImplementation(async(path:string)=>Response.json(path==='/api/us/indices'?{indices:[],unavailable:['KOSPI','KOSDAQ','NASDAQ','S&P500'].map(symbol=>({symbol,reason:'index_entitlement_unverified'})),available:false}:{base:'USD',quote:'KRW',rate:1350,date:'2026-10-06',source:'Synthetic daily reference',kind:'daily_reference'})));
  mocks.request.mockImplementation(async(path:string)=>{
   if(path==='/v1/watchlist')return {id:'watch',name:'Synthetic watchlist',items:watched};
   if(path==='/v1/portfolio')return {id:'portfolio',name:'Synthetic portfolio',weighting_note:'Membership only',positions:[holding]};
@@ -37,7 +37,7 @@ describe('PC dashboard uses account data and explicit provider coverage',()=>{
   expect(screen.getByText(/소스검증님/)).toBeVisible();
   const summaries=document.querySelectorAll('.pc-today-summary');
   expect(summaries[1]).toHaveTextContent('2개');expect(summaries[2]).toHaveTextContent('1개');
-  expect(screen.getAllByText('지수 데이터 미연결')).toHaveLength(4);
+  expect(await screen.findAllByText('시세 표시 권한 확인 대기')).toHaveLength(4);
   expect(screen.queryByText('2,687.24')).not.toBeInTheDocument();
   expect(screen.getByText(/2026-10-06 · 일일 기준/)).toBeVisible();
   expect(document.querySelector('.pc-today-gainers')).toHaveTextContent('NVDA');

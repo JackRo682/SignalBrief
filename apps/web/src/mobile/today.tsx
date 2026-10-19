@@ -7,11 +7,13 @@ import {feedSchema,watchlistSchema,portfolioSchema,notificationsSchema} from '@/
 import {savedSchema} from '@/workspace/contracts';
 import {useData} from '@/workspace/ui';
 import {usePrefs} from '@/workspace/preferences';
+import {useMarketIndices,MarketIndexCards,MarketIndicesStatus} from '@/components/market-indices';
 import {ActionNotice,DateNote,EmptyState,LoadState,MIcon,MobileEventCard,SectionTitle} from './ui';
 import './today.css';
 
 export default function MobileToday(){
  const auth=useAuth(),{text:t,value}=usePrefs(),[all,setAll]=useState(false),[days,setDays]=useState(30),[offset,setOffset]=useState(0);
+ const indices=useMarketIndices();
  const feed=useResource(`/v1/feed?days=${days}&limit=${all?12:4}&offset=${offset}`,feedSchema);
  const watch=useResource('/v1/watchlist',watchlistSchema),portfolio=useResource('/v1/portfolio',portfolioSchema),alerts=useResource('/v1/notifications',notificationsSchema),saved=useData({action:'saved_list',p:{kind:''}},savedSchema);
  const track=auth.track;
@@ -25,7 +27,8 @@ export default function MobileToday(){
   {href:'/alerts',icon:'bell',label:t('알림','Alerts'),count:alerts.data?.filter(a=>!a.read_at).length,detail:t('안 읽은 알림','Unread alerts'),color:'gold'},
  ];
  return <div className="m-today"><div className="m-today-heading"><div><p className="m-greeting">{auth.me?.display_name}{t('님, ',', ')}{greeting}</p><h1>{t('오늘의 변화','Today’s changes')} <span aria-hidden="true">☀️</span></h1><p className="m-today-description">{t('관심 종목에서 중요한 변화 ','Important changes in your stocks: ')}<b>{feed.data?.total??'—'}{t('건','')}</b>{t('이 있어요.','')}</p></div><DateNote message={<>{t('오늘도 현명한 한 걸음을','A clearer view,')}<br/>{t('응원합니다.','one day at a time.')}</>}/></div>
-  <div className="m-market-strip" aria-label={t('시장 지수','Market indices')}>{[[t('코스피','KOSPI'),'pink'],[t('코스닥','KOSDAQ'),'pink'],[t('나스닥','NASDAQ'),'blue']].map(([name,color])=><Link key={name} className={`m-market-index ${color}`} href="/us"><strong>{name}</strong><b>—</b><span>{t('지수 시세 미연결','Index feed unavailable')}</span></Link>)}</div>
+  <div className="m-market-strip" aria-label={t('시장 지수','Market indices')}><MarketIndexCards state={indices} mobile/></div>
+  <MarketIndicesStatus state={indices}/>
   <SectionTitle title={t('주요 변화','Important changes')} action={<button type="button" onClick={()=>{setAll(v=>!v);setOffset(0);}} aria-expanded={all}>{all?t('간단히 보기','Show less'):t('전체 보기','View all')}<MIcon name="chevron" size={15}/></button>}/>
   {all&&<div className="m-today-filters"><label className="m-field"><span>{t('조회 기간','Period')}</span><select aria-label={t('변화 조회 기간','Change date range')} value={days} onChange={e=>{setDays(Number(e.target.value));setOffset(0);}}><option value={7}>{t('최근 7일','Last 7 days')}</option><option value={30}>{t('최근 30일','Last 30 days')}</option><option value={90}>{t('최근 90일','Last 90 days')}</option></select></label><span className="m-muted">{feed.data?.total??'—'} {t('건','results')}</span></div>}
   <LoadState {...feed} retry={feed.reload}/>
