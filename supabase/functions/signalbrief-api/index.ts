@@ -28,7 +28,7 @@ async function unwrap<T>(query: PromiseLike<{data:T;error:unknown}>): Promise<T>
 }
 async function rpc(db:SupabaseClient,name:string,args:Row={}):Promise<unknown>{return unwrap(db.rpc(name,args));}
 async function getRows(db:SupabaseClient,table:string,field:string,ids:string[],select="*"):Promise<Row[]>{
-  if(!ids.length)return []; return rows(await unwrap(db.from(table).select(select).in(field,unique(ids))));
+  const keys=unique(ids);if(!keys.length)return []; return rows(await unwrap(db.from(table).select(select).in(field,keys)));
 }
 function index(items:Row[]):Map<string,Row>{return new Map(items.map(x=>[s(x.id),x]));}
 function required(map:Map<string,Row>,id:string):Row{const value=map.get(id);check(value,404,"evidence_not_available");return value;}
@@ -68,11 +68,18 @@ function ics(items:Row[]):string{
   // RFC 5545 octet-aware line folding; never split UTF-8 characters.
   return lines.map(line=>{let out="",len=0;for(const c of line){const size=new TextEncoder().encode(c).length;if(len+size>73){out+="\r\n ";len=1;}out+=c;len+=size;}return out;}).join("\r\n")+"\r\n";
 }
-async function calendar(db:SupabaseClient){
+async function calendar(db:SupabaseClient,url:URL){
   const m=await memberships(db),ids=new Set([...m.watched,...m.held]);
-  const items=rows(await unwrap(db.from("calendar_items").select("*").order("occurs_on").limit(500))).filter(x=>x.origin==="user"||ids.has(s(x.company_id)));
+  let query=db.from("calendar_items").select("*").eq("calendar_status","confirmed");
+  // Apply membership and month boundaries before LIMIT, including the weekly view.
+  query=ids.size?query.or(`origin.eq.user,company_id.in.(${[...ids].join(',')})`):query.eq("origin","user");
+  const from=url.searchParams.get('from_date'),until=url.searchParams.get('until_date');
+  for(const date of [from,until])if(date!==null)check(/^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(Date.parse(date+'T00:00:00Z'))&&new Date(date+'T00:00:00Z').toISOString().slice(0,10)===date,422,"invalid_calendar_date");
+  if(from&&until)check(from<=until,422,"invalid_calendar_range");
+  if(from)query=query.gte('occurs_on',from);if(until)query=query.lte('occurs_on',until);
+  const items=rows(await unwrap(query.order("occurs_on").order("id").limit(500)));
   const chunks=await getRows(db,"document_chunks","id",items.map(x=>s(x.chunk_id))),cm=index(chunks),docs=index(await getRows(db,"documents","id",chunks.map(x=>s(x.document_id)),DOC_FIELDS));
-  return items.map(x=>({...x,source_url:docs.get(s(cm.get(s(x.chunk_id))?.document_id))?.source_url??null,is_demo:false}));
+  return items.map(x=>({...x,source_url:x.source_url??docs.get(s(cm.get(s(x.chunk_id))?.document_id))?.source_url??null,is_demo:false}));
 }
 async function body(req:Request):Promise<Row>{const text=await req.text();check(new TextEncoder().encode(text).length<=131072,413,"body_too_large");let value:unknown;try{value=JSON.parse(text||"{}");}catch{throw new Fault(422,"invalid_json");}check(value&&typeof value==="object"&&!Array.isArray(value));return row(value);}
 function limit(url:URL,max=100,defaultValue=50):number{const value=Number(url.searchParams.get("limit")??defaultValue);check(Number.isInteger(value)&&value>=1&&value<=max);return value;}
@@ -139,9 +146,9 @@ Deno.serve(async(req:Request)=>{
         response=json(await rpc(db,"sb_save_answer",{eid:identity(parts[2]),question,reason:advice?"advice":evidence.length?changed?"changes":"current":"no_evidence",fact_ids:advice?[]:evidence.map(x=>x.fact_id)}));
       }else if(path==="/v1/questions"&&method==="GET")response=json(await unwrap(db.from("question_history").select("id,event_id,question,answer,created_at").eq("user_id",auth.user.id).order("created_at",{ascending:false}).limit(100)));
       else if(path==="/v1/questions"&&method==="DELETE"){await rpc(db,"sb_clear_history");response=json(null,204);}
-      else if(path==="/v1/calendar"&&method==="GET")response=json(await calendar(db));
+      else if(path==="/v1/calendar"&&method==="GET")response=json(await calendar(db,url));
       else if(path==="/v1/calendar"&&method==="POST")response=json(await rpc(db,"sb_user_action",{action:"calendar_add",p:await body(req)}));
-      else if(path==="/v1/calendar/export"&&method==="GET")response=calendarResponse(await calendar(db));
+      else if(path==="/v1/calendar/export"&&method==="GET")response=calendarResponse(await calendar(db,url));
       else if(path==="/v1/calendar/subscription"&&method==="POST"){
         const token=[...crypto.getRandomValues(new Uint8Array(32))].map(x=>x.toString(16).padStart(2,"0")).join("");await rpc(db,"sb_user_action",{action:"subscription_create",p:{token}});response=json({url:`${SITE}/api/v1/calendar/feed/${token}.ics`,expires_in_days:90,warning:"Anyone with this URL can read these calendar events. Revoke it to remove access."});
       }else if(path==="/v1/calendar/subscription"&&method==="DELETE"){await rpc(db,"sb_user_action",{action:"subscription_revoke"});response=json(null,204);}
