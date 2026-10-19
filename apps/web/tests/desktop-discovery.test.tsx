@@ -64,6 +64,7 @@ describe('desktop exploration and search',()=>{
  it('keeps failed history deletions visible, and persists successful deletion across remounts',async()=>{
   failSearch=true;const first=mount(<DesktopExplore/>);fireEvent.click(await screen.findByRole('button',{name:'NVDA 검색 기록 삭제'}));
   await screen.findByText('Synthetic history write failed');expect(screen.getByRole('button',{name:'NVDA 검색 기록 삭제'})).toBeTruthy();
+  await waitFor(()=>expect((screen.getByRole('button',{name:'NVDA 검색 기록 삭제'}) as HTMLButtonElement).disabled).toBe(false));
   failSearch=false;fireEvent.click(screen.getByRole('button',{name:'NVDA 검색 기록 삭제'}));
   await waitFor(()=>expect(screen.queryByRole('button',{name:'NVDA 검색 기록 삭제'})).toBeNull());
   first.unmount();mount(<DesktopExplore/>);await screen.findByRole('button',{name:'10-K 검색 기록 삭제'});expect(screen.queryByRole('button',{name:'NVDA 검색 기록 삭제'})).toBeNull();
@@ -170,7 +171,7 @@ describe('desktop watchlist persistence and quote truthfulness',()=>{
   failRemove=secondId;mount(<DesktopWatchlist/>);await screen.findByRole('link',{name:'Synthetic Alpha NVDA · NASDAQ'});
   fireEvent.click(screen.getByRole('checkbox',{name:'표시된 관심종목 전체 선택'}));fireEvent.click(screen.getByRole('button',{name:'선택 삭제'}));await screen.findByText('Synthetic remove failed');
   await waitFor(()=>expect(screen.queryByRole('link',{name:'Synthetic Alpha NVDA · NASDAQ'})).toBeNull());
-  expect(screen.getByRole('link',{name:'Synthetic Beta AAPL · NYSE'})).toBeTruthy();expect((screen.getByRole('checkbox',{name:'Synthetic Beta 선택'}) as HTMLInputElement).checked).toBe(true);expect(screen.queryByText('선택한 관심종목을 삭제했습니다.')).toBeNull();
+  expect(await screen.findByRole('link',{name:'Synthetic Beta AAPL · NYSE'})).toBeTruthy();expect((screen.getByRole('checkbox',{name:'Synthetic Beta 선택'}) as HTMLInputElement).checked).toBe(true);expect(screen.queryByText('선택한 관심종목을 삭제했습니다.')).toBeNull();
   failRemove='';fireEvent.click(screen.getByRole('button',{name:'선택 삭제'}));await screen.findByText('첫 관심종목을 추가해 보세요.');
  });
 });
