@@ -142,6 +142,7 @@ export async function mobileFixture(page: Page, options: Options = {}) {
     }
     await unknown(route,'unexpected email preferences method');
   });
+  await page.route('**/api/us/indices', route => route.fulfill({json:{indices:[],unavailable:['KOSPI','KOSDAQ','NASDAQ','S&P500'].map(symbol=>({symbol,reason:symbol.startsWith('KOS')?'kis_display_license_unverified':'index_entitlement_unverified'})),available:false}}));
   await page.route('**/api/us/reference-rate', route => route.fulfill({json: {base: 'USD', quote: 'KRW', rate: 1350, date: '2026-10-06', source: 'Synthetic E2E reference rate', kind: 'daily_reference'}}));
   await page.route('**/api/market?**', route => {
     const symbols = new URL(route.request().url()).searchParams.get('symbols')?.split(',') ?? [];

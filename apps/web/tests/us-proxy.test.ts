@@ -2,6 +2,23 @@
 import {describe,it,expect,vi,afterEach} from 'vitest';
 import {proxyUS} from '../src/server/us-proxy';
 afterEach(()=>{vi.unstubAllEnvs();vi.unstubAllGlobals();});
+
+describe('homepage indices proxy boundary',()=>{
+ it('requires a bearer session before querying indices',async()=>{
+  const fetcher=vi.fn();vi.stubGlobal('fetch',fetcher);
+  const result=await proxyUS(new Request('https://signalbrief.test/api/us/indices'),'indices');
+  expect(result.status).toBe(401);expect(fetcher).not.toHaveBeenCalled();
+ });
+ it('forwards an authenticated GET to the fixed US indices endpoint without caching',async()=>{
+  vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL','https://synthetic-project.supabase.co');vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY','synthetic-publishable-key');
+  const payload={available:false,indices:[],unavailable:[{symbol:'KOSPI',reason:'kis_display_license_unverified'}]};
+  const fetcher=vi.fn().mockResolvedValue(Response.json(payload));vi.stubGlobal('fetch',fetcher);
+  const result=await proxyUS(new Request('https://signalbrief.test/api/us/indices',{headers:{Authorization:'Bearer synthetic-user-token'}}),'indices');
+  expect(result.status).toBe(200);expect(await result.json()).toEqual(payload);expect(result.headers.get('cache-control')).toBe('private, no-store');
+  const [url,init]=fetcher.mock.calls[0];expect(url.href).toBe('https://synthetic-project.supabase.co/functions/v1/signalbrief-us/indices');
+  expect(init.method).toBe('GET');expect(init.headers.Authorization).toBe('Bearer synthetic-user-token');expect(init.cache).toBe('no-store');
+ });
+});
 describe('DART retry proxy boundary',()=>{
  it('requires authentication before forwarding a retry',async()=>{
   const fetcher=vi.fn();vi.stubGlobal('fetch',fetcher);
