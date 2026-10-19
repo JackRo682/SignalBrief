@@ -11,6 +11,7 @@ import {decimalInput} from '@/lib/decimal-input';
 import {workspace} from '@/workspace/client';
 import {companyDetailSchema, resourceHref, type Resource} from '@/workspace/contracts';
 import {useQuotes} from '@/workspace/market';
+import {quoteUnavailableText,quoteDatePrecision} from '@/lib/quote-display';
 import {usePrefs} from '@/workspace/preferences';
 import {useData, useMutation} from '@/workspace/ui';
 import {ActionNotice, CompanyLogo, Dialog, EmptyState, LoadState, MIcon, SectionTitle, SmallChart, eventLabel, formatMoney, relativeTime} from '@/mobile/ui';
@@ -131,9 +132,9 @@ export default function MobileCompany({id}: {id: string}) {
           <p className="m-company-description">{company.summary || t('공식 공시로 연결되는 기업 정보와 주요 변화', 'Company information and changes linked to official filings')}</p></div></div>
         <div className="m-company-quote-area"><button className={`m-company-quote ${quote?.change_pct != null && quote.change_pct < 0 ? 'is-negative' : ''}`}
           onClick={() => setChartOpen(true)} aria-label={t('주가 차트 자세히 보기', 'Open price history')}>
-          <div><strong>{quote?.price == null ? '—' : formatMoney(quote.price, quote.currency, value.locale)}</strong><span>{quote?.change_pct == null ? t('시세 확인 전', 'Quote unavailable') : `${quote.change_pct < 0 ? '▼' : '▲'} ${Math.abs(quote.change_pct).toFixed(2)}%`}</span></div>
+          <div><strong>{quote?.price == null ? '—' : formatMoney(quote.price, quote.currency, value.locale)}</strong><span>{quote?.change_pct == null ? (quote ? t('등락률 정보 없음', 'Daily change unavailable') : t('시세 확인 전', 'Quote unavailable')) : `${quote.change_pct < 0 ? '▼' : '▲'} ${Math.abs(quote.change_pct).toFixed(2)}%`}</span></div>
           <SmallChart values={quote?.history.map(point => point.close) ?? []}/>
-        </button><p className="m-company-quote-meta">{quote ? date(quote.as_of) : t('시세 공급자 연결 확인', 'Check price data connection')}<br/>{quote ? `${quote.source} · ${quote.currency}` : company.market}</p></div>
+        </button><p className="m-company-quote-meta">{quote ? date(quote.as_of,quoteDatePrecision(quote.as_of)) : quoteUnavailableText(quotes,company.ticker,t)}<br/>{quote ? `${quote.source} · ${quote.currency}` : company.market}</p></div>
         <div className="m-company-actions"><button className="m-button m-button-secondary" disabled={action.busy} aria-pressed={data.watching}
           onClick={() => void action.run(async () => {await request(`/v1/watchlist/${encodeURIComponent(id)}`, token, emptySchema, body(data.watching ? 'DELETE' : 'PUT')); result.reload();}, t('관심종목을 업데이트했어요.', 'Watchlist updated.'))}>
           <MIcon name="star" size={18} className={data.watching ? 'm-company-watched' : ''}/>{t('관심종목', 'Watchlist')}</button>
@@ -181,7 +182,7 @@ export default function MobileCompany({id}: {id: string}) {
       {chartOpen && <Dialog title={`${title} ${t('주가 추이', 'price history')}`} onClose={() => setChartOpen(false)}><div className="m-company-chart-dialog">
         <label className="m-field">{t('조회 기간', 'Period')}<select value={period} onChange={event => setPeriod(event.target.value)}><option value="1m">{t('1개월', '1 month')}</option><option value="3m">{t('3개월', '3 months')}</option><option value="6m">{t('6개월', '6 months')}</option><option value="1y">{t('1년', '1 year')}</option></select></label>
         <LoadState loading={quotes.loading}/>{!quotes.loading && <SmallChart values={quote?.history.map(point => point.close) ?? []}/>}
-        {quote ? <p className="m-muted">{quote.source} · {date(quote.as_of)} · {quote.currency}</p> : <EmptyState title={t('주가 자료를 불러오지 못했어요', 'Price history unavailable')} href="/us" label={t('연결 상태 확인', 'View connection status')}/>}
+        {quote ? <p className="m-muted">{quote.source} · {date(quote.as_of,quoteDatePrecision(quote.as_of))} · {quote.currency}</p> : <EmptyState title={t('주가 자료를 불러오지 못했어요', 'Price history unavailable')} href="/us" label={t('연결 상태 확인', 'View connection status')}/>}
       </div></Dialog>}
     </>}
     {positionOpen && <PositionDialog id={id} onClose={() => setPositionOpen(false)} onSaved={() => {setPositionOpen(false); result.reload();}}/>}

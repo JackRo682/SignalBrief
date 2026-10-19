@@ -24,8 +24,10 @@ export const accountSchema=z.object({created_at:z.string(),bio:z.string(),ticket
 export const securitySchema=z.object({sessions:z.array(z.object({id:z.string(),created_at:z.string(),last_seen:z.string(),user_agent:z.string().nullable(),aal:z.string().nullable(),current:z.boolean()})),history:z.array(z.object({created_at:z.string(),action:z.string()}))});
 export const notificationsSettingsSchema=z.object({realtime_enabled:z.boolean(),notify_min_score:z.number().min(0).max(1)});
 export const searchesSchema=z.array(z.object({query:z.string(),searched_at:z.string()}));
-export const quoteSchema=z.object({symbol:z.string(),price:z.number().nullable(),currency:z.string(),change_pct:z.number().nullable(),as_of:z.string(),source:z.string(),history:z.array(z.object({date:z.string(),close:z.number()})).default([])}).passthrough();
-export const quotesSchema=z.object({quotes:z.array(quoteSchema),available:z.boolean().optional(),reason:z.string().optional()});
+const quoteDate=z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(v=>{const d=new Date(v);return Number.isFinite(+d)&&d.toISOString().slice(0,10)===v;},'Invalid provider date');
+export const quoteSchema=z.object({symbol:z.string().min(1),price:z.number().finite().positive().nullable(),currency:z.string().regex(/^[A-Z]{3}$/),change_pct:z.number().finite().nullable(),as_of:z.union([quoteDate,z.string().datetime({offset:true})]),source:z.string().trim().min(1),history:z.array(z.object({date:quoteDate,close:z.number().finite().positive()})).default([])}).passthrough();
+export const quoteUnavailableSchema=z.object({symbol:z.string(),reason:z.string()});
+export const quotesSchema=z.object({quotes:z.array(quoteSchema),unavailable:z.array(quoteUnavailableSchema).default([]),available:z.boolean().optional(),reason:z.string().optional()});
 const empty=z.object({}).strict();
 const idPayload=z.object({id:uuid}).strict();
 const decimalString=z.string().regex(/^\d{1,20}(\.\d{1,8})?$/);

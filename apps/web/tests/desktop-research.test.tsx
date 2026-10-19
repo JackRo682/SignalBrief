@@ -8,11 +8,11 @@ import {DesktopCompany,DesktopDocument,DesktopEvent,DesktopTimeline} from '../sr
 import {defaults,documentDetailSchema,type Resource} from '../src/workspace/contracts';
 import {detailSchema,portfolioSchema,type EventCard} from '../src/lib/contracts';
 
-const mocks=vi.hoisted(()=>({workspace:vi.fn(),request:vi.fn(),push:vi.fn(),historyEnabled:false,saved:false,watching:false,failSave:false,failLoad:false,failPosition:false,text:(ko:string)=>ko,date:(value:string|null)=>value??'—'}));
+const mocks=vi.hoisted(()=>({workspace:vi.fn(),request:vi.fn(),push:vi.fn(),quoteReason:"not_configured",historyEnabled:false,saved:false,watching:false,failSave:false,failLoad:false,failPosition:false,text:(ko:string)=>ko,date:(value:string|null)=>value??'—'}));
 vi.mock('../src/components/auth',()=>({useAuth:()=>({token:'isolated-desktop-research-token',me:{id:'10000000-0000-4000-8000-000000000001'}})}));
 vi.mock('../src/workspace/preferences',()=>({usePrefs:()=>({value:{...defaults,history_enabled:mocks.historyEnabled},text:mocks.text,date:mocks.date})}));
 vi.mock('../src/workspace/client',()=>({workspace:mocks.workspace}));
-vi.mock('../src/workspace/market',()=>({useQuotes:()=>({quotes:[],loading:false,reason:'not_configured'})}));
+vi.mock('../src/workspace/market',()=>({useQuotes:()=>({quotes:[],loading:false,reason:mocks.quoteReason})}));
 vi.mock('../src/lib/api',async original=>({...await original<typeof import('../src/lib/api')>(),request:mocks.request}));
 vi.mock('next/navigation',()=>({useRouter:()=>({push:mocks.push})}));
 
@@ -33,7 +33,7 @@ let currentDocument:z.infer<typeof documentDetailSchema>,timeline:EventCard[];
 let holding={quantity:'1.234567890123456789012345678e19',average_cost:'0.00000001',currency:'USD'};
 const mount=(node:React.ReactNode)=>render(<div className="sb-pc">{node}</div>);
 beforeEach(()=>{
- pageDataCache.reset();vi.clearAllMocks();mocks.historyEnabled=false;mocks.saved=false;mocks.watching=false;mocks.failSave=false;mocks.failLoad=false;mocks.failPosition=false;currentDocument=structuredClone(baseDocument);holding={quantity:'1.234567890123456789012345678e19',average_cost:'0.00000001',currency:'USD'};
+ pageDataCache.reset();vi.clearAllMocks();mocks.quoteReason="not_configured";mocks.historyEnabled=false;mocks.saved=false;mocks.watching=false;mocks.failSave=false;mocks.failLoad=false;mocks.failPosition=false;currentDocument=structuredClone(baseDocument);holding={quantity:'1.234567890123456789012345678e19',average_cost:'0.00000001',currency:'USD'};
  timeline=[{...event,published_at:new Date(Date.now()-86400000).toISOString()},{...event,id:'30000000-0000-4000-8000-000000000002',headline:'Older synthetic product event',event_type:'product',published_at:new Date(Date.now()-90*86400000).toISOString()}];
  window.history.replaceState({},'','/today');Object.defineProperty(HTMLDialogElement.prototype,'showModal',{configurable:true,value:function(this:HTMLDialogElement){this.setAttribute('open','');}});
  mocks.workspace.mockImplementation(async(_token,req)=>{
@@ -66,7 +66,7 @@ describe('desktop company and timeline',()=>{
  it('does not mark denied watch as success and persists actual monitoring bookmarks',async()=>{
   const page=mount(<DesktopCompany id={companyId}/>),watch=await screen.findByRole('button',{name:'관심종목'});mocks.failSave=true;fireEvent.click(watch);expect(await screen.findByRole('alert')).toHaveTextContent('Synthetic watch denied');expect(watch).toHaveAttribute('aria-pressed','false');
   mocks.failSave=false;fireEvent.click(watch);await waitFor(()=>expect(screen.getByRole('button',{name:'관심종목'})).toHaveAttribute('aria-pressed','true'));
-  const monitoring=screen.getByRole('checkbox',{name:eventResource.title+' 모니터링 저장'});fireEvent.click(monitoring);await waitFor(()=>expect(monitoring).toHaveAttribute('aria-checked','true'));page.unmount();mount(<DesktopCompany id={companyId}/>);expect(await screen.findByRole('checkbox',{name:eventResource.title+' 모니터링 저장'})).toHaveAttribute('aria-checked','true');expect(screen.getByText('연결된 시세가 없습니다.')).toBeVisible();expect(screen.queryByText(/PER|시가총액/)).toBeNull();
+  const monitoring=screen.getByRole('checkbox',{name:eventResource.title+' 모니터링 저장'});fireEvent.click(monitoring);await waitFor(()=>expect(monitoring).toHaveAttribute('aria-checked','true'));page.unmount();mount(<DesktopCompany id={companyId}/>);expect(await screen.findByRole('checkbox',{name:eventResource.title+' 모니터링 저장'})).toHaveAttribute('aria-checked','true');expect(screen.getByText('시세를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.')).toBeVisible();expect(screen.queryByText(/PER|시가총액/)).toBeNull();
  });
  it('filters actual dated events by date and type, preserving navigation semantics',async()=>{
   mount(<DesktopTimeline companyId={companyId}/>);await screen.findByRole('heading',{name:event.headline});expect(document.querySelectorAll('.pc-timeline-item')).toHaveLength(2);
@@ -105,4 +105,9 @@ describe('desktop document data and mutations',()=>{
  it('does not fabricate absent file metadata, sections, summaries, or unsupported AI links',async()=>{
   currentDocument={...currentDocument,document:{...resource,source_url:'javascript:alert(1)'},summaries:[],facts:[],sections:[],sections_total:0,next_section_offset:null,events:[],related:[],counts:{summaries:0,facts:0,events:0,related:0}};mount(<DesktopDocument id={documentId}/>);await screen.findByText('게시된 요약이 없습니다');expect(screen.getByText('공개된 근거 구간이 없습니다')).toBeVisible();expect(screen.queryByRole('link',{name:'원문 보기'})).toBeNull();expect(screen.queryByRole('link',{name:'AI에게 질문하기'})).toBeNull();expect(screen.getByText('질문할 수 있는 게시된 이벤트가 아직 없습니다. 공식 원문을 확인해 주세요.')).toBeVisible();expect(screen.queryByText('PDF')).toBeNull();expect(document.querySelectorAll('a[href^="javascript:"]')).toHaveLength(0);
  });
+});
+
+it('explains that company prices are waiting for display approval',async()=>{
+ mocks.quoteReason='fmp_display_license_unverified';mount(<DesktopCompany id={companyId}/>);
+ expect(await screen.findByText('미국 주가의 웹 표시 승인 대기 중입니다.')).toBeVisible();
 });
