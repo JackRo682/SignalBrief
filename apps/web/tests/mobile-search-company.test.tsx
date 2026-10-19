@@ -1,3 +1,4 @@
+import '@testing-library/jest-dom/vitest';
 import {cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {defaults, type Resource} from '../src/workspace/contracts';
@@ -5,12 +6,12 @@ import MobileExplore, {MobileSearchResults} from '../src/mobile/search';
 import MobileCompany from '../src/mobile/company';
 
 // These synthetic responses are isolated UI regressions, never production data.
-const mocks = vi.hoisted(() => ({workspace: vi.fn(), request: vi.fn(), push: vi.fn()}));
+const mocks = vi.hoisted(() => ({quoteReason: "fixture_unavailable", workspace: vi.fn(), request: vi.fn(), push: vi.fn()}));
 vi.mock('next/navigation', () => ({useRouter: () => ({push: mocks.push})}));
 vi.mock('@/components/auth', () => ({useAuth: () => ({token: 'isolated-fixture-token'})}));
 vi.mock('@/workspace/client', async importOriginal => ({...await importOriginal<typeof import('../src/workspace/client')>(), workspace: mocks.workspace}));
 vi.mock('@/lib/api', async importOriginal => ({...await importOriginal<typeof import('../src/lib/api')>(), request: mocks.request}));
-vi.mock('@/workspace/market', () => ({useQuotes: () => ({quotes: [], loading: false, reason: 'fixture_unavailable'})}));
+vi.mock('@/workspace/market', () => ({useQuotes: () => ({quotes: [], loading: false, reason: mocks.quoteReason})}));
 vi.mock('@/workspace/preferences', () => ({usePrefs: () => ({value: {...defaults, history_enabled: true}, text: (ko: string) => ko, date: (value: string | null) => value ?? '확인 전'})}));
 
 const companyId = '20000000-0000-4000-8000-000000000001';
@@ -23,7 +24,7 @@ let searches = [{query: 'TEST', searched_at: '2026-10-01T00:00:00Z'}, {query: '1
 let eventSaved = false;
 
 beforeEach(() => {
-  vi.clearAllMocks();
+  vi.clearAllMocks();mocks.quoteReason="fixture_unavailable";
   searches = [{query: 'TEST', searched_at: '2026-10-01T00:00:00Z'}, {query: '10-K', searched_at: '2026-10-01T00:00:00Z'}];
   eventSaved = false;
   mocks.workspace.mockImplementation(async (_token, req) => {
@@ -126,4 +127,9 @@ describe('mobile company persisted actions', () => {
     fireEvent.click(checkbox);
     await waitFor(() => expect(checkbox.getAttribute('aria-checked')).toBe('false'));
   });
+});
+
+it('explains pending price display permission in the mobile company header', async () => {
+ mocks.quoteReason='fmp_display_license_unverified';render(<MobileCompany id={companyId}/>);
+ expect(await screen.findByText(/미국 주가의 웹 표시 승인 대기 중입니다\./)).toBeVisible();
 });
