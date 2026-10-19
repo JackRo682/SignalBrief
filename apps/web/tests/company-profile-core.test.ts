@@ -1,6 +1,6 @@
 // @vitest-environment node
 import {describe,it,expect} from 'vitest';
-import {parseProfile} from '../../../supabase/functions/signalbrief-profiles/core';
+import {parseProfile,parseSecProfile} from '../../../supabase/functions/signalbrief-profiles/core';
 const company={id:'20000000-0000-4000-8000-000000000001',provider_company_id:'12345678',ticker:'123456'};
 const raw={status:'000',corp_code:'12345678',stock_code:'123456',corp_name:'Synthetic company',corp_name_eng:'Synthetic',ceo_nm:'Synthetic executive',adres:'Synthetic address',hm_url:'https://example.com',est_dt:'20200229',induty_code:'12345',acc_mt:'12'};
 const parse=(change={})=>parseProfile(JSON.stringify({...raw,...change}),company,'2026-10-18T00:00:00Z','a'.repeat(64));
@@ -15,4 +15,13 @@ describe('DART profile identity and provenance',()=>{
  it('does not turn API credential errors into missing company data',()=>expect(()=>parse({status:'010'})).toThrow('provider_key_invalid'));
  it('reports upstream quotas',()=>expect(()=>parse({status:'020'})).toThrow('provider_quota_exceeded'));
  it('represents an explicit no-data response',()=>expect(parse({status:'013'})).toMatchObject({status:'not_available',profile:null}));
+});
+
+describe('SEC profile identity and null handling',()=>{
+ const issuer={...company,provider_company_id:'123',ticker:'TEST'};
+ const sec={cik:123,tickers:['TEST'],name:'Synthetic US issuer',sicDescription:'Synthetic industry',fiscalYearEnd:'1231',addresses:{business:{street1:'Synthetic road',city:'Synthetic city'}}};
+ const parse=(change={})=>parseSecProfile(JSON.stringify({...sec,...change}),issuer,'2026-10-19T00:00:00Z','b'.repeat(64));
+ it('preserves provenance and labels only provider-supplied fields',()=>{expect(parse()).toMatchObject({provider:'SEC EDGAR',source_sha256:'b'.repeat(64),profile:{name:'Synthetic US issuer',industry_description:'Synthetic industry',fiscal_month:'12',ceo:null,established_on:null,website:null}});});
+ it.each([{cik:456},{tickers:['OTHER']},{cik:null},{tickers:null}])('rejects a different issuer',change=>expect(()=>parse(change)).toThrow('company_identity_mismatch'));
+ it.each(['null','[]','{'])('rejects malformed SEC responses',raw=>expect(()=>parseSecProfile(raw,issuer,'now','sha')).toThrow('invalid_provider_response'));
 });
