@@ -1,0 +1,289 @@
+{
+  "kind": "controlled_regression_not_real_llm_evaluation",
+  "cases": 40,
+  "pass": 40,
+  "fail": 0,
+  "blocked": 0,
+  "records": [
+    {
+      "id": "claim-0-value",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[0-value]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-0-unit",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[0-unit]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-0-period",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[0-period]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-0-accession",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[0-accession]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-0-fact_id",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[0-fact_id]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-0-quote",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[0-quote]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-0-field",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[0-field]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-0-omitted",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[0-omitted]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-1-value",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[1-value]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-1-unit",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[1-unit]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-1-period",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[1-period]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-1-accession",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[1-accession]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-1-fact_id",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[1-fact_id]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-1-quote",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[1-quote]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-1-field",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[1-field]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-1-omitted",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[1-omitted]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-2-value",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[2-value]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-2-unit",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[2-unit]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-2-period",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[2-period]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-2-accession",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[2-accession]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-2-fact_id",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[2-fact_id]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-2-quote",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[2-quote]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-2-field",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[2-field]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "claim-2-omitted",
+      "category": "mutated_real_filing_claim",
+      "nodeid": "tests/test_financial_benchmark.py::test_adversarial_claim[2-omitted]",
+      "expected": "reject_unsupported_evidence",
+      "status": "PASS"
+    },
+    {
+      "id": "system-01",
+      "category": "timeout",
+      "nodeid": "tests/test_jobs_http.py::test_timeout_and_exponential_retry",
+      "expected": "fail_closed_or_isolate_or_idempotent",
+      "status": "PASS"
+    },
+    {
+      "id": "system-02",
+      "category": "rate_limit",
+      "nodeid": "tests/test_jobs_http.py::test_429_long_retry_after_delegates_to_job",
+      "expected": "fail_closed_or_isolate_or_idempotent",
+      "status": "PASS"
+    },
+    {
+      "id": "system-03",
+      "category": "missing_filing",
+      "nodeid": "tests/test_jobs_http.py::test_http_does_not_follow_redirect_or_retry_permanent_error[404]",
+      "expected": "fail_closed_or_isolate_or_idempotent",
+      "status": "PASS"
+    },
+    {
+      "id": "system-04",
+      "category": "permanent_failure",
+      "nodeid": "tests/test_jobs_http.py::test_nonretryable_dead_letter",
+      "expected": "fail_closed_or_isolate_or_idempotent",
+      "status": "PASS"
+    },
+    {
+      "id": "system-05",
+      "category": "duplicate_job",
+      "nodeid": "tests/test_jobs_http.py::test_job_dedup",
+      "expected": "fail_closed_or_isolate_or_idempotent",
+      "status": "PASS"
+    },
+    {
+      "id": "system-06",
+      "category": "duplicate_processing",
+      "nodeid": "tests/test_jobs_http.py::test_claim_fence_success",
+      "expected": "fail_closed_or_isolate_or_idempotent",
+      "status": "PASS"
+    },
+    {
+      "id": "system-07",
+      "category": "retry_fencing",
+      "nodeid": "tests/test_jobs_http.py::test_expired_lease_reclaimed",
+      "expected": "fail_closed_or_isolate_or_idempotent",
+      "status": "PASS"
+    },
+    {
+      "id": "system-08",
+      "category": "cross_user",
+      "nodeid": "tests/test_api.py::test_watchlist_tenant_isolation",
+      "expected": "fail_closed_or_isolate_or_idempotent",
+      "status": "PASS"
+    },
+    {
+      "id": "system-09",
+      "category": "cross_user",
+      "nodeid": "tests/test_api.py::test_portfolio_roundtrip_and_user_isolation",
+      "expected": "fail_closed_or_isolate_or_idempotent",
+      "status": "PASS"
+    },
+    {
+      "id": "system-10",
+      "category": "cross_user",
+      "nodeid": "tests/test_api.py::test_alert_and_calendar_idor",
+      "expected": "fail_closed_or_isolate_or_idempotent",
+      "status": "PASS"
+    },
+    {
+      "id": "system-11",
+      "category": "admin_escalation",
+      "nodeid": "tests/test_api.py::test_admin_cannot_be_granted_by_client_metadata",
+      "expected": "fail_closed_or_isolate_or_idempotent",
+      "status": "PASS"
+    },
+    {
+      "id": "system-12",
+      "category": "unauthorized_publish",
+      "nodeid": "tests/test_api.py::test_blocked_event_hidden_and_cannot_approve",
+      "expected": "fail_closed_or_isolate_or_idempotent",
+      "status": "PASS"
+    },
+    {
+      "id": "system-13",
+      "category": "hallucination",
+      "nodeid": "tests/test_sec_table_pipeline.py::test_bad_or_incomplete_model_output_cannot_be_approved[wrong_number]",
+      "expected": "fail_closed_or_isolate_or_idempotent",
+      "status": "PASS"
+    },
+    {
+      "id": "system-14",
+      "category": "insufficient_evidence",
+      "nodeid": "tests/test_sec_table_pipeline.py::test_bad_or_incomplete_model_output_cannot_be_approved[omitted]",
+      "expected": "fail_closed_or_isolate_or_idempotent",
+      "status": "PASS"
+    },
+    {
+      "id": "system-15",
+      "category": "comparison_period",
+      "nodeid": "tests/test_sec_tables.py::test_exact_fiscal_intervals_do_not_compare_cumulative_to_quarter",
+      "expected": "fail_closed_or_isolate_or_idempotent",
+      "status": "PASS"
+    },
+    {
+      "id": "system-16",
+      "category": "source_identity",
+      "nodeid": "tests/test_providers.py::test_sec_company_mismatch",
+      "expected": "fail_closed_or_isolate_or_idempotent",
+      "status": "PASS"
+    }
+  ]
+}

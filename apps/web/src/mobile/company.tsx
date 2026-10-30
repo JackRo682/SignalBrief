@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {useEffect, useState} from 'react';
 import {z} from 'zod';
 import {useAuth} from '@/components/auth';
+import {MarketWidget} from '@/components/market-widget';
 import CompanyProfile from '@/components/company-profile';
 import {body, emptySchema, errorMessage, request} from '@/lib/api';
 import {portfolioSchema} from '@/lib/contracts';
@@ -11,6 +12,7 @@ import {decimalInput} from '@/lib/decimal-input';
 import {workspace} from '@/workspace/client';
 import {companyDetailSchema, resourceHref, type Resource} from '@/workspace/contracts';
 import {useQuotes} from '@/workspace/market';
+import {quoteUnavailableText,quoteDatePrecision} from '@/lib/quote-display';
 import {usePrefs} from '@/workspace/preferences';
 import {useData, useMutation} from '@/workspace/ui';
 import {ActionNotice, CompanyLogo, Dialog, EmptyState, LoadState, MIcon, SectionTitle, SmallChart, eventLabel, formatMoney, relativeTime} from '@/mobile/ui';
@@ -131,9 +133,9 @@ export default function MobileCompany({id}: {id: string}) {
           <p className="m-company-description">{company.summary || t('공식 공시로 연결되는 기업 정보와 주요 변화', 'Company information and changes linked to official filings')}</p></div></div>
         <div className="m-company-quote-area"><button className={`m-company-quote ${quote?.change_pct != null && quote.change_pct < 0 ? 'is-negative' : ''}`}
           onClick={() => setChartOpen(true)} aria-label={t('주가 차트 자세히 보기', 'Open price history')}>
-          <div><strong>{quote?.price == null ? '—' : formatMoney(quote.price, quote.currency, value.locale)}</strong><span>{quote?.change_pct == null ? t('시세 확인 전', 'Quote unavailable') : `${quote.change_pct < 0 ? '▼' : '▲'} ${Math.abs(quote.change_pct).toFixed(2)}%`}</span></div>
+          <div><strong>{quote?.price == null ? '—' : formatMoney(quote.price, quote.currency, value.locale)}</strong><span>{quote?.change_pct == null ? (quote ? t('등락률 정보 없음', 'Daily change unavailable') : t('시세 확인 전', 'Quote unavailable')) : `${quote.change_pct < 0 ? '▼' : '▲'} ${Math.abs(quote.change_pct).toFixed(2)}%`}</span></div>
           <SmallChart values={quote?.history.map(point => point.close) ?? []}/>
-        </button><p className="m-company-quote-meta">{quote ? date(quote.as_of) : t('시세 공급자 연결 확인', 'Check price data connection')}<br/>{quote ? `${quote.source} · ${quote.currency}` : company.market}</p></div>
+        </button><p className="m-company-quote-meta">{quote ? date(quote.as_of,quoteDatePrecision(quote.as_of)) : quoteUnavailableText(quotes,company.ticker,t)}<br/>{quote ? `${quote.source} · ${quote.currency}` : company.market}</p></div>
         <div className="m-company-actions"><button className="m-button m-button-secondary" disabled={action.busy} aria-pressed={data.watching}
           onClick={() => void action.run(async () => {await request(`/v1/watchlist/${encodeURIComponent(id)}`, token, emptySchema, body(data.watching ? 'DELETE' : 'PUT')); result.reload();}, t('관심종목을 업데이트했어요.', 'Watchlist updated.'))}>
           <MIcon name="star" size={18} className={data.watching ? 'm-company-watched' : ''}/>{t('관심종목', 'Watchlist')}</button>
@@ -141,10 +143,10 @@ export default function MobileCompany({id}: {id: string}) {
         </div>
       </section>
 
-      <CompanyProfile id={id} ticker={company.ticker}/>
+      <CompanyProfile id={id} ticker={company.ticker}/><MarketWidget key={id} ticker={company.ticker} market={company.market}/>
       <section className="m-company-section m-company-metrics-section"><SectionTitle title={t('핵심 지표', 'Key metrics')} action={<button onClick={() => setMetricsOpen(true)}>{t('전체 보기', 'View all')}<MIcon name="chevron" size={13}/></button>}/>
         <div className="m-company-metrics">{data.facts.length ? data.facts.slice(0, 4).map((fact, index) => <SourcedMetric key={fact.id} fact={fact} index={index}/>) : noMetrics.map((metric, index) => <div className={`m-card m-company-metric m-company-metric-${index}`} key={metric.en}>
-          <div><span className="m-company-metric-icon"><MIcon name={metric.icon} size={16}/></span><span>{t(metric.ko, metric.en)}</span></div><strong>—</strong><p>{t('자료 확인 전', 'Not available')}</p>
+          <div><span className="m-company-metric-icon"><MIcon name={metric.icon} size={16}/></span><span>{t(metric.ko, metric.en)}</span></div><strong>—</strong><p>{t('공개·검증된 재무 수치 없음', 'No published, validated financial figure')}</p>
         </div>)}</div>
       </section>
 
@@ -181,7 +183,7 @@ export default function MobileCompany({id}: {id: string}) {
       {chartOpen && <Dialog title={`${title} ${t('주가 추이', 'price history')}`} onClose={() => setChartOpen(false)}><div className="m-company-chart-dialog">
         <label className="m-field">{t('조회 기간', 'Period')}<select value={period} onChange={event => setPeriod(event.target.value)}><option value="1m">{t('1개월', '1 month')}</option><option value="3m">{t('3개월', '3 months')}</option><option value="6m">{t('6개월', '6 months')}</option><option value="1y">{t('1년', '1 year')}</option></select></label>
         <LoadState loading={quotes.loading}/>{!quotes.loading && <SmallChart values={quote?.history.map(point => point.close) ?? []}/>}
-        {quote ? <p className="m-muted">{quote.source} · {date(quote.as_of)} · {quote.currency}</p> : <EmptyState title={t('주가 자료를 불러오지 못했어요', 'Price history unavailable')} href="/us" label={t('연결 상태 확인', 'View connection status')}/>}
+        {quote ? <p className="m-muted">{quote.source} · {date(quote.as_of,quoteDatePrecision(quote.as_of))} · {quote.currency}</p> : <EmptyState title={quoteUnavailableText(quotes,company.ticker,t)} href="/us" label={t('연결 상태 확인', 'View connection status')}/>}
       </div></Dialog>}
     </>}
     {positionOpen && <PositionDialog id={id} onClose={() => setPositionOpen(false)} onSaved={() => {setPositionOpen(false); result.reload();}}/>}

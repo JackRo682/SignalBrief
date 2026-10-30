@@ -72,6 +72,12 @@ def db():
         if migration.name == 'BASELINE_GENERATED.sql':
             continue
         with connection.connection.driver_connection.cursor() as cursor:
+            if migration.name == '20261019071121_company_detail_connections.sql':
+                # The projection now depends on the production collector's DART metadata table.
+                # Replay its real table/RLS DDL before the function migration, without enabling jobs.
+                collector = (ROOT / 'docs/sql/collector.sql').read_text()
+                cursor.execute(collector.split('CREATE OR REPLACE FUNCTION public.sb_us_secrets()')[0],
+                               prepare=False)
             cursor.execute(migration.read_text(), prepare=False)
     seed = """
         INSERT INTO auth.users VALUES (:a,'a@example.invalid','{"name":"Synthetic A"}'),(:b,'b@example.invalid','{"name":"Synthetic B"}');

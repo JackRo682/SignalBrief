@@ -1,0 +1,8 @@
+.sb-market-widget{min-width:0;max-width:100%;margin:16px 0;padding:16px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;color:#334155}
+.sb-market-widget h3{margin:0 0 8px;font-size:16px}
+.sb-market-widget p{font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.sb-market-widget button{padding:9px 14px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;cursor:pointer}
+.sb-market-widget-frame{width:100%;min-width:0;height:380px;overflow:hidden}
+.sb-market-widget-frame[hidden]{display:none}
+.sb-market-widget .tradingview-widget-copyright{margin-top:10px;font-size:12px}
+.sb-market-widget a{color:#2563eb}

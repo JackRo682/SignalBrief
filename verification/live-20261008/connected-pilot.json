@@ -1,0 +1,43 @@
+{
+  "source": {
+    "external_id": "0000320193-26-000013",
+    "raw_sha256": "d54cffdda0bf920aa4c86be26586db24dbf6e048635f79e0940dc94c92e54b64",
+    "object_key": "raw/d5/d54cffdda0bf920aa4c86be26586db24dbf6e048635f79e0940dc94c92e54b64"
+  },
+  "storage_roundtrip_sha256_matches": true,
+  "anonymous_raw_download_status": 400,
+  "runs": [
+    {
+      "status": "validation_failed",
+      "model_version": "gpt-4.1-mini-2025-04-14",
+      "input_tokens": 49490,
+      "output_tokens": 10175,
+      "cost_usd": "0.03607600"
+    }
+  ],
+  "validation_status_counts": {
+    "partially_supported": 53,
+    "unsupported": 31,
+    "supported": 6
+  },
+  "validation_reason_counts": {
+    "Currency/unit is not explicit in the same quotation": 14,
+    "Quotation is not an exact contiguous substring of the cited chunk": 30,
+    "Reporting period is not explicit in the same quotation": 1,
+    "Metric/semantic label is not explicit in the quoted evidence": 31,
+    "Numeric field has no supported numeric value": 6,
+    "Metric, value, unit and period are not one unambiguous bound claim": 1,
+    "Exact quotation, explicit metric label, and numeric/context checks passed; semantic review still applies": 6,
+    "Unverified scheduled event date": 1
+  },
+  "events": [
+    {
+      "state": "rejected",
+      "published_to_users_at": null
+    }
+  ],
+  "reject_audit_count": 1,
+  "paid_ai_requests": 31,
+  "end_to_end_status": "FAIL_VALIDATION",
+  "ten_pairs_started": false
+}

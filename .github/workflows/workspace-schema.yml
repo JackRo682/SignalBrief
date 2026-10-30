@@ -4,7 +4,7 @@ on:
     branches: [main, codex/workspace-reviewed-20261006, codex/mobile-authenticated-20261006]
     paths: ['supabase/**', 'tests/workspace/**', '.github/workflows/workspace-schema.yml']
   pull_request:
-    paths: ['supabase/**', 'tests/workspace/**', '.github/workflows/workspace-schema.yml']
+    paths: ['apps/api/**', 'supabase/**', 'tests/workspace/**', '.github/workflows/workspace-schema.yml']
 permissions:
   contents: read
 jobs:

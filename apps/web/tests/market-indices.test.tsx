@@ -35,7 +35,8 @@ describe('homepage market index contract',()=>{
   expect(screen.getByText(/시세 기준/).querySelector('time')).toHaveAttribute('datetime',stamp);
   expect(screen.getByText(/조회 시각/).querySelector('time')).toHaveAttribute('datetime',stamp);
   expect(screen.getByText('공급자 계정 연결 필요')).toBeVisible();expect(screen.getByText('시세 표시 권한 확인 대기')).toBeVisible();
-  expect(screen.getAllByRole('link')).toHaveLength(4);
+  expect(screen.getAllByRole('link').filter(link=>link.getAttribute('href')==='/us')).toHaveLength(4);
+  expect(screen.getByRole('link',{name:'TradingView에서 확인'})).toHaveAttribute('href','https://www.tradingview.com/markets/indices/');
   expect(fetch).toHaveBeenCalledWith('/api/us/indices',expect.objectContaining({headers:{Authorization:'Bearer synthetic-session'},cache:'no-store',signal:expect.any(AbortSignal)}));
  });
  it('shows HTTP failures and retries to actual data',async()=>{

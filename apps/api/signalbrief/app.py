@@ -78,7 +78,8 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
     async def request_context(request: Request, call_next):
         request.state.request_id = str(uuid4())
         started = time.monotonic()
-        if request.method != "OPTIONS" and request.url.path.startswith("/v1/"):
+        # Rate-limit the actual routed path, independent of Host URL reconstruction.
+        if request.method != "OPTIONS" and request.scope["path"].startswith("/v1/"):
             # Never trust forwarded IP headers from arbitrary clients.
             peer = request.client.host if request.client else "unknown"
             permitted = await run_in_threadpool(

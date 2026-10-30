@@ -1,0 +1,406 @@
+{
+  "checked_at": "2026-10-08T19:32:37.895517+00:00",
+  "read_only": true,
+  "events": [
+    {
+      "event_id": "b7818c3d-0614-5411-a4f7-2227baebd5a4",
+      "document_id": "36a85dfd-3b8b-4be5-afbf-4e7db50f2088",
+      "accession": "0000320193-26-000013",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm",
+      "raw_sha256": "d54cffdda0bf920aa4c86be26586db24dbf6e048635f79e0940dc94c92e54b64",
+      "storage_bytes": 999919,
+      "storage_hash_matches": true,
+      "state": "published",
+      "published_to_users_at": "2026-10-08T13:21:39.361805+00:00",
+      "evidence_replay_passed": true,
+      "fact_count": 8,
+      "supported_count": 8,
+      "facts": [
+        {
+          "field": "revenue",
+          "value_raw": "111184",
+          "unit": "USD million",
+          "period": "2025-12-28/2026-03-28",
+          "scope": "consolidated",
+          "basis": "actual",
+          "validation_status": "supported"
+        },
+        {
+          "field": "revenue",
+          "value_raw": "95359",
+          "unit": "USD million",
+          "period": "2024-12-29/2025-03-29",
+          "scope": "consolidated",
+          "basis": "actual",
+          "validation_status": "supported"
+        },
+        {
+          "field": "revenue",
+          "value_raw": "254940",
+          "unit": "USD million",
+          "period": "2025-09-28/2026-03-28",
+          "scope": "consolidated",
+          "basis": "actual",
+          "validation_status": "supported"
+        },
+        {
+          "field": "revenue",
+          "value_raw": "219659",
+          "unit": "USD million",
+          "period": "2024-09-29/2025-03-29",
+          "scope": "consolidated",
+          "basis": "actual",
+          "validation_status": "supported"
+        },
+        {
+          "field": "operating_income",
+          "value_raw": "35885",
+          "unit": "USD million",
+          "period": "2025-12-28/2026-03-28",
+          "scope": "consolidated",
+          "basis": "actual",
+          "validation_status": "supported"
+        },
+        {
+          "field": "operating_income",
+          "value_raw": "29589",
+          "unit": "USD million",
+          "period": "2024-12-29/2025-03-29",
+          "scope": "consolidated",
+          "basis": "actual",
+          "validation_status": "supported"
+        },
+        {
+          "field": "operating_income",
+          "value_raw": "86737",
+          "unit": "USD million",
+          "period": "2025-09-28/2026-03-28",
+          "scope": "consolidated",
+          "basis": "actual",
+          "validation_status": "supported"
+        },
+        {
+          "field": "operating_income",
+          "value_raw": "72421",
+          "unit": "USD million",
+          "period": "2024-09-29/2025-03-29",
+          "scope": "consolidated",
+          "basis": "actual",
+          "validation_status": "supported"
+        }
+      ],
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "insufficient_history",
+          "comparison_kind": null,
+          "previous_value": null,
+          "current_value": "111184",
+          "absolute_change": null,
+          "percentage_change": null
+        },
+        {
+          "field": "revenue",
+          "change_type": "insufficient_history",
+          "comparison_kind": null,
+          "previous_value": null,
+          "current_value": "95359",
+          "absolute_change": null,
+          "percentage_change": null
+        },
+        {
+          "field": "revenue",
+          "change_type": "insufficient_history",
+          "comparison_kind": null,
+          "previous_value": null,
+          "current_value": "254940",
+          "absolute_change": null,
+          "percentage_change": null
+        },
+        {
+          "field": "revenue",
+          "change_type": "insufficient_history",
+          "comparison_kind": null,
+          "previous_value": null,
+          "current_value": "219659",
+          "absolute_change": null,
+          "percentage_change": null
+        },
+        {
+          "field": "operating_income",
+          "change_type": "insufficient_history",
+          "comparison_kind": null,
+          "previous_value": null,
+          "current_value": "35885",
+          "absolute_change": null,
+          "percentage_change": null
+        },
+        {
+          "field": "operating_income",
+          "change_type": "insufficient_history",
+          "comparison_kind": null,
+          "previous_value": null,
+          "current_value": "29589",
+          "absolute_change": null,
+          "percentage_change": null
+        },
+        {
+          "field": "operating_income",
+          "change_type": "insufficient_history",
+          "comparison_kind": null,
+          "previous_value": null,
+          "current_value": "86737",
+          "absolute_change": null,
+          "percentage_change": null
+        },
+        {
+          "field": "operating_income",
+          "change_type": "insufficient_history",
+          "comparison_kind": null,
+          "previous_value": null,
+          "current_value": "72421",
+          "absolute_change": null,
+          "percentage_change": null
+        }
+      ],
+      "run_id": "1f8dd98a-b968-4620-86fe-64cf856d979c",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "status": "validated",
+      "input_tokens": 4209,
+      "output_tokens": 1836,
+      "cost_usd": "0.00462120",
+      "audit": [
+        {
+          "action": "approve",
+          "created_at": "2026-10-08T13:21:39.361805+00:00"
+        }
+      ]
+    },
+    {
+      "event_id": "12877d3d-ef23-5765-88b7-2754de0e95af",
+      "document_id": "3c3d236c-7ed5-419f-a41d-37d0abcd48a9",
+      "accession": "0000320193-26-000020",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/aapl-20260627.htm",
+      "raw_sha256": "906ef0a0bc771267e9f7b8748d5711bae79f74ebcf96ef37f12f29883987767d",
+      "storage_bytes": 1018319,
+      "storage_hash_matches": true,
+      "state": "published",
+      "published_to_users_at": "2026-10-08T19:29:11.258885+00:00",
+      "evidence_replay_passed": true,
+      "fact_count": 8,
+      "supported_count": 8,
+      "facts": [
+        {
+          "field": "revenue",
+          "value_raw": "109417",
+          "unit": "USD million",
+          "period": "2026-03-29/2026-06-27",
+          "scope": "consolidated",
+          "basis": "actual",
+          "validation_status": "supported"
+        },
+        {
+          "field": "revenue",
+          "value_raw": "94036",
+          "unit": "USD million",
+          "period": "2025-03-30/2025-06-28",
+          "scope": "consolidated",
+          "basis": "actual",
+          "validation_status": "supported"
+        },
+        {
+          "field": "revenue",
+          "value_raw": "364357",
+          "unit": "USD million",
+          "period": "2025-09-28/2026-06-27",
+          "scope": "consolidated",
+          "basis": "actual",
+          "validation_status": "supported"
+        },
+        {
+          "field": "revenue",
+          "value_raw": "313695",
+          "unit": "USD million",
+          "period": "2024-09-29/2025-06-28",
+          "scope": "consolidated",
+          "basis": "actual",
+          "validation_status": "supported"
+        },
+        {
+          "field": "operating_income",
+          "value_raw": "35695",
+          "unit": "USD million",
+          "period": "2026-03-29/2026-06-27",
+          "scope": "consolidated",
+          "basis": "actual",
+          "validation_status": "supported"
+        },
+        {
+          "field": "operating_income",
+          "value_raw": "28202",
+          "unit": "USD million",
+          "period": "2025-03-30/2025-06-28",
+          "scope": "consolidated",
+          "basis": "actual",
+          "validation_status": "supported"
+        },
+        {
+          "field": "operating_income",
+          "value_raw": "122432",
+          "unit": "USD million",
+          "period": "2025-09-28/2026-06-27",
+          "scope": "consolidated",
+          "basis": "actual",
+          "validation_status": "supported"
+        },
+        {
+          "field": "operating_income",
+          "value_raw": "100623",
+          "unit": "USD million",
+          "period": "2024-09-29/2025-06-28",
+          "scope": "consolidated",
+          "basis": "actual",
+          "validation_status": "supported"
+        }
+      ],
+      "changes": [
+        {
+          "field": "revenue",
+          "change_type": "decreased",
+          "comparison_kind": "quarter_over_quarter",
+          "previous_value": "111184",
+          "current_value": "109417",
+          "absolute_change": "-1767",
+          "percentage_change": "-1.5893"
+        },
+        {
+          "field": "revenue",
+          "change_type": "decreased",
+          "comparison_kind": "quarter_over_quarter",
+          "previous_value": "95359",
+          "current_value": "94036",
+          "absolute_change": "-1323",
+          "percentage_change": "-1.3874"
+        },
+        {
+          "field": "revenue",
+          "change_type": "insufficient_history",
+          "comparison_kind": null,
+          "previous_value": null,
+          "current_value": "364357",
+          "absolute_change": null,
+          "percentage_change": null
+        },
+        {
+          "field": "revenue",
+          "change_type": "insufficient_history",
+          "comparison_kind": null,
+          "previous_value": null,
+          "current_value": "313695",
+          "absolute_change": null,
+          "percentage_change": null
+        },
+        {
+          "field": "operating_income",
+          "change_type": "decreased",
+          "comparison_kind": "quarter_over_quarter",
+          "previous_value": "35885",
+          "current_value": "35695",
+          "absolute_change": "-190",
+          "percentage_change": "-0.5295"
+        },
+        {
+          "field": "operating_income",
+          "change_type": "decreased",
+          "comparison_kind": "quarter_over_quarter",
+          "previous_value": "29589",
+          "current_value": "28202",
+          "absolute_change": "-1387",
+          "percentage_change": "-4.6876"
+        },
+        {
+          "field": "operating_income",
+          "change_type": "insufficient_history",
+          "comparison_kind": null,
+          "previous_value": null,
+          "current_value": "122432",
+          "absolute_change": null,
+          "percentage_change": null
+        },
+        {
+          "field": "operating_income",
+          "change_type": "insufficient_history",
+          "comparison_kind": null,
+          "previous_value": null,
+          "current_value": "100623",
+          "absolute_change": null,
+          "percentage_change": null
+        }
+      ],
+      "run_id": "d8fd8407-38ca-4160-8088-c8db61accad0",
+      "model": "gpt-4.1-mini-2025-04-14",
+      "status": "validated",
+      "input_tokens": 4207,
+      "output_tokens": 1820,
+      "cost_usd": "0.00459480",
+      "audit": [
+        {
+          "action": "approve",
+          "created_at": "2026-10-08T19:29:11.258885+00:00"
+        }
+      ]
+    }
+  ],
+  "paid_calls_during_check": 0,
+  "after_idempotent_resume": {
+    "runs": 2,
+    "events": 2,
+    "input_tokens": 8416,
+    "output_tokens": 3656,
+    "cost_usd": "0.00921600"
+  },
+  "scope": "consolidated statement of operations: revenue and operating_income only",
+  "scoped_pair_verdict": "PASS",
+  "full_service_completion_verdict": "FAIL_UNVERIFIED_REQUIREMENTS_REMAIN",
+  "human_review": {
+    "first_filing_eight_values": "user explicitly attested original-source review complete",
+    "second_filing": "publication explicitly authorized; separate human value-review completion not attested"
+  },
+  "browser": {
+    "origin": "https://signalbrief.online",
+    "today_mobile_days": 90,
+    "event_visible": "12877d3d-ef23-5765-88b7-2754de0e95af",
+    "headline": "매출 감소 -1.5893%",
+    "desktop_default_days": 30,
+    "desktop_event_visible": false,
+    "desktop_exclusion_reason": "filing publication date outside window",
+    "logout_login_redirect": true,
+    "logged_out_ops_redirect": true,
+    "google_relogin": true,
+    "separate_non_admin_production_account_tested": false
+  },
+  "legacy_rejected_event": {
+    "event_id": "65ca674b-bf8d-5947-9ce6-bdeacefcaee0",
+    "state": "rejected",
+    "hosted_visibility_function": false,
+    "reject_audit_count": 1
+  },
+  "unverified": [
+    "independent second-filing human value review",
+    "two distinct ordinary-user production browser sessions and cross-user denial",
+    "financial metrics outside declared scope",
+    "non-USD or general Inline XBRL transformations"
+  ],
+  "known_ui_limitations": [
+    "Desktop default 30-day feed excludes both historical filings",
+    "Today preview may select operating-income quote beneath revenue headline; stored full evidence includes both"
+  ],
+  "ten_pair_execution": "NOT_STARTED",
+  "cost_basis": {
+    "input_usd_per_million": "0.4",
+    "output_usd_per_million": "1.6",
+    "measurement": "Actual API response token counts multiplied by configured rates; not final invoice",
+    "existing_cumulative_reservation_limit_usd": "100",
+    "ledger_reset": false
+  }
+}

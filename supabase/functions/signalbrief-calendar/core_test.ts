@@ -1,0 +1,18 @@
+import {dateOnly,parseSource,fetchSource,type Source} from './core.ts';
+const assert=(value:unknown)=>{if(!value)throw new Error('assertion failed');};
+const rejects=(fn:()=>unknown)=>{let rejected=false;try{fn();}catch{rejected=true;}assert(rejected);};
+const samsung:Source={key:'samsung-ir',ticker:'005930',market:'KOSPI',url:'https://www.samsung.com/global/ir/ir-events-presentations/events/',adapter:'samsung'};
+const microsoft:Source={key:'microsoft-ir',ticker:'MSFT',market:'NASDAQ',url:'https://www.microsoft.com/en-us/investor/default',adapter:'microsoft'};
+const sam=(date:string,title='3Q26 Earnings Conference Call')=>`<h2>Upcoming Events</h2><dl class="ir-event-list__detail"><dt>${title}</dt><dd>${date}</dd></dl><div class="ir-event-wrap__past">`;
+const ms=(events:unknown[])=>`<cascade eventsData="${JSON.stringify({Events:events}).replaceAll('"','&#34;')}">`;
+const event={EventID:'123',EventName:'Quarterly Earnings Call',DateTime:{Local:'2026-10-28T14:30:00',UTC:'2026-10-28T21:30:00',TimeZone:'PT'}};
+Deno.test('real calendar dates reject rollover and malformed dates',()=>{assert(dateOnly('2028-02-29')==='2028-02-29');for(const date of ['2026-02-29','2026-13-01','26-01-01','2026-04-31'])rejects(()=>dateOnly(date));});
+Deno.test('Samsung accepts explicit date and timezone with exact quote',()=>{const r=parseSource(samsung,sam('October 29, 2026, 10:00 a.m. KST'),'2026-10-19');assert(r.entries[0].occurs_on==='2026-10-29');assert(r.entries[0].timezone==='Asia/Seoul');assert(r.text.includes(r.entries[0].quote));});
+Deno.test('Samsung rejects ranges, missing years, and TBD',()=>{for(const date of ['October 29','October 28-29, 2026','TBD'])rejects(()=>parseSource(samsung,sam(date),'2026-10-19'));});
+Deno.test('Samsung ignores scripts, comments and archived dates',()=>{const r=parseSource(samsung,sam('October 29, 2026')+sam('November 2, 2026'),'2026-10-19');assert(r.entries.length===1);});
+Deno.test('Microsoft uses source local day, no UTC day shift',()=>{const r=parseSource(microsoft,ms([{...event,DateTime:{...event.DateTime,Local:'2026-10-28T23:30:00',UTC:'2026-10-29T06:30:00'}}]),'2026-10-19');assert(r.entries[0].occurs_on==='2026-10-28');assert(r.text.includes(r.entries[0].quote));});
+Deno.test('duplicates collapse and contradictory source identities fail closed',()=>{assert(parseSource(microsoft,ms([event,event]),'2026-10-19').entries.length===1);rejects(()=>parseSource(microsoft,ms([event,{...event,DateTime:{...event.DateTime,Local:'2026-10-29T14:30:00'}}]),'2026-10-19'));});
+Deno.test('format changes and unknown timezones fail closed',()=>{rejects(()=>parseSource(microsoft,'no schedule','2026-10-19'));rejects(()=>parseSource(microsoft,ms([{...event,DateTime:{...event.DateTime,TimeZone:'unknown'}}]),'2026-10-19'));});
+Deno.test('old events do not crowd out upcoming dates',()=>{assert(parseSource(microsoft,ms([{...event,DateTime:{...event.DateTime,Local:'2020-01-01T00:00:00'}}, {...event,EventID:'456'}]),'2026-10-19').entries.length===1);});
+Deno.test('fetch refuses unapproved URLs before networking',async()=>{let called=false;try{await fetchSource({...samsung,url:'https://attacker.test/'},(()=>{called=true;throw new Error();}) as typeof fetch);}catch{}assert(!called);});
+Deno.test('fetch rejects upstream errors, content and oversized responses',async()=>{for(const response of [new Response('',{status:403}),new Response('{}',{headers:{'content-type':'application/json'}}),new Response('a'.repeat(2000001),{headers:{'content-type':'text/html'}})]){let rejected=false;try{await fetchSource(samsung,(()=>Promise.resolve(response)) as typeof fetch);}catch{rejected=true;}assert(rejected);}});

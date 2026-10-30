@@ -2,13 +2,39 @@
 
 import hashlib
 import time
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
+from decimal import ROUND_CEILING, ROUND_FLOOR, Decimal
 
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
 from .models import ProviderLimit, RateBucket, now
+
+
+def reserve_ai_cost(factory, amount: Decimal, ceiling: Decimal) -> bool:
+    """Atomically reserve microdollars before sending, retaining uncertain/failed calls.
+
+    Reuses the existing durable counter schema. The lifetime row does not expire
+    during normal cleanup. No refund: a timed-out request may still be billable.
+    All processes sharing this database share the same ceiling.
+    """
+    units = int((Decimal(str(amount)) * 1_000_000).to_integral_value(rounding=ROUND_CEILING))
+    limit = int((Decimal(str(ceiling)) * 1_000_000).to_integral_value(rounding=ROUND_FLOOR))
+    if units <= 0 or units > limit or limit > 1_000_000_000:
+        return False
+    with factory.begin() as session:
+        statement = dialect_insert(session, RateBucket).values(
+            key="openai-lifetime-reserved-microusd-v1",
+            hits=units,
+            expires_at=datetime(9999, 1, 1, tzinfo=timezone.utc),
+        )
+        statement = statement.on_conflict_do_update(
+            index_elements=[RateBucket.key],
+            set_={"hits": RateBucket.hits + units},
+            where=RateBucket.hits + units <= limit,
+        ).returning(RateBucket.hits)
+        return session.execute(statement).scalar_one_or_none() is not None
 
 
 def aware(dt):

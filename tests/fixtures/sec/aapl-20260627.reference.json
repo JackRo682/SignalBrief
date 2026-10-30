@@ -1,0 +1,32 @@
+{
+  "source_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/aapl-20260627.htm",
+  "raw_sha256": "906ef0a0bc771267e9f7b8748d5711bae79f74ebcf96ef37f12f29883987767d",
+  "review_status": "agent_transcribed_from_original_table; publication_authorized_by_user; separate_human_value_review_not_attested",
+  "unit": "USD million",
+  "table": 12,
+  "rows": {
+    "revenue": 6,
+    "operating_income": 19
+  },
+  "periods": [
+    "2026-03-29/2026-06-27",
+    "2025-03-30/2025-06-28",
+    "2025-09-28/2026-06-27",
+    "2024-09-29/2025-06-28"
+  ],
+  "expected": {
+    "revenue": [
+      "109417",
+      "94036",
+      "364357",
+      "313695"
+    ],
+    "operating_income": [
+      "35695",
+      "28202",
+      "122432",
+      "100623"
+    ]
+  },
+  "provenance": "Complete original bytes, compressed losslessly. Expected values separately transcribed from displayed statement rows, not generated from parser output. Public SEC filing; not synthetic."
+}

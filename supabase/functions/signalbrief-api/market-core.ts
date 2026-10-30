@@ -1,4 +1,18 @@
-import {obj,str,arr,ProviderError,jsonFetch,websitePermission,type Row,type Fetcher} from './us-core.ts';
+import {obj,str,arr,ProviderError,jsonFetch,websitePermission,fmpQuote,fmpHistory,usSymbol,type Row,type Fetcher} from './us-core.ts';
+/** Explicit EOD selection never falls back to an intraday endpoint. Rights apply to both modes. */
+export async function fmpEquityQuote(symbol:string,key:string,config:Row,fetcher:Fetcher=fetch):Promise<Row>{
+ if(!websitePermission(config,'fmp'))throw new ProviderError('fmp','fmp_display_license_unverified',409);
+ const name=usSymbol(symbol),mode=config.fmp_quote_mode??'snapshot';
+ if(mode==='snapshot')return fmpQuote(name,key,fetcher);
+ if(mode!=='eod')throw new ProviderError('fmp','invalid_quote_mode',503);
+ const history=await fmpHistory(name,key,fetcher),last=history.at(-1);
+ if(!last)throw new ProviderError('fmp','eod_price_unavailable',503);
+ if(history.some(point=>{const day=str(point.date),date=new Date(day);return !Number.isFinite(+date)||date.toISOString().slice(0,10)!==day;}))throw new ProviderError('fmp','invalid_history');
+ // The provider supplies a trading date, not an exchange timestamp. Do not invent a closing time
+ // or a daily return from a series whose adjustment basis has not been confirmed.
+ return {symbol:name,price:last.close,currency:'USD',change_pct:null,as_of:last.date,source:'FMP EOD',history,
+  price_kind:'end_of_day_close',timestamp_kind:'provider_date',delay:'end_of_day',history_resolution:'daily'};
+}
 export const indexSymbols:Record<string,string>={KOSPI:'0001',KOSDAQ:'1001',NASDAQ:'^IXIC','S&P500':'^GSPC'};
 export function koreanSymbol(value:string):string{if(!/^\d{6}$/.test(value))throw new ProviderError('kis','invalid_korean_symbol',422);return value;}
 const number=(value:unknown)=>{const s=typeof value==='number'?String(value):str(value);if(!/^-?\d+(?:\.\d+)?$/.test(s))throw new ProviderError('market','invalid_numeric_quote');const n=Number(s);if(!Number.isFinite(n))throw new ProviderError('market','invalid_numeric_quote');return n;};

@@ -3,6 +3,14 @@ on: [push, pull_request]
 permissions:
   contents: read
 jobs:
+  python-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install -e '.[dev]' pip-audit
+      - run: pip-audit --progress-spinner off --format json --output python-audit.json
   backend:
     runs-on: ubuntu-latest
     steps:
@@ -31,6 +39,10 @@ jobs:
       - run: pip install -e '.[dev]'
       - working-directory: apps/web
         run: if [ -f package-lock.json ]; then npm ci; else npm install; fi
+      - uses: denoland/setup-deno@v2
+        with: {deno-version: v2.x}
+      - name: Check hosted API without deploying
+        run: deno check --no-lock --config supabase/functions/signalbrief-api/deno.json supabase/functions/signalbrief-api/index.ts supabase/functions/signalbrief-us/index.ts supabase/functions/signalbrief-profiles/index.ts
       - name: Full repository release checks
         run: python scripts/verify.py --full
       - name: Preserve the released mobile implementation
@@ -48,7 +60,7 @@ jobs:
             sleep 1
           done
           curl -fsS http://127.0.0.1:3000/login > /dev/null
-          npm run test:e2e -- market-indices.spec.ts news.spec.ts performance.spec.ts auth-navigation.spec.ts marketing-pages.spec.ts ui-refinement.spec.ts responsive-design.spec.ts workspace-pages.spec.ts mobile-authenticated.spec.ts mobile-details.spec.ts daily-digest.spec.ts desktop-references.spec.ts career-analytics.spec.ts research.spec.ts
+          npm run test:e2e -- company-connections.spec.ts quote-permissions.spec.ts market-indices.spec.ts news.spec.ts performance.spec.ts auth-navigation.spec.ts marketing-pages.spec.ts ui-refinement.spec.ts responsive-design.spec.ts workspace-pages.spec.ts mobile-authenticated.spec.ts mobile-details.spec.ts daily-digest.spec.ts desktop-references.spec.ts career-analytics.spec.ts research.spec.ts
       - uses: actions/upload-artifact@v4
         if: always()
         with:

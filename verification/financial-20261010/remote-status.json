@@ -1,0 +1,78 @@
+{
+  "tested_code_commit": "3017318019c906d4e8cd2f1e5e7c92bbef0eaea8",
+  "tested_tree": "bdf1960e8a5ffdf17e8d72e792100c071b600408",
+  "pr": "https://github.com/JackRo682/SignalBrief/pull/15",
+  "base_pr": "https://github.com/JackRo682/SignalBrief/pull/13",
+  "observed_at": "2026-10-10T01:50:00Z",
+  "workflows": [
+    {
+      "id": 38014203329,
+      "name": "Workspace schema security replay",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/38014203329"
+    },
+    {
+      "id": 38014203343,
+      "name": "Hosted schema replay",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/38014203343"
+    },
+    {
+      "id": 38014203363,
+      "name": "Financial evidence benchmark",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/38014203363"
+    },
+    {
+      "id": 38014203354,
+      "name": "signalbrief-verification",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/38014203354"
+    }
+  ],
+  "backend": {
+    "passed": 332,
+    "skipped": 37
+  },
+  "product_browser": {
+    "passed": 76,
+    "skipped": 16,
+    "scope": "CI local test environment; not production two-account OAuth proof",
+    "skip_reason": "16 desktop instances of dedicated mobile reference tests are intentionally skipped; corresponding mobile cases execute."
+  },
+  "study_browser": {
+    "passed": 4,
+    "participants": 0
+  },
+  "release": "BLOCKED",
+  "notes": [
+    "Evidence-only follow-up commit adds this record, CI artifacts, screenshots and documentation; tested code identity above remains authoritative.",
+    "Windows blocked local web execution; Linux full repository checks and desktop/mobile browser suite passed.",
+    "A/C paid calls and held-out scoring were not executed."
+  ],
+  "web_unit_tests": {
+    "passed": 363,
+    "files": 30
+  },
+  "artifacts": [
+    {
+      "id": 11655209150,
+      "name": "navigation-performance-results",
+      "sha256": "38fedc5b0fb38fa9f3b115094a5d916cd1714fad8fb85e44906a3ee6deb8f4c0"
+    },
+    {
+      "id": 11655593433,
+      "name": "study-software-tests-not-human-results",
+      "sha256": "6670162c84a60819ab9aa51aa4f891ebd05f71f9481e07cd6adb49659a39509b"
+    },
+    {
+      "id": 11654768267,
+      "name": "financial-benchmark-results",
+      "sha256": "1cd7c53c0abc9b6a6134239b54821131593cfd45dcd68a3d0a0c189afa33e25c"
+    }
+  ]
+}

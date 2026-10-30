@@ -17,7 +17,9 @@ from sqlalchemy import select
 
 def llm(db, handler):
     settings = db.settings.model_copy(
-        update={"openai_api_key": "unit-test-not-real", "openai_model": "fixture-model"}
+        update={"openai_api_key": "unit-test-not-real", "openai_model": "fixture-model",
+                "ai_total_budget_usd": 1, "openai_input_usd_per_million": 0.4,
+                "openai_output_usd_per_million": 1.6}
     )
     return StructuredLLM(settings, db.factory, transport=httpx.MockTransport(handler), sleep=lambda _: None)
 

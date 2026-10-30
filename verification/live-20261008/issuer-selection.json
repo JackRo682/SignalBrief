@@ -1,0 +1,18 @@
+[
+  {
+    "ticker": "MSFT",
+    "cik": "0000789019",
+    "name": "MICROSOFT CORP",
+    "official_metadata_verified": true,
+    "quarterly_filings_available": 18,
+    "document_processing": "not_started_pending_pilot"
+  },
+  {
+    "ticker": "NVDA",
+    "cik": "0001045810",
+    "name": "NVIDIA CORP",
+    "official_metadata_verified": true,
+    "quarterly_filings_available": 18,
+    "document_processing": "not_started_pending_pilot"
+  }
+]

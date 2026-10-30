@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "pair_count": 1,
+  "started_at": "2026-10-08T11:15:52.819017+00:00",
+  "status": "COLLECTED_NOT_END_TO_END_VERIFIED",
+  "pairs": [
+    {
+      "symbol": "AAPL",
+      "company_name": "Apple Inc.",
+      "metadata_sha256": "e89635068cd46772d1d3859ce2bc839fab781630787943a1874f258fa354e7a9",
+      "documents": [
+        {
+          "descriptor": {
+            "provider": "sec",
+            "company_external_id": "0000320193",
+            "external_id": "0000320193-26-000013",
+            "title": "10-Q · 2026-05-01",
+            "form_type": "10-Q",
+            "source_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm",
+            "download_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm",
+            "published_at": "2026-05-01T14:01:00Z",
+            "publication_date": "2026-05-01",
+            "publication_precision": "second",
+            "publication_timezone": "UTC",
+            "provider_metadata": {
+              "cik": "0000320193",
+              "accessionNumber": "0000320193-26-000013",
+              "filingDate": "2026-05-01",
+              "acceptanceDateTime": "2026-05-01T14:01:00.000Z",
+              "primaryDocument": "aapl-20260328.htm",
+              "form": "10-Q",
+              "is_amendment": false
+            },
+            "is_demo": false
+          },
+          "sha256": "d54cffdda0bf920aa4c86be26586db24dbf6e048635f79e0940dc94c92e54b64",
+          "object_key": "raw/d5/d54cffdda0bf920aa4c86be26586db24dbf6e048635f79e0940dc94c92e54b64",
+          "content_type": "text/html",
+          "bytes": 999919,
+          "normalized_chars": 93281,
+          "chunks": 31,
+          "within_llm_coverage_budget": true
+        },
+        {
+          "descriptor": {
+            "provider": "sec",
+            "company_external_id": "0000320193",
+            "external_id": "0000320193-26-000020",
+            "title": "10-Q · 2026-07-31",
+            "form_type": "10-Q",
+            "source_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/aapl-20260627.htm",
+            "download_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/aapl-20260627.htm",
+            "published_at": "2026-07-31T14:01:02Z",
+            "publication_date": "2026-07-31",
+            "publication_precision": "second",
+            "publication_timezone": "UTC",
+            "provider_metadata": {
+              "cik": "0000320193",
+              "accessionNumber": "0000320193-26-000020",
+              "filingDate": "2026-07-31",
+              "acceptanceDateTime": "2026-07-31T14:01:02.000Z",
+              "primaryDocument": "aapl-20260627.htm",
+              "form": "10-Q",
+              "is_amendment": false
+            },
+            "is_demo": false
+          },
+          "sha256": "906ef0a0bc771267e9f7b8748d5711bae79f74ebcf96ef37f12f29883987767d",
+          "object_key": "raw/90/906ef0a0bc771267e9f7b8748d5711bae79f74ebcf96ef37f12f29883987767d",
+          "content_type": "text/html",
+          "bytes": 1018319,
+          "normalized_chars": 91460,
+          "chunks": 31,
+          "within_llm_coverage_budget": true
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "not_verified": [
+    "live_ai",
+    "hosted_persistence",
+    "approval",
+    "rejection",
+    "today_feed",
+    "browser_login"
+  ]
+}

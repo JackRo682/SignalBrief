@@ -3,6 +3,7 @@ from sqlalchemy import select
 
 from . import models as m
 from .api_schemas import CompanyOut
+from .card_evidence import headline_fact
 from .limits import aware
 from .ranking import memberships, rank
 
@@ -48,10 +49,10 @@ def event_cards(session, events, user_id, membership=None):
         select(m.Change).where(m.Change.event_id.in_(event_ids)).order_by(m.Change.id)
     ):
         grouped_changes.setdefault(change.event_id, []).append(change)
-    first_facts = {}
+    grouped_facts = {}
     for fact in session.scalars(select(m.Fact).where(m.Fact.event_id.in_(event_ids)).order_by(m.Fact.id)):
         if fact.validation_status == "supported":
-            first_facts.setdefault(fact.event_id, fact)
+            grouped_facts.setdefault(fact.event_id, []).append(fact)
     watched, held = membership or memberships(session, user_id)
     result = []
     for event in events:
@@ -59,7 +60,7 @@ def event_cards(session, events, user_id, membership=None):
         changes = grouped_changes.get(event.id, [])
         changed = sum(c.change_type in ("increased", "decreased", "wording_changed") for c in changes)
         ranking = rank(event, company.id in watched, company.id in held, document.provider, bool(changed))
-        fact = first_facts.get(event.id)
+        fact = headline_fact(brief.headline, grouped_facts.get(event.id, []), changes, document)
         result.append(
             {
                 "id": event.id,

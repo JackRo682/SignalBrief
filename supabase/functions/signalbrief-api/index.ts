@@ -2,6 +2,7 @@ import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.1
 
 // Production web API. Every private request verifies the bearer token with Auth;
 // all reads and mutations then execute under that user's PostgreSQL RLS identity.
+import { headlineFact } from "./card-evidence.ts";
 type Row = Record<string, unknown>;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const PUBLIC_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
@@ -28,7 +29,7 @@ async function unwrap<T>(query: PromiseLike<{data:T;error:unknown}>): Promise<T>
 }
 async function rpc(db:SupabaseClient,name:string,args:Row={}):Promise<unknown>{return unwrap(db.rpc(name,args));}
 async function getRows(db:SupabaseClient,table:string,field:string,ids:string[],select="*"):Promise<Row[]>{
-  if(!ids.length)return []; return rows(await unwrap(db.from(table).select(select).in(field,unique(ids))));
+  const keys=unique(ids);if(!keys.length)return []; return rows(await unwrap(db.from(table).select(select).in(field,keys)));
 }
 function index(items:Row[]):Map<string,Row>{return new Map(items.map(x=>[s(x.id),x]));}
 function required(map:Map<string,Row>,id:string):Row{const value=map.get(id);check(value,404,"evidence_not_available");return value;}
@@ -44,11 +45,11 @@ async function memberships(db:SupabaseClient){
 }
 async function cards(db:SupabaseClient,events:Row[],member?:Awaited<ReturnType<typeof memberships>>){
   if(!events.length)return [];
-  const [companies,documents,briefs,changes,facts,m]=await Promise.all([getRows(db,"companies","id",events.map(e=>s(e.company_id)),COMPANY_FIELDS),getRows(db,"documents","id",events.map(e=>s(e.document_id)),DOC_FIELDS),getRows(db,"briefs","event_id",events.map(e=>s(e.id))),getRows(db,"changes","event_id",events.map(e=>s(e.id))),getRows(db,"facts","event_id",events.map(e=>s(e.id)),"id,event_id,quote,validation_status"),member??memberships(db)]);
+  const [companies,documents,briefs,changes,facts,m]=await Promise.all([getRows(db,"companies","id",events.map(e=>s(e.company_id)),COMPANY_FIELDS),getRows(db,"documents","id",events.map(e=>s(e.document_id)),DOC_FIELDS),getRows(db,"briefs","event_id",events.map(e=>s(e.id))),getRows(db,"changes","event_id",events.map(e=>s(e.id))),getRows(db,"facts","event_id",events.map(e=>s(e.id)),"id,event_id,quote,validation_status,field,period"),member??memberships(db)]);
   const cm=index(companies),dm=index(documents),bm=new Map(briefs.map(b=>[s(b.event_id),b]));
   return events.flatMap(e=>{const c=cm.get(s(e.company_id)),d=dm.get(s(e.document_id)),b=bm.get(s(e.id));if(!c||!d||!b||d.is_demo)return [];
     const changed=changes.filter(x=>x.event_id===e.id&&["increased","decreased","wording_changed"].includes(s(x.change_type))).length;
-    return [{id:e.id,company:c,event_type:e.event_type,state:e.state,headline:b.headline,what_happened:b.what_happened,confidence:number(e.confidence),materiality:number(e.materiality),published_at:e.published_at,publication_precision:d.publication_precision,is_demo:false,source_tier:1,source_provider:d.provider,source_url:d.source_url,ranking:ranking(e,m.watched.has(s(c.id)),m.held.has(s(c.id)),s(d.provider),changed>0),change_count:changed,fact_summary:facts.filter(f=>f.event_id===e.id&&f.validation_status==="supported").sort((a,b)=>s(a.id).localeCompare(s(b.id)))[0]?.quote??null,change_summary:changes.filter(x=>x.event_id===e.id).sort((a,b)=>s(a.id).localeCompare(s(b.id))).slice(0,2).map(x=>({field:x.field,previous_value:x.previous_value??null,current_value:x.current_value??null})),interpretation:b.interpretation??null,source_document:{id:d.id,title:d.title,provider:d.provider,source_url:d.source_url,published_at:d.published_at}}];});
+    return [{id:e.id,company:c,event_type:e.event_type,state:e.state,headline:b.headline,what_happened:b.what_happened,confidence:number(e.confidence),materiality:number(e.materiality),published_at:e.published_at,publication_precision:d.publication_precision,is_demo:false,source_tier:1,source_provider:d.provider,source_url:d.source_url,ranking:ranking(e,m.watched.has(s(c.id)),m.held.has(s(c.id)),s(d.provider),changed>0),change_count:changed,fact_summary:headlineFact(s(b.headline),facts.filter(f=>f.event_id===e.id),changes.filter(x=>x.event_id===e.id))?.quote??null,change_summary:changes.filter(x=>x.event_id===e.id).sort((a,b)=>s(a.id).localeCompare(s(b.id))).slice(0,2).map(x=>({field:x.field,previous_value:x.previous_value??null,current_value:x.current_value??null})),interpretation:b.interpretation??null,source_document:{id:d.id,title:d.title,provider:d.provider,source_url:d.source_url,published_at:d.published_at}}];});
 }
 async function detail(db:SupabaseClient,id:string){
   const e=rows(await unwrap(db.from("events").select("*").eq("id",identity(id)).limit(1)))[0];check(e,404,"event_not_found");
@@ -68,11 +69,18 @@ function ics(items:Row[]):string{
   // RFC 5545 octet-aware line folding; never split UTF-8 characters.
   return lines.map(line=>{let out="",len=0;for(const c of line){const size=new TextEncoder().encode(c).length;if(len+size>73){out+="\r\n ";len=1;}out+=c;len+=size;}return out;}).join("\r\n")+"\r\n";
 }
-async function calendar(db:SupabaseClient){
+async function calendar(db:SupabaseClient,url:URL){
   const m=await memberships(db),ids=new Set([...m.watched,...m.held]);
-  const items=rows(await unwrap(db.from("calendar_items").select("*").order("occurs_on").limit(500))).filter(x=>x.origin==="user"||ids.has(s(x.company_id)));
+  let query=db.from("calendar_items").select("*").eq("calendar_status","confirmed");
+  // Apply membership and month boundaries before LIMIT, including the weekly view.
+  query=ids.size?query.or(`origin.eq.user,company_id.in.(${[...ids].join(',')})`):query.eq("origin","user");
+  const from=url.searchParams.get('from_date'),until=url.searchParams.get('until_date');
+  for(const date of [from,until])if(date!==null)check(/^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(Date.parse(date+'T00:00:00Z'))&&new Date(date+'T00:00:00Z').toISOString().slice(0,10)===date,422,"invalid_calendar_date");
+  if(from&&until)check(from<=until,422,"invalid_calendar_range");
+  if(from)query=query.gte('occurs_on',from);if(until)query=query.lte('occurs_on',until);
+  const items=rows(await unwrap(query.order("occurs_on").order("id").limit(500)));
   const chunks=await getRows(db,"document_chunks","id",items.map(x=>s(x.chunk_id))),cm=index(chunks),docs=index(await getRows(db,"documents","id",chunks.map(x=>s(x.document_id)),DOC_FIELDS));
-  return items.map(x=>({...x,source_url:docs.get(s(cm.get(s(x.chunk_id))?.document_id))?.source_url??null,is_demo:false}));
+  return items.map(x=>({...x,source_url:x.source_url??docs.get(s(cm.get(s(x.chunk_id))?.document_id))?.source_url??null,is_demo:false}));
 }
 async function body(req:Request):Promise<Row>{const text=await req.text();check(new TextEncoder().encode(text).length<=131072,413,"body_too_large");let value:unknown;try{value=JSON.parse(text||"{}");}catch{throw new Fault(422,"invalid_json");}check(value&&typeof value==="object"&&!Array.isArray(value));return row(value);}
 function limit(url:URL,max=100,defaultValue=50):number{const value=Number(url.searchParams.get("limit")??defaultValue);check(Number.isInteger(value)&&value>=1&&value<=max);return value;}
@@ -139,9 +147,9 @@ Deno.serve(async(req:Request)=>{
         response=json(await rpc(db,"sb_save_answer",{eid:identity(parts[2]),question,reason:advice?"advice":evidence.length?changed?"changes":"current":"no_evidence",fact_ids:advice?[]:evidence.map(x=>x.fact_id)}));
       }else if(path==="/v1/questions"&&method==="GET")response=json(await unwrap(db.from("question_history").select("id,event_id,question,answer,created_at").eq("user_id",auth.user.id).order("created_at",{ascending:false}).limit(100)));
       else if(path==="/v1/questions"&&method==="DELETE"){await rpc(db,"sb_clear_history");response=json(null,204);}
-      else if(path==="/v1/calendar"&&method==="GET")response=json(await calendar(db));
+      else if(path==="/v1/calendar"&&method==="GET")response=json(await calendar(db,url));
       else if(path==="/v1/calendar"&&method==="POST")response=json(await rpc(db,"sb_user_action",{action:"calendar_add",p:await body(req)}));
-      else if(path==="/v1/calendar/export"&&method==="GET")response=calendarResponse(await calendar(db));
+      else if(path==="/v1/calendar/export"&&method==="GET")response=calendarResponse(await calendar(db,url));
       else if(path==="/v1/calendar/subscription"&&method==="POST"){
         const token=[...crypto.getRandomValues(new Uint8Array(32))].map(x=>x.toString(16).padStart(2,"0")).join("");await rpc(db,"sb_user_action",{action:"subscription_create",p:{token}});response=json({url:`${SITE}/api/v1/calendar/feed/${token}.ics`,expires_in_days:90,warning:"Anyone with this URL can read these calendar events. Revoke it to remove access."});
       }else if(path==="/v1/calendar/subscription"&&method==="DELETE"){await rpc(db,"sb_user_action",{action:"subscription_revoke"});response=json(null,204);}

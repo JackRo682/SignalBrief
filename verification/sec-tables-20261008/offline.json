@@ -1,0 +1,393 @@
+{
+  "status": "PASS_OFFLINE_SCOPED_PARSER",
+  "end_to_end_status": "FAIL_NOT_COMPLETED",
+  "source_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/aapl-20260328.htm",
+  "raw_sha256": "d54cffdda0bf920aa4c86be26586db24dbf6e048635f79e0940dc94c92e54b64",
+  "scope": "consolidated_operations_revenue_and_operating_income_only",
+  "reference_status": "agent_transcribed_from_original_table; independent_human_review_pending",
+  "checked_facts": 8,
+  "matched_facts": 8,
+  "inline_facts_seen": 756,
+  "excluded_from_scope": 748,
+  "facts": [
+    {
+      "raw_sha256": "d54cffdda0bf920aa4c86be26586db24dbf6e048635f79e0940dc94c92e54b64",
+      "table": 12,
+      "row": 6,
+      "column": 3,
+      "fact_id": "f-56",
+      "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+      "context_ref": "c-18",
+      "entity": "0000320193",
+      "unit_ref": "usd",
+      "scale": 6,
+      "field": "revenue",
+      "label": "Total net sales",
+      "display": "111,184",
+      "value": "111184",
+      "base_value": "111184000000",
+      "unit": "USD million",
+      "period": "2025-12-28/2026-03-28",
+      "period_kind": "quarter",
+      "reporting_date": "2026-03-28",
+      "headers": [
+        {
+          "row": 1,
+          "column": 3,
+          "rowspan": 1,
+          "colspan": 9,
+          "text": "Three Months Ended"
+        },
+        {
+          "row": 2,
+          "column": 3,
+          "rowspan": 1,
+          "colspan": 3,
+          "text": "March 28, 2026"
+        }
+      ],
+      "caption": [
+        "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)",
+        "(In millions, except number of shares, which are reflected in thousands, and per-share amounts)"
+      ],
+      "quote": "[SEC table 12, row 6, column 3; reconstructed cell excerpts]\nCONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)\n(In millions, except number of shares, which are reflected in thousands, and per-share amounts)\n[header r1 c3] Three Months Ended\n[header r2 c3] March 28, 2026\n[label r6 c0] Total net sales\n[value r6 c3] 111,184\n[XBRL f-56] us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax; context=c-18; unit=iso4217:USD; scale=6; 2025-12-28/2026-03-28"
+    },
+    {
+      "raw_sha256": "d54cffdda0bf920aa4c86be26586db24dbf6e048635f79e0940dc94c92e54b64",
+      "table": 12,
+      "row": 6,
+      "column": 9,
+      "fact_id": "f-57",
+      "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+      "context_ref": "c-19",
+      "entity": "0000320193",
+      "unit_ref": "usd",
+      "scale": 6,
+      "field": "revenue",
+      "label": "Total net sales",
+      "display": "95,359",
+      "value": "95359",
+      "base_value": "95359000000",
+      "unit": "USD million",
+      "period": "2024-12-29/2025-03-29",
+      "period_kind": "quarter",
+      "reporting_date": "2025-03-29",
+      "headers": [
+        {
+          "row": 1,
+          "column": 3,
+          "rowspan": 1,
+          "colspan": 9,
+          "text": "Three Months Ended"
+        },
+        {
+          "row": 2,
+          "column": 9,
+          "rowspan": 1,
+          "colspan": 3,
+          "text": "March 29, 2025"
+        }
+      ],
+      "caption": [
+        "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)",
+        "(In millions, except number of shares, which are reflected in thousands, and per-share amounts)"
+      ],
+      "quote": "[SEC table 12, row 6, column 9; reconstructed cell excerpts]\nCONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)\n(In millions, except number of shares, which are reflected in thousands, and per-share amounts)\n[header r1 c3] Three Months Ended\n[header r2 c9] March 29, 2025\n[label r6 c0] Total net sales\n[value r6 c9] 95,359\n[XBRL f-57] us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax; context=c-19; unit=iso4217:USD; scale=6; 2024-12-29/2025-03-29"
+    },
+    {
+      "raw_sha256": "d54cffdda0bf920aa4c86be26586db24dbf6e048635f79e0940dc94c92e54b64",
+      "table": 12,
+      "row": 6,
+      "column": 15,
+      "fact_id": "f-58",
+      "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+      "context_ref": "c-1",
+      "entity": "0000320193",
+      "unit_ref": "usd",
+      "scale": 6,
+      "field": "revenue",
+      "label": "Total net sales",
+      "display": "254,940",
+      "value": "254940",
+      "base_value": "254940000000",
+      "unit": "USD million",
+      "period": "2025-09-28/2026-03-28",
+      "period_kind": "year_to_date",
+      "reporting_date": "2026-03-28",
+      "headers": [
+        {
+          "row": 1,
+          "column": 15,
+          "rowspan": 1,
+          "colspan": 9,
+          "text": "Six Months Ended"
+        },
+        {
+          "row": 2,
+          "column": 15,
+          "rowspan": 1,
+          "colspan": 3,
+          "text": "March 28, 2026"
+        }
+      ],
+      "caption": [
+        "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)",
+        "(In millions, except number of shares, which are reflected in thousands, and per-share amounts)"
+      ],
+      "quote": "[SEC table 12, row 6, column 15; reconstructed cell excerpts]\nCONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)\n(In millions, except number of shares, which are reflected in thousands, and per-share amounts)\n[header r1 c15] Six Months Ended\n[header r2 c15] March 28, 2026\n[label r6 c0] Total net sales\n[value r6 c15] 254,940\n[XBRL f-58] us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax; context=c-1; unit=iso4217:USD; scale=6; 2025-09-28/2026-03-28"
+    },
+    {
+      "raw_sha256": "d54cffdda0bf920aa4c86be26586db24dbf6e048635f79e0940dc94c92e54b64",
+      "table": 12,
+      "row": 6,
+      "column": 21,
+      "fact_id": "f-59",
+      "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+      "context_ref": "c-20",
+      "entity": "0000320193",
+      "unit_ref": "usd",
+      "scale": 6,
+      "field": "revenue",
+      "label": "Total net sales",
+      "display": "219,659",
+      "value": "219659",
+      "base_value": "219659000000",
+      "unit": "USD million",
+      "period": "2024-09-29/2025-03-29",
+      "period_kind": "year_to_date",
+      "reporting_date": "2025-03-29",
+      "headers": [
+        {
+          "row": 1,
+          "column": 15,
+          "rowspan": 1,
+          "colspan": 9,
+          "text": "Six Months Ended"
+        },
+        {
+          "row": 2,
+          "column": 21,
+          "rowspan": 1,
+          "colspan": 3,
+          "text": "March 29, 2025"
+        }
+      ],
+      "caption": [
+        "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)",
+        "(In millions, except number of shares, which are reflected in thousands, and per-share amounts)"
+      ],
+      "quote": "[SEC table 12, row 6, column 21; reconstructed cell excerpts]\nCONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)\n(In millions, except number of shares, which are reflected in thousands, and per-share amounts)\n[header r1 c15] Six Months Ended\n[header r2 c21] March 29, 2025\n[label r6 c0] Total net sales\n[value r6 c21] 219,659\n[XBRL f-59] us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax; context=c-20; unit=iso4217:USD; scale=6; 2024-09-29/2025-03-29"
+    },
+    {
+      "raw_sha256": "d54cffdda0bf920aa4c86be26586db24dbf6e048635f79e0940dc94c92e54b64",
+      "table": 12,
+      "row": 19,
+      "column": 3,
+      "fact_id": "f-88",
+      "concept": "us-gaap:OperatingIncomeLoss",
+      "context_ref": "c-18",
+      "entity": "0000320193",
+      "unit_ref": "usd",
+      "scale": 6,
+      "field": "operating_income",
+      "label": "Operating income",
+      "display": "35,885",
+      "value": "35885",
+      "base_value": "35885000000",
+      "unit": "USD million",
+      "period": "2025-12-28/2026-03-28",
+      "period_kind": "quarter",
+      "reporting_date": "2026-03-28",
+      "headers": [
+        {
+          "row": 1,
+          "column": 3,
+          "rowspan": 1,
+          "colspan": 9,
+          "text": "Three Months Ended"
+        },
+        {
+          "row": 2,
+          "column": 3,
+          "rowspan": 1,
+          "colspan": 3,
+          "text": "March 28, 2026"
+        }
+      ],
+      "caption": [
+        "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)",
+        "(In millions, except number of shares, which are reflected in thousands, and per-share amounts)"
+      ],
+      "quote": "[SEC table 12, row 19, column 3; reconstructed cell excerpts]\nCONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)\n(In millions, except number of shares, which are reflected in thousands, and per-share amounts)\n[header r1 c3] Three Months Ended\n[header r2 c3] March 28, 2026\n[label r19 c0] Operating income\n[value r19 c3] 35,885\n[XBRL f-88] us-gaap:OperatingIncomeLoss; context=c-18; unit=iso4217:USD; scale=6; 2025-12-28/2026-03-28"
+    },
+    {
+      "raw_sha256": "d54cffdda0bf920aa4c86be26586db24dbf6e048635f79e0940dc94c92e54b64",
+      "table": 12,
+      "row": 19,
+      "column": 9,
+      "fact_id": "f-89",
+      "concept": "us-gaap:OperatingIncomeLoss",
+      "context_ref": "c-19",
+      "entity": "0000320193",
+      "unit_ref": "usd",
+      "scale": 6,
+      "field": "operating_income",
+      "label": "Operating income",
+      "display": "29,589",
+      "value": "29589",
+      "base_value": "29589000000",
+      "unit": "USD million",
+      "period": "2024-12-29/2025-03-29",
+      "period_kind": "quarter",
+      "reporting_date": "2025-03-29",
+      "headers": [
+        {
+          "row": 1,
+          "column": 3,
+          "rowspan": 1,
+          "colspan": 9,
+          "text": "Three Months Ended"
+        },
+        {
+          "row": 2,
+          "column": 9,
+          "rowspan": 1,
+          "colspan": 3,
+          "text": "March 29, 2025"
+        }
+      ],
+      "caption": [
+        "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)",
+        "(In millions, except number of shares, which are reflected in thousands, and per-share amounts)"
+      ],
+      "quote": "[SEC table 12, row 19, column 9; reconstructed cell excerpts]\nCONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)\n(In millions, except number of shares, which are reflected in thousands, and per-share amounts)\n[header r1 c3] Three Months Ended\n[header r2 c9] March 29, 2025\n[label r19 c0] Operating income\n[value r19 c9] 29,589\n[XBRL f-89] us-gaap:OperatingIncomeLoss; context=c-19; unit=iso4217:USD; scale=6; 2024-12-29/2025-03-29"
+    },
+    {
+      "raw_sha256": "d54cffdda0bf920aa4c86be26586db24dbf6e048635f79e0940dc94c92e54b64",
+      "table": 12,
+      "row": 19,
+      "column": 15,
+      "fact_id": "f-90",
+      "concept": "us-gaap:OperatingIncomeLoss",
+      "context_ref": "c-1",
+      "entity": "0000320193",
+      "unit_ref": "usd",
+      "scale": 6,
+      "field": "operating_income",
+      "label": "Operating income",
+      "display": "86,737",
+      "value": "86737",
+      "base_value": "86737000000",
+      "unit": "USD million",
+      "period": "2025-09-28/2026-03-28",
+      "period_kind": "year_to_date",
+      "reporting_date": "2026-03-28",
+      "headers": [
+        {
+          "row": 1,
+          "column": 15,
+          "rowspan": 1,
+          "colspan": 9,
+          "text": "Six Months Ended"
+        },
+        {
+          "row": 2,
+          "column": 15,
+          "rowspan": 1,
+          "colspan": 3,
+          "text": "March 28, 2026"
+        }
+      ],
+      "caption": [
+        "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)",
+        "(In millions, except number of shares, which are reflected in thousands, and per-share amounts)"
+      ],
+      "quote": "[SEC table 12, row 19, column 15; reconstructed cell excerpts]\nCONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)\n(In millions, except number of shares, which are reflected in thousands, and per-share amounts)\n[header r1 c15] Six Months Ended\n[header r2 c15] March 28, 2026\n[label r19 c0] Operating income\n[value r19 c15] 86,737\n[XBRL f-90] us-gaap:OperatingIncomeLoss; context=c-1; unit=iso4217:USD; scale=6; 2025-09-28/2026-03-28"
+    },
+    {
+      "raw_sha256": "d54cffdda0bf920aa4c86be26586db24dbf6e048635f79e0940dc94c92e54b64",
+      "table": 12,
+      "row": 19,
+      "column": 21,
+      "fact_id": "f-91",
+      "concept": "us-gaap:OperatingIncomeLoss",
+      "context_ref": "c-20",
+      "entity": "0000320193",
+      "unit_ref": "usd",
+      "scale": 6,
+      "field": "operating_income",
+      "label": "Operating income",
+      "display": "72,421",
+      "value": "72421",
+      "base_value": "72421000000",
+      "unit": "USD million",
+      "period": "2024-09-29/2025-03-29",
+      "period_kind": "year_to_date",
+      "reporting_date": "2025-03-29",
+      "headers": [
+        {
+          "row": 1,
+          "column": 15,
+          "rowspan": 1,
+          "colspan": 9,
+          "text": "Six Months Ended"
+        },
+        {
+          "row": 2,
+          "column": 21,
+          "rowspan": 1,
+          "colspan": 3,
+          "text": "March 29, 2025"
+        }
+      ],
+      "caption": [
+        "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)",
+        "(In millions, except number of shares, which are reflected in thousands, and per-share amounts)"
+      ],
+      "quote": "[SEC table 12, row 19, column 21; reconstructed cell excerpts]\nCONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)\n(In millions, except number of shares, which are reflected in thousands, and per-share amounts)\n[header r1 c15] Six Months Ended\n[header r2 c21] March 29, 2025\n[label r19 c0] Operating income\n[value r19 c21] 72,421\n[XBRL f-91] us-gaap:OperatingIncomeLoss; context=c-20; unit=iso4217:USD; scale=6; 2024-09-29/2025-03-29"
+    }
+  ],
+  "within_filing_yoy_examples": [
+    {
+      "field": "revenue",
+      "current_fact_id": "f-56",
+      "previous_fact_id": "f-57",
+      "change_type": "increased",
+      "comparison_kind": "year_over_year",
+      "previous_value": "95359",
+      "current_value": "111184",
+      "absolute_change": "15825",
+      "percentage_change": "16.5952",
+      "materiality": 0.3319036483184597,
+      "confidence": 0.85
+    },
+    {
+      "field": "operating_income",
+      "current_fact_id": "f-88",
+      "previous_fact_id": "f-89",
+      "change_type": "increased",
+      "comparison_kind": "year_over_year",
+      "previous_value": "29589",
+      "current_value": "35885",
+      "absolute_change": "6296",
+      "percentage_change": "21.2782",
+      "materiality": 0.42556355402345464,
+      "confidence": 0.85
+    }
+  ],
+  "new_paid_calls": 0,
+  "new_input_tokens": 0,
+  "new_output_tokens": 0,
+  "new_estimated_usage_cost_usd": "0",
+  "next_request_reservation_usd": "0.0153036",
+  "cost_assumption": "Configured text rates: input 0.4/output 1.6 USD per million; reservation is not measured use",
+  "outstanding": [
+    "user_approval_before_paid_call",
+    "independent_human_reference_review",
+    "live_model_extraction",
+    "second_filing_and_cross_filing_comparison",
+    "hosted_approval_and_today_browser",
+    "live_nonadmin_and_user_isolation"
+  ],
+  "ten_pairs_started": false
+}

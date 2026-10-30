@@ -2,8 +2,9 @@
 import {useEffect,useState} from 'react';
 import {z} from 'zod';
 import {useAuth} from '@/components/auth';
-import {quotesSchema,quoteSchema} from './contracts';
+import {quotesSchema,quoteSchema,quoteUnavailableSchema} from './contracts';
 type Quote=z.infer<typeof quoteSchema>;
+type Unavailable=z.infer<typeof quoteUnavailableSchema>;
 /** The licensed provider accepts at most eight symbols per request. Keep partial outages explicit. */
 export async function loadQuoteBatches(token:string,symbols:string[],period:string,signal:AbortSignal){
  const unique=[...new Set(symbols.map(s=>s.trim().toUpperCase()).filter(Boolean))];
@@ -19,13 +20,20 @@ export async function loadQuoteBatches(token:string,symbols:string[],period:stri
   return quotesSchema.parse(await r.json());
  }));
  if(signal.aborted)throw new DOMException('Quote request aborted','AbortError');
- const quotes=new Map<string,Quote>();let failed=false,reason='';
- for(const reply of replies){if(reply.status==='rejected'){failed=true;continue;}reason ||= reply.value.reason??'';for(const q of reply.value.quotes)if(unique.includes(q.symbol))quotes.set(q.symbol,q);}
- return {quotes:[...quotes.values()],reason:failed||quotes.size<unique.length?(reason||'partial_provider_unavailable'):reason};
+ const quotes=new Map<string,Quote>(),unavailable=new Map<string,Unavailable>();
+ for(const [index,reply] of replies.entries()){
+  const batch=batches[index];
+  if(reply.status==='rejected'){for(const symbol of batch)unavailable.set(symbol,{symbol,reason:'provider_unavailable'});continue;}
+  for(const q of reply.value.quotes)if(batch.includes(q.symbol)&&q.price!==null)quotes.set(q.symbol,q);
+  for(const item of reply.value.unavailable)if(batch.includes(item.symbol)&&!quotes.has(item.symbol))unavailable.set(item.symbol,item);
+  for(const symbol of batch)if(!quotes.has(symbol)&&!unavailable.has(symbol))unavailable.set(symbol,{symbol,reason:reply.value.reason||'partial_provider_unavailable'});
+ }
+ const missing=unique.filter(symbol=>!quotes.has(symbol)).map(symbol=>unavailable.get(symbol)!);
+ return {quotes:[...quotes.values()],unavailable:missing,reason:missing.length?(quotes.size?'partial_provider_unavailable':missing[0].reason):''};
 }
 export function useQuotes(symbols:string[],period='6m'){
- const {token}=useAuth(),key=[...new Set(symbols)].sort().join(','),[quotes,setQuotes]=useState<z.infer<typeof quoteSchema>[]>([]),[loading,setLoading]=useState(false),[reason,setReason]=useState('');
- useEffect(()=>{if(!token||!key){setQuotes([]);setLoading(false);setReason('');return;}const ctrl=new AbortController();let live=true;setLoading(true);setQuotes([]);setReason('');
-  loadQuoteBatches(token,key.split(','),period,ctrl.signal).then(d=>{if(live){setQuotes(d.quotes);setReason(d.reason);}}).catch(()=>{if(live)setReason('provider_unavailable');}).finally(()=>{if(live)setLoading(false);});return()=>{live=false;ctrl.abort();};},[token,key,period]);
- return {quotes,loading,reason};
+ const {token}=useAuth(),key=[...new Set(symbols.map(s=>s.trim().toUpperCase()).filter(Boolean))].sort().join(','),[quotes,setQuotes]=useState<Quote[]>([]),[unavailable,setUnavailable]=useState<Unavailable[]>([]),[loading,setLoading]=useState(false),[reason,setReason]=useState('');
+ useEffect(()=>{if(!token||!key){setQuotes([]);setUnavailable([]);setLoading(false);setReason('');return;}const ctrl=new AbortController();let live=true;setLoading(true);setQuotes([]);setUnavailable([]);setReason('');
+  loadQuoteBatches(token,key.split(','),period,ctrl.signal).then(d=>{if(live){setQuotes(d.quotes);setUnavailable(d.unavailable);setReason(d.reason);}}).catch(()=>{if(live)setReason('provider_unavailable');}).finally(()=>{if(live)setLoading(false);});return()=>{live=false;ctrl.abort();};},[token,key,period]);
+ return {quotes,unavailable,loading,reason};
 }

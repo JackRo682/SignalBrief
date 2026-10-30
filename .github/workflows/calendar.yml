@@ -1,0 +1,31 @@
+name: official-calendar-verification
+on:
+  push:
+    paths: ['supabase/functions/signalbrief-calendar/**', 'supabase/functions/signalbrief-api/**', 'supabase/migrations/*official_calendar*.sql', 'tests/test_calendar_ingestion.py', '.github/workflows/calendar.yml']
+  pull_request:
+    paths: ['supabase/functions/signalbrief-calendar/**', 'supabase/functions/signalbrief-api/**', 'supabase/migrations/*official_calendar*.sql', 'tests/test_calendar_ingestion.py', '.github/workflows/calendar.yml']
+permissions:
+  contents: read
+jobs:
+  calendar:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env: {POSTGRES_USER: postgres, POSTGRES_PASSWORD: test-only, POSTGRES_DB: calendar_ci_test}
+        ports: ['5432:5432']
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with: {deno-version: 'v2.9.6'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install -e '.[dev]'
+      - run: deno test supabase/functions/signalbrief-calendar/core_test.ts
+      - run: deno test --allow-env supabase/functions/signalbrief-api/calendar_test.ts
+      - run: deno check supabase/functions/signalbrief-calendar/index.ts supabase/functions/signalbrief-api/index.ts
+      - name: Official calendar ingestion and RLS regression
+        env:
+          SB_TEST_CALENDAR_POSTGRES_URL: postgresql://postgres:test-only@localhost:5432/calendar_ci_test
+        run: pytest -q tests/test_calendar_ingestion.py
