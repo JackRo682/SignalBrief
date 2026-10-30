@@ -43,7 +43,7 @@ export async function handleProfiles(req:Request):Promise<Response>{
    const secrets=await rpc('sb_us_secrets'),contact=env('SEC_CONTACT_EMAIL')||secrets.SEC_CONTACT_EMAIL;
    if(typeof contact!=='string'||!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/).test(contact))throw new ProfileError('sec_contact_required',503);
    const reserved=await db.rpc('sb_us_reserve',{p:'sec',amount:0,smoke:false});if(reserved.error)throw new ProfileError('provider_quota_exceeded',429);
-   const raw=await providerFetch(`https://data.sec.gov/submissions/CIK${company.provider_company_id.padStart(10,'0')}.json`,'sec',{headers:{'User-Agent':`SignalBrief/0.2 ${contact}`}},fetch,3_000_000);
+   const raw=await providerFetch(new URL(`https://data.sec.gov/submissions/CIK${company.provider_company_id.padStart(10,'0')}.json`),'sec',{headers:{'User-Agent':`SignalBrief/0.2 ${contact}`}},fetch,3_000_000);
    const bytes=new TextEncoder().encode(raw),digest=await sha(bytes),profile=parseSecProfile(raw,company,new Date().toISOString(),digest);
    const archive=await db.storage.from('signalbrief-raw').upload(`us/sec/submissions/${digest}.json`,bytes,{contentType:'application/json',upsert:false});
    if(archive.error&&!/already exists|duplicate/i.test(archive.error.message))throw new ProfileError('archive_failed',500);
