@@ -10,7 +10,7 @@ pytestmark = pytest.mark.postgres
 
 def test_collected_metadata_does_not_require_published_analysis(own):
     # Synthetic baseline filing exists, with no published analysis.
-    own.execute(text("SELECT public.sb_user_action('watch_add',jsonb_build_object('company_id',:c))"), {'c': C})
+    own.execute(text("SELECT public.sb_user_action('watch_add',jsonb_build_object('company_id',cast(:c as text)))"), {'c': C})
     result = rpc(own, 'source_overview')
     assert result['companies'] == result['filing_count'] == 1
     assert result['published_count'] == 0
