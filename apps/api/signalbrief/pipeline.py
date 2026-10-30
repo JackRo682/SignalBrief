@@ -1,5 +1,6 @@
 import time
 from datetime import date
+from hashlib import sha256
 from uuid import NAMESPACE_URL, uuid5
 
 from sqlalchemy import select
@@ -9,12 +10,21 @@ from .ai.client import LiveExtractor, StructuredLLM
 from .ai.demo_extractor import DemoExtractor
 from .ai.evidence import VALIDATOR_VERSION, conflicting_facts, validate_fact
 from .ai.schemas import CitationVerdict, ExtractedFact, ExtractionBatch
+from .ai.sec_table_evidence import (
+    PREFIX,
+    SCOPE,
+    SecTableExtractor,
+    complete_table_coverage,
+    evidence_source,
+    replay_source,
+)
 from .briefs import build_brief
 from .changes import compare, comparison_kind
 from .errors import EvidenceError, ProviderError
 from .jobs import assert_lease, enqueue
 from .limits import dialect_insert
-from .parser import PARSER_VERSION, chunk_text, normalized_text
+from .parser import PARSER_VERSION, ParsedChunk, chunk_text, normalized_text
+from .sec_tables import VERSION as SEC_TABLE_VERSION
 from .storage import make_store
 
 PIPELINE_VERSION = "pipeline-v1"
@@ -39,19 +49,29 @@ def supported_event_evidence(session, event):
     chunks = {
         chunk.id: chunk.text
         for chunk in session.execute(
-            select(m.Chunk).where(m.Chunk.document_id == event.document_id)
+            select(m.Chunk).where(
+                m.Chunk.document_id == event.document_id, m.Chunk.id.in_([f.chunk_id for f in facts])
+            )
         ).scalars()
     }
     try:
+        document = session.get(m.Document, event.document_id)
+        for source in chunks.values():
+            if source.startswith(PREFIX) and replay_source(source).raw_sha256 != document.raw_sha256:
+                return False
         candidates = [
             ExtractedFact(**{field: getattr(fact, field) for field in ExtractedFact.model_fields})
             for fact in facts
         ]
-        return all(
-            validate_fact(fact, chunks, f"fact:{index}").status == "supported"
-            for index, fact in enumerate(candidates)
-        ) and not conflicting_facts(candidates)
-    except ValueError:
+        return (
+            complete_table_coverage(candidates, chunks)
+            and all(
+                validate_fact(fact, chunks, f"fact:{index}").status == "supported"
+                for index, fact in enumerate(candidates)
+            )
+            and not conflicting_facts(candidates)
+        )
+    except (ValueError, EvidenceError):
         return False
 
 
@@ -118,6 +138,8 @@ def process_document(
     settings, factory, document_id: str, revision=PIPELINE_VERSION, extractor=None, store=None, lease=None
 ):
     started = time.monotonic()
+    table_mode = revision == "sec-tables-v1"
+    parser_version = SEC_TABLE_VERSION if table_mode else PARSER_VERSION
     identity = stable_id(document_id, revision)
     with factory() as s:
         existing = s.get(m.Event, identity)
@@ -139,7 +161,7 @@ def process_document(
                 model="deterministic-fixture-parser"
                 if document.is_demo
                 else (settings.openai_model or "unconfigured"),
-                prompt_version="extract-v1",
+                prompt_version="sec-table-v1" if table_mode else "extract-v1",
                 pipeline_version=revision,
                 status="running",
             )
@@ -147,18 +169,40 @@ def process_document(
     llm = None
     try:
         raw = (store or make_store(settings)).get(blob.object_key)
-        parsed = normalized_text(raw, blob.content_type)
-        pieces = chunk_text(parsed)
+        if sha256(raw).hexdigest() != document.raw_sha256:
+            raise EvidenceError("raw_source_integrity_failure")
+        if table_mode:
+            if document.provider != "sec" or document.is_demo:
+                raise EvidenceError("real_sec_table_document_required")
+            parsed = evidence_source(raw)
+            result = replay_source(parsed)
+            with factory() as s:
+                company = s.get(m.Company, document.company_id)
+                if any(int(f.entity) != int(company.provider_company_id) for f in result.facts):
+                    raise EvidenceError("sec_table_entity_mismatch")
+            pieces = [
+                ParsedChunk(
+                    0,
+                    parsed,
+                    0,
+                    len(parsed),
+                    "SEC reconstructed table excerpts; original bytes embedded; zero-based cells",
+                    sha256(parsed.encode()).hexdigest(),
+                )
+            ]
+        else:
+            parsed = normalized_text(raw, blob.content_type)
+            pieces = chunk_text(parsed)
         with factory.begin() as s:
             if lease:
                 assert_lease(s, lease)
             for piece in pieces:
-                chunk_id = stable_id(document_id, PARSER_VERSION, str(piece.ordinal))
+                chunk_id = stable_id(document_id, parser_version, str(piece.ordinal))
                 statement = dialect_insert(s, m.Chunk).values(
                     id=chunk_id,
                     document_id=document_id,
                     ordinal=piece.ordinal,
-                    parser_version=PARSER_VERSION,
+                    parser_version=parser_version,
                     text=piece.text,
                     text_sha256=piece.text_sha256,
                     char_start=piece.char_start,
@@ -172,7 +216,7 @@ def process_document(
             chunks = (
                 s.execute(
                     select(m.Chunk)
-                    .where(m.Chunk.document_id == document_id, m.Chunk.parser_version == PARSER_VERSION)
+                    .where(m.Chunk.document_id == document_id, m.Chunk.parser_version == parser_version)
                     .order_by(m.Chunk.ordinal)
                 )
                 .scalars()
@@ -183,11 +227,19 @@ def process_document(
                 extractor = DemoExtractor()
             else:
                 llm = StructuredLLM(settings, factory)
-                extractor = LiveExtractor(llm)
+                extractor = SecTableExtractor(llm) if table_mode else LiveExtractor(llm)
         batch = ExtractionBatch.model_validate(extractor.extract(chunks))
         source_texts = {chunk.id: chunk.text for chunk in chunks}
         verdicts = [validate_fact(f, source_texts, f"fact:{i}") for i, f in enumerate(batch.facts)]
-        good_indexes = [i for i, v in enumerate(verdicts) if v.status == "supported"]
+        if not complete_table_coverage(batch.facts, source_texts):
+            verdicts.append(
+                CitationVerdict(
+                    status="missing_source",
+                    reason="Scoped table extraction omitted or duplicated source cells",
+                    claim_key="table_coverage",
+                )
+            )
+        good_indexes = [i for i, v in enumerate(verdicts[: len(batch.facts)]) if v.status == "supported"]
         conflicts = conflicting_facts([batch.facts[i] for i in good_indexes])
         for j in conflicts:
             i = good_indexes[j]
@@ -245,7 +297,7 @@ def process_document(
                 document_id=document_id,
                 run_id=run_id,
                 revision=revision,
-                title=document.title,
+                title=document.title + (" · 매출·영업이익 표 분석" if table_mode else ""),
                 event_type=batch.event_type,
                 state="needs_review" if all_valid else "blocked",
                 confidence=0.85 if all_valid else 0.2,
@@ -284,6 +336,19 @@ def process_document(
                     .scalars()
                     .all()
                 )
+                if table_mode:
+                    # Stable precedence within the newest filing: exact-period
+                    # revision, then adjacent quarter, then comparable prior year.
+                    # SQL ordering is otherwise not defined between its fact rows.
+                    priority = {"same_period_revision": 0, "quarter_over_quarter": 1, "year_over_year": 2}
+                    prior_candidates.sort(
+                        key=lambda old: (
+                            -s.get(m.Event, old.event_id).published_at.timestamp(),
+                            priority.get(comparison_kind(old, fact), 9),
+                            old.period or "",
+                            old.id,
+                        )
+                    )
                 previous = None
                 for old in prior_candidates:
                     if not comparison_kind(old, fact):
@@ -320,7 +385,14 @@ def process_document(
                         event_id=identity, **verdict.model_dump(), validator_version=VALIDATOR_VERSION
                     )
                 )
-            brief = m.Brief(event_id=identity, **build_brief(document, facts, changes))
+            brief_changes = changes
+            if table_mode and facts:
+                latest_end = max(f.period.split("/")[-1] for f in facts)
+                current_ids = {f.id for f in facts if f.period.split("/")[-1] == latest_end}
+                brief_changes = [c for c in changes if c["current_fact_id"] in current_ids]
+            brief = m.Brief(event_id=identity, **build_brief(document, facts, brief_changes))
+            if table_mode:
+                brief.uncertainty += " 분석 범위는 연결 손익계산서의 매출·영업이익이며, 다른 지표와 공시 전체는 검증하지 않았습니다."
             s.add(brief)
             s.flush()
             all_fact_ids = {f.id for f in facts} | {
@@ -348,9 +420,20 @@ def process_document(
                 "verdicts": [v.model_dump() for v in verdicts],
                 "chunks_total": len(chunks),
                 "chunks_analyzed": len(chunks),
-                "coverage": "complete",
+                "coverage": "complete_declared_table_scope" if table_mode else "complete",
+                "scope": SCOPE if table_mode else "full_document",
+                "candidates": [f.model_dump() for f in batch.facts],
                 "publication_requires_review": not document.is_demo and not settings.auto_publish_validated,
             }
+            if table_mode:
+                table_result = replay_source(parsed)
+                run.prompt_version = "sec-table-v1"
+                run.validation_result["table_evidence"] = {
+                    "raw_sha256": table_result.raw_sha256,
+                    "inline_facts_seen": table_result.inline_facts_seen,
+                    "included": [f.record() for f in table_result.facts],
+                    "excluded": table_result.excluded,
+                }
             run.latency_ms = int((time.monotonic() - started) * 1000)
             run.finished_at = m.now()
             if llm:

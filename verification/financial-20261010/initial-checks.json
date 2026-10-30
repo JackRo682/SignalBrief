@@ -1,0 +1,110 @@
+{
+  "checked_at": "2026-10-10T01:01:31.255501+00:00",
+  "full_release_suite": true,
+  "results": [
+    {
+      "check": "python_compile",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "C:\\Users\\hanss\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-act\\work\\SignalBrief\\.venv\\Scripts\\python.exe",
+        "-m",
+        "compileall",
+        "-q",
+        "apps/api",
+        "tests",
+        "scripts"
+      ],
+      "log": "verification/python_compile.log"
+    },
+    {
+      "check": "backend_tests",
+      "status": "FAIL",
+      "returncode": 1,
+      "command": [
+        "C:\\Users\\hanss\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-act\\work\\SignalBrief\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-q",
+        "--junitxml=C:\\Users\\hanss\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-act\\work\\SignalBrief\\verification\\pytest.xml"
+      ],
+      "log": "verification/backend_tests.log"
+    },
+    {
+      "check": "openapi_export",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "C:\\Users\\hanss\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-act\\work\\SignalBrief\\.venv\\Scripts\\python.exe",
+        "scripts/export_openapi.py"
+      ],
+      "log": "verification/openapi_export.log"
+    },
+    {
+      "check": "backend_lint",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "C:\\Users\\hanss\\Documents\\Codex\\2026-10-10\\files-pasted-by-the-user-act\\work\\SignalBrief\\.venv\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "apps/api",
+        "tests",
+        "scripts"
+      ],
+      "log": "verification/backend_lint.log"
+    },
+    {
+      "check": "frontend_lint",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "C:\\Users\\hanss\\Documents\\Codex\\2026-10-09\\code-review-guidelines-you-coordinate-this\\work\\tools\\node-v22.23.3-win-x64\\npm.cmd",
+        "run",
+        "lint"
+      ],
+      "log": "verification/frontend_lint.log"
+    },
+    {
+      "check": "frontend_typecheck",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "C:\\Users\\hanss\\Documents\\Codex\\2026-10-09\\code-review-guidelines-you-coordinate-this\\work\\tools\\node-v22.23.3-win-x64\\npm.cmd",
+        "run",
+        "typecheck"
+      ],
+      "log": "verification/frontend_typecheck.log"
+    },
+    {
+      "check": "frontend_unit_tests",
+      "status": "FAIL",
+      "returncode": 1,
+      "command": [
+        "C:\\Users\\hanss\\Documents\\Codex\\2026-10-09\\code-review-guidelines-you-coordinate-this\\work\\tools\\node-v22.23.3-win-x64\\npm.cmd",
+        "run",
+        "test"
+      ],
+      "log": "verification/frontend_unit_tests.log"
+    },
+    {
+      "check": "frontend_build",
+      "status": "FAIL",
+      "returncode": 1,
+      "command": [
+        "C:\\Users\\hanss\\Documents\\Codex\\2026-10-09\\code-review-guidelines-you-coordinate-this\\work\\tools\\node-v22.23.3-win-x64\\npm.cmd",
+        "run",
+        "build"
+      ],
+      "log": "verification/frontend_build.log"
+    }
+  ],
+  "not_in_this_script": [
+    "Real provider credentials",
+    "Google OAuth redirects",
+    "Hosted deployment",
+    "Human-labeled financial Gold Dataset",
+    "Browser E2E (run Playwright separately)"
+  ]
+}

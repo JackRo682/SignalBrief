@@ -27,4 +27,29 @@ describe('portfolio quote batching',()=>{
   const result=await loadQuoteBatches('isolated-token',['AAPL','NVDA'],'1m',new AbortController().signal);
   expect(result.quotes.map(q=>q.symbol)).toEqual(['AAPL']);expect(result.reason).toBe('partial_provider_unavailable');
  });
+ it('preserves separate US and Korean authorization failures',async()=>{
+  vi.stubGlobal('fetch',vi.fn(async()=>Response.json({quotes:[],unavailable:[{symbol:'AAPL',reason:'fmp_display_license_unverified'},{symbol:'005930',reason:'kis_display_license_unverified'}],reason:'fmp_display_license_unverified'})));
+  const result=await loadQuoteBatches('isolated-token',['AAPL','005930'],'1m',new AbortController().signal);
+  expect(result.unavailable).toEqual([{symbol:'AAPL',reason:'fmp_display_license_unverified'},{symbol:'005930',reason:'kis_display_license_unverified'}]);
+ });
+ it('keeps an approved quote and identifies the blocked company',async()=>{
+  vi.stubGlobal('fetch',vi.fn(async()=>Response.json({quotes:[{symbol:'AAPL',price:100,currency:'USD',change_pct:null,as_of:'2026-10-06',source:'fixture'}],unavailable:[{symbol:'005930',reason:'kis_display_license_unverified'},{symbol:'WRONG',reason:'missing_key'}]})));
+  const result=await loadQuoteBatches('isolated-token',['AAPL','005930'],'1m',new AbortController().signal);
+  expect(result.quotes.map(q=>q.symbol)).toEqual(['AAPL']);expect(result.reason).toBe('partial_provider_unavailable');expect(result.unavailable).toEqual([{symbol:'005930',reason:'kis_display_license_unverified'}]);
+ });
+ it('does not accept a quote from another request batch',async()=>{
+  let count=0;vi.stubGlobal('fetch',vi.fn(async()=>Response.json({quotes:++count===1?[{symbol:'I',price:100,currency:'USD',change_pct:null,as_of:'2026-10-06',source:'fixture'}]:[]})));
+  const result=await loadQuoteBatches('isolated-token',['A','B','C','D','E','F','G','H','I'],'1m',new AbortController().signal);
+  expect(result.quotes).toEqual([]);expect(result.unavailable).toHaveLength(9);
+ });
+ it('keeps a missing price unavailable rather than counting it as a usable quote',async()=>{
+  vi.stubGlobal('fetch',vi.fn(async()=>Response.json({quotes:[{symbol:'AAPL',price:null,currency:'USD',change_pct:null,as_of:'2026-10-06',source:'fixture'}]})));
+  const result=await loadQuoteBatches('isolated-token',['AAPL'],'1m',new AbortController().signal);
+  expect(result.quotes).toEqual([]);expect(result.unavailable).toEqual([{symbol:'AAPL',reason:'partial_provider_unavailable'}]);
+ });
+ it('does not return late prices after cancellation',async()=>{
+  const ctrl=new AbortController();vi.stubGlobal('fetch',vi.fn(async()=>{ctrl.abort();return Response.json({quotes:[]});}));
+  await expect(loadQuoteBatches('isolated-token',['AAPL'],'1m',ctrl.signal)).rejects.toMatchObject({name:'AbortError'});
+ });
+
 });

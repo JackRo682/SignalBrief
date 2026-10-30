@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import {MarketWidget} from './market-widget';
 import {useEffect,useState} from 'react';
 import {z} from 'zod';
 import {useAuth} from '@/components/auth';
@@ -110,9 +111,9 @@ export function MarketIndexCards({state,mobile=false}:{state:IndexState;mobile?:
 
 export function MarketIndicesStatus({state}:{state:IndexState}){
  const {text:t}=usePrefs();
- return <div className="market-indices-status" role={state.error&&state.error!=='authentication_required'?'alert':'status'} aria-live="polite">
+ return <><div className="market-indices-status" role={state.error&&state.error!=='authentication_required'?'alert':'status'} aria-live="polite">
   {state.error&&<span>{reasonText(state.error,t)} </span>}
   <span>{t('권한이 확인된 공급자 데이터 · 시각은 설정한 시간대 기준','Authorized provider data · times use your selected timezone')}</span>
   <button type="button" onClick={state.reload} disabled={state.loading}>{state.loading?t('확인 중…','Loading…'):t('지수 다시 조회','Refresh indices')}</button>
- </div>;
+ </div>{!state.loading && (state.error || indexNames.some(name => !state.data?.quotes[name])) && <MarketWidget/>}</>;
 }

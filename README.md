@@ -2,6 +2,8 @@
 
 # SignalBrief
 
+> 최신 실제 공시 점검: [2026-10-08 구현·실검증·미검증 구분](docs/LIVE_COMPLETION_STATUS_20261008.md), [Python ↔ Supabase 연결 및 1쌍→10쌍 재개 절차](docs/LIVE_TRIAL_RUNBOOK_KO.md). 수집 성공만으로 AI 분석·승인·Today 흐름 완성을 의미하지 않습니다.
+
 **근거 우선 포트폴리오 변화 브리핑.** Next.js/TypeScript + FastAPI/Python + PostgreSQL/Supabase.
 새로 작성한 애플리케이션 소스이며, 코드 생성 프롬프트만 담은 패키지가 아닙니다.
 

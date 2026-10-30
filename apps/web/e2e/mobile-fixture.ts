@@ -99,6 +99,7 @@ export async function mobileFixture(page: Page, options: Options = {}) {
     await route.fallback();
   });
   await page.route('**/api/auth-config', route => route.fulfill({json: {url: 'https://test-project.supabase.co', publishableKey: 'sb_publishable_isolated_fixture'}}));
+  await page.route('**/api/company-profile?**',route=>route.fulfill({json:{status:'not_available',profile:null}}));
   await page.route('https://test-project.supabase.co/rest/v1/rpc/sb_digest_preferences',async route=>{
     const headers={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Allow-Headers':route.request().headers()['access-control-request-headers']??'authorization,apikey,content-type,x-client-info'};
     if(route.request().method()==='OPTIONS'){await route.fulfill({status:204,headers});return;}

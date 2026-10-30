@@ -1,0 +1,81 @@
+
+> signalbrief-web@0.1.0 build
+> next build
+
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.ts took 24ms
+⚠ No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 8.0s
+  Running TypeScript ...
+  Finished TypeScript in 12.4s ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/36) ...
+  Generating static pages using 3 workers (9/36) 
+  Generating static pages using 3 workers (18/36) 
+  Generating static pages using 3 workers (27/36) 
+✓ Generating static pages using 3 workers (36/36) in 729ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /about
+├ ○ /alerts
+├ ƒ /api/[...path]
+├ ƒ /api/auth-config
+├ ƒ /api/market
+├ ƒ /api/public-stats
+├ ƒ /api/release
+├ ƒ /api/us/[...path]
+├ ƒ /api/workspace
+├ ○ /auth/callback
+├ ○ /calendar
+├ ƒ /companies/[id]
+├ ƒ /companies/[id]/timeline
+├ ○ /customers
+├ ○ /disclaimer
+├ ƒ /documents/[id]
+├ ƒ /events/[id]
+├ ○ /explore
+├ ○ /features
+├ ○ /forgot-password
+├ ƒ /help
+├ ○ /login
+├ ○ /onboarding
+├ ○ /ops
+├ ƒ /ops/documents/[id]
+├ ƒ /ops/runs/[id]
+├ ○ /portfolio
+├ ○ /pricing
+├ ○ /privacy
+├ ƒ /questions
+├ ○ /reset-password
+├ ○ /saved
+├ ƒ /search
+├ ○ /settings
+├ ○ /settings/account
+├ ○ /settings/appearance
+├ ○ /settings/notifications
+├ ○ /settings/security
+├ ○ /signup
+├ ○ /sources
+├ ○ /status
+├ ○ /terms
+├ ○ /timeline
+├ ○ /today
+├ ○ /us
+└ ○ /watchlist
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

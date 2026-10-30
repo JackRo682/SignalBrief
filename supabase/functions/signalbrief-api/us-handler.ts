@@ -1,5 +1,5 @@
 import {sendNotification} from '../signalbrief-delivery/core.ts';
-import {kisToken,kisQuote,fmpIndex,indexSymbols} from './market-core.ts';
+import {kisToken,kisQuote,fmpIndex,indexSymbols,fmpEquityQuote} from './market-core.ts';
 import {verificationPlan,runVerification} from './verification.ts';
 import {createClient, type SupabaseClient} from 'npm:@supabase/supabase-js@2.117.2';
 import {ProviderError,obj,arr,str,providerFetch,jsonFetch,websitePermission,usSymbol,fmpQuote,fmpHistory,frankfurter,secSubmissions,validateFilingURL,normalizeFiling,analyzeEvidence,analysisReservation,openaiSmoke,resendDomains,sendVerifiedEmail,gnewsSearch,type Row} from './us-core.ts';
@@ -109,7 +109,7 @@ export async function handleUS(req:Request):Promise<Response>{
   }
   if(path==='/analysis'&&req.method==='GET'){const id=url.searchParams.get('filing_id')??'';if(!/^[a-f0-9-]{36}$/.test(id))throw new ProviderError('api','invalid_filing_id',422);const r=await actor.db.from('us_analyses').select('*').eq('filing_id',id).maybeSingle();if(r.error)throw new ProviderError('database','analysis_read_failed');return reply(r.data??{status:'not_available_or_pending_review'});}
   if(path==='/quotes'&&req.method==='GET'){
-   const symbols=[...new Set((url.searchParams.get('symbols')??'').split(',').filter(Boolean))];if(symbols.length>40)throw new ProviderError('market','max_forty_symbols',422);
+   const symbols=[...new Set((url.searchParams.get('symbols')??'').split(',').map(s=>s.trim().toUpperCase()).filter(Boolean))];if(symbols.length>40)throw new ProviderError('market','max_forty_symbols',422);
    const period=url.searchParams.get('period')??'1y',periodDays:Record<string,number>={'1d':1,'1w':7,'1m':31,'3m':93,'6m':186,'1y':370,'3y':370};if(!(period in periodDays))throw new ProviderError('market','invalid_period',422);
    const s=await settings(db),quotes:Row[]=[],unavailable:Row[]=[];
    for(const [position,symbol] of symbols.entries()){try{if(/^\d{6}$/.test(symbol)){
@@ -122,8 +122,9 @@ export async function handleUS(req:Request):Promise<Response>{
    }
    if(!websitePermission(config,'fmp'))throw new ProviderError('fmp','fmp_display_license_unverified',409);
 if(position>=8)throw new ProviderError('market','per_request_provider_limit',429);const name=usSymbol(symbol),company=await db.from('companies').select('id').eq('ticker',name).eq('provider','sec').eq('is_demo',false).maybeSingle();if(!company.data)throw new ProviderError('market','unsupported_company',422);
-    const q=obj(await cached(db,`fmp:q:${name}`,async()=>{await reserve(db,'fmp');return fmpQuote(name,str(s.FMP_API_KEY));}));
-    let history:unknown=[];try{history=await cached(db,`fmp:h:${name}`,async()=>{await reserve(db,'fmp');return fmpHistory(name,str(s.FMP_API_KEY));},21600);}catch{}
+    const mode=config.fmp_quote_mode??'snapshot';
+    const q=obj(await cached(db,`fmp:q:${mode}:${name}`,async()=>{await reserve(db,'fmp');return fmpEquityQuote(name,str(s.FMP_API_KEY),config); }));
+    let history:unknown=q.history??[];if(mode!=='eod')try{history=await cached(db,`fmp:h:${name}`,async()=>{await reserve(db,'fmp');return fmpHistory(name,str(s.FMP_API_KEY));},21600);}catch{}
     const cutoff=new Date(Date.now()-periodDays[period]*864e5).toISOString().slice(0,10);quotes.push({...q,history:arr(history).filter(x=>str(x.date)>=cutoff),history_resolution:'daily',history_coverage:period==='3y'?'up_to_one_year':'requested_daily_window'});
    }catch(e){unavailable.push({symbol,reason:e instanceof ProviderError?e.code:'provider_unavailable'});}}
    return reply({quotes,unavailable,available:quotes.length>0,reason:quotes.length?'':str(unavailable[0]?.reason),korean_data:websitePermission(config,'kis')?'configured':'license_or_credentials_required'});

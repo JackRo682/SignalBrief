@@ -1,0 +1,110 @@
+{
+  "checked_at": "2026-10-30T01:39:06.535338+00:00",
+  "full_release_suite": true,
+  "results": [
+    {
+      "check": "python_compile",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "compileall",
+        "-q",
+        "apps/api",
+        "tests",
+        "scripts"
+      ],
+      "log": "verification/python_compile.log"
+    },
+    {
+      "check": "backend_tests",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "--junitxml=/workspace/scratch/0a0ec247e3c2/SignalBrief/verification/pytest.xml"
+      ],
+      "log": "verification/backend_tests.log"
+    },
+    {
+      "check": "openapi_export",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "scripts/export_openapi.py"
+      ],
+      "log": "verification/openapi_export.log"
+    },
+    {
+      "check": "backend_lint",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "apps/api",
+        "tests",
+        "scripts"
+      ],
+      "log": "verification/backend_lint.log"
+    },
+    {
+      "check": "frontend_lint",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm",
+        "run",
+        "lint"
+      ],
+      "log": "verification/frontend_lint.log"
+    },
+    {
+      "check": "frontend_typecheck",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm",
+        "run",
+        "typecheck"
+      ],
+      "log": "verification/frontend_typecheck.log"
+    },
+    {
+      "check": "frontend_unit_tests",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm",
+        "run",
+        "test"
+      ],
+      "log": "verification/frontend_unit_tests.log"
+    },
+    {
+      "check": "frontend_build",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm",
+        "run",
+        "build"
+      ],
+      "log": "verification/frontend_build.log"
+    }
+  ],
+  "not_in_this_script": [
+    "Real provider credentials",
+    "Google OAuth redirects",
+    "Hosted deployment",
+    "Human-labeled financial Gold Dataset",
+    "Browser E2E (run Playwright separately)"
+  ]
+}
