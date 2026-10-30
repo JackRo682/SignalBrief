@@ -17,7 +17,7 @@ export const researchRequest=z.union([
  req('quality',{}),req('reliability',{}),req('reports',{}),req('check_record',{name:short,status:z.enum(['passed','failed','blocked']),environment:z.enum(['local','preview','production']),evidence:z.string().min(10).max(4000)})
 ]);
 export type Row=Record<string,unknown>;
-export const responseSchema=z.record(z.unknown());
+export const responseSchema=z.record(z.string(),z.unknown());
 export const rows=(v:unknown):Row[]=>z.array(responseSchema).parse(v??[]);
 export const row=(v:unknown):Row=>responseSchema.parse(v??{});
 export const str=(v:unknown)=>v==null?'':String(v);

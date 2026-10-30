@@ -42,7 +42,7 @@
     "apps/web/src/components/ui.tsx": "acd8b7c197b29f335346b8c0584bd38b75cc9eabfe02b55ef959fce20220fa89",
     "apps/web/src/lib/api.ts": "87d5f019e66f68af853669444b63cf47526047aafd10b3dee05a423b84dc3379",
     "apps/web/src/lib/auth-policy.ts": "8cdd93f809d03afb2ad09599168cd7bf83aca9363a754f2eeec7ea83401aff8c",
-    "apps/web/src/lib/contracts.ts": "e05e1facede50958ba8d4d76f61be74d499be0278075fffad6183991f2618993",
+    "apps/web/src/lib/contracts.ts": "b26ed49fc32a112f6aad4a1622a044059ba86c78e0083f8586ddf62c023d144e",
     "apps/web/src/lib/decimal-input.ts": "8c58ab4a506f3ff2bbe55fbc4f2238fe88279031ee23912c448293857e947ff0",
     "apps/web/src/lib/format.ts": "f9aa8390633f568b3551764d48ae54b36312a7a70107f377382e554c867b826c",
     "apps/web/src/lib/internal-navigation.ts": "3f001aed6646b41bb3f6c88686b7a35cf92e7ca7ce281613761d225dc13fafe8",
@@ -54,7 +54,7 @@
     "apps/web/src/lib/site-url.ts": "be111521b7975c53a1a6563f18ff061c006dcbe55a0fd96cd1187e3600ec802c",
     "apps/web/src/lib/supabase.ts": "e9b5f56864fc58ffc67078fd1cdb78ea4abe2c7f99f1f74472bf30b0e6116385",
     "apps/web/src/mobile/account-security.css": "6fd21a16da462ad2c996396875f3c13ad64837cad0d940783b51cf6d4b1aa407",
-    "apps/web/src/mobile/account.tsx": "c1bb0b575e8f8d09aa82e0f568969686ada872ee6fbfcddb37e262c02bafe439",
+    "apps/web/src/mobile/account.tsx": "1268715664875decff32ad457c662f0b8a5bf7ee1f4486dcc8c3f7c9d59b4a14",
     "apps/web/src/mobile/alerts.tsx": "4c99ce85441f4144f82793e4c747b7cdb9e706128b40a6876673c185188ea7fb",
     "apps/web/src/mobile/appearance.css": "a98fd17e4e18afbc2633524680bfa4708bb11474113156376f8f6a1b7d0e1899",
     "apps/web/src/mobile/appearance.tsx": "34b07c0142f1939e10fea84703d18e5242af4f3585c7578cb6fa280363223669",
@@ -91,11 +91,11 @@
     "apps/web/src/mobile/today.tsx": "5aad71e767d0f9e37c790eea9d62de916e87e38ee6964c62f1c015161968a1ad",
     "apps/web/src/mobile/ui.tsx": "882ab3a49e5584df5c43c961bd1c57f633881736352f974424e2c767602399c7",
     "apps/web/src/mobile/watchlist.tsx": "ba22a90f3618c63b48ec26ec4f18f2f0c936bd3076f77a9f49f71a6b8a9fb272",
-    "apps/web/src/workspace/account.tsx": "5c81a5c80572a21e49ddd856601b4a3a8c51c2eff17b390ce12df0d1b6df3e47",
+    "apps/web/src/workspace/account.tsx": "682cca1347409cb0b2a85a3b1c20f4e91297ffb272e7d1964fc933f7a07c7966",
     "apps/web/src/workspace/appearance.tsx": "07c2d522a2239a8f9844758f600a7b747e90605b530f4748f378fd95e747c283",
     "apps/web/src/workspace/client.ts": "130ae6df964b222fc4baf323eb468ba1a0bd2605f9dcda8fd4bcf3e209fc406b",
     "apps/web/src/workspace/company.tsx": "e8f999a18c162c25cad07ed44da312fed550cae4766d912d096a47c6f814f51f",
-    "apps/web/src/workspace/contracts.ts": "8c2371aa755b953ab85ed84d529d0bd3e17f4e867fa8c898dee18ecc16be9dce",
+    "apps/web/src/workspace/contracts.ts": "39b8fb82554fc8a30110614c2185608f36704cd8b3adf3125483eed5b1dbdb40",
     "apps/web/src/workspace/help-content.ts": "da7a69609ce00b6877efa46599df9c222326b5aec60f2eed766d4afcd4e99fc0",
     "apps/web/src/workspace/help.tsx": "ed18e636f7248468831d336cc7b8f5b92e977b2188fceb250fd769fdcaa98948",
     "apps/web/src/workspace/market.ts": "8bbc4e7cce954f71c5e140053e1d020d1adf625196aae2bea11ae649f0054ad0",
@@ -179,14 +179,32 @@
       {
         "path": "apps/web/src/workspace/contracts.ts",
         "previous_sha256": "da417e906c21050fa9ec43df471060d6652a1e300780b73acb4bb6e74c834a96",
-        "sha256": "8c2371aa755b953ab85ed84d529d0bd3e17f4e867fa8c898dee18ecc16be9dce",
-        "reason": "User-authorized PR31/32 company/DART/quote integration and opt-in market fallback; browser regression required before release."
+        "sha256": "39b8fb82554fc8a30110614c2185608f36704cd8b3adf3125483eed5b1dbdb40",
+        "reason": "Authorized security update: patched Next/Zod/Vite/Vitest and explicit string-key Zod record schemas. Full browser regression required."
       },
       {
         "path": "apps/web/src/workspace/market.ts",
         "previous_sha256": "de5933bbd9b7165eb92435aa8caac5ddb929b061ae3076fc7641f5a61e00c4b1",
         "sha256": "8bbc4e7cce954f71c5e140053e1d020d1adf625196aae2bea11ae649f0054ad0",
         "reason": "User-authorized PR31/32 company/DART/quote integration and opt-in market fallback; browser regression required before release."
+      },
+      {
+        "path": "apps/web/src/lib/contracts.ts",
+        "previous_sha256": "e05e1facede50958ba8d4d76f61be74d499be0278075fffad6183991f2618993",
+        "sha256": "b26ed49fc32a112f6aad4a1622a044059ba86c78e0083f8586ddf62c023d144e",
+        "reason": "Authorized security update: patched Next/Zod/Vite/Vitest and explicit string-key Zod record schemas. Full browser regression required."
+      },
+      {
+        "path": "apps/web/src/mobile/account.tsx",
+        "previous_sha256": "c1bb0b575e8f8d09aa82e0f568969686ada872ee6fbfcddb37e262c02bafe439",
+        "sha256": "1268715664875decff32ad457c662f0b8a5bf7ee1f4486dcc8c3f7c9d59b4a14",
+        "reason": "Authorized security update: patched Next/Zod/Vite/Vitest and explicit string-key Zod record schemas. Full browser regression required."
+      },
+      {
+        "path": "apps/web/src/workspace/account.tsx",
+        "previous_sha256": "5c81a5c80572a21e49ddd856601b4a3a8c51c2eff17b390ce12df0d1b6df3e47",
+        "sha256": "682cca1347409cb0b2a85a3b1c20f4e91297ffb272e7d1964fc933f7a07c7966",
+        "reason": "Authorized security update: patched Next/Zod/Vite/Vitest and explicit string-key Zod record schemas. Full browser regression required."
       }
     ],
     "note": "Only listed authorized changes are rebased. All other hashes, route assertions and CSS scope checks remain enforced."
