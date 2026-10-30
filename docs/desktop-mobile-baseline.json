@@ -33,7 +33,7 @@
     "apps/web/public/reference-assets/onboarding-guide.webp": "f5161adbb49e9467002ac8e2ee1f1ae522d59e48f0af64cc8b750c1aa788546a",
     "apps/web/src/app/account-marketing.css": "b72e43d5b87ba0ccfb81d028e7e893a8d4a9baf886f426933ba02f272b67351e",
     "apps/web/src/app/fonts/LICENSE.txt": "b04538c9abec39a3db75108cf0af0fd9c77032fe8aa2cf38345b4d250e98e38e",
-    "apps/web/src/app/fonts/PretendardVariable.woff2": "53d82394d18628c616e5351f8ffa002f7527640b4b0fedf81f60f3c2a37a9f66",
+    "apps/web/src/app/fonts/PretendardVariable.woff2": "9599f12fd42fc0bce1cd50b47a0c022e108d7aa64dd0d1bb0ed44f3282d900b4",
     "apps/web/src/app/globals.css": "622aab68e02a9ace329b78e2f4db2a800e328521ae2ec730512b4f2e8191392a",
     "apps/web/src/app/layout.tsx": "ecb92c55c966da5ba05f7771e3753f8b61a34944f81b39333668fc7e081fa01a",
     "apps/web/src/app/release-layout.css": "4d25e2fb626d509c46dd5acec92fb8a67a9598913c6402f58fbde10df8ebf0e6",
@@ -156,12 +156,6 @@
         "path": "apps/web/e2e/mobile-fixture.ts",
         "previous_sha256": "f4e86fcde747ebf7ddd80d6d8697bb946b411e239cbc605af41217457307c6c9",
         "sha256": "cdb5185da4a772a671c395f3f3ec1e5f0d61d01db6f1d7adfac4b38e056d7882",
-        "reason": "User-authorized PR31/32 company/DART/quote integration and opt-in market fallback; browser regression required before release."
-      },
-      {
-        "path": "apps/web/src/app/fonts/PretendardVariable.woff2",
-        "previous_sha256": "9599f12fd42fc0bce1cd50b47a0c022e108d7aa64dd0d1bb0ed44f3282d900b4",
-        "sha256": "53d82394d18628c616e5351f8ffa002f7527640b4b0fedf81f60f3c2a37a9f66",
         "reason": "User-authorized PR31/32 company/DART/quote integration and opt-in market fallback; browser regression required before release."
       },
       {
