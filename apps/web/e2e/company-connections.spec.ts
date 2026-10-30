@@ -27,9 +27,23 @@ test('company chart explains missing public display authorization',async({page},
  await mobileFixture(page);
  await page.route('**/api/market?**',route=>route.fulfill({json:{quotes:[],available:false,reason:'fmp_display_license_unverified'}}));
  await page.goto(`/companies/${companyId}`);
- await expect(page.getByText('FMP 시세 공개 표시 권한이 확인되지 않았습니다.').first()).toBeVisible();
+ await expect(page.getByText('미국 주가의 웹 표시 승인 대기 중입니다.').first()).toBeVisible();
  if(info.project.name==='desktop'){
   await page.getByRole('button',{name:'주가 차트',exact:true}).click();
-  await expect(page.getByText('FMP 시세 공개 표시 권한이 확인되지 않았습니다.').last()).toBeVisible();
+  await expect(page.getByText('미국 주가의 웹 표시 승인 대기 중입니다.').last()).toBeVisible();
  }
+});
+
+// The provider is intercepted for this lifecycle test; no prices are fabricated in production.
+test('external market fallback loads only when opened and retains its provider link',async({page})=>{
+ await mobileFixture(page);
+ await page.route('https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js',route=>route.abort());
+ await page.goto(`/companies/${companyId}`);
+ const chart=page.getByRole('region',{name:'외부 시세 차트'});
+ await expect(chart.locator('script')).toHaveCount(0);
+ await chart.getByRole('button',{name:'외부 차트 불러오기'}).click();
+ await expect(chart.getByText('차트를 불러오지 못했습니다. 공급자 링크에서 확인하세요.')).toBeVisible();
+ await expect(chart.getByRole('link',{name:'TradingView에서 확인'})).toHaveAttribute('href',/^https:\/\/www\.tradingview\.com\/symbols\//);
+ await expect(chart.getByRole('button',{name:'다시 시도'})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)).toBe(true);
 });

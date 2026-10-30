@@ -19,7 +19,7 @@
   "files": {
     "apps/web/e2e/mobile-authenticated.spec.ts": "4e53bce533bcf687f28738ffc9a52cd1df4aa07ced64427a6fd8af30989026c6",
     "apps/web/e2e/mobile-details.spec.ts": "8d8ccb5d2d333b7d6f151ddf1dce768a6847fcf225952f9218959d6ab8b32f9c",
-    "apps/web/e2e/mobile-fixture.ts": "f4e86fcde747ebf7ddd80d6d8697bb946b411e239cbc605af41217457307c6c9",
+    "apps/web/e2e/mobile-fixture.ts": "cdb5185da4a772a671c395f3f3ec1e5f0d61d01db6f1d7adfac4b38e056d7882",
     "apps/web/public/reference-assets/logos/000660.webp": "f929f01b36db4e59075cf4eb7ad2ae5cc285bcf3febdf63d4986090eca547cf8",
     "apps/web/public/reference-assets/logos/005380.webp": "34b0302b033f9b8e5e4b0132905eb1f15835e15df624290df6b74168580a22e7",
     "apps/web/public/reference-assets/logos/005490.webp": "cef6cef4dc1fab0a48bd410370a8dbb14622629a7231e9fb345f10dff9a0ddc6",
@@ -33,7 +33,7 @@
     "apps/web/public/reference-assets/onboarding-guide.webp": "f5161adbb49e9467002ac8e2ee1f1ae522d59e48f0af64cc8b750c1aa788546a",
     "apps/web/src/app/account-marketing.css": "b72e43d5b87ba0ccfb81d028e7e893a8d4a9baf886f426933ba02f272b67351e",
     "apps/web/src/app/fonts/LICENSE.txt": "b04538c9abec39a3db75108cf0af0fd9c77032fe8aa2cf38345b4d250e98e38e",
-    "apps/web/src/app/fonts/PretendardVariable.woff2": "9599f12fd42fc0bce1cd50b47a0c022e108d7aa64dd0d1bb0ed44f3282d900b4",
+    "apps/web/src/app/fonts/PretendardVariable.woff2": "53d82394d18628c616e5351f8ffa002f7527640b4b0fedf81f60f3c2a37a9f66",
     "apps/web/src/app/globals.css": "622aab68e02a9ace329b78e2f4db2a800e328521ae2ec730512b4f2e8191392a",
     "apps/web/src/app/layout.tsx": "ecb92c55c966da5ba05f7771e3753f8b61a34944f81b39333668fc7e081fa01a",
     "apps/web/src/app/release-layout.css": "4d25e2fb626d509c46dd5acec92fb8a67a9598913c6402f58fbde10df8ebf0e6",
@@ -63,9 +63,9 @@
     "apps/web/src/mobile/calendar.tsx": "c87515c518983ebbd3d66ad9f779c5ceb9fb2ce3977e3d70c11ef9cd12ee577f",
     "apps/web/src/mobile/collections.css": "826a05d0b46c1eff4b8bcfd0446229fffc85c3c8bc3b90e5af109ab05f754c30",
     "apps/web/src/mobile/company.css": "7e7146168412b5384442c17e6e247458bf1abf6d614aa12b44b9c6c3be6c8813",
-    "apps/web/src/mobile/company.tsx": "fde6e6960337c5c013e6f18013ab221bcce62cd7319d0b74484ef8ec509baddd",
+    "apps/web/src/mobile/company.tsx": "dd6432b3c05f71a6bc2df304524710951a6a9cdcd396440a89707907315990bc",
     "apps/web/src/mobile/detail-shell.css": "602e80b15cfc413a25ed1aacd4e5ac0ba2aea8e0fe23fefb168f99424bce6773",
-    "apps/web/src/mobile/document.tsx": "87763c4fecf5176117c87ac4be3b7cca1acccdd597657ffff7bac92728e908a4",
+    "apps/web/src/mobile/document.tsx": "23698da7e01bad96bf98ac7f051e2c6552286b7b7409107857a354388e119ff1",
     "apps/web/src/mobile/event.css": "2bdafb81de253b86ec4e5d52f529f715138175b1fc4c9b4f3588afacb5be8865",
     "apps/web/src/mobile/event.tsx": "aff23ee686b7a53faf82b483f0732fb6bf07697f38253701092ba767be816ce1",
     "apps/web/src/mobile/help.css": "c30076ff6f55565f809ce5b6c9cf1d2686526ce8c372f15c3c38cf16ebd61443",
@@ -94,11 +94,11 @@
     "apps/web/src/workspace/account.tsx": "5c81a5c80572a21e49ddd856601b4a3a8c51c2eff17b390ce12df0d1b6df3e47",
     "apps/web/src/workspace/appearance.tsx": "07c2d522a2239a8f9844758f600a7b747e90605b530f4748f378fd95e747c283",
     "apps/web/src/workspace/client.ts": "130ae6df964b222fc4baf323eb468ba1a0bd2605f9dcda8fd4bcf3e209fc406b",
-    "apps/web/src/workspace/company.tsx": "44e4397a584d0a5faa0534a569c127402404200a95ffbb02c1887a72fc151284",
-    "apps/web/src/workspace/contracts.ts": "da417e906c21050fa9ec43df471060d6652a1e300780b73acb4bb6e74c834a96",
+    "apps/web/src/workspace/company.tsx": "e8f999a18c162c25cad07ed44da312fed550cae4766d912d096a47c6f814f51f",
+    "apps/web/src/workspace/contracts.ts": "8c2371aa755b953ab85ed84d529d0bd3e17f4e867fa8c898dee18ecc16be9dce",
     "apps/web/src/workspace/help-content.ts": "da7a69609ce00b6877efa46599df9c222326b5aec60f2eed766d4afcd4e99fc0",
     "apps/web/src/workspace/help.tsx": "ed18e636f7248468831d336cc7b8f5b92e977b2188fceb250fd769fdcaa98948",
-    "apps/web/src/workspace/market.ts": "de5933bbd9b7165eb92435aa8caac5ddb929b061ae3076fc7641f5a61e00c4b1",
+    "apps/web/src/workspace/market.ts": "8bbc4e7cce954f71c5e140053e1d020d1adf625196aae2bea11ae649f0054ad0",
     "apps/web/src/workspace/notifications.tsx": "000631ce6c82a2e8ea97d8a7c8480b662969eff8c292164b7735a34e7202b477",
     "apps/web/src/workspace/preferences.tsx": "b21c285d6068cef640286d55360dbfcbd639d156412e85f3e882eade1b7ee060",
     "apps/web/src/workspace/saved.tsx": "9f2af7b35a729fa0e7a20885e4a5785ec0bebe2bf74b7ff1ee0ee05cc324ba59",
@@ -148,5 +148,53 @@
       ],
       "verification": "Desktop/mobile Playwright consent, delivery time, reload and opt-out: 2 passed; shared component unit regressions passed."
     }
-  ]
+  ],
+  "integration_review_20261030": {
+    "source_main": "35531abdf6650a72ee969b9ed49e6ec2a59d1ad8",
+    "changes": [
+      {
+        "path": "apps/web/e2e/mobile-fixture.ts",
+        "previous_sha256": "f4e86fcde747ebf7ddd80d6d8697bb946b411e239cbc605af41217457307c6c9",
+        "sha256": "cdb5185da4a772a671c395f3f3ec1e5f0d61d01db6f1d7adfac4b38e056d7882",
+        "reason": "User-authorized PR31/32 company/DART/quote integration and opt-in market fallback; browser regression required before release."
+      },
+      {
+        "path": "apps/web/src/app/fonts/PretendardVariable.woff2",
+        "previous_sha256": "9599f12fd42fc0bce1cd50b47a0c022e108d7aa64dd0d1bb0ed44f3282d900b4",
+        "sha256": "53d82394d18628c616e5351f8ffa002f7527640b4b0fedf81f60f3c2a37a9f66",
+        "reason": "User-authorized PR31/32 company/DART/quote integration and opt-in market fallback; browser regression required before release."
+      },
+      {
+        "path": "apps/web/src/mobile/company.tsx",
+        "previous_sha256": "fde6e6960337c5c013e6f18013ab221bcce62cd7319d0b74484ef8ec509baddd",
+        "sha256": "dd6432b3c05f71a6bc2df304524710951a6a9cdcd396440a89707907315990bc",
+        "reason": "User-authorized PR31/32 company/DART/quote integration and opt-in market fallback; browser regression required before release."
+      },
+      {
+        "path": "apps/web/src/mobile/document.tsx",
+        "previous_sha256": "87763c4fecf5176117c87ac4be3b7cca1acccdd597657ffff7bac92728e908a4",
+        "sha256": "23698da7e01bad96bf98ac7f051e2c6552286b7b7409107857a354388e119ff1",
+        "reason": "User-authorized PR31/32 company/DART/quote integration and opt-in market fallback; browser regression required before release."
+      },
+      {
+        "path": "apps/web/src/workspace/company.tsx",
+        "previous_sha256": "44e4397a584d0a5faa0534a569c127402404200a95ffbb02c1887a72fc151284",
+        "sha256": "e8f999a18c162c25cad07ed44da312fed550cae4766d912d096a47c6f814f51f",
+        "reason": "User-authorized PR31/32 company/DART/quote integration and opt-in market fallback; browser regression required before release."
+      },
+      {
+        "path": "apps/web/src/workspace/contracts.ts",
+        "previous_sha256": "da417e906c21050fa9ec43df471060d6652a1e300780b73acb4bb6e74c834a96",
+        "sha256": "8c2371aa755b953ab85ed84d529d0bd3e17f4e867fa8c898dee18ecc16be9dce",
+        "reason": "User-authorized PR31/32 company/DART/quote integration and opt-in market fallback; browser regression required before release."
+      },
+      {
+        "path": "apps/web/src/workspace/market.ts",
+        "previous_sha256": "de5933bbd9b7165eb92435aa8caac5ddb929b061ae3076fc7641f5a61e00c4b1",
+        "sha256": "8bbc4e7cce954f71c5e140053e1d020d1adf625196aae2bea11ae649f0054ad0",
+        "reason": "User-authorized PR31/32 company/DART/quote integration and opt-in market fallback; browser regression required before release."
+      }
+    ],
+    "note": "Only listed authorized changes are rebased. All other hashes, route assertions and CSS scope checks remain enforced."
+  }
 }
