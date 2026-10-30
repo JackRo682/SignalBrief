@@ -169,7 +169,7 @@ function SearchResultCard({item, quote}: {item: Resource; quote?: Quote}) {
   if (item.kind === 'company') return <Link href={resourceHref(item)} onClick={track} className="m-card m-search-result-company">
     <CompanyLogo ticker={item.ticker} size={52}/><div className="m-search-result-company-body"><div className="m-search-company-name"><strong>{companyLabel(item, value.locale)}</strong><span>{item.ticker}</span></div>
       <p>{item.summary || item.title}</p><small>{t('공시, 주요 변화와 기업 타임라인을 확인하세요.', 'Explore filings, changes and company history.')}</small>
-      <div className="m-search-result-tags"><span>{item.market}</span><span>SEC EDGAR</span></div></div>
+      <div className="m-search-result-tags"><span>{item.market}</span><span>{/^(KRX|KOSPI|KOSDAQ)$/.test(item.market)?'OpenDART':'SEC EDGAR'}</span></div></div>
     <div className="m-search-result-company-quote"><div className={`m-search-quote-box ${quote?.change_pct != null && quote.change_pct < 0 ? 'is-negative' : ''}`}>
       <SmallChart values={quote?.history.map(point => point.close) ?? []}/><strong>{quote?.price == null ? '—' : formatMoney(quote.price, quote.currency, value.locale)}</strong>
       <small>{quote?.change_pct == null ? t('시세 확인 전', 'Quote unavailable') : `${quote.change_pct < 0 ? '▼' : '▲'} ${Math.abs(quote.change_pct).toFixed(2)}%`}</small></div>
@@ -240,7 +240,8 @@ export function MobileSearchResults({initial, initialKind, initialMarket = '', i
   </div>;
 
   return <div className="m-search-page m-search-results-page">
-    <SearchHeading results/><SearchInput initial={initial} submit={query => set({q: query})} onFilter={() => setFilterOpen(true)} filtered={Boolean(initialMarket || initialDays || kind)} results/>
+    <SearchHeading results/>
+    <p className="m-muted">{t('연결된 기업과 수집된 공시만 검색합니다. 한국어 동의어와 공개 문서 원문을 포함합니다.','Search covers connected companies and collected filings, including Korean synonyms and published source text.')}</p><SearchInput initial={initial} submit={query => set({q: query})} onFilter={() => setFilterOpen(true)} filtered={Boolean(initialMarket || initialDays || kind)} results/>
     <nav className="m-tabs m-search-tabs" aria-label={t('검색 결과 유형', 'Search result types')}>
       {groups.reduce<{kind: Kind; label: string}[]>((list, group) => [...list, {kind: group.kind, label: group.label}], [{kind: '', label: t('전체', 'All')}]).map(tab => <button key={tab.kind}
         className={kind === tab.kind || tab.kind === 'document' && kind === 'filing' ? 'active' : ''} aria-pressed={kind === tab.kind || tab.kind === 'document' && kind === 'filing'} onClick={() => set({kind: tab.kind})}>{tab.label}</button>)}

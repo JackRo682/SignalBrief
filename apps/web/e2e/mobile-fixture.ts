@@ -205,6 +205,7 @@ export async function mobileFixture(page: Page, options: Options = {}) {
         if (p.version !== state.preferenceVersion) {await route.fulfill({status: 409, json: {error: {code: 'version_conflict'}}}); return;}
         Object.assign(state.preferences, p.value); state.preferenceVersion++; response = {value: state.preferences, version: state.preferenceVersion}; break;
       }
+      case 'source_overview': response = {companies: state.watched.size, filing_count: 0, published_count: 0, filings: [], historical_events: [], calendar: []}; break;
       case 'catalog': {
         const alias = companies.find(c => c.name === p.q)?.ticker ?? p.q ?? '', q = alias.toLowerCase();
         const all = resources.map(savedResource).filter(r => (!q || `${r.title} ${r.summary} ${r.company_name} ${r.ticker} ${r.category}`.toLowerCase().includes(q)) && (!p.market || r.market === p.market) && (!p.days || !r.published_at || Date.parse(r.published_at) >= Date.parse(fixtureNow) - p.days * 86400000));

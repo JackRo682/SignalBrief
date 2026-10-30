@@ -19,7 +19,7 @@
   "files": {
     "apps/web/e2e/mobile-authenticated.spec.ts": "4e53bce533bcf687f28738ffc9a52cd1df4aa07ced64427a6fd8af30989026c6",
     "apps/web/e2e/mobile-details.spec.ts": "8d8ccb5d2d333b7d6f151ddf1dce768a6847fcf225952f9218959d6ab8b32f9c",
-    "apps/web/e2e/mobile-fixture.ts": "cdb5185da4a772a671c395f3f3ec1e5f0d61d01db6f1d7adfac4b38e056d7882",
+    "apps/web/e2e/mobile-fixture.ts": "3ef71b5a3f27dbe2036f17731f2bdf91b9837cd0757065a4fb33413f867d70bd",
     "apps/web/public/reference-assets/logos/000660.webp": "f929f01b36db4e59075cf4eb7ad2ae5cc285bcf3febdf63d4986090eca547cf8",
     "apps/web/public/reference-assets/logos/005380.webp": "34b0302b033f9b8e5e4b0132905eb1f15835e15df624290df6b74168580a22e7",
     "apps/web/public/reference-assets/logos/005490.webp": "cef6cef4dc1fab0a48bd410370a8dbb14622629a7231e9fb345f10dff9a0ddc6",
@@ -81,21 +81,21 @@
     "apps/web/src/mobile/responsive.tsx": "9e8058771d49c852f6d67d64900f5b50d4c465d76793db14c5c1674110c5ca0e",
     "apps/web/src/mobile/saved.tsx": "3a5a42befd505530f3e4a8fc57fcb42dad5882e8c9693d77182123ededaa914f",
     "apps/web/src/mobile/search.css": "e85a8d1f635ae18efe4553089c518b4d435d7145102dd77b6e637c531aa19fe9",
-    "apps/web/src/mobile/search.tsx": "7c8995fa6142697ac67c5be1dc079c72eac07a57325514835c7872d53ed3db4d",
+    "apps/web/src/mobile/search.tsx": "3988ff4b1c3abb39102fc2bcb7e7c24e44a7650207a74e37dea2c4a2e038c401",
     "apps/web/src/mobile/security.tsx": "45c06b100cfd3a3619fd922c77dfba5baf8eb16fefb0d23a460bbe550b54856a",
     "apps/web/src/mobile/settings-notifications.css": "415913064d82cd1f86bc9ead4ceb3c84ad45ec6c37ec53cf6504959035a72536",
     "apps/web/src/mobile/settings.tsx": "ba1a4bbd2b4f9a0a99886c4ec4d5ef9d07b456c3cf822f99234d314ab18473a3",
     "apps/web/src/mobile/shell.tsx": "48c44b3d2778cbc4793d1c510c237569b6f7edec6901e14bfa17a028f55d1d99",
     "apps/web/src/mobile/timeline.tsx": "3fef6b328cd25d5813f787909901b704fd2fb423b95aa71bde0f19fc074d3428",
     "apps/web/src/mobile/today.css": "495a3595b362a686b90a796c5840d7a71f21aaa6900abb3f920780cec1f660ca",
-    "apps/web/src/mobile/today.tsx": "5aad71e767d0f9e37c790eea9d62de916e87e38ee6964c62f1c015161968a1ad",
+    "apps/web/src/mobile/today.tsx": "db88e67256296b6bc4447cb7dca0ad20a9f2f9fa2abc1b298e00c69a3dd54871",
     "apps/web/src/mobile/ui.tsx": "882ab3a49e5584df5c43c961bd1c57f633881736352f974424e2c767602399c7",
-    "apps/web/src/mobile/watchlist.tsx": "ba22a90f3618c63b48ec26ec4f18f2f0c936bd3076f77a9f49f71a6b8a9fb272",
+    "apps/web/src/mobile/watchlist.tsx": "5cfc790fe95ac7aca92107ba0074528251b7c0375d2aa9765fa8aadcf1d0b71c",
     "apps/web/src/workspace/account.tsx": "682cca1347409cb0b2a85a3b1c20f4e91297ffb272e7d1964fc933f7a07c7966",
     "apps/web/src/workspace/appearance.tsx": "07c2d522a2239a8f9844758f600a7b747e90605b530f4748f378fd95e747c283",
     "apps/web/src/workspace/client.ts": "130ae6df964b222fc4baf323eb468ba1a0bd2605f9dcda8fd4bcf3e209fc406b",
     "apps/web/src/workspace/company.tsx": "e8f999a18c162c25cad07ed44da312fed550cae4766d912d096a47c6f814f51f",
-    "apps/web/src/workspace/contracts.ts": "39b8fb82554fc8a30110614c2185608f36704cd8b3adf3125483eed5b1dbdb40",
+    "apps/web/src/workspace/contracts.ts": "bc605b76639eaac13f8b645c62dff30a5eb75af6d5cfe94d2a337e8e3cb6263b",
     "apps/web/src/workspace/help-content.ts": "da7a69609ce00b6877efa46599df9c222326b5aec60f2eed766d4afcd4e99fc0",
     "apps/web/src/workspace/help.tsx": "ed18e636f7248468831d336cc7b8f5b92e977b2188fceb250fd769fdcaa98948",
     "apps/web/src/workspace/market.ts": "8bbc4e7cce954f71c5e140053e1d020d1adf625196aae2bea11ae649f0054ad0",
@@ -208,5 +208,39 @@
       }
     ],
     "note": "Only listed authorized changes are rebased. All other hashes, route assertions and CSS scope checks remain enforced."
-  }
+  },
+  "reviewed_updates": [
+    {
+      "date": "2026-10-30",
+      "branch": "audit/screen-data-visibility-20261030",
+      "reason": "Explicit desktop/mobile visibility audit: source history, quote denial explanations, DART labels and additive authenticated contracts. Route expressions and mobile shell are unchanged. New SQL security replay and desktop/mobile E2E tests accompany this snapshot.",
+      "files": [
+        {
+          "path": "apps/web/e2e/mobile-fixture.ts",
+          "previous_sha256": "cdb5185da4a772a671c395f3f3ec1e5f0d61d01db6f1d7adfac4b38e056d7882",
+          "sha256": "3ef71b5a3f27dbe2036f17731f2bdf91b9837cd0757065a4fb33413f867d70bd"
+        },
+        {
+          "path": "apps/web/src/mobile/search.tsx",
+          "previous_sha256": "7c8995fa6142697ac67c5be1dc079c72eac07a57325514835c7872d53ed3db4d",
+          "sha256": "3988ff4b1c3abb39102fc2bcb7e7c24e44a7650207a74e37dea2c4a2e038c401"
+        },
+        {
+          "path": "apps/web/src/mobile/today.tsx",
+          "previous_sha256": "5aad71e767d0f9e37c790eea9d62de916e87e38ee6964c62f1c015161968a1ad",
+          "sha256": "db88e67256296b6bc4447cb7dca0ad20a9f2f9fa2abc1b298e00c69a3dd54871"
+        },
+        {
+          "path": "apps/web/src/mobile/watchlist.tsx",
+          "previous_sha256": "ba22a90f3618c63b48ec26ec4f18f2f0c936bd3076f77a9f49f71a6b8a9fb272",
+          "sha256": "5cfc790fe95ac7aca92107ba0074528251b7c0375d2aa9765fa8aadcf1d0b71c"
+        },
+        {
+          "path": "apps/web/src/workspace/contracts.ts",
+          "previous_sha256": "39b8fb82554fc8a30110614c2185608f36704cd8b3adf3125483eed5b1dbdb40",
+          "sha256": "bc605b76639eaac13f8b645c62dff30a5eb75af6d5cfe94d2a337e8e3cb6263b"
+        }
+      ]
+    }
+  ]
 }
