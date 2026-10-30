@@ -86,6 +86,7 @@ BEGIN
    SELECT c.id,c.company_id,c.title,c.occurs_on,c.source_url,c.source_timezone,c.verified_at
    FROM public.calendar_items c JOIN scope s ON s.company_id=c.company_id
    WHERE c.origin='official' AND c.calendar_status='confirmed' AND c.verified_at IS NOT NULL
+    AND app_private.sb_calendar_confirmed(c.id)
     AND c.source_url IS NOT NULL AND (c.user_id IS NULL OR c.user_id=u)
   )
   SELECT jsonb_build_object(

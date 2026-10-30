@@ -28,6 +28,7 @@ it('executes source visibility, bilingual full-text search and denial paths in d
    CREATE TABLE calendar_items(id text,user_id text,company_id text,title text,occurs_on date,origin text,calendar_status text,source_url text,source_timezone text,verified_at timestamptz);
    CREATE FUNCTION app_private.sb_event_visible(eid text) RETURNS boolean LANGUAGE sql AS $$SELECT EXISTS(SELECT 1 FROM public.events WHERE id=eid AND state='published')$$;
    CREATE FUNCTION app_private.sb_document_visible(did text) RETURNS boolean LANGUAGE sql AS $$SELECT EXISTS(SELECT 1 FROM public.events WHERE document_id=did AND state='published')$$;
+   CREATE FUNCTION app_private.sb_calendar_confirmed(cid text) RETURNS boolean LANGUAGE sql AS $$SELECT EXISTS(SELECT 1 FROM public.calendar_items WHERE id=cid AND verified_at IS NOT NULL AND calendar_status='confirmed')$$;
    INSERT INTO auth.users VALUES('10000000-0000-4000-8000-000000000001'),('10000000-0000-4000-8000-000000000002');
    INSERT INTO users SELECT id::text FROM auth.users;
    INSERT INTO companies VALUES('kr','삼성전자','005930','KRX','dart',false,now()),('us','Apple','AAPL','NASDAQ','sec',false,now()),('demo','Demo','DEMO','KRX','dart',true,now());

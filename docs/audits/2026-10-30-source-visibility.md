@@ -43,7 +43,7 @@ PR #31/#32/#33은 이미 병합됐다. #15는 main에 포함된 뒤 별도 PR이
 
 ## 구현 경로와 보안
 
-- `source_overview`는 `auth.uid()`의 관심종목과 보유종목 합집합에만 접근한다. 사용자 ID를 받지 않는다. 공식 일정도 소유권, confirmed, verified_at, 출처 존재를 확인한다.
+- `source_overview`는 `auth.uid()`의 관심종목과 보유종목 합집합에만 접근한다. 사용자 ID를 받지 않는다. 공식 일정도 소유권, confirmed, verified_at, 출처 존재와 기존 `sb_calendar_confirmed` 원문 검증을 확인한다.
 - 원문 전문 검색은 기존 공개 리소스 집합 안에서만 수행한다. 미공개 AI 제목/요약/근거 및 거절된 이벤트는 검색으로 우회하지 못한다. 수집된 179건 전체의 텍스트가 파싱·공개됐다는 뜻은 아니다.
 - DB 함수의 기존 인증, MFA, rate limit, 소유권, 저장/설정/문의 동작을 보존하기 위해 운영에서 읽은 고정 함수 정의를 마이그레이션에 포함했다. 런타임에 임의 SQL 문자열을 조립하지 않는다.
 - 브라우저 응답은 Zod로 검사한다. DB 오류는 재시도 가능한 오류로 표시하고 0건으로 바꾸지 않는다. 원문 링크는 기존 HTTPS 검사와 noreferrer를 사용한다.
@@ -93,6 +93,8 @@ PR #31/#32/#33은 이미 병합됐다. #15는 main에 포함된 뒤 별도 PR이
 4. 승인된 프런트엔드를 배포. `/today`, `/watchlist`, 한국어 검색, 설정의 한국 기업, 오류/재시도, 작은 화면 가로 넘침, 원문 링크, 기존 저장·보유·알림 동작을 실제 계정으로 점검. 새 키/유료 API/새 스케줄러는 필요 없다.
 5. 롤백은 프런트엔드와 API를 이전 운영 버전으로 되돌린 뒤 `supabase/workspace-rollbacks/20261030120000_source_visibility.sql` 적용. 공시/사용자 행을 삭제하지 않는다.
 
+운영 `/status` 화면에서도 OpenDART 최근 수집, Google 제공자·콜백 설정 확인, FMP/국내 시세 라이선스 확인 대기, AI 예산 설정을 직접 확인했다. 실제 OAuth 동의/로그인 완료와 사용자별 전체 화면 검사는 별도다. 메일 outbox에는 기존 delivered 상태 2건이 있었으며 실제 수신함 도달은 검사하지 않았다.
+
 운영에서 읽은 현재 버전: API 15, US 20, profiles 3, collector 14, calendar 1, notifications/delivery 각 3. Vercel production READY: `dpl_5Q5rDT2iwUqP6eSN4esTt1TDjwet`, 사용자 URL https://signalbrief.online. 이번 변경의 배포가 완료됐다는 뜻이 아니다.
 
 ## 테스트
@@ -108,6 +110,6 @@ PR #31/#32/#33은 이미 병합됐다. #15는 main에 포함된 뒤 별도 PR이
 - 공통 UI/계약: `apps/web/src/components/source-overview.tsx`, `apps/web/src/components/source-overview.css`, `apps/web/src/workspace/contracts.ts`.
 - PC: `apps/web/src/desktop/today.tsx`, `apps/web/src/desktop/watchlist.tsx`, `apps/web/src/desktop/search.tsx`.
 - 모바일/설정: `apps/web/src/mobile/today.tsx`, `apps/web/src/mobile/watchlist.tsx`, `apps/web/src/mobile/search.tsx`, `apps/web/src/reference/reference-app.tsx`.
-- 테스트: `apps/web/tests/source-visibility-sql.test.ts`, `apps/web/tests/workspace.test.ts`, `apps/web/tests/desktop-today.test.tsx`, `apps/web/e2e/source-visibility.spec.ts`, `apps/web/e2e/mobile-fixture.ts`, `tests/workspace/test_source_visibility.py`.
+- 테스트: `apps/web/tests/source-visibility-sql.test.ts`, `apps/web/tests/workspace.test.ts`, `apps/web/tests/desktop-today.test.tsx`, `apps/web/e2e/source-visibility.spec.ts`, `apps/web/e2e/mobile-fixture.ts`, `tests/workspace/test_source_visibility.py`, `tests/workspace/test_workspace_schema.py`, `apps/web/tests/desktop-questions.test.tsx`.
 - 검증/배포 설정: `.github/workflows/ci.yml`, `apps/web/vercel.json`, `docs/desktop-mobile-baseline.json`.
 - 보고서/검사 기록: 이 파일, `docs/audits/2026-10-30-source-visibility-checks.json`.
