@@ -45,7 +45,8 @@ test('feature and beta CTAs resolve to actual authentication or availability pag
  await expect(page.locator('body')).not.toContainText('authentication_required');
  await page.goto('/pricing');await page.locator('.v-plan').first().getByRole('link',{name:'무료로 시작하기'}).click();await expect(page).toHaveURL(/\/signup$/);
  await page.goto('/pricing');await page.locator('.v-plan-featured').getByRole('link').click();await expect(page).toHaveURL(/\/pricing#availability$/);
- await page.locator('#availability').getByRole('link').click();await expect(page).toHaveURL(/\/privacy#contact$/);await expect(page.locator('#contact')).toBeVisible();
+ await expect(page.locator('#availability').getByRole('link',{name:'30일 자료 이용권 준비 상태 →',exact:true})).toHaveAttribute('href','/billing');
+ await page.locator('#availability').getByRole('link',{name:'문의 안내 →',exact:true}).click();await expect(page).toHaveURL(/\/privacy#contact$/);await expect(page.locator('#contact')).toBeVisible();
 });
 test('privacy sections, consent controls and official source destinations remain accessible',async({page})=>{
  await anonymous(page);await page.goto('/privacy');await expect(page.locator('.v-policy-section')).toHaveCount(11);

@@ -60,10 +60,10 @@
     "apps/web/src/mobile/appearance.tsx": "34b07c0142f1939e10fea84703d18e5242af4f3585c7578cb6fa280363223669",
     "apps/web/src/mobile/brand-paths.ts": "898b5f4b4e84ce8fc1d9d9901a4996b03bdc3e018c4ed8ca8115ebe601980045",
     "apps/web/src/mobile/calendar-alerts.css": "874b143743ac99eae12fac771c21c39a2dc1ec737113c3d54c44a5503913b50b",
-    "apps/web/src/mobile/calendar.tsx": "c87515c518983ebbd3d66ad9f779c5ceb9fb2ce3977e3d70c11ef9cd12ee577f",
+    "apps/web/src/mobile/calendar.tsx": "bcadc07109f7e4aa7d4f726af1f769a56e6a256d4e00378e9c6c3df3aba76436",
     "apps/web/src/mobile/collections.css": "826a05d0b46c1eff4b8bcfd0446229fffc85c3c8bc3b90e5af109ab05f754c30",
     "apps/web/src/mobile/company.css": "7e7146168412b5384442c17e6e247458bf1abf6d614aa12b44b9c6c3be6c8813",
-    "apps/web/src/mobile/company.tsx": "dd6432b3c05f71a6bc2df304524710951a6a9cdcd396440a89707907315990bc",
+    "apps/web/src/mobile/company.tsx": "6d9605db5d160140d96f5f9d7d09880f4ca2df97ae0bd3a0d74f31290942c608",
     "apps/web/src/mobile/detail-shell.css": "602e80b15cfc413a25ed1aacd4e5ac0ba2aea8e0fe23fefb168f99424bce6773",
     "apps/web/src/mobile/document.tsx": "23698da7e01bad96bf98ac7f051e2c6552286b7b7409107857a354388e119ff1",
     "apps/web/src/mobile/event.css": "2bdafb81de253b86ec4e5d52f529f715138175b1fc4c9b4f3588afacb5be8865",
@@ -86,7 +86,7 @@
     "apps/web/src/mobile/settings-notifications.css": "415913064d82cd1f86bc9ead4ceb3c84ad45ec6c37ec53cf6504959035a72536",
     "apps/web/src/mobile/settings.tsx": "ba1a4bbd2b4f9a0a99886c4ec4d5ef9d07b456c3cf822f99234d314ab18473a3",
     "apps/web/src/mobile/shell.tsx": "48c44b3d2778cbc4793d1c510c237569b6f7edec6901e14bfa17a028f55d1d99",
-    "apps/web/src/mobile/timeline.tsx": "3fef6b328cd25d5813f787909901b704fd2fb423b95aa71bde0f19fc074d3428",
+    "apps/web/src/mobile/timeline.tsx": "8dda92853b26c250b4641fa8e0843e6b5f0c65ef6b2aef135a9a5a02b882e7b9",
     "apps/web/src/mobile/today.css": "495a3595b362a686b90a796c5840d7a71f21aaa6900abb3f920780cec1f660ca",
     "apps/web/src/mobile/today.tsx": "db88e67256296b6bc4447cb7dca0ad20a9f2f9fa2abc1b298e00c69a3dd54871",
     "apps/web/src/mobile/ui.tsx": "882ab3a49e5584df5c43c961bd1c57f633881736352f974424e2c767602399c7",
@@ -94,7 +94,7 @@
     "apps/web/src/workspace/account.tsx": "682cca1347409cb0b2a85a3b1c20f4e91297ffb272e7d1964fc933f7a07c7966",
     "apps/web/src/workspace/appearance.tsx": "07c2d522a2239a8f9844758f600a7b747e90605b530f4748f378fd95e747c283",
     "apps/web/src/workspace/client.ts": "130ae6df964b222fc4baf323eb468ba1a0bd2605f9dcda8fd4bcf3e209fc406b",
-    "apps/web/src/workspace/company.tsx": "e8f999a18c162c25cad07ed44da312fed550cae4766d912d096a47c6f814f51f",
+    "apps/web/src/workspace/company.tsx": "66f9e6b3f01f151385d904b8755b00d120d86e5131199b7453b087d357da0e27",
     "apps/web/src/workspace/contracts.ts": "bc605b76639eaac13f8b645c62dff30a5eb75af6d5cfe94d2a337e8e3cb6263b",
     "apps/web/src/workspace/help-content.ts": "da7a69609ce00b6877efa46599df9c222326b5aec60f2eed766d4afcd4e99fc0",
     "apps/web/src/workspace/help.tsx": "ed18e636f7248468831d336cc7b8f5b92e977b2188fceb250fd769fdcaa98948",
@@ -239,6 +239,32 @@
           "path": "apps/web/src/workspace/contracts.ts",
           "previous_sha256": "39b8fb82554fc8a30110614c2185608f36704cd8b3adf3125483eed5b1dbdb40",
           "sha256": "bc605b76639eaac13f8b645c62dff30a5eb75af6d5cfe94d2a337e8e3cb6263b"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-31",
+      "reason": "User requested official filing timelines, external company widgets and 30/90/365-day calendar views. Additive panels preserve routes, shell, authentication and provider limits. New tests accompany the intentional mobile changes.",
+      "files": [
+        {
+          "path": "apps/web/src/mobile/calendar.tsx",
+          "previous_sha256": "c87515c518983ebbd3d66ad9f779c5ceb9fb2ce3977e3d70c11ef9cd12ee577f",
+          "sha256": "bcadc07109f7e4aa7d4f726af1f769a56e6a256d4e00378e9c6c3df3aba76436"
+        },
+        {
+          "path": "apps/web/src/mobile/company.tsx",
+          "previous_sha256": "dd6432b3c05f71a6bc2df304524710951a6a9cdcd396440a89707907315990bc",
+          "sha256": "6d9605db5d160140d96f5f9d7d09880f4ca2df97ae0bd3a0d74f31290942c608"
+        },
+        {
+          "path": "apps/web/src/mobile/timeline.tsx",
+          "previous_sha256": "3fef6b328cd25d5813f787909901b704fd2fb423b95aa71bde0f19fc074d3428",
+          "sha256": "8dda92853b26c250b4641fa8e0843e6b5f0c65ef6b2aef135a9a5a02b882e7b9"
+        },
+        {
+          "path": "apps/web/src/workspace/company.tsx",
+          "previous_sha256": "e8f999a18c162c25cad07ed44da312fed550cae4766d912d096a47c6f814f51f",
+          "sha256": "66f9e6b3f01f151385d904b8755b00d120d86e5131199b7453b087d357da0e27"
         }
       ]
     }

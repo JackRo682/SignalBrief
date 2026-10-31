@@ -13,7 +13,7 @@ test('company profile, sourced financials, DART filings and licensed chart state
  await page.goto(`/companies/${companyId}`);
  await expect(page.getByText('Synthetic executive')).toBeVisible();
  await expect(page.getByText('12,345,678,901,234,567,890.12345678')).toBeVisible();
- const source=page.getByRole('link',{name:/Synthetic Korean official filing/});
+ const source=page.getByRole('link',{name:/Synthetic Korean official filing/}).first();
  await expect(source).toHaveAttribute('href',`/documents/${filing.id}?kind=filing`);
  await expect(page.getByRole('img',{name:mobile?'실제 종가 추이':'공급자 종가 추이'}).first()).toBeVisible();
  if(mobile)await page.getByRole('button',{name:'주가 차트 자세히 보기'}).click();
