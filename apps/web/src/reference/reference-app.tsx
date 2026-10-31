@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import {researchMvp} from '@/lib/release-scope';
 import WorkspaceLoading from "@/components/workspace-loading";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth";
@@ -71,7 +72,9 @@ export default function ReferenceApp({screen,id}:{screen:Screen;id?:string}){
   target.addEventListener("click",navigate);
   const unmount = mountReference(target,screen,context);
   const unpolish = polishReference(target,screen,context);
-  if(screen!=="landing"){
+  if(researchMvp&&!path.startsWith('/ops')){
+    target.querySelectorAll<HTMLAnchorElement>('a[href="/portfolio"],a[href="/us"]').forEach(link=>{link.href=link.getAttribute('href')==='/portfolio'?'/saved':'/explore';link.textContent=link.getAttribute('href')==='/saved'?'저장 자료':'기업 / 공시 탐색';});
+  }else if(screen!=="landing"){
     const banner=document.createElement("div");banner.className="usLaunchNotice";banner.innerHTML='<strong>공시·시세 연결 상태</strong> · 공식 공시는 수집 결과를, 주식·지수 시세는 공급자 사용 권한을 확인해 제공합니다. <a href="/us">미국 공시·연결 상태 보기 →</a>';
     (target.querySelector(".main")??target).prepend(banner);
   }

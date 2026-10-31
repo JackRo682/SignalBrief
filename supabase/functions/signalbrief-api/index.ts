@@ -1,3 +1,4 @@
+import {selectEvidence} from './evidence-selection.ts';
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.117.2";
 
 // Production web API. Every private request verifies the bearer token with Auth;
@@ -137,11 +138,8 @@ Deno.serve(async(req:Request)=>{
       else if(parts[1]==="events"&&parts[3]==="questions"&&parts.length===4&&method==="POST"){
         const p=await body(req),question=s(p.question).trim();check(question.length>0&&question.length<=2000);const d=await detail(db,parts[2]);
         const advice=/매수|매도|목표\s*주가|목표가|살까|팔까|사야|팔아야|\bbuy\b|\bsell\b|price\s*target|guaranteed/i.test(question);
-        const aliases:Record<string,string>={매출:"revenue",배당:"dividend",설비:"capex",투자:"capex",위험:"risk",리스크:"risk",경영진:"management",전망:"guidance",영업:"operating"};
-        const words=unique([...(question.toLowerCase().match(/[a-z가-힣]{2,}/g)??[]),...Object.entries(aliases).filter(([k])=>question.includes(k)).map(([,v])=>v)]);
-        const changed=/변화|바뀐|달라|이전|비교|change|previous|compare/i.test(question);
         const fields=new Map(d.facts.map(f=>[s(f.id),s(f.field)]));
-        const evidence=d.evidence.filter(x=>changed||words.some(w=>(s(x.quote)+" "+fields.get(s(x.fact_id))).toLowerCase().includes(w))).slice(0,6);
+        const {changed,evidence}=selectEvidence(question,d.evidence,fields);
         response=json(await rpc(db,"sb_save_answer",{eid:identity(parts[2]),question,reason:advice?"advice":evidence.length?changed?"changes":"current":"no_evidence",fact_ids:advice?[]:evidence.map(x=>x.fact_id)}));
       }else if(path==="/v1/questions"&&method==="GET")response=json(await unwrap(db.from("question_history").select("id,event_id,question,answer,created_at").eq("user_id",auth.user.id).order("created_at",{ascending:false}).limit(100)));
       else if(path==="/v1/questions"&&method==="DELETE"){await rpc(db,"sb_clear_history");response=json(null,204);}

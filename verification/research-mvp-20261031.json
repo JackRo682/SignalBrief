@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-31",
+  "checks": [
+    {
+      "check": "python_compile",
+      "status": "PASS"
+    },
+    {
+      "check": "backend_tests",
+      "status": "PASS"
+    },
+    {
+      "check": "openapi_export",
+      "status": "PASS"
+    },
+    {
+      "check": "backend_lint",
+      "status": "PASS"
+    },
+    {
+      "check": "frontend_lint",
+      "status": "PASS"
+    },
+    {
+      "check": "frontend_typecheck",
+      "status": "PASS"
+    },
+    {
+      "check": "frontend_unit_tests",
+      "status": "PASS"
+    },
+    {
+      "check": "frontend_build",
+      "status": "PASS"
+    }
+  ],
+  "final_frontend_tests": 666,
+  "backend_tests_passed": 340,
+  "backend_tests_skipped": 108,
+  "admin_pages_changed": false,
+  "parse_jobs_reconciled": 2,
+  "drafts_requiring_human_review": 51,
+  "embedded_postgres_tests": "included in frontend suite",
+  "local_browser_preview": "blocked: unsupported Vite flags appended to Next.js dev command"
+}

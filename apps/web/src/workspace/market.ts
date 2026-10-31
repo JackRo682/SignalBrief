@@ -1,6 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
 import {z} from 'zod';
+import {useResearchScope} from '@/mvp/scope';
 import {useAuth} from '@/components/auth';
 import {quotesSchema,quoteSchema,quoteUnavailableSchema} from './contracts';
 type Quote=z.infer<typeof quoteSchema>;
@@ -32,7 +33,8 @@ export async function loadQuoteBatches(token:string,symbols:string[],period:stri
  return {quotes:[...quotes.values()],unavailable:missing,reason:missing.length?(quotes.size?'partial_provider_unavailable':missing[0].reason):''};
 }
 export function useQuotes(symbols:string[],period='6m'){
- const {token}=useAuth(),key=[...new Set(symbols.map(s=>s.trim().toUpperCase()).filter(Boolean))].sort().join(','),[quotes,setQuotes]=useState<Quote[]>([]),[unavailable,setUnavailable]=useState<Unavailable[]>([]),[loading,setLoading]=useState(false),[reason,setReason]=useState('');
+ const research=useResearchScope();
+ const {token}=useAuth(),key=research?'':[...new Set(symbols.map(s=>s.trim().toUpperCase()).filter(Boolean))].sort().join(','),[quotes,setQuotes]=useState<Quote[]>([]),[unavailable,setUnavailable]=useState<Unavailable[]>([]),[loading,setLoading]=useState(false),[reason,setReason]=useState('');
  useEffect(()=>{if(!token||!key){setQuotes([]);setUnavailable([]);setLoading(false);setReason('');return;}const ctrl=new AbortController();let live=true;setLoading(true);setQuotes([]);setUnavailable([]);setReason('');
   loadQuoteBatches(token,key.split(','),period,ctrl.signal).then(d=>{if(live){setQuotes(d.quotes);setUnavailable(d.unavailable);setReason(d.reason);}}).catch(()=>{if(live)setReason('provider_unavailable');}).finally(()=>{if(live)setLoading(false);});return()=>{live=false;ctrl.abort();};},[token,key,period]);
  return {quotes,unavailable,loading,reason};
