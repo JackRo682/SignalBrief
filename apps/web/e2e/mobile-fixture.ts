@@ -2,7 +2,7 @@ import {type Page, type Route} from '@playwright/test';
 import {z} from 'zod';
 import {researchRequest} from '../src/research/contracts';
 import {answerSchema, calendarSchema, detailSchema, eventSchema, meSchema, notificationsSchema, portfolioSchema, type Company} from '../src/lib/contracts';
-import {companyDetailSchema, documentDetailSchema, defaults, preferenceSchema, resourceSchema, workspaceRequest, type Preferences, type Resource, type WorkspaceRequest} from '../src/workspace/contracts';
+import {companyDetailSchema, contentNotificationsSchema, documentDetailSchema, defaults, preferenceSchema, resourceSchema, workspaceRequest, type Preferences, type Resource, type WorkspaceRequest} from '../src/workspace/contracts';
 
 // All prices, disclosures, accounts and mutations below are synthetic, local to this E2E suite.
 // The browser never reads or writes a production account or a live financial provider.
@@ -205,7 +205,9 @@ export async function mobileFixture(page: Page, options: Options = {}) {
         if (p.version !== state.preferenceVersion) {await route.fulfill({status: 409, json: {error: {code: 'version_conflict'}}}); return;}
         Object.assign(state.preferences, p.value); state.preferenceVersion++; response = {value: state.preferences, version: state.preferenceVersion}; break;
       }
-      case 'source_overview': response = {companies: state.watched.size, filing_count: 0, published_count: 0, filings: [], historical_events: [], calendar: []}; break;
+      case 'content_notifications': response = contentNotificationsSchema.parse({items:state.notifications.map(item=>({id:item.id,created_at:item.created_at,read_at:item.read_at,resource:savedResource(eventResources.find(resource=>resource.id===item.event.id)!)})),unread_count:state.notifications.filter(item=>!item.read_at).length}); break;
+      case 'content_notification_read': state.notifications.forEach(item=>{if(p.all||item.id===p.id)item.read_at=fixtureNow;});response={read:true};break;
+      case 'source_overview': response = {companies: state.watched.size, filing_count: 0, published_count: 0, filings: [], analyses:[], historical_events: [], calendar: [], historical_calendar:[], scope:p.scope??'following',following_count:state.watched.size,saved_count:state.saved.size,unread_count:state.notifications.filter(item=>!item.read_at).length,fallback_to_all:false,monitoring:[]}; break;
       case 'catalog': {
         const alias = companies.find(c => c.name === p.q)?.ticker ?? p.q ?? '', q = alias.toLowerCase();
         const all = resources.map(savedResource).filter(r => (!q || `${r.title} ${r.summary} ${r.company_name} ${r.ticker} ${r.category}`.toLowerCase().includes(q)) && (!p.market || r.market === p.market) && (!p.days || !r.published_at || Date.parse(r.published_at) >= Date.parse(fixtureNow) - p.days * 86400000));

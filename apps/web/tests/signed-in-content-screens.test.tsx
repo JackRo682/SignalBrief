@@ -61,4 +61,25 @@ describe('signed-in content workspace',()=>{
  it('never displays a draft on the approved-only customer view, even with admin=true',()=>{
   render(<FilingAnalysis value={{...approved.analysis,status:'needs_review'}} admin busy={false} approvedOnly onReview={async()=>{}}/>);expect(screen.queryByText('Synthetic supported claim')).not.toBeInTheDocument();expect(screen.queryByRole('button')).not.toBeInTheDocument();
  });
+ it('cleans the approved DART display without mutating stored evidence or hiding caveats',()=>{
+  const body='  Synthetic source body.\nIncludes exact spacing.  ',quote=`FILE 20261029800130.xml MODE html_text_recovery_requires_review\n${body}`;
+  const entry={...approved,resource:{...approved.resource,kind:'dart_analysis' as const},analysis:{...approved.analysis,result:{...approved.analysis.result,claims:[{text:'Synthetic supported claim',quote}],uncertainty:'Semantic review is required. These figures are provisional.'}}};
+  const {container}=render(<ApprovedDocumentAnalyses entries={[entry]}/>);
+  expect(container.querySelector('blockquote')?.textContent).toBe(body);
+  expect(entry.analysis.result.claims[0].quote).toBe(quote);
+  expect(screen.getByRole('heading',{name:'Approved source excerpt summary'})).toBeVisible();
+  expect(screen.getByText('Notes recorded when the analysis was generated')).toBeVisible();
+  expect(screen.getByText(entry.analysis.result.uncertainty)).toBeInTheDocument();
+  expect(screen.getByText(/approval does not cover the entire document/)).toBeInTheDocument();
+ });
+ it('does not apply DART cleanup to SEC quotations or the admin review screen',()=>{
+  const quote='FILE 20261029800130.xml MODE strict_xml\nSynthetic exact quotation';
+  const analysisValue={...approved.analysis,result:{...approved.analysis.result,claims:[{text:'Synthetic supported claim',quote}]}};
+  const {container,unmount}=render(<ApprovedDocumentAnalyses entries={[{...approved,analysis:analysisValue}]}/>);
+  expect(container.querySelector('blockquote')?.textContent).toBe(quote);unmount();
+  const admin=render(<FilingAnalysis value={{...analysisValue,status:'needs_review'}} admin busy={false} onReview={async()=>{}}/>);
+  expect(admin.container.querySelector('blockquote')?.textContent).toBe(quote);
+  expect(screen.getByText(analysisValue.result.uncertainty)).toBeVisible();
+  expect(screen.queryByText('Notes recorded when the analysis was generated')).not.toBeInTheDocument();
+ });
 });

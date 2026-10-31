@@ -51,6 +51,7 @@ test('slow auth keeps a content skeleton and redirects anonymous visitors withou
 });
 test('expired sessions go to login without showing protocol error toasts',async({page})=>{
   await page.addInitScript(()=>sessionStorage.setItem('signalbrief.demo.token','isolated-synthetic-token'));
+  await page.route('**/api/workspace',route=>route.fulfill({status:401,json:{error:{code:'authentication_required'}}}));
   await page.route('**/v1/**',async route=>{
     const path=new URL(route.request().url()).pathname;
     if(path.endsWith('/config'))await route.fulfill({json:{auth_mode:'demo',demo_mode:true,demo_admin_enabled:false}});

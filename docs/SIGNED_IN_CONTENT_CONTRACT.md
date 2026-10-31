@@ -10,6 +10,8 @@ This change affects authenticated customer pages. Existing administration and re
 
 A filing excerpt has canonical kind `us_analysis` or `dart_analysis` and ID equal to its filing UUID. Published comparison events remain kind `event` and are not relabeled as excerpts. The UI link is `/documents/{filing_id}?kind=filing&analysis=us|dart`. Document detail returns claims, quotations, canonical URL, coverage, creation date and review date, without exposing the full stored excerpt or private object metadata.
 
+The approved customer view removes one leading DART collector marker (`FILE <member>.xml MODE strict_xml` or `html_text_recovery_requires_review`, followed by a newline) from displayed quotations. It preserves every following character and leaves stored evidence, hashes, validation, SEC quotations and administration views unchanged. Generation-time uncertainty is retained under a labeled disclosure, with the reviewed excerpt status and incomplete-document coverage explained separately.
+
 `published_at` remains the original filing date with `publication_precision='date'`. `reviewed_at` is obtained from approval audit history at or after the current analysis creation; if unavailable it is null. Recent approval does not turn an old filing into a new disclosure.
 
 ## Scope and measurements
