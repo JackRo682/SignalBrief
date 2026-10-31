@@ -117,11 +117,9 @@ Deno.serve(async(req:Request)=>{
       else if(path==="/v1/notification-settings"&&method==="PATCH")response=json(await rpc(db,"sb_notification_settings",{p:await body(req)}));
       else if(path==="/v1/onboarding"&&method==="POST")response=json(await rpc(db,"sb_user_action",{action:"onboarding",p:await body(req)}));
       else if(path==="/v1/companies"&&method==="GET"){
-        const term=(url.searchParams.get("q")??"").trim();check(term.length<=100);let query=db.from("companies").select(COMPANY_FIELDS).eq("is_demo",false).order("name").limit(limit(url,100));
-        // Escape pattern metacharacters and PostgREST grammar. No client-supplied SQL/filter expressions.
-        const safe=term.replace(/[%_*,.()\\"']/g," ").trim();if(safe)query=query.or(`name.ilike.%${safe}%,ticker.ilike.%${safe}%`);
-        const market=url.searchParams.get("market");if(market&&["KOSPI","KOSDAQ","NASDAQ","NYSE"].includes(market))query=query.eq("market",market);
-        response=json(await unwrap(query));
+        const term=(url.searchParams.get("q")??"").trim(),market=url.searchParams.get("market")??"";
+        check(term.length<=100&&market.length<=32);
+        response=json(await rpc(db,"sb_workspace",{action:"company_lookup",p:{q:term,market,limit:limit(url,100)}}));
       }else if(path==="/v1/watchlist"&&method==="GET")response=json(await rpc(db,"sb_watchlist"));
       else if(parts[1]==="watchlist"&&parts.length===3&&["PUT","DELETE"].includes(method)){await rpc(db,"sb_user_action",{action:method==="PUT"?"watch_add":"watch_remove",p:{company_id:identity(parts[2])}});response=json(null,204);}
       else if(path==="/v1/portfolio"&&method==="GET")response=json(await rpc(db,"sb_portfolio"));

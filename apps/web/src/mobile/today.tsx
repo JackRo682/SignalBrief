@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import {SourceOverview} from '@/components/source-overview';
 import {useEffect,useState} from 'react';
 import {useAuth} from '@/components/auth';
 import {useResource} from '@/components/ui';
@@ -40,5 +41,5 @@ export default function MobileToday(){
   {(watch.error||portfolio.error||alerts.error||saved.error)&&<ActionNotice action={{error:t('일부 현황을 불러오지 못했습니다. 해당 메뉴에서 다시 확인해 주세요.','Some totals could not be loaded. Open that section to retry.')}}/>}
   <Link className="m-today-alert-cta" href="/settings/notifications"><span className="m-cta-icon"><MIcon name="trend" size={24}/></span><div><strong>{t('시장의 중요한 변화를 놓치지 마세요.','Stay close to important changes.')}</strong><p>{t('관심종목 맞춤 알림으로 더 빠르게 확인하세요.','Set alerts for the companies you follow.')}</p></div><span className="m-cta-button">{t('알림 설정하기','Set alerts')}<MIcon name="chevron" size={13}/></span></Link>
   <nav className="m-home-more" aria-label={t('바로가기','Quick links')}>{[['/timeline','timeline',t('기업 타임라인','Timeline')],['/calendar','calendar',t('캘린더','Calendar')],['/saved','bookmark',t('저장 / 기록','Saved / history')],['/help','help',t('도움말 및 지원','Help & support')]].map(([href,icon,label])=><Link href={href} key={href}><MIcon name={icon} size={16}/>{label}<MIcon name="chevron" size={12}/></Link>)}</nav>
- </div>;
+ <SourceOverview/></div>;
 }

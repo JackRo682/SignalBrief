@@ -1,4 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "regions": ["hnd1"]
+  "regions": [
+    "hnd1"
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "audit/screen-data-visibility-20261030": false
+    }
+  }
 }

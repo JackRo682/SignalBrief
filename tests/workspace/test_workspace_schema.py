@@ -78,6 +78,10 @@ def db():
                 collector = (ROOT / 'docs/sql/collector.sql').read_text()
                 cursor.execute(collector.split('CREATE OR REPLACE FUNCTION public.sb_us_secrets()')[0],
                                prepare=False)
+            if migration.name == '20261030120000_source_visibility.sql':
+                # Replay the actual deployed calendar schema, not a hand-built column stub.
+                calendar = ROOT / 'supabase/migrations/20261019070909_official_calendar_ingestion.sql'
+                cursor.execute(calendar.read_text(), prepare=False)
             cursor.execute(migration.read_text(), prepare=False)
     seed = """
         INSERT INTO auth.users VALUES (:a,'a@example.invalid','{"name":"Synthetic A"}'),(:b,'b@example.invalid','{"name":"Synthetic B"}');

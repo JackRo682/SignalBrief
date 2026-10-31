@@ -35,7 +35,6 @@ export default function ReferenceApp({screen,id}:{screen:Screen;id?:string}){
    if(response.status===204)return null;
    const data=await response.json().catch(()=>null);
    if(!response.ok){if(response.status===401){window.dispatchEvent(new Event("signalbrief:unauthorized"));router.replace("/login");throw new Error("auth_redirect");}throw new Error(response.status===403?"이 작업에 접근할 권한이 없습니다.":"요청을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요.");}
-   if(endpoint.startsWith("/v1/companies?")&&Array.isArray(data))return data.filter(c=>c.provider==="sec");
    return data;
    });
   };

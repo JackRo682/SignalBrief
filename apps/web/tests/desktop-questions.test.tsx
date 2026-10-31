@@ -64,7 +64,9 @@ describe('PC evidence follow-up uses persisted source material',()=>{
   await waitFor(()=>expect(screen.getAllByRole('article',{name:'AI 근거 답변'})).toHaveLength(1));
   await waitFor(()=>expect(input).toBeEnabled());expect(input).toHaveValue('');
   expect(mock.request).toHaveBeenCalledWith(`/v1/events/${eventId}/questions`,'token-synthetic-owner-a',expect.anything(),{method:'POST',body:JSON.stringify({question:'매출 수치의 근거를 보여줘'})});
-  fireEvent.click(screen.getByRole('button',{name:'매출 수치 근거'}));fireEvent.click(screen.getByRole('button',{name:'질문 보내기'}));
+  fireEvent.click(screen.getByRole('button',{name:'매출 수치 근거'}));
+  await waitFor(()=>expect(screen.getByRole('button',{name:'질문 보내기'})).toBeEnabled());
+  fireEvent.click(screen.getByRole('button',{name:'질문 보내기'}));
   await waitFor(()=>expect(history).toHaveLength(2));await waitFor(()=>expect(input).toBeEnabled());
   expect(screen.getAllByRole('article',{name:'AI 근거 답변'})).toHaveLength(2);
   cleanup();await ready();expect(screen.getAllByRole('article',{name:'AI 근거 답변'})).toHaveLength(2);

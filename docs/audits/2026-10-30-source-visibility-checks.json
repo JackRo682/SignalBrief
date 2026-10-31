@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-30",
+  "base_commit": "27c3e58e6009d4ea60c4db90de0324dd8dac33c5",
+  "checks": [
+    {
+      "check": "python_compile",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "backend_tests",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "openapi_export",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "backend_lint",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "frontend_lint",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "frontend_typecheck",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "frontend_unit_tests",
+      "status": "PASS",
+      "returncode": 0
+    },
+    {
+      "check": "frontend_build",
+      "status": "PASS",
+      "returncode": 0
+    }
+  ],
+  "frontend": {
+    "passed": 639,
+    "files": 60
+  },
+  "backend": {
+    "passed": 340,
+    "skipped": 106
+  },
+  "mobile_isolation": "PASS (6 explicitly authorized snapshot updates; 21 routes preserved)",
+  "local_browser": "BLOCKED: Chromium download returned invalid zip",
+  "ci_postgres_browser": "pending",
+  "production_deployment": "not performed"
+}

@@ -8,6 +8,7 @@ export type Preferences=z.infer<typeof preferenceValue>;
 export const preferenceSchema=z.object({value:preferenceValue,version:z.number().int().nonnegative()});
 export const defaults:Preferences={timezone:'Asia/Seoul',locale:'ko',theme:'light',ui_density:'comfortable',font_scale:1,reduced_motion:false,chart_animation:true,history_enabled:false,quiet_enabled:false,quiet_start:'22:00',quiet_end:'07:00',daily_cap:3,muted_companies:[],bio:''};
 export const catalogSchema=z.object({items:z.array(resourceSchema),total:z.number(),counts:z.record(z.string(),z.number()),markets:z.array(z.string()),next_offset:z.number().nullable()});
+export const sourceOverviewSchema=z.object({companies:z.number().int().nonnegative(),filing_count:z.number().int().nonnegative(),published_count:z.number().int().nonnegative(),filings:z.array(resourceSchema),historical_events:z.array(resourceSchema),calendar:z.array(z.object({id:z.string(),company_id:z.string(),title:z.string(),occurs_on:z.string(),source_url:z.string(),source_timezone:z.string().nullable(),verified_at:z.string()}))});
 export const savedSchema=z.object({items:z.array(resourceSchema),counts:z.object({event:z.number(),document:z.number(),history:z.number()})});
 export const companyDetailSchema=z.object({company:resourceSchema,events:z.array(resourceSchema),documents:z.array(resourceSchema),facts:z.array(z.object({id:z.string(),field:z.string(),value_raw:z.string().nullable(),unit:z.string().nullable(),period:z.string().nullable(),basis:z.string(),quote:z.string(),event_id:z.string()})),watching:z.boolean(),holding:z.boolean()});
 export const documentDetailSchema=z.object({
@@ -34,6 +35,8 @@ const decimalString=z.string().regex(/^\d{1,20}(\.\d{1,8})?$/);
 const onboardingPosition=z.object({company_id:uuid,quantity:decimalString.refine(v=>/[1-9]/.test(v),'Quantity must be positive'),average_cost:decimalString.nullable(),currency:z.enum(['USD','KRW','EUR','JPY','GBP','AUD','CAD','HKD','CNY','CHF'])}).strict();
 export const workspaceRequest=z.discriminatedUnion('action',[
  z.object({action:z.literal('preferences'),p:empty}),
+ z.object({action:z.literal('source_overview'),p:empty}),
+ z.object({action:z.literal('company_lookup'),p:z.object({q:z.string().max(100).optional(),market:z.string().max(32).optional(),limit:z.number().int().min(1).max(100).optional()}).strict()}),
  z.object({action:z.literal('preferences_save'),p:z.object({value:preferenceValue.partial(),version:z.number().int().nonnegative()}).strict()}),
  z.object({action:z.literal('catalog'),p:z.object({q:z.string().max(100).optional(),market:z.string().max(32).optional(),kind:resourceKind.or(z.literal('')).optional(),days:z.number().int().min(0).max(3650).optional(),offset:z.number().int().min(0).max(1000).optional(),limit:z.number().int().min(1).max(50).optional(),sort:z.enum(['relevance','newest']).optional()}).strict()}),
  z.object({action:z.literal('resource'),p:z.object({kind:resourceKind,id:uuid}).strict()}),

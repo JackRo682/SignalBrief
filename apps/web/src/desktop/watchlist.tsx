@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import {SourceOverview} from '@/components/source-overview';
+import {quoteUnavailableText} from '@/lib/quote-display';
 import {useEffect, useState} from 'react';
 import {useAuth} from '@/components/auth';
 import {Icon} from '@/components/icons';
@@ -42,7 +44,7 @@ export default function DesktopWatchlist(){
    <div className="pc-watch-table-scroll"><table className="pc-watch-table"><thead><tr><th><input type="checkbox" aria-label={t('표시된 관심종목 전체 선택','Select all visible companies')} checked={allSelected} disabled={!shown.length} onChange={toggleShown}/></th><th>{t('기업','Company')}</th><th>{t('현재가','Quote')}</th><th>{t('전일 대비','Daily change')}</th><th>{t('최근 1개월','Past month')}</th><th>{t('알림 설정','Alerts')}</th><th><span className="pc-watch-sr-only">{t('더 보기','More actions')}</span></th></tr></thead><tbody>{shown.map(company=>{const quote=quoteMap.get(company.ticker.toUpperCase()),change=quote?.change_pct??null,muted=prefs.value.muted_companies.includes(company.id),delta=quote?.price!=null&&change!==null&&change>-100?quote.price-quote.price/(1+change/100):null;return <tr key={company.id}>
     <td><input type="checkbox" aria-label={`${company.name} ${t('선택','select')}`} checked={selected.includes(company.id)} onChange={e=>setSelected(values=>e.target.checked?[...values,company.id]:values.filter(id=>id!==company.id))}/></td>
     <td><Link className="pc-watch-company" href={`/companies/${company.id}`}><PcLogo ticker={company.ticker} size={46}/><span><strong>{company.name}</strong><small>{company.ticker} · {company.market}</small></span></Link></td>
-    <td className="pc-watch-price" title={quote?`${quote.source} · ${prefs.date(quote.as_of)}`:t('연결된 시세가 없습니다.','No connected quote.')}>{money(quote?.price,quote?.currency??'USD',prefs.value.locale)}</td>
+    <td className="pc-watch-price" title={quote?`${quote.source} · ${prefs.date(quote.as_of)}`:quoteUnavailableText(prices,company.ticker,t)}>{money(quote?.price,quote?.currency??'USD',prefs.value.locale)}{!quote&&<small style={{display:'block',fontSize:11,fontWeight:400,whiteSpace:'normal'}}>{quoteUnavailableText(prices,company.ticker,t)}</small>}</td>
     <td className={`pc-watch-change ${change===null?'':change>=0?'pc-watch-positive':'pc-watch-negative'}`}>{change===null?<span>—</span>:<><strong>{change>=0?'▲':'▼'} {delta===null?'':`${delta>=0?'+':''}${new Intl.NumberFormat(prefs.value.locale,{maximumFractionDigits:2}).format(delta)}`}</strong><span>{change>=0?'+':''}{change.toFixed(2)}%</span></>}</td>
     <td className={`pc-watch-chart ${change!==null&&change<0?'pc-watch-negative':'pc-watch-positive'}`}><PcChart values={quote?.history.map(point=>point.close)??[]}/></td>
     <td><button className={`pc-watch-alert ${muted?'muted':''}`} aria-label={`${company.name} ${t('알림','notifications')}`} aria-pressed={!muted} disabled={!prefs.loaded||prefs.busy||action.busy} title={muted?t('기업 알림 허용','Allow company notifications'):t('기업 알림 제외','Mute company notifications')} onClick={()=>void action.run(()=>prefs.save({muted_companies:muted?prefs.value.muted_companies.filter(id=>id!==company.id):[...prefs.value.muted_companies,company.id]}),muted?t('기업 알림 제외를 해제했습니다.','Company unmuted.'):t('기업을 알림에서 제외했습니다.','Company muted.'))}><Icon name="bell" size={21}/>{muted&&<i/>}</button></td>
@@ -56,6 +58,6 @@ export default function DesktopWatchlist(){
   {!prices.loading&&items.length>0&&prices.reason&&<p className="pc-watch-data-note">{t('연결된 시세가 없는 종목은 —로 표시합니다. 시세와 변동률의 기준일은 종목별로 다를 수 있습니다.','Unavailable quotes display —. Quote dates may differ between companies.')}</p>}
   {prices.quotes.length>0&&<details className="pc-watch-sources"><summary>{t('시세 기준 및 출처','Quote dates and sources')}</summary>{prices.quotes.map(quote=><p key={quote.symbol}><strong>{quote.symbol}</strong> · {quote.source} · {prefs.date(quote.as_of)}</p>)}</details>}
   {add&&<PcModal title={t('관심종목 추가','Add a company')} onClose={()=>setAdd(false)}><PcNotice action={action}/><label className="pc-field"><span>{t('기업명 또는 종목코드','Company name or ticker')}</span><input className="pc-input" autoFocus maxLength={100} value={query} onChange={e=>setQuery(e.target.value)} placeholder={t('기업 검색','Search companies')}/></label><PcDataState loading={catalog.loading} error={catalog.error} retry={catalog.reload}/><div className="pc-watch-add-results">{!catalog.loading&&catalog.data?.map(company=><div key={company.id}><PcLogo ticker={company.ticker} size={39}/><Link href={`/companies/${company.id}`}><strong>{company.name}</strong><small>{company.ticker} · {company.market}</small></Link><button className="pc-button" disabled={action.busy||ids.has(company.id)} aria-label={`${company.name} ${ids.has(company.id)?t('추가됨','already added'):t('추가','add')}`} onClick={()=>void action.run(()=>mutate(company.id,'PUT'),t('관심종목에 추가했습니다.','Company added to your watchlist.'))}>{ids.has(company.id)?t('추가됨','Added'):t('+ 추가','+ Add')}</button></div>)}</div>{catalog.data&&!catalog.loading&&!catalog.data.length&&<PcEmpty title={t('검색 결과가 없습니다.','No matching companies.')}/>}</PcModal>}
- </div>;
+ <SourceOverview/></div>;
 }
 export {DesktopWatchlist};

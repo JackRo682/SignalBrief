@@ -13,6 +13,12 @@ describe('workspace contracts and deterministic presentation',()=>{
  it('validates the actual default preferences',()=>expect(preferenceValue.parse(defaults)).toEqual(defaults));
  it.each([{daily_cap:0},{daily_cap:101},{daily_cap:1.5},{font_scale:4},{quiet_start:'24:00'},{quiet_end:'2:4'},{locale:'xx'},{history_enabled:'true'},{muted_companies:['wrong']},{bio:'x'.repeat(161)}])('rejects invalid preference %j',patch=>expect(preferenceValue.safeParse({...defaults,...patch}).success).toBe(false));
  it.each([{user_id:id},{admin:true},{service_key:'not-a-secret'}])('rejects caller-selected identity in a preferences payload %j',p=>expect(workspaceRequest.safeParse({action:'preferences',p}).success).toBe(false));
+ it('accepts scoped source reads and rejects caller-selected identities',()=>{
+  expect(workspaceRequest.parse({action:'source_overview',p:{}}).action).toBe('source_overview');
+  for(const p of [{user_id:id},{company_id:id},{admin:true}])expect(workspaceRequest.safeParse({action:'source_overview',p}).success).toBe(false);
+  expect(workspaceRequest.parse({action:'company_lookup',p:{q:'삼전',market:'KRX',limit:100}}).action).toBe('company_lookup');
+  for(const p of [{limit:101},{q:'x'.repeat(101)},{user_id:id}])expect(workspaceRequest.safeParse({action:'company_lookup',p}).success).toBe(false);
+ });
  it('rejects arbitrary actions',()=>expect(workspaceRequest.safeParse({action:'execute_sql',p:{}}).success).toBe(false));
  it('bounds search and pagination',()=>{for(const p of [{q:'x'.repeat(101)},{offset:1001},{limit:51},{days:-1},{sort:'random'}])expect(workspaceRequest.safeParse({action:'catalog',p}).success).toBe(false);});
  it('has exact source lookup distinct from paginated catalog',()=>expect(workspaceRequest.parse({action:'resource',p:{id,kind:'filing'}}).action).toBe('resource'));
