@@ -1,6 +1,6 @@
 import {z} from 'zod';
 
-export const newsTopics = ['증시', '삼성전자', 'SK하이닉스', '현대자동차', '네이버', '카카오', 'LG에너지솔루션'] as const;
+export const newsTopics = ['증시', '삼성전자', 'SK하이닉스', '현대자동차', '네이버', '카카오', 'LG에너지솔루션', '애플', '마이크로소프트', '엔비디아', '테슬라'] as const;
 export const newsTopic = z.enum(newsTopics);
 const sourceUrl = z.string().url().refine(value => {
   const url = new URL(value);

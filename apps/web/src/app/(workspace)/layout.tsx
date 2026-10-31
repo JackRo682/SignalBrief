@@ -6,7 +6,7 @@ import MobileShell from '@/mobile/shell';
 import {useMobileViewport} from '@/mobile/responsive';
 import ResearchShell from '@/research/shell';
 import {DesktopShell} from '@/desktop/shell';
-export default function WorkspaceLayout({children}:{children:React.ReactNode}){
+function LegacyWorkspaceLayout({children}:{children:React.ReactNode}){
  const path=usePathname();
  const mobile=useMobileViewport();
  if(mobile===null)return null;
@@ -19,3 +19,7 @@ export default function WorkspaceLayout({children}:{children:React.ReactNode}){
 const reference=["/today","/watchlist","/portfolio","/onboarding","/timeline","/questions","/calendar","/alerts","/ops"].includes(path)||/^\/(companies|events)\/[^/]+$/.test(path);
  return reference||/^\/companies\/[^/]+\/timeline$/.test(path)?<>{children}</>:<AppShell>{children}</AppShell>;
 }
+
+import {ResearchScope} from '@/mvp/scope';
+import {researchMvp} from '@/lib/release-scope';
+export default function WorkspaceLayout({children}:{children:React.ReactNode}){const path=usePathname();return <ResearchScope value={researchMvp&&!path.startsWith('/ops')}><LegacyWorkspaceLayout>{children}</LegacyWorkspaceLayout></ResearchScope>;}

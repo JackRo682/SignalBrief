@@ -1,0 +1,12 @@
+'use client';
+import {useEffect,useState} from 'react';
+import {newsResponse,type NewsResponse} from '@/lib/news-contract';
+import {usePrefs} from '@/workspace/preferences';
+export const companyNewsQueries:Record<string,string>={'005930':'삼성전자','000660':'SK하이닉스','005380':'현대자동차',AAPL:'애플',MSFT:'마이크로소프트',NVDA:'엔비디아',TSLA:'테슬라'};
+export function CompanyNews({ticker}:{ticker:string}){
+ const {text:t,date}=usePrefs(),query=companyNewsQueries[ticker],scope=query??ticker;
+ const [state,setState]=useState<{scope:string;data:NewsResponse|null;error:boolean}>({scope:'',data:null,error:false}),[revision,setRevision]=useState(0);
+ useEffect(()=>{if(!query)return;const ctrl=new AbortController();let active=true;fetch('/api/news?q='+encodeURIComponent(query),{cache:'no-store',signal:AbortSignal.any([ctrl.signal,AbortSignal.timeout(25000)])}).then(async r=>{if(!r.ok)throw new Error();return newsResponse.parse(await r.json());}).then(data=>{if(data.query!==query)throw new Error();if(active)setState({scope,data,error:false});}).catch(()=>{if(active)setState({scope,data:null,error:true});});return()=>{active=false;ctrl.abort();};},[query,scope,revision]);
+ const current=state.scope===scope?state:null;
+ return <section className="mv-panel"><header><h2>{t('기업 뉴스','Company news')} · {query??ticker}</h2><button onClick={()=>{setState({scope:'',data:null,error:false});setRevision(v=>v+1);}} disabled={!query}>{t('새로고침','Refresh')}</button></header><p className="mv-muted">{t('네이버 뉴스 검색 결과입니다. 공시 원문과 검토된 AI 분석은 공시 및 분석 탭에서 확인하세요.','NAVER news-search results. Original disclosures and reviewed AI analyses are in the disclosures tab.')}</p>{!query?<p>{t('연결된 뉴스 검색어가 없습니다.','No connected news query.')}</p>:!current?<p role="status">{t('뉴스를 불러오는 중…','Loading news…')}</p>:current.error?<p role="alert">{t('뉴스를 불러오지 못했습니다. 새로고침하여 다시 시도하세요.','News could not be loaded. Refresh to retry.')}</p>:<><div className="mv-records">{current.data?.items.map((item,i)=><article key={item.link+i}><div className="mv-record-meta"><span>{new URL(item.originalLink??item.link).hostname}</span><time>{date(item.publishedAt)}</time></div><a className="mv-record-title" href={item.originalLink??item.link} target="_blank" rel="noopener noreferrer">{item.title} ↗</a></article>)}</div>{!current.data?.items.length&&<p>{t('검색된 기사가 없습니다.','No matching articles.')}</p>}<small>{t('조회 시각','Retrieved')}: {date(current.data?.retrievedAt??null)}</small></>}<p className="mv-muted">NAVER™ · {t('기사 권리는 각 언론사에 있습니다.','Article rights belong to their publishers.')}</p></section>;
+}
