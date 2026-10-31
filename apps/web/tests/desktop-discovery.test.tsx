@@ -1,10 +1,10 @@
 import {pageDataCache} from '../src/lib/page-data-cache';
 import {cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
-import {DesktopExplore, DesktopSearchResults} from '../src/desktop/search';
-import DesktopWatchlist from '../src/desktop/watchlist';
+import {DesktopExplore, DesktopSearchResults} from '../src/desktop/search-legacy';
+import DesktopWatchlist from '../src/desktop/watchlist-legacy';
 import {WorkspacePreferences} from '../src/workspace/preferences';
-import {defaults, type Preferences, type Resource} from '../src/workspace/contracts';
+import {defaults, sourceOverviewSchema, type Preferences, type Resource} from '../src/workspace/contracts';
 import type {Company} from '../src/lib/contracts';
 
 // Synthetic responses are isolated UI test fixtures and never reach production.
@@ -28,6 +28,7 @@ beforeEach(()=>{
  mocks.workspace.mockImplementation(async(_token,req)=>{
   if(req.action==='preferences')return {value:{...preferences},version};
   if(req.action==='preferences_save'){if(failPreferences)throw new Error('Synthetic preference write failed');expect(req.p.version).toBe(version);preferences={...preferences,...req.p.value};version++;return {value:{...preferences},version};}
+  if(req.action==='source_overview')return sourceOverviewSchema.parse({companies:watched.length,following_count:watched.length,scope:'following',fallback_to_all:false,filing_count:0,published_count:0,filings:[],analyses:[],historical_events:[],calendar:[],historical_calendar:[],monitoring:[],saved_count:0,unread_count:0});
   if(req.action==='catalog'){const resources=[company,{...event,is_saved:saved},filing],items=resources.filter(item=>(!req.p.kind||item.kind===req.p.kind||req.p.kind==='document'&&item.kind==='filing')&&(!req.p.market||item.market===req.p.market));return {items:items.slice(req.p.offset??0,(req.p.offset??0)+(req.p.limit??50)),total:items.length,counts:{company:1,event:1,filing:1},markets:['NASDAQ','NYSE'],next_offset:null};}
   if(req.action==='searches')return [...searches];
   if(req.action==='search_delete'){if(failSearch)throw new Error('Synthetic history write failed');searches=searches.filter(item=>item.query!==req.p.query);return {deleted:true};}

@@ -2,19 +2,19 @@
 > signalbrief-web@0.1.0 build
 > next build
 
-▲ Next.js 16.3.8 (Turbopack)
-✓ Running next.config.ts took 19ms
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.ts took 24ms
 
   Creating an optimized production build ...
-✓ Compiled successfully in 175ms
+✓ Compiled successfully in 526ms
   Running TypeScript ...
-  Finished TypeScript in 1537ms ...
+  Finished TypeScript in 2.8s ...
   Collecting page data using 8 workers ...
-  Generating static pages using 8 workers (0/28) ...
-  Generating static pages using 8 workers (7/28) 
-  Generating static pages using 8 workers (14/28) 
-  Generating static pages using 8 workers (21/28) 
-✓ Generating static pages using 8 workers (28/28) in 374ms
+  Generating static pages using 8 workers (0/45) ...
+  Generating static pages using 8 workers (11/45)
+  Generating static pages using 8 workers (22/45)
+  Generating static pages using 8 workers (33/45)
+✓ Generating static pages using 8 workers (45/45) in 549ms
   Finalizing page optimization ...
 
 Route (app)
@@ -24,32 +24,65 @@ Route (app)
 ├ ○ /alerts
 ├ ƒ /api/[...path]
 ├ ƒ /api/auth-config
+├ ƒ /api/billing/checkout
+├ ƒ /api/billing/export
+├ ƒ /api/billing/status
+├ ƒ /api/billing/webhook
+├ ƒ /api/company-profile
+├ ƒ /api/internal/dart
 ├ ƒ /api/market
+├ ƒ /api/news
 ├ ƒ /api/public-stats
 ├ ƒ /api/release
+├ ƒ /api/research
 ├ ƒ /api/us/[...path]
+├ ƒ /api/workspace
 ├ ○ /auth/callback
+├ ○ /billing
 ├ ○ /calendar
 ├ ƒ /companies/[id]
+├ ƒ /companies/[id]/timeline
 ├ ○ /customers
 ├ ○ /disclaimer
+├ ƒ /documents/[id]
+├ ƒ /email/unsubscribe
 ├ ƒ /events/[id]
+├ ○ /explore
 ├ ○ /features
 ├ ○ /forgot-password
+├ ƒ /help
 ├ ○ /login
+├ ○ /more
+├ ○ /news
 ├ ○ /onboarding
 ├ ○ /ops
+├ ○ /ops/analytics
 ├ ƒ /ops/documents/[id]
+├ ○ /ops/evaluations
+├ ƒ /ops/evaluations/datasets/[id]
+├ ƒ /ops/evaluations/runs/[id]
+├ ○ /ops/experiments
+├ ƒ /ops/experiments/[id]
+├ ○ /ops/quality
+├ ○ /ops/reliability
+├ ○ /ops/reports
 ├ ƒ /ops/runs/[id]
 ├ ○ /portfolio
 ├ ○ /pricing
 ├ ○ /privacy
-├ ○ /questions
+├ ƒ /questions
 ├ ○ /reset-password
+├ ○ /saved
+├ ƒ /search
 ├ ○ /settings
+├ ○ /settings/account
+├ ○ /settings/appearance
+├ ○ /settings/notifications
+├ ○ /settings/security
 ├ ○ /signup
 ├ ○ /sources
 ├ ○ /status
+├ ƒ /study/[id]
 ├ ○ /terms
 ├ ○ /timeline
 ├ ○ /today

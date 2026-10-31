@@ -2,8 +2,8 @@ import '@testing-library/jest-dom/vitest';
 import {cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {defaults, type Resource} from '../src/workspace/contracts';
-import MobileExplore, {MobileSearchResults} from '../src/mobile/search';
-import MobileCompany from '../src/mobile/company';
+import MobileExplore, {MobileSearchResults} from '../src/mobile/search-legacy';
+import MobileCompany from '../src/mobile/company-legacy';
 
 // These synthetic responses are isolated UI regressions, never production data.
 const mocks = vi.hoisted(() => ({quoteReason: "fixture_unavailable", workspace: vi.fn(), request: vi.fn(), push: vi.fn()}));

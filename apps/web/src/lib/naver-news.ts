@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {newsResponse, type NewsResponse, type newsTopics} from './news-contract';
+import {newsResponse, newsQuery, type NewsResponse} from './news-contract';
 
 const providerResponse = z.object({items: z.array(z.object({
   title: z.string().min(1).max(5000), link: z.string().url(),
@@ -20,7 +20,8 @@ export class NewsError extends Error {
   constructor(public status:number, public code:string) {super(code);}
 }
 
-export async function loadNaverNews(query: typeof newsTopics[number]): Promise<NewsResponse> {
+export async function loadNaverNews(query: z.infer<typeof newsQuery>): Promise<NewsResponse> {
+  if(!newsQuery.safeParse(query).success)throw new NewsError(400,'invalid_news_query');
   const id = process.env.NAVER_NEWS_CLIENT_ID, secret = process.env.NAVER_NEWS_CLIENT_SECRET;
   if (!id || !secret) throw new NewsError(503,'news_not_configured');
   const url = new URL('https://naverapihub.apigw.ntruss.com/search/v1/news');

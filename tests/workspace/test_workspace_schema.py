@@ -41,7 +41,7 @@ def db():
         CREATE ROLE authenticated NOLOGIN;
         CREATE ROLE service_role NOLOGIN BYPASSRLS;
         CREATE SCHEMA auth;
-        CREATE TABLE auth.users(id uuid PRIMARY KEY,email text,raw_user_meta_data jsonb);
+        CREATE TABLE auth.users(id uuid PRIMARY KEY,email text,raw_user_meta_data jsonb,email_confirmed_at timestamptz);
         CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS
         $$ SELECT nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
         CREATE TABLE auth.mfa_factors(id uuid,user_id uuid,status text);
@@ -82,9 +82,21 @@ def db():
                 # Replay the actual deployed calendar schema, not a hand-built column stub.
                 calendar = ROOT / 'supabase/migrations/20261019070909_official_calendar_ingestion.sql'
                 cursor.execute(calendar.read_text(), prepare=False)
+            if migration.name == '20261031125310_signed_in_content_workspace.sql':
+                # Customer excerpt publication depends on the deployed DART review tables.
+                # Replay their real DDL; this does not schedule or ingest any document.
+                cursor.execute((ROOT / 'docs/sql/dart-documents.sql').read_text(), prepare=False)
+            if migration.name == '20261031132007_email_readiness_gate.sql':
+                # Replay the deployed outbox/preference functions, without scheduling jobs.
+                cursor.execute('CREATE SCHEMA extensions; CREATE EXTENSION pgcrypto WITH SCHEMA extensions;',
+                               prepare=False)
+                for name in ('delivery.sql', 'daily-digest.sql'):
+                    cursor.execute((ROOT / 'docs/sql' / name).read_text(), prepare=False)
+                scheduling = (ROOT / 'docs/sql/notification-schedule.sql').read_text()
+                cursor.execute(scheduling.split('SELECT cron.schedule(')[0], prepare=False)
             cursor.execute(migration.read_text(), prepare=False)
     seed = """
-        INSERT INTO auth.users VALUES (:a,'a@example.invalid','{"name":"Synthetic A"}'),(:b,'b@example.invalid','{"name":"Synthetic B"}');
+        INSERT INTO auth.users(id,email,raw_user_meta_data) VALUES (:a,'a@example.invalid','{"name":"Synthetic A"}'),(:b,'b@example.invalid','{"name":"Synthetic B"}');
         INSERT INTO public.companies(id,name,ticker,market,provider,provider_company_id,is_demo,created_at)
         VALUES (:c,'Synthetic Company','TEST','NASDAQ','sec','0000000001',false,now()),
         ('20000000-0000-4000-8000-000000000002','Excluded demo','DEMO','NASDAQ','sec','0000000002',true,now());
@@ -817,3 +829,80 @@ def test_ordinary_notifications_honor_mute_quiet_hours_and_daily_cap(own):
     assert publish() is None
     rpc(own, 'notification_save', {'realtime_enabled': False})
     assert publish() is None
+
+
+def test_customer_projection_exposes_approved_excerpts_only_and_preserves_owner_saves(own):
+    result = {
+        'validation': 'quote_substring_and_numeric_check',
+        'source_url': 'https://www.sec.gov/Archives/edgar/data/1/test.htm',
+        'normalized_excerpt': 'Synthetic quoted passage from the archived fixture.',
+        'claims': [{'text': 'Synthetic supported claim', 'quote': 'Synthetic quoted passage'}],
+        'uncertainty': 'Synthetic excerpt only',
+    }
+    own.exec_driver_sql('RESET ROLE')
+    own.execute(text("""INSERT INTO public.us_analyses
+        (filing_id,status,model,source_sha256,result)
+        VALUES (cast(:f AS uuid),'needs_review','synthetic',repeat('0',64),cast(:r AS jsonb))"""),
+                {'f': F, 'r': json.dumps(result)})
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+
+    def customer(action, payload=None):
+        return own.execute(text('SELECT public.sb_customer_workspace(:a,cast(:p AS jsonb))'),
+                           {'a': action, 'p': json.dumps(payload or {})}).scalar()
+
+    assert customer('source_overview')['analyses'] == []
+    own.exec_driver_sql('RESET ROLE')
+    own.execute(text("UPDATE public.us_analyses SET status='approved' WHERE filing_id=cast(:f AS uuid)"),
+                {'f': F})
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+    overview = customer('source_overview')
+    assert overview['scope'] == 'all' and overview['fallback_to_all'] is True
+    assert [row['id'] for row in overview['analyses']] == [F]
+    customer('save', {'id': F, 'kind': 'us_analysis', 'saved': True})
+    customer('save', {'id': F, 'kind': 'us_analysis', 'saved': True})
+    assert customer('saved_list')['counts']['analysis'] == 1
+    own.execute(text("SELECT set_config('request.jwt.claim.sub',:u,true)"), {'u': B})
+    own.exec_driver_sql('SELECT public.sb_initialize_profile()')
+    assert customer('saved_list')['counts']['analysis'] == 0
+    own.execute(text("SELECT set_config('request.jwt.claim.sub',:u,true)"), {'u': A})
+    assert own.exec_driver_sql("SELECT prosecdef FROM pg_proc WHERE oid='public.sb_customer_workspace(text,jsonb)'::regprocedure").scalar() is False
+    assert own.exec_driver_sql("SELECT has_function_privilege('anon','public.sb_customer_workspace(text,jsonb)','EXECUTE')").scalar() is False
+    own.exec_driver_sql('RESET ROLE')
+    own.execute(text("UPDATE public.us_analyses SET status='rejected' WHERE filing_id=cast(:f AS uuid)"),
+                {'f': F})
+    own.exec_driver_sql('SET LOCAL ROLE authenticated')
+    assert customer('saved_list')['items'] == []
+    assert customer('document_detail', {'id': F, 'kind': 'filing'})['approved_analyses'] == []
+
+
+def test_excerpt_notifications_honor_quiet_hours_and_user_local_day_cap(own):
+    user_action(own, 'watch_add', {'company_id': C})
+    rpc(own, 'notification_save', {'realtime_enabled': True, 'notify_min_score': 0})
+    rpc(own, 'preferences_save', {'version': 0, 'value': {
+        'quiet_enabled': True, 'quiet_start': '00:00', 'quiet_end': '00:00',
+    }})
+    own.exec_driver_sql('RESET ROLE')
+    own.execute(text("""INSERT INTO us_analyses(filing_id,status,model,source_sha256,result)
+        VALUES(cast(:f AS uuid),'approved','synthetic',repeat('0',64),cast(:r AS jsonb))"""),
+                {'f': F, 'r': json.dumps({
+                    'validation': 'quote_substring_and_numeric_check',
+                    'source_url': 'https://www.sec.gov/Archives/edgar/data/1/test.htm',
+                    'normalized_excerpt': 'Synthetic quoted passage.',
+                    'claims': [{'text': 'Synthetic fact', 'quote': 'Synthetic quoted passage'}],
+                })})
+    assert own.exec_driver_sql('SELECT count(*) FROM content_notifications').scalar() == 0
+    own.execute(text("UPDATE workspace_preferences SET value=value||cast(:v AS jsonb) WHERE user_id=:u"),
+                {'u': A, 'v': json.dumps({'quiet_enabled': False, 'timezone': 'Asia/Seoul', 'daily_cap': 1})})
+    own.execute(text("UPDATE us_analyses SET status='needs_review' WHERE filing_id=cast(:f AS uuid)"), {'f': F})
+    own.execute(text("UPDATE us_analyses SET status='approved' WHERE filing_id=cast(:f AS uuid)"), {'f': F})
+    assert own.exec_driver_sql('SELECT count(*) FROM content_notifications').scalar() == 1
+    own.exec_driver_sql("UPDATE content_notifications SET created_at='2026-01-01 15:30Z'")
+    allowed = text("SELECT app_private.sb_app_notification_allowed(:u,:c,'2026-01-02 01:00Z')")
+    assert own.execute(allowed, {'u': A, 'c': C}).scalar() is False
+    own.exec_driver_sql("UPDATE content_notifications SET created_at='2026-01-01 14:30Z'")
+    assert own.execute(allowed, {'u': A, 'c': C}).scalar() is True
+    own.exec_driver_sql("UPDATE content_notifications SET created_at='2026-01-02 15:30Z'")
+    assert own.execute(allowed, {'u': A, 'c': C}).scalar() is True
+    own.execute(text("UPDATE workspace_preferences SET value=value||cast(:v AS jsonb) WHERE user_id=:u"),
+                {'u': A, 'v': json.dumps({'timezone': 'Invalid/Zone'})})
+    assert own.execute(allowed, {'u': A, 'c': C}).scalar() is False

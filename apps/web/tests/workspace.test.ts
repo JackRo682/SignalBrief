@@ -1,6 +1,6 @@
 // @vitest-environment node
 import {describe,it,expect,vi,beforeEach,afterEach} from 'vitest';
-import {workspaceRequest,preferenceValue,defaults,chartPoints,safeSource,resourceHref,resourceSchema,documentDetailSchema} from '../src/workspace/contracts';
+import {workspaceRequest,preferenceValue,defaults,chartPoints,safeSource,resourceHref,resourceSchema,documentDetailSchema,sourceOverviewSchema} from '../src/workspace/contracts';
 import {searchHelp,helpArticles as articles} from '../src/workspace/help-content';
 import {POST} from '../src/app/api/workspace/route';
 const mock=vi.hoisted(()=>({getUser:vi.fn(),rpc:vi.fn(),createClient:vi.fn()}));
@@ -15,9 +15,14 @@ describe('workspace contracts and deterministic presentation',()=>{
  it.each([{user_id:id},{admin:true},{service_key:'not-a-secret'}])('rejects caller-selected identity in a preferences payload %j',p=>expect(workspaceRequest.safeParse({action:'preferences',p}).success).toBe(false));
  it('accepts scoped source reads and rejects caller-selected identities',()=>{
   expect(workspaceRequest.parse({action:'source_overview',p:{}}).action).toBe('source_overview');
-  for(const p of [{user_id:id},{company_id:id},{admin:true}])expect(workspaceRequest.safeParse({action:'source_overview',p}).success).toBe(false);
+  expect(workspaceRequest.parse({action:'source_overview',p:{company_id:id,scope:'all',days:0}}).p).toEqual({company_id:id,scope:'all',days:0});
+  for(const p of [{user_id:id},{company_id:'invalid'},{scope:'private'},{admin:true}])expect(workspaceRequest.safeParse({action:'source_overview',p}).success).toBe(false);
   expect(workspaceRequest.parse({action:'company_lookup',p:{q:'삼전',market:'KRX',limit:100}}).action).toBe('company_lookup');
   for(const p of [{limit:101},{q:'x'.repeat(101)},{user_id:id}])expect(workspaceRequest.safeParse({action:'company_lookup',p}).success).toBe(false);
+ });
+ it('keeps missing customer totals unavailable instead of fabricating successful zeros',()=>{
+  const value=sourceOverviewSchema.parse({companies:0,filing_count:0,published_count:0,filings:[],historical_events:[],calendar:[]});
+  expect(value.following_count).toBeUndefined();expect(value.saved_count).toBeUndefined();expect(value.unread_count).toBeUndefined();
  });
  it('rejects arbitrary actions',()=>expect(workspaceRequest.safeParse({action:'execute_sql',p:{}}).success).toBe(false));
  it('bounds search and pagination',()=>{for(const p of [{q:'x'.repeat(101)},{offset:1001},{limit:51},{days:-1},{sort:'random'}])expect(workspaceRequest.safeParse({action:'catalog',p}).success).toBe(false);});
@@ -80,7 +85,10 @@ describe('authenticated workspace BFF',()=>{
  });
  it('dispatches document-detail reads only to their reviewed projection RPC',async()=>{
   const p={id,kind:'document',section_offset:12};mock.rpc.mockResolvedValue({data:{sections:[],sections_total:12,next_section_offset:null},error:null});
-  const r=await POST(req({action:'document_detail',p}));expect(r.status).toBe(200);expect(mock.rpc).toHaveBeenCalledExactlyOnceWith('sb_document_detail',{p});expect(r.headers.get('Cache-Control')).toContain('private, no-store');
+  const r=await POST(req({action:'document_detail',p}));expect(r.status).toBe(200);expect(mock.rpc).toHaveBeenCalledExactlyOnceWith('sb_customer_workspace',{action:'document_detail',p});expect(r.headers.get('Cache-Control')).toContain('private, no-store');
+ });
+ it.each([{action:'source_overview',p:{scope:'all'}},{action:'catalog',p:{kind:'analysis',source:'sec'}},{action:'save',p:{kind:'us_analysis',id,saved:true}},{action:'content_notifications',p:{}},{action:'content_notification_read',p:{all:true}}])('dispatches $action to the customer publication projection',async value=>{
+  const response=await POST(req(value));expect(response.status).toBe(200);expect(mock.rpc).toHaveBeenCalledExactlyOnceWith('sb_customer_workspace',value);
  });
  it('preserves hidden-document denial without exposing provider metadata',async()=>{
   mock.rpc.mockResolvedValue({data:null,error:{code:'PT404',message:'resource_not_available',details:'private provider content'}});

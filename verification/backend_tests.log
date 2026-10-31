@@ -1,14 +1,96 @@
-........................................................................ [ 29%]
-..................................s..................................... [ 58%]
-................................................s....................... [ 88%]
-.............................                                            [100%]
+.................................................s..........ssssssssssss [ 15%]
+ssssssssssssssssssssssssss...sssssssssss..sssssssssss................... [ 31%]
+........................................................................ [ 46%]
+..s..................................................................... [ 62%]
+.........................sssssssss...................................... [ 78%]
+...................................................sssssssssssssssssssss [ 93%]
+sssssssssssssssssssssssssssss                                            [100%]
 =============================== warnings summary ===============================
-../../../../root/.local/lib/python3.12/site-packages/starlette/testclient.py:45
-  /root/.local/lib/python3.12/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+../../../../root/.local/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /root/.local/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+../../../../root/.local/lib/python3.12/site-packages/starlette/testclient.py:53
+  /root/.local/lib/python3.12/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
     _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== short test summary info ============================
+SKIPPED [1] tests/test_calendar_ingestion.py:20: Disposable calendar PostgreSQL URL not supplied
+SKIPPED [18] tests/test_career_sql.py:48: Disposable PostgreSQL required; SQL exercises were NOT executed
+SKIPPED [18] tests/test_career_sql.py:85: Disposable PostgreSQL required; SQL exercises were NOT executed
+SKIPPED [1] tests/test_career_sql.py:106: Disposable PostgreSQL required; SQL exercises were NOT executed
+SKIPPED [1] tests/test_career_sql.py:117: Disposable PostgreSQL required; SQL exercises were NOT executed
+SKIPPED [1] tests/test_daily_digest_sql.py:32: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_daily_digest_sql.py:49: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_daily_digest_sql.py:62: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_daily_digest_sql.py:72: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_daily_digest_sql.py:83: Requires disposable PostgreSQL
+SKIPPED [4] tests/test_daily_digest_sql.py:91: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_daily_digest_sql.py:99: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_daily_digest_sql.py:111: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_email_readiness_sql.py:42: Requires disposable PostgreSQL
+SKIPPED [7] tests/test_email_readiness_sql.py:68: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_email_readiness_sql.py:96: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_email_readiness_sql.py:115: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_email_readiness_sql.py:130: Requires disposable PostgreSQL
 SKIPPED [1] tests/test_hosted_schema.py:27: No disposable hosted-schema PostgreSQL database supplied
 SKIPPED [1] tests/test_migrations.py:96: SB_TEST_POSTGRES_URL not supplied; PostgreSQL/RLS not verified in this environment
-243 passed, 2 skipped, 1 warning in 8.40s
+SKIPPED [1] tests/test_provider_delivery_sql.py:77: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_provider_delivery_sql.py:95: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_provider_delivery_sql.py:115: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_provider_delivery_sql.py:135: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_provider_delivery_sql.py:149: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_provider_delivery_sql.py:161: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_provider_delivery_sql.py:186: Requires disposable PostgreSQL
+SKIPPED [1] tests/test_provider_delivery_sql.py:203: Requires disposable PostgreSQL
+SKIPPED [1] tests/workspace/test_billing.py:11: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_billing.py:22: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_research.py:55: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_research.py:65: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_research.py:95: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_research.py:113: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_research.py:129: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_research.py:157: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_research.py:168: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_research.py:195: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_source_visibility.py:11: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_source_visibility.py:30: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:133: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:224: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:252: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:263: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:275: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:286: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:313: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:331: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [2] tests/workspace/test_workspace_schema.py:346: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:360: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:385: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:398: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:410: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:419: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:435: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:454: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:471: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:494: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:536: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:573: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:588: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:601: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:608: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:619: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:626: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:658: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:682: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:710: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:717: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:728: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:745: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:759: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:769: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:787: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:799: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:834: Requires a disposable loopback workspace PostgreSQL database
+SKIPPED [1] tests/workspace/test_workspace_schema.py:878: Requires a disposable loopback workspace PostgreSQL database
+340 passed, 121 skipped, 2 warnings in 21.83s

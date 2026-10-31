@@ -2,7 +2,7 @@ import {pageDataCache} from '../src/lib/page-data-cache';
 import '@testing-library/jest-dom/vitest';
 import {cleanup,fireEvent,render,screen,waitFor,within} from '@testing-library/react';
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
-import {DesktopToday} from '../src/desktop/today';
+import {DesktopToday} from '../src/desktop/today-legacy';
 import {defaults} from '../src/workspace/contracts';
 import {companies,events,fixtureNow} from '../e2e/mobile-fixture';
 import {type Company} from '../src/lib/contracts';

@@ -1,0 +1,227 @@
+import {test,expect,type Page,type TestInfo} from '@playwright/test';
+import {companyId,companies} from './mobile-fixture';
+import {researchWorkspaceFixture,filing,approved,sourceId,sourceQuote,sourceUrl,upcoming,historical,type ResearchFixture} from './research-workspace-fixture';
+
+test.setTimeout(180000);
+
+const main=(page:Page)=>page.locator('main');
+async function navigate(page:Page,info:TestInfo,label:'Home'|'Companies'|'Watchlist'|'Calendar'|'Saved'|'Notifications'){
+ if(info.project.name==='mobile'){
+  const nav=page.getByRole('navigation',{name:'Mobile navigation'});
+  if(label==='Saved'||label==='Notifications'||label==='Calendar'){
+   await nav.getByRole('link',{name:'More',exact:true}).click();
+   await main(page).getByRole('link',{name:label==='Saved'?'Saved items':label,exact:true}).click();
+  }else await nav.getByRole('link',{name:label,exact:true}).click();
+ }else if(label==='Notifications')await page.locator('.pc-topbar').getByRole('link',{name:/^Notifications/}).click();
+ else await page.getByRole('navigation',{name:'Main navigation'}).getByRole('link',{name:label,exact:true}).click();
+}
+async function screenshot(page:Page,info:TestInfo,name:string){
+ await expect(page.locator('.pc-loading,.ws-loading,.m-loading')).toHaveCount(0);
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth),'The workspace must fit the viewport').toBeLessThanOrEqual(1);
+ await page.screenshot({path:`../../verification/research-workspace-${info.project.name}-${name}.png`,fullPage:true,animations:'disabled'});
+}
+function expectClean(fixture:ResearchFixture){
+ expect(fixture.blockedRequests,'No quotes, indices, portfolio valuation or TradingView requests').toEqual([]);
+ expect(fixture.state.unexpected,'Every API request is understood by the signed-in fixture').toEqual([]);
+ expect(fixture.state.runtimeErrors,'No hydration or React runtime errors').toEqual([]);
+}
+
+test('signed-in research journey connects company tabs, evidence, saved items and monitoring',async({page},info)=>{
+ const fixture=await researchWorkspaceFixture(page);
+ await page.goto('/today');
+ await expect(page.getByRole('heading',{name:'Follow companies. Read the evidence.'})).toBeVisible();
+ const metrics=page.getByRole('region',{name:'Your monitoring overview'});
+ for(const label of ['Companies followed','Unread alerts','Saved items'])await expect(metrics.getByRole('link',{name:new RegExp(label)}).locator('strong')).toHaveText('0');
+ await expect(page.getByText('You are viewing all supported companies because you have not followed any yet.')).toBeVisible();
+ await expect(page.getByRole('button',{name:'All supported companies',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect(page.getByRole('button',{name:'Following',exact:true})).toBeDisabled();
+ await expect(page.locator('#disclosures').getByRole('link',{name:filing.title,exact:true})).toBeVisible();
+ await expect(page.locator('#changes').getByRole('link',{name:approved.title,exact:true})).toBeVisible();
+ await expect(page.locator('#changes')).toContainText('Reviewed:');
+ await expect(page.locator('#changes time')).toHaveAttribute('datetime',filing.published_at!);
+ await expect(page.getByRole('link',{name:upcoming.title,exact:true})).toBeVisible();
+ await expect(page.getByRole('link',{name:historical.title,exact:true})).toBeHidden();
+ await expect(page.getByRole('link',{name:'Synthetic company news article',exact:true})).toBeVisible();
+ await screenshot(page,info,'home');
+
+ await page.getByRole('textbox',{name:'Search company name or identifier'}).fill('NVDA');
+ await page.getByRole('button',{name:'Find company',exact:true}).click();
+ await expect(page).toHaveURL(/\/search\?kind=company&q=NVDA$/);
+ await expect(page.getByRole('heading',{name:'Search results',exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Approved analyses',exact:true}).click();
+ await expect(page.locator('.sb-monitor-result-list').getByRole('link',{name:approved.title,exact:true})).toBeVisible();
+ await page.getByRole('combobox',{name:'Source',exact:true}).selectOption('dart');
+ await expect(page.getByText('No records match these filters.',{exact:true})).toBeVisible();
+ await page.getByRole('combobox',{name:'Source',exact:true}).selectOption('sec');
+ await expect(page.locator('.sb-monitor-result-list').getByRole('link',{name:approved.title,exact:true})).toBeVisible();
+ await page.getByRole('combobox',{name:'Source period',exact:true}).selectOption('30');
+ await expect(page.getByText('No records match these filters.',{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Reset filters',exact:true}).click();
+ await expect(page.getByRole('combobox',{name:'Source period',exact:true})).toHaveValue('0');
+ await expect(page.getByRole('combobox',{name:'Source',exact:true})).toHaveValue('');
+ await page.getByRole('button',{name:'Companies',exact:true}).click();
+ await page.locator('.sb-monitor-result-list').getByRole('link',{name:companies[0].name,exact:true}).click();
+ await expect(page).toHaveURL(new RegExp(`/companies/${companyId}$`));
+ const company=page.getByTestId('company-workspace');
+ await expect(company.getByRole('heading',{name:companies[0].name,exact:true})).toBeVisible();
+ await expect(company.getByRole('tab')).toHaveText(['Overview','Disclosures','Analyses','News','Events']);
+ await expect(company.getByRole('heading',{name:'Verified source facts'})).toBeVisible();
+ await expect(company).toContainText('45,000 USD million');
+ await expect(company.locator('a[href="https://www.nvidia.com/en-us/about-nvidia/"]')).toBeVisible();
+ await company.getByRole('button',{name:'Follow company',exact:true}).click();
+ await expect(company.getByRole('button',{name:'Following',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect.poll(()=>fixture.state.watched.has(companyId)).toBe(true);
+ await page.reload();
+ await expect(company.getByRole('button',{name:'Following',exact:true})).toHaveAttribute('aria-pressed','true');
+ await screenshot(page,info,'company');
+
+ await company.getByRole('tab',{name:'Disclosures',exact:true}).click();
+ await expect(company.getByRole('tabpanel')).toContainText(filing.title);
+ await company.getByRole('tab',{name:'News',exact:true}).click();
+ await expect(company.getByRole('tabpanel').getByRole('link',{name:'Synthetic company news article',exact:true})).toBeVisible();
+ expect(fixture.newsCompanyIds.at(-1)).toBe(companyId);
+ await expect(company.getByRole('tabpanel')).toContainText('Search query: 엔비디아');
+ await company.getByRole('tab',{name:'Events',exact:true}).click();
+ await expect(company.getByRole('tabpanel').getByRole('link',{name:upcoming.title,exact:true})).toBeVisible();
+ await expect(company.getByRole('tabpanel').getByRole('link',{name:historical.title,exact:true})).toBeHidden();
+ await company.getByRole('tabpanel').locator('summary').click();
+ await expect(company.getByRole('tabpanel').getByRole('link',{name:historical.title,exact:true})).toBeVisible();
+ await company.getByRole('tab',{name:'Analyses',exact:true}).click();
+ await expect(company.getByRole('tabpanel')).toContainText('Approved excerpt summary');
+ await company.getByRole('tabpanel').getByRole('link',{name:approved.title,exact:true}).click();
+ await expect(page).toHaveURL(new RegExp(`/documents/${sourceId}\\?kind=filing&analysis=us$`));
+ const evidence=page.getByRole('region',{name:'Approved disclosure summary'});
+ await expect(evidence.getByRole('heading',{name:'Approved source excerpt summary'})).toBeVisible();
+ await expect(evidence.getByText(sourceQuote,{exact:true})).toBeVisible();
+ await expect(evidence.getByRole('link',{name:/Open official source/})).toHaveAttribute('href',sourceUrl);
+ await expect(main(page)).not.toContainText('No published summary');
+ await expect(main(page).getByRole('heading',{name:'Key takeaways',exact:true})).toHaveCount(0);
+ await expect(page.getByRole('checkbox')).toHaveCount(0);
+ await page.locator('.rw-analysis-excerpt').getByRole('button',{name:`${approved.title} Save`,exact:true}).click();
+ await expect(page.locator('.rw-analysis-excerpt').getByRole('button',{name:`${approved.title} Unsave`,exact:true})).toHaveAttribute('aria-pressed','true');
+ expect(fixture.state.saved.has(`us_analysis:${sourceId}`)).toBe(true);
+ expect(fixture.state.saved.has(`filing:${sourceId}`)).toBe(false);
+ await page.reload();
+ await expect(evidence.getByText(sourceQuote,{exact:true})).toBeVisible();
+ await expect(page.locator('.rw-analysis-excerpt').getByRole('button',{name:`${approved.title} Unsave`,exact:true})).toHaveAttribute('aria-pressed','true');
+ await screenshot(page,info,'evidence');
+
+ await navigate(page,info,'Saved');
+ await expect(page.getByRole('heading',{name:'Saved / history',exact:true})).toBeVisible();
+ await expect(main(page).getByRole('link',{name:approved.title,exact:true})).toBeVisible();
+ await page.reload();
+ await expect(main(page).getByRole('link',{name:approved.title,exact:true})).toHaveAttribute('href',`/documents/${sourceId}?kind=filing&analysis=us`);
+ expect(fixture.state.saved.size).toBe(1);
+ await navigate(page,info,'Watchlist');
+ await expect(page.getByRole('heading',{name:'Watchlist',exact:true})).toBeVisible();
+ await expect(page.locator('.sb-monitor-card').getByRole('link',{name:filing.title,exact:true})).toBeVisible();
+ await expect(page.locator('.sb-monitor-card').getByRole('link',{name:approved.title,exact:true})).toBeVisible();
+ await screenshot(page,info,'watchlist');
+ await page.getByRole('button',{name:`${companies[0].name} unfollow`,exact:true}).click();
+ await expect(page.getByText('Follow your first company.',{exact:true})).toBeVisible();
+ await page.reload();
+ await expect(page.getByText('Follow your first company.',{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Add company',exact:true}).click();
+ const dialog=page.getByRole('dialog');
+ await dialog.getByRole('textbox',{name:'Company name or identifier',exact:true}).fill('NVDA');
+ await expect(dialog.getByRole('button',{name:'Follow',exact:true})).toHaveCount(1);
+ await dialog.getByRole('button',{name:'Follow',exact:true}).click();
+ await expect(dialog.getByRole('button',{name:'Following',exact:true})).toBeDisabled();
+ await dialog.getByRole('button',{name:'Close',exact:true}).click();
+ await page.reload();
+ await expect(page.getByText('Following 1 companies',{exact:true})).toBeVisible();
+ await navigate(page,info,'Calendar');
+ await expect(page.getByRole('heading',{name:'Calendar',exact:true})).toBeVisible();
+ await expect(main(page).getByRole('link',{name:upcoming.title,exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Historical',exact:true}).click();
+ await expect(main(page).getByRole('link',{name:historical.title,exact:true})).toBeVisible();
+ await expect(main(page).getByRole('link',{name:upcoming.title,exact:true})).toHaveCount(0);
+ await screenshot(page,info,'calendar');
+ await page.goto('/more');
+ await expect(page.getByRole('heading',{name:'More',exact:true})).toBeVisible();
+ for(const label of ['Calendar','Saved items','Notifications','Settings'])await expect(main(page).getByRole('link',{name:label,exact:true})).toBeVisible();
+ await screenshot(page,info,'more');
+ await page.goto('/settings/notifications');
+ await expect(page.getByRole('heading',{name:'Notification settings',exact:true})).toBeVisible();
+ await expect(page.getByRole('switch',{name:'Email alerts — unavailable',exact:true})).toBeDisabled();
+ await expect(page.getByRole('switch',{name:'Daily digest email',exact:true})).toBeDisabled();
+ await expect(page.getByText('Daily digest email is unavailable until delivery is configured and verified.',{exact:true})).toBeVisible();
+ expect(fixture.state.emailCalls.every(call=>call.method==='GET')).toBe(true);
+ await screenshot(page,info,'notification-settings');
+ await navigate(page,info,'Home');
+ await expect(page.getByRole('region',{name:'Your monitoring overview'}).getByRole('link',{name:/Companies followed/}).locator('strong')).toHaveText('1');
+ await expect(page.getByRole('region',{name:'Your monitoring overview'}).getByRole('link',{name:/Saved items/}).locator('strong')).toHaveText('1');
+ await expect(page.getByRole('button',{name:'Following',exact:true})).toHaveAttribute('aria-pressed','true');
+ await page.getByRole('button',{name:'All supported companies',exact:true}).click();
+ await expect(page.getByRole('button',{name:'All supported companies',exact:true})).toHaveAttribute('aria-pressed','true');
+ expect(fixture.state.calls.some(call=>call.action==='source_overview'&&call.p.scope==='all'&&!call.p.company_id)).toBe(true);
+ await page.goto(`/companies/${companyId}/timeline`);
+ await expect(main(page).getByText(companies[0].name,{exact:true}).first()).toBeVisible();
+ await expect(main(page)).not.toContainText('Current price');
+ await expect(page.locator('iframe[src*="tradingview"]')).toHaveCount(0);
+ await page.goto('/portfolio');
+ await expect(page.getByRole('heading',{name:'This feature is currently unavailable.',exact:true})).toBeVisible();
+ await expect(main(page)).toContainText('Your existing records are retained.');
+ expectClean(fixture);
+});
+
+test('service errors remain distinct from empty results and offer recovery without invented totals',async({page},info)=>{
+ const fixture=await researchWorkspaceFixture(page,{emptyContent:true,overviewError:true,newsError:true});
+ await page.goto('/today');
+ await expect(page.getByRole('heading',{name:'Follow companies. Read the evidence.'})).toBeVisible();
+ const metrics=page.getByRole('region',{name:'Your monitoring overview'});
+ await expect(metrics.locator('strong')).toHaveText(['Unavailable','Unavailable','Unavailable']);
+ await expect(page.getByText('The news provider could not be reached. Disclosures remain available.')).toBeVisible();
+ await expect(page.getByText('No matching articles were returned for this company.')).toHaveCount(0);
+ await screenshot(page,info,'unavailable');
+ fixture.control.overviewError=false;
+ await page.getByRole('button',{name:'Retry',exact:true}).click();
+ await expect(page.getByText('No disclosures were collected in this date range. Try a wider period.')).toBeVisible();
+ await expect(page.getByText('No approved excerpt summaries are available in this scope yet. Official disclosures remain available above.')).toBeVisible();
+ fixture.control.newsError=false;fixture.control.newsEmpty=true;
+ await page.getByRole('button',{name:'Retry news',exact:true}).click();
+ await expect(page.getByText('No matching articles were returned for this company.')).toBeVisible();
+ await expect(page.getByText('The news provider could not be reached. Disclosures remain available.')).toHaveCount(0);
+ await page.reload();
+ await expect(metrics.locator('strong')).toHaveText(['0','0','0']);
+ await screenshot(page,info,'empty');
+ await navigate(page,info,'Companies');
+ await expect(page.getByRole('heading',{name:'Companies',exact:true})).toBeVisible();
+ await page.getByRole('searchbox',{name:'Search companies or sources'}).fill('no-such-synthetic-company');
+ await page.getByRole('search').getByRole('button',{name:'Search',exact:true}).click();
+ await expect(page.getByText('No records match these filters.',{exact:true})).toBeVisible();
+ expectClean(fixture);
+});
+
+test('approved content alerts can be read and stay read after reload',async({page},info)=>{
+ const fixture=await researchWorkspaceFixture(page,{following:true});
+ await page.goto('/today');
+ await expect(page.getByRole('region',{name:'Your monitoring overview'}).getByRole('link',{name:/Unread alerts/}).locator('strong')).toHaveText('1');
+ await navigate(page,info,'Notifications');
+ await expect(page.getByRole('heading',{name:'Notifications',exact:true})).toBeVisible();
+ await expect(main(page).getByRole('link',{name:approved.title,exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Mark all read',exact:true}).click();
+ await expect(page.getByRole('button',{name:'Mark all read',exact:true})).toBeDisabled();
+ await page.reload();
+ await expect(page.getByRole('button',{name:'Mark all read',exact:true})).toBeDisabled();
+ await page.getByRole('button',{name:'Unread (0)',exact:true}).click();
+ await expect(page.getByText('You are all caught up.',{exact:true})).toBeVisible();
+ await navigate(page,info,'Home');
+ await expect(page.getByRole('region',{name:'Your monitoring overview'}).getByRole('link',{name:/Unread alerts/}).locator('strong')).toHaveText('0');
+ expect(fixture.state.calls.some(call=>call.action==='content_notification_read'&&call.p.all)).toBe(true);
+ expectClean(fixture);
+});
+
+test('anonymous workspace links preserve their destination when redirected to sign in',async({page})=>{
+ const workspaceCalls:string[]=[];
+ await page.route('**/v1/config',route=>route.fulfill({json:{auth_mode:'supabase',demo_mode:false,demo_admin_enabled:false}}));
+ await page.route('**/api/auth-config',route=>route.fulfill({json:{url:'https://test-project.supabase.co',publishableKey:'sb_publishable_isolated_fixture'}}));
+ await page.route('**/api/workspace',async route=>{workspaceCalls.push(route.request().postData()??'');await route.fulfill({status:401,json:{error:{code:'authentication_required'}}});});
+ const destination=`/companies/${companyId}?tab=analyses`;
+ await page.goto(destination);
+ await expect(page).toHaveURL(/\/login\?next=/);
+ expect(new URL(page.url()).searchParams.get('next')).toBe(destination);
+ await expect(page.getByRole('button',{name:'로그인',exact:true})).toBeVisible();
+ await expect(page.getByTestId('company-workspace')).toHaveCount(0);
+ expect(workspaceCalls,'Customer data is not requested before authentication').toEqual([]);
+});

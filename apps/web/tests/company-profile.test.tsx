@@ -12,6 +12,14 @@ describe('company profile display',()=>{
  it('loads US issuer data with the correct source label',async()=>{vi.mocked(fetch).mockResolvedValueOnce(Response.json({...data,provider:'SEC EDGAR',source_url:'https://www.sec.gov/edgar/browse/?CIK=0000320193',profile:{...data.profile,ticker:'AAPL'}}));render(<CompanyProfile id={id} ticker="AAPL"/>);expect(await screen.findByText('Synthetic company')).toBeTruthy();expect(screen.getByText('출처: SEC EDGAR 기업정보')).toBeTruthy();});
  it('rejects an otherwise valid response for a different ticker',async()=>{render(<CompanyProfile id={id} ticker="654321"/>);expect(await screen.findByText('기업정보를 불러오지 못했습니다.')).toBeTruthy();expect(screen.queryByText('Synthetic company')).toBeNull();});
  it('shows an explicit missing-data state',async()=>{vi.mocked(fetch).mockResolvedValueOnce(Response.json({status:'not_available',profile:null}));render(<CompanyProfile id={id} ticker="123456"/>);expect(await screen.findByText('제공된 기업정보가 없습니다.')).toBeTruthy();});
+ it('omits an unavailable supplemental profile while preserving failed-lookup recovery',async()=>{
+  vi.mocked(fetch).mockResolvedValueOnce(Response.json({status:'not_available',profile:null}));
+  const view=render(<CompanyProfile id={id} ticker="123456" hideUnavailable/>);
+  await waitFor(()=>expect(screen.queryByRole('region',{name:'기업 기본정보'})).toBeNull());
+  vi.mocked(fetch).mockResolvedValueOnce(new Response('',{status:502}));
+  view.rerender(<CompanyProfile id="30000000-0000-4000-8000-000000000001" ticker="654321" hideUnavailable/>);
+  expect(await screen.findByRole('button',{name:'기업정보 다시 시도'})).toBeTruthy();
+ });
  it('retries a failed lookup',async()=>{vi.mocked(fetch).mockResolvedValueOnce(new Response('',{status:502}));render(<CompanyProfile id={id} ticker="123456"/>);fireEvent.click(await screen.findByRole('button',{name:'기업정보 다시 시도'}));expect(await screen.findByText('Synthetic company')).toBeTruthy();expect(fetch).toHaveBeenCalledTimes(2);});
  it('does not retain the previous issuer while navigating',async()=>{const view=render(<CompanyProfile id={id} ticker="123456"/>);await screen.findByText('Synthetic company');vi.mocked(fetch).mockImplementationOnce(()=>new Promise(()=>{}));view.rerender(<CompanyProfile id="30000000-0000-4000-8000-000000000001" ticker="654321"/>);await waitFor(()=>expect(screen.queryByText('Synthetic company')).toBeNull());});
 });

@@ -10,6 +10,8 @@ vi.mock('../src/components/auth',()=>({useAuth:()=>({token:'synthetic-token'})})
 vi.mock('../src/workspace/preferences',()=>({usePrefs:()=>({value,loaded,busy:false,error:'',reload:vi.fn(),save:mock.save,text:mock.text})}));
 vi.mock('../src/workspace/client',()=>({workspace:mock.workspace}));
 vi.mock('../src/workspace/market',()=>({useQuotes:()=>({quotes:[],loading:false,reason:'display_permission_unavailable'})}));
+// Preserve the legacy chart settings assertions behind their release flag.
+vi.mock('../src/lib/workspace-features',async original=>({...await original<typeof import('../src/lib/workspace-features')>(),workspaceFeatures:{marketData:true}}));
 beforeEach(()=>{vi.clearAllMocks();value={...defaults};loaded=true;mock.save.mockImplementation(async patch=>{value={...value,...patch};});mock.workspace.mockResolvedValue({items:[{id:'20000000-0000-4000-8000-000000000001',kind:'company',title:'Synthetic Company',summary:'',company_id:'20000000-0000-4000-8000-000000000001',company_name:'Synthetic Company',ticker:'TEST',market:'NASDAQ',source_url:null,published_at:null,publication_precision:'timestamp',category:'company',is_saved:false}],total:1,counts:{company:1},next_offset:null});});
 afterEach(()=>cleanup());
 
