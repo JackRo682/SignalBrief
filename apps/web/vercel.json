@@ -5,7 +5,8 @@
   ],
   "git": {
     "deploymentEnabled": {
-      "audit/screen-data-visibility-20261030": false
+      "audit/screen-data-visibility-20261030": false,
+      "release/complete-20261031": false
     }
   }
 }

@@ -1,0 +1,3 @@
+import {billingConfig,billingFailure,billingHeaders,billingRpc,billingUser,statusSchema} from '@/server/billing';
+export const runtime='nodejs';export const dynamic='force-dynamic';
+export async function GET(req:Request){try{const {db}=await billingUser(req),status=statusSchema.parse(await billingRpc(db,'sb_billing_status'));let checkout=false,test=false;try{test=billingConfig().test;checkout=true;}catch{/* Publicly disclose readiness only, never missing key names or values. */}return Response.json({...status,checkout,test},{headers:billingHeaders});}catch(error){return billingFailure(error);}}

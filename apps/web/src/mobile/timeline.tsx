@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import {FilingTimeline} from '@/components/filing-timeline';
 import {useEffect,useId,useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {useAuth} from '@/components/auth';
@@ -24,7 +25,7 @@ function TimelineContent({id}:{id?:string}){
  return <div className="m-timeline"><h1 className="m-research-sr">{t('기업 타임라인','Company timeline')}</h1>
   {!id?<><p className="m-timeline-intro">{t('기업의 주요 변화를 시간의 흐름에 따라 확인하세요.','Follow a company’s changes over time.')}</p><label className="m-field"><span>{t('기업명 또는 종목코드 검색','Search company or ticker')}</span><input value={query} maxLength={100} onChange={e=>setQuery(e.target.value)} placeholder={t('기업을 검색하세요.','Search companies')}/></label><LoadState {...catalog} retry={catalog.reload}/><label className="m-field"><span>{t('타임라인 기업 선택','Timeline company')}</span><select value="" disabled={catalog.loading} onChange={e=>router.push(e.target.value?`/companies/${encodeURIComponent(e.target.value)}/timeline`:'/timeline')}><option value="">{t('기업 선택','Choose a company')}</option>{companies.map(c=><option value={c.id} key={c.id}>{c.title} · {c.ticker}</option>)}</select></label>{catalog.data?.next_offset!==null&&catalog.data?.next_offset!==undefined&&<p className="m-note">{t('검색 결과 중 50개 기업을 표시합니다. 기업명이나 종목코드로 범위를 좁혀 주세요.','Showing 50 matching companies. Refine by company name or ticker.')}</p>}<EmptyState title={t('변화를 확인할 기업을 선택하세요','Choose a company to follow')} description={t('공식 자료를 바탕으로 게시된 이벤트가 날짜순으로 표시됩니다.','Published events based on official sources appear in date order.')}/></>:<>
    <LoadState {...company} retry={company.reload}/>{stock&&company.data&&<TimelineCompany key={id} stock={stock} watching={company.data.watching} onChanged={company.reload}/>}
-   <TimelineEvents key={`${id}:${days}`} id={id} days={days} onDaysChange={setDays}/>
+   {company.data&&<FilingTimeline items={company.data.documents} ticker={company.data.company.ticker}/>}<TimelineEvents key={`${id}:${days}`} id={id} days={days} onDaysChange={setDays}/>
   </>}
  </div>;
 }
