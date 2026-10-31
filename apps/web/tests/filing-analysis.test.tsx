@@ -2,6 +2,7 @@ import {render,screen,fireEvent,cleanup} from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import {describe,it,expect,vi,afterEach} from 'vitest';
 import {FilingAnalysis} from '../src/components/filing-analysis';
+vi.mock('../src/workspace/preferences',()=>({usePrefs:()=>({text:(ko:string)=>ko})}));
 afterEach(cleanup);
 const value={filing_id:'test',status:'needs_review',result:{claims:[{text:'Synthetic supported fact',quote:'Synthetic original quotation.'}],validation:'quote_substring_and_numeric_check',omitted_claim_count:1}};
 describe('human filing review',()=>{

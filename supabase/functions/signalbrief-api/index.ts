@@ -3,6 +3,8 @@ import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.1
 // Production web API. Every private request verifies the bearer token with Auth;
 // all reads and mutations then execute under that user's PostgreSQL RLS identity.
 import { headlineFact } from "./card-evidence.ts";
+import { selectQuestionEvidence } from "./question-evidence.ts";
+import { operationalSnapshot } from "./operational-readiness.ts";
 type Row = Record<string, unknown>;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const PUBLIC_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
@@ -28,6 +30,19 @@ async function unwrap<T>(query: PromiseLike<{data:T;error:unknown}>): Promise<T>
   return data;
 }
 async function rpc(db:SupabaseClient,name:string,args:Row={}):Promise<unknown>{return unwrap(db.rpc(name,args));}
+async function readiness(db:SupabaseClient){
+  const states=["queued","running","retry","dead","succeeded"];
+  const [health,counts,completed,waiting]=await Promise.all([
+    rpc(db,"sb_health").then(value=>row(value).database_ready===true).catch(()=>null),
+    Promise.all(states.map(async state=>{
+      const result=await db.from("jobs").select("id",{count:"exact",head:true}).eq("state",state);
+      return [state,result.error?null:result.count] as const;
+    })),
+    db.from("jobs").select("kind,finished_at").eq("state","succeeded").not("finished_at","is",null).order("finished_at",{ascending:false}).limit(5),
+    db.from("jobs").select("created_at").in("state",["queued","retry"]).order("created_at").limit(1),
+  ]);
+  return operationalSnapshot(health,Object.fromEntries(counts),completed.error?null:rows(completed.data),waiting.error?null:rows(waiting.data)[0]??null,new Date().toISOString());
+}
 async function getRows(db:SupabaseClient,table:string,field:string,ids:string[],select="*"):Promise<Row[]>{
   const keys=unique(ids);if(!keys.length)return []; return rows(await unwrap(db.from(table).select(select).in(field,keys)));
 }
@@ -58,7 +73,7 @@ async function detail(db:SupabaseClient,id:string){
   const previous=await getRows(db,"facts","id",changes.map(c=>s(c.previous_fact_id)));
   const allFacts=[...facts,...previous],chunks=await getRows(db,"document_chunks","id",allFacts.map(f=>s(f.chunk_id)));
   const evidenceDocs=await getRows(db,"documents","id",chunks.map(c=>s(c.document_id)),DOC_FIELDS),cm=index(chunks),dm=index(evidenceDocs);
-  const evidence=allFacts.map(f=>{const c=required(cm,s(f.chunk_id)),d=required(dm,s(c.document_id));return {fact_id:f.id,chunk_id:c.id,document_id:d.id,quote:f.quote,location:c.location,source_url:d.source_url,source_name:d.provider==="dart"?"OpenDART":"SEC EDGAR",source_tier:1,published_at:d.published_at,publication_precision:d.publication_precision,is_demo:false,role:previous.includes(f)?"previous":"current"};});
+  const evidence=allFacts.map(f=>{const c=required(cm,s(f.chunk_id)),d=required(dm,s(c.document_id));return {fact_id:f.id,chunk_id:c.id,document_id:d.id,quote:f.quote,field:f.field,validation_status:f.validation_status,location:c.location,source_url:d.source_url,source_name:d.provider==="dart"?"OpenDART":"SEC EDGAR",source_tier:1,published_at:d.published_at,publication_precision:d.publication_precision,is_demo:false,role:previous.includes(f)?"previous":"current"};});
   return {event:eventCards[0],document:{...docs[0],download_url:docs[0].source_url},facts,changes,evidence,brief:briefs[0],validations,run:runs[0]};
 }
 const escapeICS=(v:unknown)=>s(v).replace(/\\/g,"\\\\").replace(/\r?\n/g,"\\n").replace(/;/g,"\\;").replace(/,/g,"\\,");
@@ -136,13 +151,8 @@ Deno.serve(async(req:Request)=>{
       }else if(parts[1]==="events"&&parts.length===3&&method==="GET")response=json(await detail(db,parts[2]));
       else if(parts[1]==="events"&&parts[3]==="questions"&&parts.length===4&&method==="POST"){
         const p=await body(req),question=s(p.question).trim();check(question.length>0&&question.length<=2000);const d=await detail(db,parts[2]);
-        const advice=/매수|매도|목표\s*주가|목표가|살까|팔까|사야|팔아야|\bbuy\b|\bsell\b|price\s*target|guaranteed/i.test(question);
-        const aliases:Record<string,string>={매출:"revenue",배당:"dividend",설비:"capex",투자:"capex",위험:"risk",리스크:"risk",경영진:"management",전망:"guidance",영업:"operating"};
-        const words=unique([...(question.toLowerCase().match(/[a-z가-힣]{2,}/g)??[]),...Object.entries(aliases).filter(([k])=>question.includes(k)).map(([,v])=>v)]);
-        const changed=/변화|바뀐|달라|이전|비교|change|previous|compare/i.test(question);
-        const fields=new Map(d.facts.map(f=>[s(f.id),s(f.field)]));
-        const evidence=d.evidence.filter(x=>changed||words.some(w=>(s(x.quote)+" "+fields.get(s(x.fact_id))).toLowerCase().includes(w))).slice(0,6);
-        response=json(await rpc(db,"sb_save_answer",{eid:identity(parts[2]),question,reason:advice?"advice":evidence.length?changed?"changes":"current":"no_evidence",fact_ids:advice?[]:evidence.map(x=>x.fact_id)}));
+        const selection=selectQuestionEvidence(question,d.facts,d.evidence);
+        response=json(await rpc(db,"sb_save_answer",{eid:identity(parts[2]),question,...selection}));
       }else if(path==="/v1/questions"&&method==="GET")response=json(await unwrap(db.from("question_history").select("id,event_id,question,answer,created_at").eq("user_id",auth.user.id).order("created_at",{ascending:false}).limit(100)));
       else if(path==="/v1/questions"&&method==="DELETE"){await rpc(db,"sb_clear_history");response=json(null,204);}
       else if(path==="/v1/calendar"&&method==="GET")response=json(await calendar(db,url));
@@ -165,7 +175,7 @@ Deno.serve(async(req:Request)=>{
       else if(path.startsWith("/v1/ops/")){
         check(await rpc(db,"sb_is_admin"),403,"admin_required");
         if(path==="/v1/ops/dashboard"&&method==="GET")response=json(await rpc(db,"sb_ops_dashboard"));
-        else if(path==="/v1/ops/readiness"&&method==="GET")response=json({database:true,private_storage:true,web_api:true,worker:false,dart:false,sec:false,openai:false,email:false,note:"The Python worker and provider credentials have not been deployed. Queued ingestion is not processed until an operator connects the worker."});
+        else if(path==="/v1/ops/readiness"&&method==="GET")response=json(await readiness(db));
         else if(path==="/v1/ops/queues"&&method==="GET"){
           const [events,jobs,runs,reports]=await Promise.all([unwrap(db.from("events").select("*").neq("state","published").order("created_at",{ascending:false}).limit(100)),unwrap(db.from("jobs").select("*").order("created_at",{ascending:false}).limit(100)),unwrap(db.from("ai_runs").select(RUN_FIELDS).in("status",["failed","validation_failed"]).order("created_at",{ascending:false}).limit(50)),unwrap(db.from("feedback").select("*").eq("state","open").order("created_at",{ascending:false}).limit(100))]);response=json({events,jobs,failed_runs:runs,reports,source_conflicts:[]});
         }else if(path==="/v1/ops/documents"&&method==="GET")response=json(await unwrap(db.from("documents").select(DOC_FIELDS).order("ingested_at",{ascending:false}).limit(limit(url))));

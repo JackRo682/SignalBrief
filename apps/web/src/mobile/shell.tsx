@@ -7,6 +7,7 @@ import WorkspaceLoading from '@/components/workspace-loading';
 import {usePrefs} from '@/workspace/preferences';
 import {MIcon} from './ui';
 import './mobile.css';
+import {mobileWorkspaceNavigation} from '@/lib/workspace-features';
 import './detail-shell.css';
 
 const MobileAlertBadgeContext=createContext<(count:number)=>void>(()=>{});
@@ -18,7 +19,7 @@ export default function MobileShell({children}: {children:ReactNode}) {
   const updateUnread=useCallback((count:number)=>setUnread({id:auth.me?.id??'',count}),[auth.me?.id]);
   const onboarding=path==='/onboarding',event=/^\/events\/[^/]+$/.test(path),company=/^\/companies\/[^/]+$/.test(path),document=/^\/documents\/[^/]+$/.test(path),timeline=path==='/timeline'||/^\/companies\/[^/]+\/timeline$/.test(path),questions=path==='/questions';
   useEffect(()=>{
-    if(!auth.loading&&!auth.token&&!auth.error)router.replace(`/login?next=${encodeURIComponent(path)}`);
+    if(!auth.loading&&!auth.token&&!auth.error)router.replace(`/login?next=${encodeURIComponent(path+window.location.search)}`);
     if(auth.me&&!auth.me.onboarding_completed&&!onboarding)router.replace('/onboarding');
   },[auth.loading,auth.token,auth.error,auth.me,onboarding,path,router]);
   if(!auth.me||(!auth.me.onboarding_completed&&!onboarding))return <WorkspaceLoading error={auth.loading?null:auth.error}/>;
@@ -29,8 +30,8 @@ export default function MobileShell({children}: {children:ReactNode}) {
   };
   const title=event?t('이벤트 상세','Event details'):company?t('기업 개요','Company overview'):document?t('문서 상세','Document details'):timeline?t('기업 타임라인','Company timeline'):detailTitles[path];
   const compact=!!title,newDetail=compact&&!event&&!company;
-  const active=(href:string)=>path===href||href==='/explore'&&path==='/search'||href==='/watchlist'&&(company||timeline)||href==='/saved'&&document||href==='/settings'&&(path.startsWith('/settings/')||path==='/help');
-  const nav=[['/today',t('홈','Home'),'home'],['/explore',t('탐색','Explore'),'search'],path==='/saved'||document?['/saved',t('저장 / 기록','Saved'),'bookmark']:['/watchlist',t('관심종목','Watchlist'),'star'],path==='/alerts'?['/alerts',t('알림 센터','Alerts'),'bell']:['/portfolio',t('포트폴리오','Portfolio'),'pie'],['/settings',t('설정','Settings'),'settings']];
+  const active=(href:string)=>path===href||href==='/explore'&&(path==='/search'||company||document)||href==='/watchlist'&&timeline||href==='/more'&&['/calendar','/saved','/alerts','/settings','/help','/questions','/more'].some(prefix=>path===prefix||path.startsWith(prefix+'/'));
+  const nav=mobileWorkspaceNavigation.map(([href,ko,en,icon])=>[href,t(ko,en),icon]);
   const back=()=>{if(window.history.length>1)router.back();else router.push(path.startsWith('/settings/')||path==='/help'?'/settings':'/today');};
   return <div className={`sb-mobile ${onboarding?'m-onboarding-shell':''} ${event?'m-event-shell':''} ${company?'m-company-shell':''} ${newDetail?'m-secondary-shell':''} ${questions?'m-questions-shell':''} ${path==='/alerts'?'m-alerts-shell':''}`}>
     <a className="m-skip" href="#mobile-main">{t('본문으로 이동','Skip to content')}</a>

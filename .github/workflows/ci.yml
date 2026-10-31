@@ -45,11 +45,11 @@ jobs:
         run: deno check --no-lock --config supabase/functions/signalbrief-api/deno.json supabase/functions/signalbrief-api/index.ts supabase/functions/signalbrief-us/index.ts supabase/functions/signalbrief-profiles/index.ts
       - name: Full repository release checks
         run: python scripts/verify.py --full
-      - name: Preserve the released mobile implementation
-        run: python scripts/verify_desktop_isolation.py
+      - name: Protect public, admin and auth scope and retain disabled workspace features
+        run: python scripts/verify_workspace_scope.py
       - working-directory: apps/web
         run: npx playwright install --with-deps chromium
-      - name: Auth, public pages and progressive rendering on desktop and mobile
+      - name: Signed-in research MVP plus retained auth, public, admin and consent flows
         working-directory: apps/web
         run: |
           NEXT_PUBLIC_API_URL=/api NEXT_PUBLIC_SUPABASE_URL=https://test-project.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_isolated_fixture setsid npm run dev -- --hostname 127.0.0.1 > /tmp/signalbrief-web.log 2>&1 &
@@ -60,7 +60,10 @@ jobs:
             sleep 1
           done
           curl -fsS http://127.0.0.1:3000/login > /dev/null
-          npm run test:e2e -- completion.spec.ts source-visibility.spec.ts company-connections.spec.ts quote-permissions.spec.ts market-indices.spec.ts news.spec.ts performance.spec.ts auth-navigation.spec.ts marketing-pages.spec.ts ui-refinement.spec.ts responsive-design.spec.ts workspace-pages.spec.ts mobile-authenticated.spec.ts mobile-details.spec.ts daily-digest.spec.ts desktop-references.spec.ts career-analytics.spec.ts research.spec.ts
+          # The former market/portfolio screen contract is retained in its specs
+          # and legacy unit suites; it is deliberately hidden in this release.
+          # See docs/SIGNED_IN_RELEASE_CHECKS.md for the replacement coverage.
+          E2E_BASE_URL=http://localhost:3000 npm run test:e2e -- research-workspace.spec.ts auth-navigation.spec.ts marketing-pages.spec.ts ui-refinement.spec.ts responsive-design.spec.ts news.spec.ts career-analytics.spec.ts research.spec.ts daily-digest.spec.ts company-profile.spec.ts
       - uses: actions/upload-artifact@v4
         if: always()
         with:

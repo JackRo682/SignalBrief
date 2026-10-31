@@ -1,0 +1,12 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+Running 4 tests using 1 worker
+
+(node:31386) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › e2e/research-workspace.spec.ts:28:5 › signed-in research journey connects company tabs, evidence, saved items and monitoring (11.8s)
+  ✓  2 [desktop] › e2e/research-workspace.spec.ts:145:5 › service errors remain distinct from empty results and offer recovery without invented totals (3.0s)
+  ✓  3 [desktop] › e2e/research-workspace.spec.ts:173:5 › approved content alerts can be read and stay read after reload (2.2s)
+  ✓  4 [desktop] › e2e/research-workspace.spec.ts:192:5 › anonymous workspace links preserve their destination when redirected to sign in (1.4s)
+
+  4 passed (19.5s)

@@ -4,7 +4,7 @@ import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {z} from 'zod';
 import {APIError} from '../src/lib/api';
 import {pageDataCache} from '../src/lib/page-data-cache';
-import {DesktopCompany,DesktopDocument,DesktopEvent,DesktopTimeline} from '../src/desktop/research';
+import {LegacyDesktopCompany as DesktopCompany,DesktopDocument,DesktopEvent,DesktopTimeline} from '../src/desktop/research';
 import {defaults,documentDetailSchema,type Resource} from '../src/workspace/contracts';
 import {detailSchema,portfolioSchema,type EventCard} from '../src/lib/contracts';
 
@@ -72,7 +72,7 @@ describe('desktop company and timeline',()=>{
   mount(<DesktopTimeline companyId={companyId}/>);await screen.findByRole('heading',{name:event.headline});expect(document.querySelectorAll('.pc-timeline-item')).toHaveLength(2);
   fireEvent.click(within(screen.getByRole('group',{name:'이벤트 유형'})).getByRole('button',{name:'제품 (1)'}));expect(document.querySelectorAll('.pc-timeline-item')).toHaveLength(1);expect(screen.getByRole('heading',{name:'Older synthetic product event'})).toBeVisible();
   fireEvent.change(screen.getByLabelText('타임라인 시작일'),{target:{value:new Date(Date.now()-30*86400000).toISOString().slice(0,10)}});fireEvent.click(screen.getByRole('button',{name:'기간 적용'}));await screen.findByRole('heading',{name:event.headline});expect(document.querySelectorAll('.pc-timeline-item')).toHaveLength(1);expect(screen.queryByRole('heading',{name:'Older synthetic product event'})).toBeNull();
-  fireEvent.change(screen.getByRole('combobox',{name:'타임라인 기업 선택'}),{target:{value:''}});expect(mocks.push).toHaveBeenCalledWith('/timeline');expect(screen.getByRole('link',{name:'주가 차트'})).toHaveAttribute('href',`/companies/${companyId}?tab=chart`);
+  fireEvent.change(screen.getByRole('combobox',{name:'타임라인 기업 선택'}),{target:{value:''}});expect(mocks.push).toHaveBeenCalledWith('/timeline');expect(screen.queryByRole('link',{name:'주가 차트'})).not.toBeInTheDocument();
  });
 });
 

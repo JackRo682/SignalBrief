@@ -1,18 +1,24 @@
 import {z} from 'zod';
 const uuid=z.string().uuid();
-export const resourceKind=z.enum(['company','event','document','filing']);
-export const resourceSchema=z.object({id:z.string(),kind:resourceKind,title:z.string(),summary:z.string(),company_id:z.string(),company_name:z.string(),ticker:z.string(),market:z.string(),source_url:z.string().nullable(),published_at:z.string().nullable(),publication_precision:z.string(),category:z.string(),is_saved:z.boolean(),saved_at:z.string().optional()});
+export const resourceKind=z.enum(['company','event','document','filing','us_analysis','dart_analysis']);
+export const resourceSchema=z.object({id:z.string(),kind:resourceKind,title:z.string(),summary:z.string(),company_id:z.string(),company_name:z.string(),ticker:z.string(),market:z.string(),source_url:z.string().nullable(),published_at:z.string().nullable(),publication_precision:z.string(),category:z.string(),is_saved:z.boolean(),saved_at:z.string().optional(),provider:z.enum(['sec','dart']).optional(),reviewed_at:z.string().nullable().optional(),coverage:z.enum(['excerpt','event']).nullable().optional(),filing_id:z.string().nullable().optional()});
 export type Resource=z.infer<typeof resourceSchema>;
 export const preferenceValue=z.object({timezone:z.string().min(1).max(100),locale:z.enum(['ko','en']),theme:z.enum(['light','dark','system']),ui_density:z.enum(['comfortable','compact']),font_scale:z.number().int().min(0).max(3),reduced_motion:z.boolean(),chart_animation:z.boolean(),history_enabled:z.boolean(),quiet_enabled:z.boolean(),quiet_start:z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),quiet_end:z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),daily_cap:z.number().int().min(1).max(100),muted_companies:z.array(uuid).max(50),bio:z.string().max(160)}).strict();
 export type Preferences=z.infer<typeof preferenceValue>;
 export const preferenceSchema=z.object({value:preferenceValue,version:z.number().int().nonnegative()});
 export const defaults:Preferences={timezone:'Asia/Seoul',locale:'ko',theme:'light',ui_density:'comfortable',font_scale:1,reduced_motion:false,chart_animation:true,history_enabled:false,quiet_enabled:false,quiet_start:'22:00',quiet_end:'07:00',daily_cap:3,muted_companies:[],bio:''};
-export const catalogSchema=z.object({items:z.array(resourceSchema),total:z.number(),counts:z.record(z.string(),z.number()),markets:z.array(z.string()),next_offset:z.number().nullable()});
-export const sourceOverviewSchema=z.object({companies:z.number().int().nonnegative(),filing_count:z.number().int().nonnegative(),published_count:z.number().int().nonnegative(),filings:z.array(resourceSchema),historical_events:z.array(resourceSchema),calendar:z.array(z.object({id:z.string(),company_id:z.string(),title:z.string(),occurs_on:z.string(),source_url:z.string(),source_timezone:z.string().nullable(),verified_at:z.string()}))});
-export const savedSchema=z.object({items:z.array(resourceSchema),counts:z.object({event:z.number(),document:z.number(),history:z.number()})});
-export const companyDetailSchema=z.object({company:resourceSchema,events:z.array(resourceSchema),documents:z.array(resourceSchema),facts:z.array(z.object({id:z.string(),field:z.string(),value_raw:z.string().nullable(),unit:z.string().nullable(),period:z.string().nullable(),basis:z.string(),quote:z.string(),event_id:z.string()})),watching:z.boolean(),holding:z.boolean()});
+export const catalogSchema=z.object({items:z.array(resourceSchema),total:z.number(),counts:z.record(z.string(),z.number()),markets:z.array(z.string()),categories:z.array(z.string()).default([]),next_offset:z.number().nullable()});
+export const verifiedCalendarSchema=z.object({id:z.string(),company_id:z.string(),title:z.string(),occurs_on:z.string(),source_url:z.string(),source_timezone:z.string().nullable(),verified_at:z.string()});
+export const monitoringSchema=z.object({company_id:z.string(),latest_filing:resourceSchema.nullable(),latest_analysis:resourceSchema.nullable(),next_event:verifiedCalendarSchema.nullable(),last_collected_at:z.string().nullable(),filing_count:z.number().int().nonnegative().default(0),analysis_count:z.number().int().nonnegative().default(0)});
+export const sourceOverviewSchema=z.object({companies:z.number().int().nonnegative(),filing_count:z.number().int().nonnegative(),published_count:z.number().int().nonnegative(),filings:z.array(resourceSchema),historical_events:z.array(resourceSchema),calendar:z.array(verifiedCalendarSchema),scope:z.enum(['all','following']).default('following'),following_count:z.number().int().nonnegative().optional(),fallback_to_all:z.boolean().default(false),analyses:z.array(resourceSchema).default([]),historical_calendar:z.array(verifiedCalendarSchema).default([]),monitoring:z.array(monitoringSchema).default([]),saved_count:z.number().int().nonnegative().optional(),unread_count:z.number().int().nonnegative().optional()});
+export const approvedFilingAnalysisSchema=z.object({resource:resourceSchema,analysis:z.object({filing_id:z.string(),status:z.literal('approved'),created_at:z.string(),reviewed_at:z.string().nullable(),result:z.object({claims:z.array(z.object({text:z.string(),quote:z.string()})),source_url:z.string(),uncertainty:z.string(),validation:z.string(),coverage:z.literal('excerpt'),omitted_claim_count:z.number().int().nonnegative().optional()})})});
+export const contentNotificationSchema=z.object({id:z.string(),created_at:z.string(),read_at:z.string().nullable(),resource:resourceSchema});
+export const contentNotificationsSchema=z.object({items:z.array(contentNotificationSchema),unread_count:z.number().int().nonnegative()});
+export const savedSchema=z.object({items:z.array(resourceSchema),counts:z.object({event:z.number(),document:z.number(),analysis:z.number().default(0),history:z.number()})});
+export const companyDetailSchema=z.object({company:resourceSchema,events:z.array(resourceSchema),analyses:z.array(resourceSchema).default([]),documents:z.array(resourceSchema),facts:z.array(z.object({id:z.string(),field:z.string(),value_raw:z.string().nullable(),unit:z.string().nullable(),period:z.string().nullable(),basis:z.string(),quote:z.string(),event_id:z.string()})),watching:z.boolean(),holding:z.boolean()});
 export const documentDetailSchema=z.object({
  document:resourceSchema,
+ approved_analyses:z.array(approvedFilingAnalysisSchema).default([]),
  metadata:z.object({mime_type:z.string().nullable(),size_bytes:z.number().int().nonnegative().nullable(),page_count:z.number().int().positive().nullable(),provider:z.string(),publication_timezone:z.string().nullable(),ingested_at:z.string().nullable(),raw_sha256:z.string().nullable()}),
  summaries:z.array(z.object({event_id:z.string(),title:z.string(),text:z.string()})),
  facts:z.array(z.object({id:z.string(),field:z.string(),value_raw:z.string().nullable(),unit:z.string().nullable(),period:z.string().nullable(),basis:z.string(),quote:z.string(),event_id:z.string(),origin_event_id:z.string(),source_url:z.string(),location:z.string()})),
@@ -35,17 +41,19 @@ const decimalString=z.string().regex(/^\d{1,20}(\.\d{1,8})?$/);
 const onboardingPosition=z.object({company_id:uuid,quantity:decimalString.refine(v=>/[1-9]/.test(v),'Quantity must be positive'),average_cost:decimalString.nullable(),currency:z.enum(['USD','KRW','EUR','JPY','GBP','AUD','CAD','HKD','CNY','CHF'])}).strict();
 export const workspaceRequest=z.discriminatedUnion('action',[
  z.object({action:z.literal('preferences'),p:empty}),
- z.object({action:z.literal('source_overview'),p:empty}),
+ z.object({action:z.literal('source_overview'),p:z.object({scope:z.enum(['all','following']).optional(),company_id:uuid.optional(),days:z.number().int().min(0).max(3650).optional()}).strict()}),
  z.object({action:z.literal('company_lookup'),p:z.object({q:z.string().max(100).optional(),market:z.string().max(32).optional(),limit:z.number().int().min(1).max(100).optional()}).strict()}),
  z.object({action:z.literal('preferences_save'),p:z.object({value:preferenceValue.partial(),version:z.number().int().nonnegative()}).strict()}),
- z.object({action:z.literal('catalog'),p:z.object({q:z.string().max(100).optional(),market:z.string().max(32).optional(),kind:resourceKind.or(z.literal('')).optional(),days:z.number().int().min(0).max(3650).optional(),offset:z.number().int().min(0).max(1000).optional(),limit:z.number().int().min(1).max(50).optional(),sort:z.enum(['relevance','newest']).optional()}).strict()}),
+ z.object({action:z.literal('catalog'),p:z.object({q:z.string().max(100).optional(),market:z.string().max(32).optional(),kind:resourceKind.or(z.literal('')).or(z.literal('analysis')).optional(),source:z.enum(['','sec','dart']).optional(),company_id:uuid.or(z.literal('')).optional(),category:z.string().max(100).optional(),days:z.number().int().min(0).max(3650).optional(),offset:z.number().int().min(0).max(1000).optional(),limit:z.number().int().min(1).max(50).optional(),sort:z.enum(['relevance','newest']).optional()}).strict()}),
  z.object({action:z.literal('resource'),p:z.object({kind:resourceKind,id:uuid}).strict()}),
  z.object({action:z.literal('document_detail'),p:z.object({id:uuid,kind:z.enum(['document','filing']),section_offset:z.number().int().min(0).max(2147483600).optional()}).strict()}),
  z.object({action:z.literal('notifications'),p:empty}),
+ z.object({action:z.literal('content_notifications'),p:empty}),
+ z.object({action:z.literal('content_notification_read'),p:z.object({id:uuid.optional(),all:z.boolean().optional()}).strict()}),
  z.object({action:z.literal('notification_save'),p:z.object({realtime_enabled:z.boolean().optional(),notify_min_score:z.number().min(0).max(1).optional()}).strict()}),
  z.object({action:z.literal('company'),p:idPayload}),
- z.object({action:z.literal('saved_list'),p:z.object({kind:z.enum(['','event','document','history']).optional(),q:z.string().max(100).optional(),company:uuid.or(z.literal('')).optional(),sort:z.enum(['oldest','newest']).optional()}).strict()}),
- z.object({action:z.literal('save'),p:z.object({kind:z.enum(['event','document','filing']),id:uuid,saved:z.boolean()}).strict()}),
+ z.object({action:z.literal('saved_list'),p:z.object({kind:z.enum(['','event','document','analysis','history']).optional(),q:z.string().max(100).optional(),company:uuid.or(z.literal('')).optional(),sort:z.enum(['oldest','newest']).optional()}).strict()}),
+ z.object({action:z.literal('save'),p:z.object({kind:z.enum(['event','document','filing','us_analysis','dart_analysis']),id:uuid,saved:z.boolean()}).strict()}),
  z.object({action:z.literal('visit'),p:z.object({kind:resourceKind,id:uuid}).strict()}),
  z.object({action:z.literal('searches'),p:empty}),z.object({action:z.literal('search_record'),p:z.object({query:z.string().trim().min(1).max(100)}).strict()}),
  z.object({action:z.literal('search_delete'),p:z.object({query:z.string().trim().min(1).max(100)}).strict()}),z.object({action:z.literal('searches_clear'),p:empty}),
@@ -57,6 +65,6 @@ export const workspaceRequest=z.discriminatedUnion('action',[
  z.object({action:z.literal('export'),p:empty})
 ]);
 export type WorkspaceRequest=z.infer<typeof workspaceRequest>;
-export function resourceHref(r:Resource){if(r.kind==='company')return `/companies/${encodeURIComponent(r.id)}`;if(r.kind==='event')return `/events/${encodeURIComponent(r.id)}`;return `/documents/${encodeURIComponent(r.id)}?kind=${r.kind}`;}
+export function resourceHref(r:Resource){if(r.kind==='company')return `/companies/${encodeURIComponent(r.id)}`;if(r.kind==='event')return `/events/${encodeURIComponent(r.id)}`;if(r.kind==='us_analysis'||r.kind==='dart_analysis')return `/documents/${encodeURIComponent(r.filing_id??r.id)}?kind=filing&analysis=${r.kind==='us_analysis'?'us':'dart'}`;return `/documents/${encodeURIComponent(r.id)}?kind=${r.kind}`;}
 export function safeSource(url:string|null):string|undefined{try{const u=new URL(url??'');return u.protocol==='https:'&&!u.username&&!u.password&&!u.hostname.endsWith('.invalid')?u.href:undefined;}catch{return undefined;}}
 export function chartPoints(values:number[]):string|null {if(values.length<2||values.some(x=>!Number.isFinite(x)))return null;const lo=Math.min(...values),range=Math.max(...values)-lo;return values.map((v,i)=>`${i*200/(values.length-1)},${range?60-(v-lo)/range*52:32}`).join(' ');}

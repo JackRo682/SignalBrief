@@ -1,5 +1,6 @@
 import {openPublicMenu} from './public-navigation';
 import {test,expect,type Page} from '@playwright/test';
+import {researchWorkspaceFixture,upcoming} from './research-workspace-fixture';
 test.setTimeout(120000);
 const navPages=[['about','서비스 소개'],['features','주요 기능'],['sources','데이터 출처'],['pricing','요금제'],['customers','고객 사례']] as const;
 const allPages=['','about','features','sources','customers','pricing','login','signup','forgot-password','reset-password','terms','privacy','disclaimer'];
@@ -57,14 +58,11 @@ test('privacy sections, consent controls and official source destinations remain
  await expect(sec).toHaveAttribute('target','_blank');await expect(sec).toHaveAttribute('rel','noopener noreferrer');
 });
 test('signed-in visitors open their real workspace from a feature card',async({page})=>{
- await page.addInitScript(()=>sessionStorage.setItem('signalbrief.demo.token','isolated-synthetic-token'));
- await page.route('**/v1/**',route=>{const path=new URL(route.request().url()).pathname.replace(/^\/api/,'');let json:unknown=[];
-  if(path==='/v1/config')json={auth_mode:'demo',demo_mode:true,demo_admin_enabled:false};
-  if(path==='/v1/me')json={id:'fixture-user',display_name:'Test',density:'advanced',onboarding_completed:true,analytics_consent:false,is_admin:false,demo_mode:true};
-  return route.fulfill({json});
- });
+ const fixture=await researchWorkspaceFixture(page);
  await page.goto('/features');const calendar=page.locator('.v-widget-calendar').getByRole('link',{name:'알림 설정'});await expect(calendar).toHaveAttribute('href','/calendar');
  await calendar.click();await expect(page).toHaveURL(/\/calendar$/);
- const mobile=(page.viewportSize()?.width??1280)<768;
- await expect(page.locator(mobile?'.m-calendar-page':'[data-screen="calendar"]')).toBeVisible();
+ await expect(page.locator('[data-screen="research-calendar"]')).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Calendar',exact:true})).toBeVisible();
+ await expect(page.getByRole('link',{name:upcoming.title,exact:true})).toBeVisible();
+ expect(fixture.blockedRequests).toEqual([]);expect(fixture.state.unexpected).toEqual([]);expect(fixture.state.runtimeErrors).toEqual([]);
 });

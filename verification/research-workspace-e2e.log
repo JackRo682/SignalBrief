@@ -1,0 +1,18 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+Running 8 tests using 1 worker
+
+(node:32469) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › e2e/research-workspace.spec.ts:29:5 › signed-in research journey connects company tabs, evidence, saved items and monitoring (12.4s)
+  ✓  2 [desktop] › e2e/research-workspace.spec.ts:164:5 › service errors remain distinct from empty results and offer recovery without invented totals (2.4s)
+  ✓  3 [desktop] › e2e/research-workspace.spec.ts:192:5 › approved content alerts can be read and stay read after reload (2.1s)
+  ✓  4 [desktop] › e2e/research-workspace.spec.ts:211:5 › anonymous workspace links preserve their destination when redirected to sign in (922ms)
+(node:32749) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  5 [mobile] › e2e/research-workspace.spec.ts:29:5 › signed-in research journey connects company tabs, evidence, saved items and monitoring (10.5s)
+  ✓  6 [mobile] › e2e/research-workspace.spec.ts:164:5 › service errors remain distinct from empty results and offer recovery without invented totals (2.2s)
+  ✓  7 [mobile] › e2e/research-workspace.spec.ts:192:5 › approved content alerts can be read and stay read after reload (2.0s)
+  ✓  8 [mobile] › e2e/research-workspace.spec.ts:211:5 › anonymous workspace links preserve their destination when redirected to sign in (862ms)
+
+  8 passed (35.3s)

@@ -1,0 +1,3791 @@
+{
+  "reviewed_at": "2026-10-31T13:50:51.251776+00:00",
+  "review_status": "Read-only semantic review; no approvals, publication or source-data changes performed.",
+  "input_snapshot_sha256": "a7fa75b2f7cbb61f40dd7b62397516b0379ad54486263b738423aa597b093b16",
+  "record_count": 44,
+  "claim_count": 142,
+  "summary": {
+    "eligible_excerpt": 23,
+    "hold": 21
+  },
+  "source_checks": {
+    "structural_pass": 44,
+    "raw_hash_binding_pass": 44,
+    "normalized_hash_binding_pass": 44,
+    "raw_archive_present": 44,
+    "normalized_archive_present": 44,
+    "official_primary_content_retrieved": 44,
+    "raw_zip_hashes_independently_recomputed": false,
+    "truncated_analysis_excerpts": 1
+  },
+  "eligible_filing_ids": [
+    "5a69a303-1ff2-426e-a7e7-9f52fe677163",
+    "774fedf7-785b-447a-914d-290c5977ad7e",
+    "ef986c4e-6b85-4143-ab23-69d33e8ef3bd",
+    "375abc74-a9a4-4b25-8782-bf39b517e1a4",
+    "b2db7865-ba14-4c53-8b2f-b80ebcb6255e",
+    "12d4830d-091f-4773-a8fe-9ec5c671ae05",
+    "97283e76-b1a8-4571-87a5-ff1f81ccfc95",
+    "56da7830-1b0b-4237-a518-ef0f67a798b7",
+    "63253dd6-c94f-4424-871c-1434bb615c05",
+    "d602fe90-1edd-4147-88c2-bb03d7f90e8d",
+    "f7309c65-aa09-4f9d-9013-2229c82ae2e5",
+    "809dfd6c-a997-4861-aa30-e76b9d47e08a",
+    "9fcadc9b-a33d-4b52-a9f9-cd4cd63d3145",
+    "6132fbfe-3d38-4380-842c-92c638d93149",
+    "747b9d02-8771-49f5-82c9-26bce0172893",
+    "88c27b58-eedb-4ed4-95ea-b74505dd99f4",
+    "fc7abc9e-34eb-4c19-847d-51f97c8c8a8d",
+    "431e57b5-c80c-47b1-b8fd-aa0159f9b075",
+    "48ce7796-c39c-4a87-9820-470891d766bf",
+    "7d31088c-73b6-4214-b5f4-dd1fbba10744",
+    "3fecc4dd-7624-46a9-a1b0-bf40ebf06bbb",
+    "b1e05c0a-a768-4e06-a7f1-536de4837eeb",
+    "69f4eaef-5cbb-4b4b-ad4a-c3ae22b085a0"
+  ],
+  "hold_filing_ids": [
+    "e934a5ea-dd26-4cdf-8e48-e247c516b182",
+    "fe3581fe-bd83-4f07-9360-d040b61da422",
+    "a1076aae-d53e-4a25-b6ba-184c3ce85a0d",
+    "f4b198c1-ee54-43fc-87f3-ac1b7bfaf18f",
+    "57af4ab5-afe8-42c9-8a64-5ad37592a73b",
+    "e12ff736-0c1d-44d1-9e47-a3b64b4279c8",
+    "4f68bb4f-542f-44ca-bcf9-aab32f75f1b5",
+    "c3efce77-10da-4191-b222-22065ebf5cbb",
+    "c1be46a0-fee7-469c-aeee-5df39eaf61b8",
+    "6bd9dc3b-9e8e-4623-8511-f2fd255253e1",
+    "fe29523d-cb5d-4392-9a5f-baeab9ee1fb9",
+    "54685279-51ba-4cad-9592-4dc16b96a092",
+    "1894015a-e8dd-44a5-8d40-f084e139403e",
+    "a3fcdd1c-2872-4b85-b6eb-165a2ff0f97c",
+    "5480decc-443c-4e33-94d7-d605f9b56a0c",
+    "6f633953-4794-4c55-add5-26b990decc38",
+    "11a82f90-814d-4129-8f78-d67ed69373a9",
+    "d30fe7b5-d4f6-4a27-991d-4e41e100f6fb",
+    "8b599d21-52c4-4e6b-95f4-a20addf4ac51",
+    "bdc8f04a-a0a5-4137-b3ae-35c5ddc9d288",
+    "a94fafcc-0074-45fc-a5f6-7306031e3a65"
+  ],
+  "records": [
+    {
+      "index": 0,
+      "filing_id": "5a69a303-1ff2-426e-a7e7-9f52fe677163",
+      "ticker": "000660",
+      "date": "2026-10-29",
+      "title": "풍문또는보도에대한해명(미확정)",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "All three claims preserve the news-report attribution, Solidigm subsidiary scope, explicit absence of a confirmed project, and planned follow-up disclosure. No rumor is presented as a committed investment.",
+      "claims_reviewed": 3,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800130",
+      "source_sha256": "68f7f69697a1ee0263ed16029da5d793c509710fb14eb82427f6dc170f0c17e4",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800130&dcmNo=11632257&eleId=0&offset=0&length=0&dtd=HTML",
+      "official_text_sha256": "04064020c5faecff25fa19cdda9131cdcc158a45668586c27b45c9fc1638f321",
+      "short_reason": "News attribution, unconfirmed project status and planned follow-up are preserved.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1555,
+        "member_count": 1,
+        "processed_at": "2026-10-29T01:45:07.086684+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1042,
+        "raw_hash_matches": true,
+        "normalized_sha256": "acfe6776f0eefcf197e3cad76cb80497fac10486471e6b6b7ab6320812b76915",
+        "source_characters": 510,
+        "excerpt_characters": 510,
+        "omitted_claim_count": 0,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 0,
+        "filing_id": "5a69a303-1ff2-426e-a7e7-9f52fe677163",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800130",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800130&dcmNo=11632257&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 446,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "filing_id": "e934a5ea-dd26-4cdf-8e48-e247c516b182",
+      "ticker": "005380",
+      "date": "2026-10-29",
+      "title": "약관에의한금융거래시계열금융회사의거래상대방의공시",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        1
+      ],
+      "reason": "Claim 1 presents 12,000억원 as an unqualified total transaction amount. The filing describes planned Hyundai Motor Securities cash-management transactions for 2027-01-01 through 2027-03-31; the future period and planned scope must be retained.",
+      "claims_reviewed": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000447",
+      "source_sha256": "c029103cb66aeaa88ec63940fba7bfbf9b72ff55a0d4cfbe1ab067c06988a24d",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000447&dcmNo=11633567&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+      "official_text_sha256": "e60a4b6ddb1a9d9ef505d726733e09a37b892502051ad407430894cc08e260a1",
+      "short_reason": "C1 omits that 12,000억원 is planned cash-management activity for Jan–Mar 2027, not an unqualified actual total.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1536,
+        "member_count": 1,
+        "processed_at": "2026-10-29T10:15:06.799919+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 754,
+        "raw_hash_matches": true,
+        "normalized_sha256": "408d0379caf9e71a2d55f00aee2f796f2052a88d6762b93ac8b0ca0fc2b63a14",
+        "source_characters": 390,
+        "excerpt_characters": 390,
+        "omitted_claim_count": 3,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 1,
+        "filing_id": "e934a5ea-dd26-4cdf-8e48-e247c516b182",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000447",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000447&dcmNo=11633567&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+        "viewer_characters": 318,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "needs_revision",
+          "reason": "Claim 1 presents 12,000억원 as an unqualified total transaction amount. The filing describes planned Hyundai Motor Securities cash-management transactions for 2027-01-01 through 2027-03-31; the future period and planned scope must be retained."
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "filing_id": "fe3581fe-bd83-4f07-9360-d040b61da422",
+      "ticker": "005930",
+      "date": "2026-10-29",
+      "title": "특수관계인에대한증여",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        1
+      ],
+      "reason": "Claim 1 says 150,000백만원 was donated on 2026-10-29. That is the board-resolution date; the donation-date field is blank and the source schedules payments over five years starting 2026. A completed transfer on the board date is unsupported.",
+      "claims_reviewed": 5,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000573",
+      "source_sha256": "3fb64202f9d191977a287e99b4cdcd91c2a8d13cc1c1a52ae8c3cab28aa02a69",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000573&dcmNo=11634042&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+      "official_text_sha256": "ad66d29460ded91cbe99a3e27d5d551833ec3d1104eab5dcef6bfd92e38b6757",
+      "short_reason": "C1 mistakes the board date for a completed 150,000백만원 donation; the source schedules installments over five years.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1589,
+        "member_count": 1,
+        "processed_at": "2026-10-29T10:45:06.994156+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1091,
+        "raw_hash_matches": true,
+        "normalized_sha256": "9937b471038954ae8abf936eb3af9b1ab7ae51b62f3e503ae3cbf8a2c93add3e",
+        "source_characters": 535,
+        "excerpt_characters": 535,
+        "omitted_claim_count": 1,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 2,
+        "filing_id": "fe3581fe-bd83-4f07-9360-d040b61da422",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000573",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000573&dcmNo=11634042&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+        "viewer_characters": 477,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 4,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "needs_revision",
+          "reason": "Claim 1 says 150,000백만원 was donated on 2026-10-29. That is the board-resolution date; the donation-date field is blank and the source schedules payments over five years starting 2026. A completed transfer on the board date is unsupported."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 5,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "filing_id": "a1076aae-d53e-4a25-b6ba-184c3ce85a0d",
+      "ticker": "005380",
+      "date": "2026-10-29",
+      "title": "특수관계인과의내부거래",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        1
+      ],
+      "reason": "Claim 1 says a 13,700백만원 transaction was concluded. The source calls this expected 2027 brand-fee income from Hyundai Steel, expressly an estimate that can change. Preserve its future period and estimate status rather than implying a completed fixed-amount contract.",
+      "claims_reviewed": 2,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000456",
+      "source_sha256": "da5b583a8b50d697c55e20a1fbb9082d53a648f196a194c75c773d76045847b7",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000456&dcmNo=11633601&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+      "official_text_sha256": "70341583397225c09a883e6cef7610b003b0e74b3aea52558f57d7be8440a26b",
+      "short_reason": "C1 calls expected 2027 brand-fee income a completed fixed-amount contract; the source labels it a changeable estimate.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1627,
+        "member_count": 1,
+        "processed_at": "2026-10-29T09:15:07.224544+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1232,
+        "raw_hash_matches": true,
+        "normalized_sha256": "495fbf9c88551ade1b04ed9b0ded6d8b2458d1c399c4bfb1526254272ba02c84",
+        "source_characters": 590,
+        "excerpt_characters": 590,
+        "omitted_claim_count": 2,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 3,
+        "filing_id": "a1076aae-d53e-4a25-b6ba-184c3ce85a0d",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000456",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000456&dcmNo=11633601&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+        "viewer_characters": 526,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "needs_revision",
+          "reason": "Claim 1 says a 13,700백만원 transaction was concluded. The source calls this expected 2027 brand-fee income from Hyundai Steel, expressly an estimate that can change. Preserve its future period and estimate status rather than implying a completed fixed-amount contract."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "filing_id": "f4b198c1-ee54-43fc-87f3-ac1b7bfaf18f",
+      "ticker": "005930",
+      "date": "2026-10-29",
+      "title": "특수관계인에대한증여",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        1,
+        3
+      ],
+      "reason": "Claim 1 says the gift was completed, while the source schedules the contract, cash payment and facilities provision during 2026. Claim 3 turns that planned year into a donation date despite the blank date field; neither completed payment nor an actual donation date is established.",
+      "claims_reviewed": 4,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000567",
+      "source_sha256": "0685e626c7e8a58ebe365bd2a1ef82dd9eeb3f07256ebcaffa5023601335f4a8",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000567&dcmNo=11634025&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+      "official_text_sha256": "bd35af20d23d5be20b5de13d631bc6a370857629df9bce46670ef865062d9b33",
+      "short_reason": "C1/C3 turn a planned 2026 donation/provision into a completed gift and an actual donation date.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1617,
+        "member_count": 1,
+        "processed_at": "2026-10-29T10:30:07.40991+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1159,
+        "raw_hash_matches": true,
+        "normalized_sha256": "59aa019860f25a6b08d37bf08b608abb4b84d845071568cc9d6210bb1180191c",
+        "source_characters": 557,
+        "excerpt_characters": 557,
+        "omitted_claim_count": 1,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 4,
+        "filing_id": "f4b198c1-ee54-43fc-87f3-ac1b7bfaf18f",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000567",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000567&dcmNo=11634025&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+        "viewer_characters": 501,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "needs_revision",
+          "reason": "Claim 1 says the gift was completed, while the source schedules the contract, cash payment and facilities provision during 2026. Claim 3 turns that planned year into a donation date despite the blank date field; neither completed payment nor an actual donation date is established."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 3,
+          "status": "needs_revision",
+          "reason": "Claim 1 says the gift was completed, while the source schedules the contract, cash payment and facilities provision during 2026. Claim 3 turns that planned year into a donation date despite the blank date field; neither completed payment nor an actual donation date is established."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "filing_id": "774fedf7-785b-447a-914d-290c5977ad7e",
+      "ticker": "000660",
+      "date": "2026-10-28",
+      "title": "[기재정정]기업설명회(IR)개최(안내공시)",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "The four claims match the IR notice: conference-call method, investors/media audience, publication-day materials, and the corrected Teletogether Korean/English webcast route. They do not restate the superseded webcast route.",
+      "claims_reviewed": 4,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028800052",
+      "source_sha256": "2df648eacf5f2852ed128be1b3304ecc48d25ac058e3d79337ac627ef3a8b83e",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261028800052&dcmNo=11629617&eleId=0&offset=0&length=0&dtd=HTML",
+      "official_text_sha256": "1c6bc81b129071c6917b26635f47b61206167d56b3648c7073973a92bcedf7b2",
+      "short_reason": "IR method, audience, materials and corrected webcast route match the amended notice.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 2219,
+        "member_count": 1,
+        "processed_at": "2026-10-28T01:00:08.134128+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 2404,
+        "raw_hash_matches": true,
+        "normalized_sha256": "0134dcf026b17feb356745f636fedb5f06f21c9c2cc75beaa2be4aca4eb77622",
+        "source_characters": 1366,
+        "excerpt_characters": 1366,
+        "omitted_claim_count": 2,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 5,
+        "filing_id": "774fedf7-785b-447a-914d-290c5977ad7e",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028800052",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261028800052&dcmNo=11629617&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 1302,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "filing_id": "57af4ab5-afe8-42c9-8a64-5ad37592a73b",
+      "ticker": "005380",
+      "date": "2026-10-29",
+      "title": "공정거래자율준수프로그램운영현황(안내공시)",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        2
+      ],
+      "reason": "Claim 2 places the entire August-through-October training in the third quarter and states it as completed. The source reports an August–October program under a third-quarter status heading; that interval crosses into the fourth quarter. Retain the reported program period without asserting all activity occurred/completed in Q3.",
+      "claims_reviewed": 6,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800592",
+      "source_sha256": "be9e90e61a6d45dd2ea7e10f672a0c2a669a68bbf8291dc4c9343bfa40466130",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800592&dcmNo=11633769&eleId=0&offset=0&length=0&dtd=HTML",
+      "official_text_sha256": "b7067d0f201a518c53c112b5aa09af2395bd9b66c25a0d6dc00ba34348e9a577",
+      "short_reason": "C2 assigns an August–October training program wholly to completed third-quarter activity; preserve the cross-quarter period.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 2118,
+        "member_count": 1,
+        "processed_at": "2026-10-29T08:00:08.743942+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 2455,
+        "raw_hash_matches": true,
+        "normalized_sha256": "8d0783a88e16e19be95523886b16187dce5805e9b5ecaf3a785dcd867a69de87",
+        "source_characters": 1158,
+        "excerpt_characters": 1158,
+        "omitted_claim_count": 0,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 6,
+        "filing_id": "57af4ab5-afe8-42c9-8a64-5ad37592a73b",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800592",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800592&dcmNo=11633769&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 1094,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 4,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 5,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 2,
+          "status": "needs_revision",
+          "reason": "Claim 2 places the entire August-through-October training in the third quarter and states it as completed. The source reports an August–October program under a third-quarter status heading; that interval crosses into the fourth quarter. Retain the reported program period without asserting all activity occurred/completed in Q3."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 5,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 6,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "filing_id": "e12ff736-0c1d-44d1-9e47-a3b64b4279c8",
+      "ticker": "005930",
+      "date": "2026-10-29",
+      "title": "특수관계인과의보험거래",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        1,
+        3
+      ],
+      "reason": "Claim 1 asserts insurance enrollment was completed although the filing gives a start after 2026-10-29 and the board decision. Claim 3 states 4.25% without the material basis: simple-interest equivalent after premium-related expenses. Preserve plan/timing and that rate qualification.",
+      "claims_reviewed": 5,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000525",
+      "source_sha256": "1bf9afafecb650bf4ecf8d3ad1d2983ab527b77b4e141670c7d0dfe0d024f092",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000525&dcmNo=11633838&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+      "official_text_sha256": "3a7d44a7c24dbc52e8d6f51833f0ae43c5451f86125cb391258f46396e1c8bf8",
+      "short_reason": "C1 asserts completed enrollment; C3 drops the 4.25% rate basis (simple-interest equivalent after expenses).",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1632,
+        "member_count": 1,
+        "processed_at": "2026-10-29T10:00:08.52414+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1078,
+        "raw_hash_matches": true,
+        "normalized_sha256": "6624da60993bdf83894719d6d0b5d79b8df8e16b37132fdb14fec6386b294af4",
+        "source_characters": 518,
+        "excerpt_characters": 518,
+        "omitted_claim_count": 0,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 7,
+        "filing_id": "e12ff736-0c1d-44d1-9e47-a3b64b4279c8",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000525",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000525&dcmNo=11633838&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+        "viewer_characters": 460,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 4,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "needs_revision",
+          "reason": "Claim 1 asserts insurance enrollment was completed although the filing gives a start after 2026-10-29 and the board decision. Claim 3 states 4.25% without the material basis: simple-interest equivalent after premium-related expenses. Preserve plan/timing and that rate qualification."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 3,
+          "status": "needs_revision",
+          "reason": "Claim 1 asserts insurance enrollment was completed although the filing gives a start after 2026-10-29 and the board decision. Claim 3 states 4.25% without the material basis: simple-interest equivalent after premium-related expenses. Preserve plan/timing and that rate qualification."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 5,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "filing_id": "4f68bb4f-542f-44ca-bcf9-aab32f75f1b5",
+      "ticker": "000660",
+      "date": "2026-10-28",
+      "title": "현금ㆍ현물배당결정",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        2
+      ],
+      "reason": "Claim 2 presents 14,103,466,480,000원 as an unqualified final dividend total. The source explicitly calculates it from board-date eligible shares and says the actual payable total can change with record-date circulating shares. Label it the disclosed calculated amount, not a settled payable total.",
+      "claims_reviewed": 3,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028800045",
+      "source_sha256": "7bd44e9cf11d538a09cde7b063111877a75a9120504cb435aad6beadfe95af86",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261028800045&dcmNo=11629586&eleId=0&offset=0&length=0&dtd=HTML",
+      "official_text_sha256": "68fbc00cf53f02d3e63994711fdaca2cb03df1d049f3575cda849a38d63759b1",
+      "short_reason": "C2 drops the explicit condition that the calculated dividend total may change with record-date eligible shares.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1921,
+        "member_count": 1,
+        "processed_at": "2026-10-28T00:45:06.66931+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1525,
+        "raw_hash_matches": true,
+        "normalized_sha256": "5222296038637fc4142f497914318ddb147812bab17a6884315346c3162a8ff0",
+        "source_characters": 741,
+        "excerpt_characters": 741,
+        "omitted_claim_count": 3,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 8,
+        "filing_id": "4f68bb4f-542f-44ca-bcf9-aab32f75f1b5",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028800045",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261028800045&dcmNo=11629586&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 677,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 2,
+          "status": "needs_revision",
+          "reason": "Claim 2 presents 14,103,466,480,000원 as an unqualified final dividend total. The source explicitly calculates it from board-date eligible shares and says the actual payable total can change with record-date circulating shares. Label it the disclosed calculated amount, not a settled payable total."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "filing_id": "ef986c4e-6b85-4143-ab23-69d33e8ef3bd",
+      "ticker": "005380",
+      "date": "2026-10-29",
+      "title": "현금ㆍ현물배당을위한주주명부폐쇄(기준일)결정",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "Quarterly-dividend classification, shareholder eligibility purpose, use of a record date without closing the register, and an all-independent-director audit committee are expressly supported.",
+      "claims_reviewed": 3,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800264",
+      "source_sha256": "4d4223dc89a12e1ed49d9eb8c304a0a73d04d691cb37896d7e24ebe12e99ad73",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800264&dcmNo=11632755&eleId=0&offset=0&length=0&dtd=HTML",
+      "official_text_sha256": "573caab76be4f977e0b301a3c2d7c94a4ee01e4a6e2704a5e4a9c18e4dd32a31",
+      "short_reason": "Quarterly-dividend eligibility, record-date-only process and audit-committee composition are supported.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1548,
+        "member_count": 1,
+        "processed_at": "2026-10-29T06:15:06.831375+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 932,
+        "raw_hash_matches": true,
+        "normalized_sha256": "ea4797c3c2ba4d67502b754ad09b7354dcba48879fd722d1500336d8a397f99f",
+        "source_characters": 454,
+        "excerpt_characters": 454,
+        "omitted_claim_count": 2,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 9,
+        "filing_id": "ef986c4e-6b85-4143-ab23-69d33e8ef3bd",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800264",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800264&dcmNo=11632755&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 390,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "filing_id": "c3efce77-10da-4191-b222-22065ebf5cbb",
+      "ticker": "005930",
+      "date": "2026-10-29",
+      "title": "특수관계인에대한출자",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        1,
+        2,
+        5
+      ],
+      "reason": "Claim 1 treats the future 2026-11-17 scheduled subscription payment as already completed. Claim 2 omits that the 6,662억원 amount depends on the final issue price. Claim 5 invents five audit-committee attendees: the five-person count applies to independent directors, while audit attendance is only marked present.",
+      "claims_reviewed": 5,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000501",
+      "source_sha256": "fbf998845522bb839ae1dffae5d70c0edbb2b42bd64ce1491f8cc486b0fab177",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000501&dcmNo=11633768&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+      "official_text_sha256": "35bb2c0fad5ad780c13d882371f7161c8bb7c13be799c23f16354aa607bf8688",
+      "short_reason": "C1 treats future payment as complete; C2 drops provisional pricing; C5 invents five audit-committee attendees.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1805,
+        "member_count": 1,
+        "processed_at": "2026-10-29T09:45:10.395396+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1717,
+        "raw_hash_matches": true,
+        "normalized_sha256": "294985cc8f1b5429585ef363ce92b6041241ded36156284042acc1c81a5f86a8",
+        "source_characters": 789,
+        "excerpt_characters": 789,
+        "omitted_claim_count": 0,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 10,
+        "filing_id": "c3efce77-10da-4191-b222-22065ebf5cbb",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000501",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000501&dcmNo=11633768&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+        "viewer_characters": 736,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 4,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "needs_revision",
+          "reason": "Claim 1 treats the future 2026-11-17 scheduled subscription payment as already completed. Claim 2 omits that the 6,662억원 amount depends on the final issue price. Claim 5 invents five audit-committee attendees: the five-person count applies to independent directors, while audit attendance is only marked present."
+        },
+        {
+          "claim_number": 2,
+          "status": "needs_revision",
+          "reason": "Claim 1 treats the future 2026-11-17 scheduled subscription payment as already completed. Claim 2 omits that the 6,662억원 amount depends on the final issue price. Claim 5 invents five audit-committee attendees: the five-person count applies to independent directors, while audit attendance is only marked present."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 5,
+          "status": "needs_revision",
+          "reason": "Claim 1 treats the future 2026-11-17 scheduled subscription payment as already completed. Claim 2 omits that the 6,662억원 amount depends on the final issue price. Claim 5 invents five audit-committee attendees: the five-person count applies to independent directors, while audit attendance is only marked present."
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "filing_id": "375abc74-a9a4-4b25-8782-bf39b517e1a4",
+      "ticker": "000660",
+      "date": "2026-10-28",
+      "title": "현금ㆍ현물배당을위한주주명부폐쇄(기준일)결정",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "Quarterly-dividend classification, six independent/outside directors present with none absent, shareholder eligibility purpose, and no register closure match the filing.",
+      "claims_reviewed": 4,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028800048",
+      "source_sha256": "4b5dadca4d1533c4e091b641f3317e50c5b048475d4ab2b7d42a6203a8abbe69",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261028800048&dcmNo=11629604&eleId=0&offset=0&length=0&dtd=HTML",
+      "official_text_sha256": "e85fa5ac409c01c2807a32c72395f2f5e9453f10df7a438ad052ea6a371c5a1e",
+      "short_reason": "Dividend type, independent-director attendance and record-date-only eligibility are supported.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1533,
+        "member_count": 1,
+        "processed_at": "2026-10-28T00:30:06.801291+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 879,
+        "raw_hash_matches": true,
+        "normalized_sha256": "d43ff72fde2e45b707c66db15d6566778a278c4ec798ec9dc5eb180d63f564fc",
+        "source_characters": 435,
+        "excerpt_characters": 435,
+        "omitted_claim_count": 2,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 11,
+        "filing_id": "375abc74-a9a4-4b25-8782-bf39b517e1a4",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028800048",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261028800048&dcmNo=11629604&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 371,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "filing_id": "b2db7865-ba14-4c53-8b2f-b80ebcb6255e",
+      "ticker": "005380",
+      "date": "2026-10-29",
+      "title": "현금ㆍ현물배당결정",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "Both share classes have the disclosed 2,500원 per-share dividend. The total is expressly described as calculated, not paid or guaranteed; seven independent/outside directors attended. Keep the original filing and decision context with these excerpts.",
+      "claims_reviewed": 3,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800269",
+      "source_sha256": "54bc01f9ff27998e90383bf1442b106f6360c2c5e5fefb04393c40cd8b6d58cc",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800269&dcmNo=11632767&eleId=0&offset=0&length=0&dtd=HTML",
+      "official_text_sha256": "31b8678f639a12586f9a6e2061d952c3d1ea7997c1d4942600c020c8e785e74f",
+      "short_reason": "Per-share amount and director attendance match; the total is correctly described as calculated.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 2129,
+        "member_count": 1,
+        "processed_at": "2026-10-29T06:00:07.52054+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1703,
+        "raw_hash_matches": true,
+        "normalized_sha256": "c0349ae4ff3e6168eec6cdef8a2d6ebf5d91ba50b4106e0b6a503cb55627762e",
+        "source_characters": 861,
+        "excerpt_characters": 861,
+        "omitted_claim_count": 3,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 12,
+        "filing_id": "b2db7865-ba14-4c53-8b2f-b80ebcb6255e",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800269",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800269&dcmNo=11632767&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 797,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "filing_id": "c1be46a0-fee7-469c-aeee-5df39eaf61b8",
+      "ticker": "005930",
+      "date": "2026-10-29",
+      "title": "기타경영사항(자율공시)",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        1
+      ],
+      "reason": "Claim 1 says the 12.6억원 donation to the Korea Association of Athletics Federations was contributed. The evidence discloses the donation decision and identifies 2026-10-29 as its board-resolution date; it does not establish completed disbursement. Use decision wording.",
+      "claims_reviewed": 2,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800748",
+      "source_sha256": "0a55744bc8e29307f782fcf4b4f221898750570132d99511ebfd142d4e547ddb",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800748&dcmNo=11634169&eleId=0&offset=0&length=0&dtd=HTML",
+      "official_text_sha256": "29e53b18c24f99c399e1d06706e6a6a4676fd4821485d6fb1e2fb3c1f0384fbf",
+      "short_reason": "C1 claims completed donation although the evidence establishes the board decision only.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1333,
+        "member_count": 1,
+        "processed_at": "2026-10-29T09:30:07.533144+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 555,
+        "raw_hash_matches": true,
+        "normalized_sha256": "052caeccc6609327573d981fe5233ed78e9e0ef37108007f85d4bfa306d857fe",
+        "source_characters": 295,
+        "excerpt_characters": 295,
+        "omitted_claim_count": 1,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 13,
+        "filing_id": "c1be46a0-fee7-469c-aeee-5df39eaf61b8",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800748",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800748&dcmNo=11634169&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 231,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "needs_revision",
+          "reason": "Claim 1 says the 12.6억원 donation to the Korea Association of Athletics Federations was contributed. The evidence discloses the donation decision and identifies 2026-10-29 as its board-resolution date; it does not establish completed disbursement. Use decision wording."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "filing_id": "12d4830d-091f-4773-a8fe-9ec5c671ae05",
+      "ticker": "000660",
+      "date": "2026-10-28",
+      "title": "주요사항보고서(자기주식취득결정)",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "The six claims correctly preserve a buyback decision and planned acquisition window, purposes, market method/brokers, the explicitly dated 2026-10-27 reference closing price, and the historical 73-share clean-up-call acquisition. No market price is presented as live.",
+      "claims_reviewed": 6,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028000014",
+      "source_sha256": "375104ea4590f7fbaad4ac59bbba40a426e2c7daed6c7cd79ee83f4c6de05182",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261028000014&dcmNo=11629610&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+      "official_text_sha256": "aaae03780c9783d1216c3dac71906455ff539ce384dec63667ad05a6e7903da7",
+      "short_reason": "Buyback decision/planned window, purposes, brokers, dated reference price and historical odd-lot acquisition are supported.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 6253,
+        "member_count": 1,
+        "processed_at": "2026-10-28T00:15:11.625677+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 5988,
+        "raw_hash_matches": true,
+        "normalized_sha256": "2f999fbf9fa548ede865a4975c5942c8b84ce2bc922434d183a6150c975f1144",
+        "source_characters": 3166,
+        "excerpt_characters": 3166,
+        "omitted_claim_count": 0,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 14,
+        "filing_id": "12d4830d-091f-4773-a8fe-9ec5c671ae05",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028000014",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261028000014&dcmNo=11629610&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+        "viewer_characters": 3082,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 4,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 5,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 5,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 6,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "filing_id": "97283e76-b1a8-4571-87a5-ff1f81ccfc95",
+      "ticker": "005380",
+      "date": "2026-10-29",
+      "title": "[기재정정]장래사업ㆍ경영계획(공정공시)",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "The claims select the corrected 400만대 sales target, 5.5–6.5% margin target and 16조원 investment plan rather than superseded figures, preserve target/plan wording, and match the revised board/information dates and scheduled conference-call disclosure.",
+      "claims_reviewed": 6,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800231",
+      "source_sha256": "5168bb66c26ca1c98a0ec7180265cebcd583d17f0f004dd3470feadbf3b6ccb8",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800231&dcmNo=11632683&eleId=0&offset=0&length=0&dtd=HTML",
+      "official_text_sha256": "8a3cd0ec01ac7f7a93037fcd925edaeef5b752c0ee7e62814d358e2da8d82bb0",
+      "short_reason": "Uses corrected guidance figures and retains target/plan wording, revised dates and scheduled disclosure.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 2895,
+        "member_count": 1,
+        "processed_at": "2026-10-29T05:45:06.810878+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 3006,
+        "raw_hash_matches": true,
+        "normalized_sha256": "b24ab031617495e42dd80459d6c1f45956e46d1f1c10702e0547ccfbfb36e981",
+        "source_characters": 1570,
+        "excerpt_characters": 1570,
+        "omitted_claim_count": 0,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 15,
+        "filing_id": "97283e76-b1a8-4571-87a5-ff1f81ccfc95",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800231",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800231&dcmNo=11632683&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 1506,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 4,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 5,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 5,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 6,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "filing_id": "6bd9dc3b-9e8e-4623-8511-f2fd255253e1",
+      "ticker": "005930",
+      "date": "2026-10-29",
+      "title": "주요사항보고서(자기주식처분결정)",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        2
+      ],
+      "reason": "Claim 2 gives 242,000원 as the disposal share price without the source qualification that this is the 2026-10-28 reference closing price. The filing says actual shares, price and proceeds can change at transfer; preserve the reference-date and estimate status.",
+      "claims_reviewed": 6,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000539",
+      "source_sha256": "dd0c734ac850a90d6472448c37d7f617330eae48affb3708ae3cd615b98f9c6e",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000539&dcmNo=11633955&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+      "official_text_sha256": "6822d8236a688efd9bede994a0f737a5f39fbb550e04e5f8dbb7075d57c5e6f7",
+      "short_reason": "C2 presents the prior-day reference closing price without its reference-date and changeable-execution qualification.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 5150,
+        "member_count": 1,
+        "processed_at": "2026-10-29T09:00:08.639214+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 5046,
+        "raw_hash_matches": true,
+        "normalized_sha256": "bdad998557b90ae86b89854da85fdd0dbe4793f4160881127637cd9951b34742",
+        "source_characters": 2640,
+        "excerpt_characters": 2640,
+        "omitted_claim_count": 0,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 16,
+        "filing_id": "6bd9dc3b-9e8e-4623-8511-f2fd255253e1",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000539",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000539&dcmNo=11633955&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+        "viewer_characters": 2583,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 4,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 5,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 2,
+          "status": "needs_revision",
+          "reason": "Claim 2 gives 242,000원 as the disposal share price without the source qualification that this is the 2026-10-28 reference closing price. The filing says actual shares, price and proceeds can change at transfer; preserve the reference-date and estimate status."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 5,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 6,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "filing_id": "fe29523d-cb5d-4392-9a5f-baeab9ee1fb9",
+      "ticker": "000660",
+      "date": "2026-10-28",
+      "title": "수시공시의무관련사항(공정공시)",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        4
+      ],
+      "reason": "Claim 4 assigns the 20조원 buyback resolution to 2026-10-26. The filing dated 2026-10-28 says the decision is today; 2026-10-26 is the date of a different newspaper report. This is a date-to-event attribution error despite matching numeric tokens.",
+      "claims_reviewed": 5,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028800040",
+      "source_sha256": "31b9ac914e180792bc1e60f0ffa6e1c82785e9e9fa83a2d623212d76d18f6700",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261028800040&dcmNo=11629596&eleId=0&offset=0&length=0&dtd=HTML",
+      "official_text_sha256": "44d4d0d08b395e73314bd5ca109d268f71fb0d0a63ab8093eb292678ab2ebbdc",
+      "short_reason": "C4 confuses the Oct 26 newspaper-report date with the Oct 28 buyback decision.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 2461,
+        "member_count": 1,
+        "processed_at": "2026-10-27T23:45:06.566988+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 2334,
+        "raw_hash_matches": true,
+        "normalized_sha256": "067a93b28d12c0f8d4964dedb7aa278c4cb4006cbe20b033131e8d6ba67be032",
+        "source_characters": 1113,
+        "excerpt_characters": 1113,
+        "omitted_claim_count": 0,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 17,
+        "filing_id": "fe29523d-cb5d-4392-9a5f-baeab9ee1fb9",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028800040",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261028800040&dcmNo=11629596&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 1049,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 4,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 4,
+          "status": "needs_revision",
+          "reason": "Claim 4 assigns the 20조원 buyback resolution to 2026-10-26. The filing dated 2026-10-28 says the decision is today; 2026-10-26 is the date of a different newspaper report. This is a date-to-event attribution error despite matching numeric tokens."
+        },
+        {
+          "claim_number": 5,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "filing_id": "56da7830-1b0b-4237-a518-ef0f67a798b7",
+      "ticker": "005380",
+      "date": "2026-10-29",
+      "title": "[기재정정]영업실적등에대한전망(공정공시)",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "All three claims faithfully compare corrected sales targets: 4,158,300→4,000,000 total, 700,000→664,000 domestic, and 3,458,300→3,336,000 overseas. Each remains explicitly a target, not realized sales.",
+      "claims_reviewed": 3,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800240",
+      "source_sha256": "049611f8c5ef8dffbd161d3a75146e1828c611e5e1b8a8c659a8cdbf957a2f21",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800240&dcmNo=11632721&eleId=0&offset=0&length=0&dtd=HTML",
+      "official_text_sha256": "56ea30d9f7142efaebbeaa766d0f39cdf6eaf90b1c531f3c4bc68fd89eff6ea5",
+      "short_reason": "All three old/new sales-target comparisons match, with target status preserved.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 2912,
+        "member_count": 1,
+        "processed_at": "2026-10-29T05:30:07.916945+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 2383,
+        "raw_hash_matches": true,
+        "normalized_sha256": "1d421e15c5b5cde98c43a1f45973a1cceebe2318b93f94fd4397e7033f7b133c",
+        "source_characters": 1247,
+        "excerpt_characters": 1247,
+        "omitted_claim_count": 3,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 18,
+        "filing_id": "56da7830-1b0b-4237-a518-ef0f67a798b7",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800240",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800240&dcmNo=11632721&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 1183,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "filing_id": "63253dd6-c94f-4424-871c-1434bb615c05",
+      "ticker": "005930",
+      "date": "2026-10-29",
+      "title": "특수관계인에대한증여",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "The claims distinguish the board decision to donate 38,690백만원 from planned payment during 2026, retain the unset specific donation date, and correctly report independent-director and audit attendance without inventing an audit headcount.",
+      "claims_reviewed": 3,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000564",
+      "source_sha256": "d3445cc8cb891e6a1738ec89335a4dcece9d4e711ce4250755104cb964d8c730",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000564&dcmNo=11634020&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+      "official_text_sha256": "6460fb9d21390e97aff751e0ab5cd41f3b5584af34a5c8e65d51dd176a6376a1",
+      "short_reason": "Correctly distinguishes donation decision from planned 2026 payment and an unset specific date.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1475,
+        "member_count": 1,
+        "processed_at": "2026-10-29T08:45:07.821987+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 873,
+        "raw_hash_matches": true,
+        "normalized_sha256": "7230040e635184514c1f48ff2ffd25a3afae0191da0e925fdda3af2bd9818276",
+        "source_characters": 437,
+        "excerpt_characters": 437,
+        "omitted_claim_count": 1,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 19,
+        "filing_id": "63253dd6-c94f-4424-871c-1434bb615c05",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000564",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000564&dcmNo=11634020&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+        "viewer_characters": 379,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "filing_id": "d602fe90-1edd-4147-88c2-bb03d7f90e8d",
+      "ticker": "000660",
+      "date": "2026-10-28",
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "The only retained claim correctly states Q3 consolidated K-IFRS results are provisional and unaudited. It introduces no unsupported revenue/profit amount and does not claim to summarize the whole filing.",
+      "claims_reviewed": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028800036",
+      "source_sha256": "0b91b8f800ab62443e18d3492da92c0f305bf6e23c74f85e0e81a15539d45520",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261028800036&dcmNo=11629598&eleId=0&offset=0&length=0&dtd=HTML",
+      "official_text_sha256": "7602b4ad59f9bdcd70c04a50c7e2d3318d05d05c0671c4bfddfc4d0fe86ba2da",
+      "short_reason": "Retains consolidated K-IFRS, provisional and unaudited qualifications without inventing financial amounts.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 2936,
+        "member_count": 1,
+        "processed_at": "2026-10-27T23:30:07.588832+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 2325,
+        "raw_hash_matches": true,
+        "normalized_sha256": "7bbca7f75bb7e803f98b842ab34d60be27d63c7fadb3399951b421fe9879a600",
+        "source_characters": 1395,
+        "excerpt_characters": 1395,
+        "omitted_claim_count": 3,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 20,
+        "filing_id": "d602fe90-1edd-4147-88c2-bb03d7f90e8d",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028800036",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261028800036&dcmNo=11629598&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 1331,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "filing_id": "54685279-51ba-4cad-9592-4dc16b96a092",
+      "ticker": "005380",
+      "date": "2026-10-29",
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        1
+      ],
+      "reason": "Claim 1 says the presentation took place at 14:10 on 2026-10-29. The cited passage labels the information provision date/time as scheduled; it does not establish completed occurrence. Rephrase as the announced schedule or cite separate evidence of completion.",
+      "claims_reviewed": 2,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800228",
+      "source_sha256": "a6f06e337a0bfb164867e987bd2de725b2ba0c3f9502bc2c6e310d60720b2245",
+      "provenance": "Canonical source, nonempty quotations, stored-archive presence and raw/normalized hash bindings pass. Official DART viewer body independently retrieved; substantive quotation body matches after whitespace normalization and removal of parser/XML-title preambles. Original ZIP bytes were not re-downloaded or rehashed in this review.",
+      "official_viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800228&dcmNo=11632651&eleId=0&offset=0&length=0&dtd=HTML",
+      "official_text_sha256": "ab89fb84405d6781b803e760b5e3edfa6ceaacd916154f1b1fbe997c62078dd5",
+      "short_reason": "C1 turns a scheduled 14:10 presentation into an asserted completed event.",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 3002,
+        "member_count": 1,
+        "processed_at": "2026-10-29T05:15:06.624145+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 2342,
+        "raw_hash_matches": true,
+        "normalized_sha256": "bd5e96f32b47f7470bcf8d47286f71a5b7a82b4ba4d90f23a5c0c234989f3e90",
+        "source_characters": 1402,
+        "excerpt_characters": 1402,
+        "omitted_claim_count": 3,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "primary_crosscheck": {
+        "index": 21,
+        "filing_id": "54685279-51ba-4cad-9592-4dc16b96a092",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800228",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800228&dcmNo=11632651&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 1338,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "needs_revision",
+          "reason": "Claim 1 says the presentation took place at 14:10 on 2026-10-29. The cited passage labels the information provision date/time as scheduled; it does not establish completed occurrence. Rephrase as the announced schedule or cite separate evidence of completion."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Reviewed against its stored quotation and official DART body; no material unsupported assertion identified."
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "filing_id": "f7309c65-aa09-4f9d-9013-2229c82ae2e5",
+      "ticker": "005930",
+      "date": "2026-10-29",
+      "title": "현금ㆍ현물배당결정",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "Claim 1: The decision identifies a quarterly cash dividend and explicitly gives the same per-share amount for common and preferred shares. Read as a declared future payment, not confirmation that cash has already been paid.",
+      "short_reason": "Declared quarterly per-share dividend is supported for both share classes; no completed-payment assertion.",
+      "claims_reviewed": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800101",
+      "source_sha256": "4587347d91b0ea3510d29a6ea7ad216d3c5473e6d17ecd829108296f6154065a",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 2172,
+        "member_count": 1,
+        "processed_at": "2026-10-29T02:30:07.873922+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1626,
+        "raw_hash_matches": true,
+        "normalized_sha256": "a4bd228f570c641cf7827bb84cf0abafef47e638f3e3a78240630df665f865ca",
+        "source_characters": 808,
+        "excerpt_characters": 808,
+        "omitted_claim_count": 5,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 808,
+        "excerpt_characters": 808,
+        "omitted_claim_count": 5,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 22,
+        "filing_id": "f7309c65-aa09-4f9d-9013-2229c82ae2e5",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800101",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800101&dcmNo=11632157&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 744,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "The decision identifies a quarterly cash dividend and explicitly gives the same per-share amount for common and preferred shares. Read as a declared future payment, not confirmation that cash has already been paid."
+        }
+      ]
+    },
+    {
+      "index": 23,
+      "filing_id": "809dfd6c-a997-4861-aa30-e76b9d47e08a",
+      "ticker": "000660",
+      "date": "2026-10-26",
+      "title": "[기재정정]주식소각결정",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "Claim 1: The cited current table records the board decision date and the cancellation within distributable profits. Claim 2: The amended share count and planned cancellation date agree with the current table; planned wording retains the scheduled status. Claim 3: The quotation explicitly states the legal basis and that shares decrease while capital does not. Claim 4: Supported jointly by the same quotation: all audit committee members are independent directors and all independent directors attended (six present, zero absent). This is a bounded logical inference, not an invented committee headcount.",
+      "short_reason": "Corrected cancellation count/date, decision/legal basis and attendance inference are supported.",
+      "claims_reviewed": 4,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261026800524",
+      "source_sha256": "869a5cbf6c068acf4556957cfe5f4d006ce75b73cfe72078801097171c6be65c",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 2896,
+        "member_count": 1,
+        "processed_at": "2026-10-26T08:15:06.799855+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 5318,
+        "raw_hash_matches": true,
+        "normalized_sha256": "189ea52a917613e8981dcf4e560f101d6013aeb23069d895a96bba2007790414",
+        "source_characters": 2500,
+        "excerpt_characters": 2500,
+        "omitted_claim_count": 2,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 2500,
+        "excerpt_characters": 2500,
+        "omitted_claim_count": 2,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 23,
+        "filing_id": "809dfd6c-a997-4861-aa30-e76b9d47e08a",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261026800524",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261026800524&dcmNo=11627332&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 2436,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "The cited current table records the board decision date and the cancellation within distributable profits."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "The amended share count and planned cancellation date agree with the current table; planned wording retains the scheduled status."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "The quotation explicitly states the legal basis and that shares decrease while capital does not."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "Supported jointly by the same quotation: all audit committee members are independent directors and all independent directors attended (six present, zero absent). This is a bounded logical inference, not an invented committee headcount."
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "filing_id": "1894015a-e8dd-44a5-8d40-f084e139403e",
+      "ticker": "005380",
+      "date": "2026-10-29",
+      "title": "주요사항보고서(자기주식처분결정)",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        1
+      ],
+      "reason": "Claim 1: The quoted note says the price is the prior trading day closing reference used to calculate the proposal. The summary calls it the disposal price without that basis; it must not imply an assured execution price. The planned share count may also change with eligible employee counts.",
+      "short_reason": "C1 uses a prior-day reference closing price as an unqualified execution price.",
+      "claims_reviewed": 5,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000247",
+      "source_sha256": "8343ff76bb285e5ac6cb1ee56a19d9d3ac20ed5e922816a92d86670dfd241e8c",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 5302,
+        "member_count": 1,
+        "processed_at": "2026-10-29T05:00:07.453369+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 4846,
+        "raw_hash_matches": true,
+        "normalized_sha256": "2e56f45cd72c568ee6e2a4dc144d216684ca76682ac5bc58af8720b2fe121386",
+        "source_characters": 2522,
+        "excerpt_characters": 2522,
+        "omitted_claim_count": 1,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 2522,
+        "excerpt_characters": 2522,
+        "omitted_claim_count": 1,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 24,
+        "filing_id": "1894015a-e8dd-44a5-8d40-f084e139403e",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000247",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029000247&dcmNo=11632746&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+        "viewer_characters": 2468,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 4,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "needs_revision",
+          "reason": "The quoted note says the price is the prior trading day closing reference used to calculate the proposal. The summary calls it the disposal price without that basis; it must not imply an assured execution price. The planned share count may also change with eligible employee counts."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "The amount matches the reported planned disposal amount. Preserve its planned, reference-price-based and changeable status when repairing claim 0."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "The stated employee-share purpose is explicitly tied to the wage negotiation result."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "The cited proposal identifies 61,159 employees as the currently planned recipients; do not present this as the final executed count."
+        },
+        {
+          "claim_number": 5,
+          "status": "supported",
+          "reason": "The quoted alternative account-transfer routes and four-year mandatory deposit are explicit, including the employee-choice condition."
+        }
+      ]
+    },
+    {
+      "index": 25,
+      "filing_id": "a3fcdd1c-2872-4b85-b6eb-165a2ff0f97c",
+      "ticker": "005930",
+      "date": "2026-10-29",
+      "title": "[기재정정]연결재무제표기준영업(잠정)실적(공정공시)",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        1,
+        2
+      ],
+      "reason": "Claim 1: The summary states results without the provisional/unaudited qualification explicitly retained in the correction. Its assigned passage contains the amended numeric table but not the trillion-won unit label; the live full filing confirms the unit only outside this citation. Repair both the caveat and citation coverage. Claim 2: Same issue: the amended value matches the live filing, but the summary drops the provisional/unaudited qualification and the assigned quote does not show the claimed unit. Numeric substring validation alone is insufficient.",
+      "short_reason": "C1/C2 omit provisional/unaudited qualifications; their assigned quote lacks the claimed monetary unit.",
+      "claims_reviewed": 2,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800099",
+      "source_sha256": "720e092172c609e98d9de89a1c44e5092ff1802cb42cace92bc6215f1dee7473",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 3298,
+        "member_count": 1,
+        "processed_at": "2026-10-29T02:15:06.630859+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 3965,
+        "raw_hash_matches": true,
+        "normalized_sha256": "25d68926269c23c4073f797100422e931137040fbbacb8ca3f8216e4e11b8cee",
+        "source_characters": 2024,
+        "excerpt_characters": 2024,
+        "omitted_claim_count": 4,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 2024,
+        "excerpt_characters": 2024,
+        "omitted_claim_count": 4,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 25,
+        "filing_id": "a3fcdd1c-2872-4b85-b6eb-165a2ff0f97c",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800099",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800099&dcmNo=11632161&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 1960,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "needs_revision",
+          "reason": "The summary states results without the provisional/unaudited qualification explicitly retained in the correction. Its assigned passage contains the amended numeric table but not the trillion-won unit label; the live full filing confirms the unit only outside this citation. Repair both the caveat and citation coverage."
+        },
+        {
+          "claim_number": 2,
+          "status": "needs_revision",
+          "reason": "Same issue: the amended value matches the live filing, but the summary drops the provisional/unaudited qualification and the assigned quote does not show the claimed unit. Numeric substring validation alone is insufficient."
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "filing_id": "5480decc-443c-4e33-94d7-d605f9b56a0c",
+      "ticker": "000660",
+      "date": "2026-10-26",
+      "title": "자기주식취득결과보고서",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        1,
+        3
+      ],
+      "reason": "Claim 1: The reported acquisition amount expressly excludes fees. Restore that scope in the summary before treating the figure as total acquisition cost. Claim 3: The assigned quotation covers only the introductory rows of a longer acquisition table. The claim that all acquired shares were common shares needs the complete type/total evidence or a narrower statement; the live full table agrees, but the displayed single citation is incomplete for the universal claim.",
+      "short_reason": "C1 omits fees-excluded scope; C3 makes an all-shares assertion from an incomplete table citation.",
+      "claims_reviewed": 4,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261026000259",
+      "source_sha256": "14f8e6a084af5574362000c069894f63537e1a85f4bac69402c1186fdb1c719b",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 5477,
+        "member_count": 1,
+        "processed_at": "2026-10-26T08:00:07.041615+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 6480,
+        "raw_hash_matches": true,
+        "normalized_sha256": "3c2c2b7b2cd6f6319e6c9c01ad720eb3a5d67a2320619fd0b4c44c575346b291",
+        "source_characters": 4538,
+        "excerpt_characters": 4538,
+        "omitted_claim_count": 2,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 4538,
+        "excerpt_characters": 4538,
+        "omitted_claim_count": 2,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 26,
+        "filing_id": "5480decc-443c-4e33-94d7-d605f9b56a0c",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261026000259",
+        "status": "official_sections_retrieved",
+        "sections": [
+          {
+            "title": "자기주식취득결과보고서",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261026000259&dcmNo=11627309&eleId=1&offset=580&length=2386&dtd=dart4.xsd"
+          },
+          {
+            "title": "1. 발행인의 명칭 및 주소",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261026000259&dcmNo=11627309&eleId=2&offset=3025&length=422&dtd=dart4.xsd"
+          },
+          {
+            "title": "2. 취득보고에 관한 내용",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261026000259&dcmNo=11627309&eleId=5&offset=3451&length=1286&dtd=dart4.xsd"
+          },
+          {
+            "title": "3. 취득내용",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261026000259&dcmNo=11627309&eleId=8&offset=4741&length=34683&dtd=dart4.xsd"
+          },
+          {
+            "title": "4. 취득 예정 내용과 실제 취득 내용의 일치 여부",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261026000259&dcmNo=11627309&eleId=9&offset=39428&length=2600&dtd=dart4.xsd"
+          },
+          {
+            "title": "5. 취득후 자기주식등의 보유상황",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261026000259&dcmNo=11627309&eleId=10&offset=42032&length=5177&dtd=dart4.xsd"
+          },
+          {
+            "title": "6. 취득전후 최대주주의 보유주식 변동내역",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261026000259&dcmNo=11627309&eleId=11&offset=47213&length=2665&dtd=dart4.xsd"
+          }
+        ],
+        "viewer_characters": 4475,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "needs_revision",
+          "reason": "The reported acquisition amount expressly excludes fees. Restore that scope in the summary before treating the figure as total acquisition cost."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "The selected rows identify SK Securities and code 00131850; the independently retrieved complete acquisition section corroborates that broker throughout."
+        },
+        {
+          "claim_number": 3,
+          "status": "needs_revision",
+          "reason": "The assigned quotation covers only the introductory rows of a longer acquisition table. The claim that all acquired shares were common shares needs the complete type/total evidence or a narrower statement; the live full table agrees, but the displayed single citation is incomplete for the universal claim."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "The cited controlling-shareholder table gives the exact date and equal before/after balances for SK Square, without an unmentioned account aggregation."
+        }
+      ]
+    },
+    {
+      "index": 27,
+      "filing_id": "9fcadc9b-a33d-4b52-a9f9-cd4cd63d3145",
+      "ticker": "005930",
+      "date": "2026-10-29",
+      "title": "장래사업ㆍ경영계획(공정공시)",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "Claim 1: The total is explicitly an approximate plan for the specified year, not completed expenditure. Claim 2: The DS amount is expressly scheduled expenditure within the stated plan. Claim 3: The SDC amount is expressly scheduled expenditure within the stated plan. Claim 4: The described infrastructure and customer-linked investment purposes are stated for DS. The summary says the overall plan includes them, which does not incorrectly attribute them to every segment.",
+      "short_reason": "Capital-expenditure total, segments and purposes remain explicitly planned/approximate.",
+      "claims_reviewed": 4,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800102",
+      "source_sha256": "5fa48be5d12523d3da28a4be29855806b86b6d473b30153cfae7a73ea4033322",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 2079,
+        "member_count": 1,
+        "processed_at": "2026-10-29T02:00:08.660164+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1515,
+        "raw_hash_matches": true,
+        "normalized_sha256": "50e01bbfb9113b59b394d534b23559639d89f71cc82c53b42cc0dd023c2a2d4c",
+        "source_characters": 761,
+        "excerpt_characters": 761,
+        "omitted_claim_count": 1,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 761,
+        "excerpt_characters": 761,
+        "omitted_claim_count": 1,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 27,
+        "filing_id": "9fcadc9b-a33d-4b52-a9f9-cd4cd63d3145",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800102",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800102&dcmNo=11632162&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 697,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "The total is explicitly an approximate plan for the specified year, not completed expenditure."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "The DS amount is expressly scheduled expenditure within the stated plan."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "The SDC amount is expressly scheduled expenditure within the stated plan."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "The described infrastructure and customer-linked investment purposes are stated for DS. The summary says the overall plan includes them, which does not incorrectly attribute them to every segment."
+        }
+      ]
+    },
+    {
+      "index": 28,
+      "filing_id": "6132fbfe-3d38-4380-842c-92c638d93149",
+      "ticker": "000660",
+      "date": "2026-10-26",
+      "title": "풍문또는보도에대한해명(미확정)",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "Claim 1: The newspaper headline is identified as the subject of an explanatory disclosure, not asserted as an established distribution. Claim 2: The claim preserves the central qualification that no decision had been finalized at the filing date. Claim 3: The disclosure explicitly gives the intended announcement timing after a board resolution. The summary retains future/planned language rather than claiming that resolution or announcement already occurred.",
+      "short_reason": "Historical rumor response preserves lack of a final decision and the intended later announcement.",
+      "claims_reviewed": 3,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261026800118",
+      "source_sha256": "ca7ee28eb3c6f87485bebfa451bbe5c663794fc1ceeb4a2fe52051aaf905ba8f",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1549,
+        "member_count": 1,
+        "processed_at": "2026-10-26T01:00:07.24224+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1089,
+        "raw_hash_matches": true,
+        "normalized_sha256": "a18a3c4d4ac60e595fc1d75fb0333525ae2af63e3d9a6b68e41f9744990d6811",
+        "source_characters": 537,
+        "excerpt_characters": 537,
+        "omitted_claim_count": 0,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 537,
+        "excerpt_characters": 537,
+        "omitted_claim_count": 0,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 28,
+        "filing_id": "6132fbfe-3d38-4380-842c-92c638d93149",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261026800118",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261026800118&dcmNo=11626520&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 473,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "The newspaper headline is identified as the subject of an explanatory disclosure, not asserted as an established distribution."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "The claim preserves the central qualification that no decision had been finalized at the filing date."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "The disclosure explicitly gives the intended announcement timing after a board resolution. The summary retains future/planned language rather than claiming that resolution or announcement already occurred."
+        }
+      ]
+    },
+    {
+      "index": 29,
+      "filing_id": "6f633953-4794-4c55-add5-26b990decc38",
+      "ticker": "005380",
+      "date": "2026-10-23",
+      "title": "특수관계인으로부터기타유가증권매수",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        5
+      ],
+      "reason": "Claim 5: The footnote clarifies that the reported resolution date belongs to the Sustainability Management Committee, a board committee. Calling it a board resolution without that qualification loses the actual decision-making body; seven independent directors attended that committee.",
+      "short_reason": "C5 treats the Sustainability Management Committee resolution as an unqualified full-board resolution.",
+      "claims_reviewed": 5,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000336",
+      "source_sha256": "be865bbca6062a3241f723cdc27a8eecf017d128087c7d07bc8c05368c222d71",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1711,
+        "member_count": 1,
+        "processed_at": "2026-10-23T07:15:07.257404+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1385,
+        "raw_hash_matches": true,
+        "normalized_sha256": "3614a05099f27b2e2791f6bea147c23438af90241d8e37372f9ba9768604c6a0",
+        "source_characters": 665,
+        "excerpt_characters": 665,
+        "omitted_claim_count": 0,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 665,
+        "excerpt_characters": 665,
+        "omitted_claim_count": 0,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 29,
+        "filing_id": "6f633953-4794-4c55-add5-26b990decc38",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000336",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261023000336&dcmNo=11625740&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+        "viewer_characters": 595,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 4,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "The counterparty relationship and disclosed transaction date are explicit."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Issuer and instrument type agree with the stated transaction details."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "The amount and date are directly stated, with no unit conversion."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "Maturity and market-rate condition are explicit."
+        },
+        {
+          "claim_number": 5,
+          "status": "needs_revision",
+          "reason": "The footnote clarifies that the reported resolution date belongs to the Sustainability Management Committee, a board committee. Calling it a board resolution without that qualification loses the actual decision-making body; seven independent directors attended that committee."
+        }
+      ]
+    },
+    {
+      "index": 30,
+      "filing_id": "747b9d02-8771-49f5-82c9-26bce0172893",
+      "ticker": "005930",
+      "date": "2026-10-29",
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "Claim 1: The quotation expressly retains the unaudited status and possible changes during accounting review; the summary does not promote preliminary results to audited facts.",
+      "short_reason": "Preserves unaudited status and possible accounting-review changes.",
+      "claims_reviewed": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800087",
+      "source_sha256": "0ca55f79482048c3c8863b70f623df32be5331253d6fc18fcbd063a353e8ee49",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 2841,
+        "member_count": 1,
+        "processed_at": "2026-10-29T01:30:07.899045+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 2359,
+        "raw_hash_matches": true,
+        "normalized_sha256": "6725868aabd67c7becacbf3026d30b259881cc78b885607b8a136492a0ea1dca",
+        "source_characters": 1407,
+        "excerpt_characters": 1407,
+        "omitted_claim_count": 3,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 1407,
+        "excerpt_characters": 1407,
+        "omitted_claim_count": 3,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 30,
+        "filing_id": "747b9d02-8771-49f5-82c9-26bce0172893",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800087",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261029800087&dcmNo=11632013&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 1343,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "The quotation expressly retains the unaudited status and possible changes during accounting review; the summary does not promote preliminary results to audited facts."
+        }
+      ]
+    },
+    {
+      "index": 31,
+      "filing_id": "88c27b58-eedb-4ed4-95ea-b74505dd99f4",
+      "ticker": "000660",
+      "date": "2026-10-23",
+      "title": "풍문또는보도에대한해명",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "Claim 1: The document explicitly labels this as the final explanatory disclosure and says the subsidiary decided to discontinue pre-IPO/IPO review. It does not merely repeat the earlier rumor as fact.",
+      "short_reason": "Final response supports the subsidiary decision to stop pre-IPO/IPO review.",
+      "claims_reviewed": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023800002",
+      "source_sha256": "ea61e0c173ac3ce95f8a42f9846bd985cb0a2ea9312868026e22df1805a1ccab",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1872,
+        "member_count": 1,
+        "processed_at": "2026-10-22T22:45:06.656626+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1232,
+        "raw_hash_matches": true,
+        "normalized_sha256": "67bdf4cc76cc9a836cb77b4b0078f8ac87a6c8f5484e28ca8dd2accb3e011633",
+        "source_characters": 604,
+        "excerpt_characters": 604,
+        "omitted_claim_count": 0,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 604,
+        "excerpt_characters": 604,
+        "omitted_claim_count": 0,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 31,
+        "filing_id": "88c27b58-eedb-4ed4-95ea-b74505dd99f4",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023800002",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261023800002&dcmNo=11624760&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 540,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "The document explicitly labels this as the final explanatory disclosure and says the subsidiary decided to discontinue pre-IPO/IPO review. It does not merely repeat the earlier rumor as fact."
+        }
+      ]
+    },
+    {
+      "index": 32,
+      "filing_id": "fc7abc9e-34eb-4c19-847d-51f97c8c8a8d",
+      "ticker": "005380",
+      "date": "2026-10-22",
+      "title": "기업설명회(IR)개최(안내공시)",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "Claim 1: Audience and conference-call format are directly stated for the announced event. Claim 2: The planned 14:10 start and live webcast are explicitly described. Preserve the original filing/event dates; this does not verify actual event completion. Claim 3: The planned simultaneous-interpretation service and simultaneous overseas access are stated in the source.",
+      "short_reason": "IR audience, conference-call/webcast method, scheduled start and interpretation service are supported.",
+      "claims_reviewed": 3,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261022800377",
+      "source_sha256": "b57ab0b6249d7f73e0b8e30a66744a2b8374575b585b4a6771701a51df11ddc0",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1871,
+        "member_count": 1,
+        "processed_at": "2026-10-22T07:15:08.116196+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1186,
+        "raw_hash_matches": true,
+        "normalized_sha256": "bf131a581876293e8c175eeeb510ebdc984bff6ad067496c80c5762ec256872f",
+        "source_characters": 658,
+        "excerpt_characters": 658,
+        "omitted_claim_count": 2,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 658,
+        "excerpt_characters": 658,
+        "omitted_claim_count": 2,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 32,
+        "filing_id": "fc7abc9e-34eb-4c19-847d-51f97c8c8a8d",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261022800377",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261022800377&dcmNo=11623755&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 594,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Audience and conference-call format are directly stated for the announced event."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "The planned 14:10 start and live webcast are explicitly described. Preserve the original filing/event dates; this does not verify actual event completion."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "The planned simultaneous-interpretation service and simultaneous overseas access are stated in the source."
+        }
+      ]
+    },
+    {
+      "index": 33,
+      "filing_id": "431e57b5-c80c-47b1-b8fd-aa0159f9b075",
+      "ticker": "005930",
+      "date": "2026-10-26",
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "Claim 1: The issuer-information section directly records this total issued-share count. It is an as-of filing fact, not a live outstanding-share feed.",
+      "short_reason": "Issued-share total matches the filing; it remains a dated source fact.",
+      "claims_reviewed": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261026000017",
+      "source_sha256": "43f3d11964e2d235136f46a81ee29be05adc18f543f1fbd276322a5d250ebcfb",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 5214,
+        "member_count": 1,
+        "processed_at": "2026-10-26T00:45:07.819972+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 3044,
+        "raw_hash_matches": true,
+        "normalized_sha256": "9b763968f174ad62923d3427d214b699b8e178c86d7209051ecf6fd75f3bf5ef",
+        "source_characters": 1522,
+        "excerpt_characters": 1522,
+        "omitted_claim_count": 4,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 1522,
+        "excerpt_characters": 1522,
+        "omitted_claim_count": 4,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 33,
+        "filing_id": "431e57b5-c80c-47b1-b8fd-aa0159f9b075",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261026000017",
+        "status": "official_sections_retrieved",
+        "sections": [
+          {
+            "title": "임원ㆍ주요주주 특정증권등 소유상황보고서",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261026000017&dcmNo=11626492&eleId=1&offset=678&length=2504&dtd=dart4.xsd"
+          },
+          {
+            "title": "1. 발행회사에 관한 사항",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261026000017&dcmNo=11626492&eleId=2&offset=3461&length=1262&dtd=dart4.xsd"
+          },
+          {
+            "title": "2. 보고자에 관한 사항",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261026000017&dcmNo=11626492&eleId=3&offset=4727&length=4976&dtd=dart4.xsd"
+          },
+          {
+            "title": "3. 특정증권등의 소유상황",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261026000017&dcmNo=11626492&eleId=4&offset=9707&length=12878&dtd=dart4.xsd"
+          }
+        ],
+        "viewer_characters": 1460,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "The issuer-information section directly records this total issued-share count. It is an as-of filing fact, not a live outstanding-share feed."
+        }
+      ]
+    },
+    {
+      "index": 34,
+      "filing_id": "11a82f90-814d-4129-8f78-d67ed69373a9",
+      "ticker": "005380",
+      "date": "2026-10-16",
+      "title": "특수관계인으로부터기타유가증권매수",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        4
+      ],
+      "reason": "Claim 4: The footnote attributes the resolution to the Sustainability Management Committee within the board, not an unqualified full-board meeting. Preserve that body and its seven independent-director attendees.",
+      "short_reason": "C4 mislabels the Sustainability Management Committee resolution/attendance as a full-board meeting.",
+      "claims_reviewed": 4,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000490",
+      "source_sha256": "dfa4f7825654b7d240c373320dc744c306889632443a1c5acc72671f1b64c4b1",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1716,
+        "member_count": 1,
+        "processed_at": "2026-10-16T08:45:06.870951+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1385,
+        "raw_hash_matches": true,
+        "normalized_sha256": "cca93b4206a47810ddb53fc84e3ccf1ee4dc0fb45e584ab686dd239e610366c5",
+        "source_characters": 665,
+        "excerpt_characters": 665,
+        "omitted_claim_count": 0,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 665,
+        "excerpt_characters": 665,
+        "omitted_claim_count": 0,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 34,
+        "filing_id": "11a82f90-814d-4129-8f78-d67ed69373a9",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000490",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261016000490&dcmNo=11617621&eleId=0&offset=0&length=0&dtd=dart4.xsd",
+        "viewer_characters": 595,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Instrument type, transaction date and amount agree with the disclosed trade."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Maturity and market-rate terms are explicitly stated."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "The cumulative amount is correctly scoped to the business year; the note specifies accumulation through the disclosure date."
+        },
+        {
+          "claim_number": 4,
+          "status": "needs_revision",
+          "reason": "The footnote attributes the resolution to the Sustainability Management Committee within the board, not an unqualified full-board meeting. Preserve that body and its seven independent-director attendees."
+        }
+      ]
+    },
+    {
+      "index": 35,
+      "filing_id": "48ce7796-c39c-4a87-9820-470891d766bf",
+      "ticker": "000660",
+      "date": "2026-10-14",
+      "title": "기업설명회(IR)개최(안내공시)",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "Claim 1: Conference-call method is explicit for the announced event. Claim 2: The audience is explicitly investors and the press. Claim 3: The IR materials posting date and instruction to consult the website on announcement day support the planned publication statement. Claim 4: The real-time webcast and simultaneous Korean/English delivery are explicit plans.",
+      "short_reason": "Historical IR method, audience, materials and bilingual-webcast plans are supported.",
+      "claims_reviewed": 4,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261014800385",
+      "source_sha256": "f9a766ef47b49dc133af253977709dfe6b692a2d7492e43ea43f6155a0db765e",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 1796,
+        "member_count": 1,
+        "processed_at": "2026-10-14T09:56:58.786068+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1071,
+        "raw_hash_matches": true,
+        "normalized_sha256": "ea7a1b414e1608a594dc51fb9b3b4c1d80a0b4394cdbd55f022ed084e677a553",
+        "source_characters": 587,
+        "excerpt_characters": 587,
+        "omitted_claim_count": 1,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 587,
+        "excerpt_characters": 587,
+        "omitted_claim_count": 1,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 35,
+        "filing_id": "48ce7796-c39c-4a87-9820-470891d766bf",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261014800385",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261014800385&dcmNo=11613436&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 523,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "Conference-call method is explicit for the announced event."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "The audience is explicitly investors and the press."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "The IR materials posting date and instruction to consult the website on announcement day support the planned publication statement."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "The real-time webcast and simultaneous Korean/English delivery are explicit plans."
+        }
+      ]
+    },
+    {
+      "index": 36,
+      "filing_id": "d30fe7b5-d4f6-4a27-991d-4e41e100f6fb",
+      "ticker": "005930",
+      "date": "2026-10-23",
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        1
+      ],
+      "reason": "Claim 1: The summary assigns the filing contact's department and job title to the reporting executive. The source lists Seo Gyeong-heon as an unregistered managing director; People Team / Senior Professional belong to contact Kim Tae-woo. This is an entity/role attribution error, confirmed in the live official reporter-information section.",
+      "short_reason": "C1 assigns contact Kim Tae-woo’s department/title to reporting executive Seo Gyeong-heon.",
+      "claims_reviewed": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000478",
+      "source_sha256": "ebc5a5343a095b885e9bbe3eb2de886c76e308b1473661540998cb4bc0e9a343",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 5514,
+        "member_count": 1,
+        "processed_at": "2026-10-23T09:15:07.176987+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 3391,
+        "raw_hash_matches": true,
+        "normalized_sha256": "77822c0c61ae3ad418e2a78d02b4f5f0f1ba822cc7b1100e4b47d866a0725b67",
+        "source_characters": 1805,
+        "excerpt_characters": 1805,
+        "omitted_claim_count": 4,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 1805,
+        "excerpt_characters": 1805,
+        "omitted_claim_count": 4,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 36,
+        "filing_id": "d30fe7b5-d4f6-4a27-991d-4e41e100f6fb",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000478",
+        "status": "official_sections_retrieved",
+        "sections": [
+          {
+            "title": "임원ㆍ주요주주 특정증권등 소유상황보고서",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261023000478&dcmNo=11626392&eleId=1&offset=678&length=2519&dtd=dart4.xsd"
+          },
+          {
+            "title": "1. 발행회사에 관한 사항",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261023000478&dcmNo=11626392&eleId=2&offset=3476&length=1495&dtd=dart4.xsd"
+          },
+          {
+            "title": "2. 보고자에 관한 사항",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261023000478&dcmNo=11626392&eleId=3&offset=4975&length=6093&dtd=dart4.xsd"
+          },
+          {
+            "title": "3. 특정증권등의 소유상황",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261023000478&dcmNo=11626392&eleId=4&offset=11072&length=19436&dtd=dart4.xsd"
+          }
+        ],
+        "viewer_characters": 1744,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "needs_revision",
+          "reason": "The summary assigns the filing contact's department and job title to the reporting executive. The source lists Seo Gyeong-heon as an unregistered managing director; People Team / Senior Professional belong to contact Kim Tae-woo. This is an entity/role attribution error, confirmed in the live official reporter-information section."
+        }
+      ]
+    },
+    {
+      "index": 37,
+      "filing_id": "8b599d21-52c4-4e6b-95f4-a20addf4ac51",
+      "ticker": "005930",
+      "date": "2026-10-13",
+      "title": "임원ㆍ주요주주특정증권등거래계획보고서",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        1
+      ],
+      "reason": "Claim 1: The filing has separate fields for the current chairman title and an appointment date in 2003. It does not establish appointment AS chairman in 2003. Samsung's official appointment announcement dates the executive-chairman appointment to 27 October 2022. Separate current role from the filing's general appointment-date field.",
+      "short_reason": "C1 equates a 2003 general appointment field with appointment as chairman; Samsung’s official chair appointment is 2022.",
+      "claims_reviewed": 3,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261013000379",
+      "source_sha256": "b018e68ba6ea8d00221dc2ed178a257d61582288cc5a894f4223bd8b21a03023",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 7245,
+        "member_count": 1,
+        "processed_at": "2026-10-14T09:57:48.935081+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 6733,
+        "raw_hash_matches": true,
+        "normalized_sha256": "92726c90590bb227f6ee5564b9d97811a31947cc7206d765182bfc1bdfbe4ebf",
+        "source_characters": 3220,
+        "excerpt_characters": 3220,
+        "omitted_claim_count": 3,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 3220,
+        "excerpt_characters": 3220,
+        "omitted_claim_count": 3,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 37,
+        "filing_id": "8b599d21-52c4-4e6b-95f4-a20addf4ac51",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261013000379",
+        "status": "official_sections_retrieved",
+        "sections": [
+          {
+            "title": "임원ㆍ주요주주 특정증권등 거래계획보고서",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261013000379&dcmNo=11612147&eleId=1&offset=592&length=2872&dtd=dart4.xsd"
+          },
+          {
+            "title": "1. 발행회사에 관한 사항",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261013000379&dcmNo=11612147&eleId=2&offset=3523&length=1513&dtd=dart4.xsd"
+          },
+          {
+            "title": "2. 보고자에 관한 사항",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261013000379&dcmNo=11612147&eleId=3&offset=5040&length=5553&dtd=dart4.xsd"
+          },
+          {
+            "title": "3. 특정증권등의 소유상황 및 거래계획",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261013000379&dcmNo=11612147&eleId=4&offset=10597&length=30005&dtd=dart4.xsd"
+          }
+        ],
+        "viewer_characters": 3183,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "needs_revision",
+          "reason": "The filing has separate fields for the current chairman title and an appointment date in 2003. It does not establish appointment AS chairman in 2003. Samsung's official appointment announcement dates the executive-chairman appointment to 27 October 2022. Separate current role from the filing's general appointment-date field."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "The prior completed transaction is explicitly separated from future plans, with the same date, share count, unit price and total. Independent multiplication reproduces the reported total."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "The gift is explicitly a future plan with the same donor, date and share count; the summary retains planned status."
+        }
+      ],
+      "additional_primary_source": {
+        "url": "https://news.samsung.com/global/jay-y-lee-appointed-samsung-electronics-executive-chairman",
+        "finding": "Official announcement states executive-chairman appointment on 27 October 2022.",
+        "retrieval_ref": "turn8view0"
+      }
+    },
+    {
+      "index": 38,
+      "filing_id": "7d31088c-73b6-4214-b5f4-dd1fbba10744",
+      "ticker": "005930",
+      "date": "2026-10-13",
+      "title": "최대주주등소유주식변동신고서",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "Claim 1: The cited issuer-share table distinguishes common, preferred and total shares; the summary correctly uses the common-share figure only.",
+      "short_reason": "Correctly uses the common-share total instead of common-plus-preferred shares.",
+      "claims_reviewed": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261013800651",
+      "source_sha256": "4d393c2b45f6793cfc308f416185b27e66c3d62b78666693c2407b7791f472ee",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 4359,
+        "member_count": 1,
+        "processed_at": "2026-10-14T09:57:17.523374+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 5805,
+        "raw_hash_matches": true,
+        "normalized_sha256": "3b333735b3ae093502d9aec76fad5e4285cde1ff78d00f0f590875b2bd6d3362",
+        "source_characters": 3595,
+        "excerpt_characters": 3595,
+        "omitted_claim_count": 5,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 3595,
+        "excerpt_characters": 3595,
+        "omitted_claim_count": 5,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 38,
+        "filing_id": "7d31088c-73b6-4214-b5f4-dd1fbba10744",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261013800651",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261013800651&dcmNo=11612227&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 3531,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "The cited issuer-share table distinguishes common, preferred and total shares; the summary correctly uses the common-share figure only."
+        }
+      ]
+    },
+    {
+      "index": 39,
+      "filing_id": "3fecc4dd-7624-46a9-a1b0-bf40ebf06bbb",
+      "ticker": "005930",
+      "date": "2026-10-12",
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "Claim 1: The transaction row gives the stated unit price for the historical sale. Preserve the actual transaction/settlement date from the quote; this must not be reused as a live company quote. Claim 2: The stated issued-share total agrees with the issuer-information section at the report's reference date.",
+      "short_reason": "Historical sale price and dated issued-share total match the source; they are not live-price data.",
+      "claims_reviewed": 2,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261012000021",
+      "source_sha256": "3b981d0831cbd232bd5c8b2186896159af32bd1888a2aa7abd498d1512c14e65",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 5359,
+        "member_count": 1,
+        "processed_at": "2026-10-14T09:00:05.934078+00:00",
+        "parser_version": "saxes-6.0.0-dart-v1",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 3082,
+        "raw_hash_matches": true,
+        "normalized_sha256": "0d3f93a00bbc0dd545c6fe237a8ddd1158bca250fb1bec6c97c588c530526657",
+        "source_characters": 1512,
+        "excerpt_characters": 1512,
+        "omitted_claim_count": 3,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 1512,
+        "excerpt_characters": 1512,
+        "omitted_claim_count": 3,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 39,
+        "filing_id": "3fecc4dd-7624-46a9-a1b0-bf40ebf06bbb",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261012000021",
+        "status": "official_sections_retrieved",
+        "sections": [
+          {
+            "title": "임원ㆍ주요주주 특정증권등 소유상황보고서",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261012000021&dcmNo=11609204&eleId=1&offset=678&length=2509&dtd=dart4.xsd"
+          },
+          {
+            "title": "1. 발행회사에 관한 사항",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261012000021&dcmNo=11609204&eleId=2&offset=3466&length=1495&dtd=dart4.xsd"
+          },
+          {
+            "title": "2. 보고자에 관한 사항",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261012000021&dcmNo=11609204&eleId=3&offset=4965&length=6099&dtd=dart4.xsd"
+          },
+          {
+            "title": "3. 특정증권등의 소유상황",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261012000021&dcmNo=11609204&eleId=4&offset=11068&length=14642&dtd=dart4.xsd"
+          }
+        ],
+        "viewer_characters": 1472,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "The transaction row gives the stated unit price for the historical sale. Preserve the actual transaction/settlement date from the quote; this must not be reused as a live company quote."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "The stated issued-share total agrees with the issuer-information section at the report's reference date."
+        }
+      ]
+    },
+    {
+      "index": 40,
+      "filing_id": "bdc8f04a-a0a5-4137-b3ae-35c5ddc9d288",
+      "ticker": "005930",
+      "date": "2026-10-12",
+      "title": "자기주식취득결과보고서",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        1,
+        2,
+        3
+      ],
+      "reason": "Claim 1: The number is the disclosed average price rounded to the nearest won and excluding fees; restore these calculation/scope qualifiers in the summary. Claim 2: The quoted total expressly excludes fees. The summary should say the disclosed acquisition consideration excluding fees, not an unqualified total cost. Claim 3: The unchanged amount applies to the row labeled Samsung Life; the immediately following Samsung Life special-account row decreases. The summary must explicitly scope the unchanged balance to the non-special account rather than suggesting Samsung Life's combined holdings were unchanged.",
+      "short_reason": "C1/C2 omit rounding/fees scope; C3 hides the different movement in Samsung Life’s separate special account.",
+      "claims_reviewed": 3,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261012000421",
+      "source_sha256": "fdf4530566b03f01846258313b2db058884898d284528ce421d7d317965602c4",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 5190,
+        "member_count": 1,
+        "processed_at": "2026-10-14T09:01:13.747451+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 5782,
+        "raw_hash_matches": true,
+        "normalized_sha256": "42d22410f0758869f6b6c6f0be57445a87f76e6a3a5232e9ecb220bd3746628c",
+        "source_characters": 3812,
+        "excerpt_characters": 3812,
+        "omitted_claim_count": 2,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 3812,
+        "excerpt_characters": 3812,
+        "omitted_claim_count": 2,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 40,
+        "filing_id": "bdc8f04a-a0a5-4137-b3ae-35c5ddc9d288",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261012000421",
+        "status": "official_sections_retrieved",
+        "sections": [
+          {
+            "title": "자기주식취득결과보고서",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261012000421&dcmNo=11610527&eleId=1&offset=573&length=2391&dtd=dart4.xsd"
+          },
+          {
+            "title": "1. 발행인의 명칭 및 주소",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261012000421&dcmNo=11610527&eleId=2&offset=3023&length=419&dtd=dart4.xsd"
+          },
+          {
+            "title": "2. 취득보고에 관한 내용",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261012000421&dcmNo=11610527&eleId=5&offset=3446&length=1260&dtd=dart4.xsd"
+          },
+          {
+            "title": "3. 취득내용",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261012000421&dcmNo=11610527&eleId=8&offset=4710&length=26366&dtd=dart4.xsd"
+          },
+          {
+            "title": "4. 취득 예정 내용과 실제 취득 내용의 일치 여부",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261012000421&dcmNo=11610527&eleId=9&offset=31080&length=2604&dtd=dart4.xsd"
+          },
+          {
+            "title": "5. 취득후 자기주식등의 보유상황",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261012000421&dcmNo=11610527&eleId=10&offset=33688&length=6074&dtd=dart4.xsd"
+          },
+          {
+            "title": "6. 취득전후 최대주주의 보유주식 변동내역",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261012000421&dcmNo=11610527&eleId=11&offset=39766&length=4167&dtd=dart4.xsd"
+          }
+        ],
+        "viewer_characters": 3756,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "needs_revision",
+          "reason": "The number is the disclosed average price rounded to the nearest won and excluding fees; restore these calculation/scope qualifiers in the summary."
+        },
+        {
+          "claim_number": 2,
+          "status": "needs_revision",
+          "reason": "The quoted total expressly excludes fees. The summary should say the disclosed acquisition consideration excluding fees, not an unqualified total cost."
+        },
+        {
+          "claim_number": 3,
+          "status": "needs_revision",
+          "reason": "The unchanged amount applies to the row labeled Samsung Life; the immediately following Samsung Life special-account row decreases. The summary must explicitly scope the unchanged balance to the non-special account rather than suggesting Samsung Life's combined holdings were unchanged."
+        }
+      ]
+    },
+    {
+      "index": 41,
+      "filing_id": "b1e05c0a-a768-4e06-a7f1-536de4837eeb",
+      "ticker": "005930",
+      "date": "2026-10-08",
+      "title": "기업설명회(IR)개최(안내공시)",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "Claim 1: The source explicitly announces the date, time and purpose. Preserve it as a historical announcement of a scheduled event, not evidence that the event completed. Claim 2: Conference-call format and simultaneous Korean/English delivery are explicit. Claim 3: Audience categories agree with the announcement. Claim 4: The website material and webcast plans are explicit. Claim 5: The decision date and opening date for questions are both present and distinguished from the event date.",
+      "short_reason": "IR date/time, purpose, audience, language, materials and question-opening dates remain a historical announcement.",
+      "claims_reviewed": 5,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008800028",
+      "source_sha256": "a6aa93766f780f9380561b28ff08108c723f1f1a82cbb3b820f6b1a12acd0f4e",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 2163,
+        "member_count": 1,
+        "processed_at": "2026-10-14T09:45:06.089635+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 1582,
+        "raw_hash_matches": true,
+        "normalized_sha256": "913e6dd6a2bac57f6f3a0176d8f2619815fcefbe08e400e624444014e058351a",
+        "source_characters": 879,
+        "excerpt_characters": 879,
+        "omitted_claim_count": 0,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 879,
+        "excerpt_characters": 879,
+        "omitted_claim_count": 0,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 41,
+        "filing_id": "b1e05c0a-a768-4e06-a7f1-536de4837eeb",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008800028",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008800028&dcmNo=11606522&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 815,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 2,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 3,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 4,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "The source explicitly announces the date, time and purpose. Preserve it as a historical announcement of a scheduled event, not evidence that the event completed."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "Conference-call format and simultaneous Korean/English delivery are explicit."
+        },
+        {
+          "claim_number": 3,
+          "status": "supported",
+          "reason": "Audience categories agree with the announcement."
+        },
+        {
+          "claim_number": 4,
+          "status": "supported",
+          "reason": "The website material and webcast plans are explicit."
+        },
+        {
+          "claim_number": 5,
+          "status": "supported",
+          "reason": "The decision date and opening date for questions are both present and distinguished from the event date."
+        }
+      ]
+    },
+    {
+      "index": 42,
+      "filing_id": "a94fafcc-0074-45fc-a5f6-7306031e3a65",
+      "ticker": "005930",
+      "date": "2026-10-08",
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)",
+      "classification": "hold",
+      "hold_claim_numbers": [
+        1
+      ],
+      "reason": "Claim 1: The assigned quote ends immediately after the external-auditor phrase. The statement that the audit is not complete occurs in the next passage, cited only by another claim. The full live filing supports the statement, but repair this claim's citation to include that continuation (or narrow the statement). Preserve provisional/unaudited scope.",
+      "short_reason": "C1’s quote ends before the unaudited-status clause; the full source supports it, but this citation is incomplete.",
+      "claims_reviewed": 2,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008800004",
+      "source_sha256": "b9a0375e9f123334fab7ea15899b694c4727a71afadb66f5b5d9930588d45ae7",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 2593,
+        "member_count": 1,
+        "processed_at": "2026-10-14T09:30:06.991957+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 2083,
+        "raw_hash_matches": true,
+        "normalized_sha256": "e1bb03c1e9ccdf857b11ede4c96b45de59529c1ada038cf386562955e91d15e7",
+        "source_characters": 1127,
+        "excerpt_characters": 1127,
+        "omitted_claim_count": 2,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 1127,
+        "excerpt_characters": 1127,
+        "omitted_claim_count": 2,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 42,
+        "filing_id": "a94fafcc-0074-45fc-a5f6-7306031e3a65",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008800004",
+        "status": "official_viewer_retrieved",
+        "viewer_url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008800004&dcmNo=11606520&eleId=0&offset=0&length=0&dtd=HTML",
+        "viewer_characters": 1063,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          },
+          {
+            "claim_index": 1,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "needs_revision",
+          "reason": "The assigned quote ends immediately after the external-auditor phrase. The statement that the audit is not complete occurs in the next passage, cited only by another claim. The full live filing supports the statement, but repair this claim's citation to include that continuation (or narrow the statement). Preserve provisional/unaudited scope."
+        },
+        {
+          "claim_number": 2,
+          "status": "supported",
+          "reason": "The selected continuation explicitly states the intended republication at board approval. Keep it as the plan stated in the older filing, not a new future promise after later disclosures."
+        }
+      ]
+    },
+    {
+      "index": 43,
+      "filing_id": "69f4eaef-5cbb-4b4b-ad4a-c3ae22b085a0",
+      "ticker": "005930",
+      "date": "2026-10-08",
+      "title": "주식등의대량보유상황보고서(일반)",
+      "classification": "eligible_excerpt",
+      "hold_claim_numbers": [],
+      "reason": "Claim 1: The reporter table identifies Samsung C&T and the holding-purpose section states influence over management, present participation and no specific plan. The summary does not generalize this purpose to the separately excepted Samsung Life special account. Its evidence lies within the disclosed 12,000-character analyzed excerpt.",
+      "short_reason": "The single ownership-purpose claim is supported within the 12,000-character analyzed excerpt; not a whole-filing summary.",
+      "claims_reviewed": 1,
+      "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000706",
+      "source_sha256": "5a73ee9b59c30fd003e2817b018cdbbd62bddd6712f643f5a1a8108eb134879a",
+      "source_validation": {
+        "coverage": "bounded_normalized_excerpt",
+        "raw_bytes": 21293,
+        "member_count": 1,
+        "processed_at": "2026-10-14T09:15:05.028817+00:00",
+        "parser_version": "saxes-6.0.0-htmlparser2-10.0.0-dart-v2",
+        "citation_method": "server_resolved_passage_v1",
+        "structural_pass": true,
+        "normalized_bytes": 30357,
+        "raw_hash_matches": true,
+        "normalized_sha256": "cdeffd08f17835e5b46b39122a2f245d00cc41cdec5b35e5f086e2f99521a91d",
+        "source_characters": 17533,
+        "excerpt_characters": 12000,
+        "omitted_claim_count": 5,
+        "raw_archive_present": true,
+        "normalized_hash_matches": true,
+        "normalized_archive_present": true
+      },
+      "provenance": {
+        "stored_validation_all_pass": true,
+        "archived_hashes_independently_recomputed": false,
+        "source": "Root-provided read-only database snapshot; public DART viewer was independently retrieved",
+        "source_characters": 17533,
+        "excerpt_characters": 12000,
+        "omitted_claim_count": 5,
+        "coverage": "bounded_normalized_excerpt"
+      },
+      "primary_crosscheck": {
+        "index": 43,
+        "filing_id": "69f4eaef-5cbb-4b4b-ad4a-c3ae22b085a0",
+        "source_url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008000706",
+        "status": "official_sections_retrieved",
+        "sections": [
+          {
+            "title": "주식등의 대량보유상황보고서",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008000706&dcmNo=11608997&eleId=1&offset=795&length=9119&dtd=dart4.xsd"
+          },
+          {
+            "title": "제1부 보고의 개요",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008000706&dcmNo=11608997&eleId=2&offset=10138&length=55074&dtd=dart4.xsd"
+          },
+          {
+            "title": "1. 발행회사에 관한 사항",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008000706&dcmNo=11608997&eleId=3&offset=10285&length=1451&dtd=dart4.xsd"
+          },
+          {
+            "title": "2. 대량보유자에 관한 사항",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008000706&dcmNo=11608997&eleId=4&offset=11740&length=46360&dtd=dart4.xsd"
+          },
+          {
+            "title": "3. 보유주식등의 수 및 보유비율",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008000706&dcmNo=11608997&eleId=8&offset=58104&length=4959&dtd=dart4.xsd"
+          },
+          {
+            "title": "4. 보유목적",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008000706&dcmNo=11608997&eleId=9&offset=63067&length=892&dtd=dart4.xsd"
+          },
+          {
+            "title": "5. 변동[변경]사유",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008000706&dcmNo=11608997&eleId=10&offset=63963&length=1235&dtd=dart4.xsd"
+          },
+          {
+            "title": "제2부 대량보유내역",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008000706&dcmNo=11608997&eleId=11&offset=65216&length=94370&dtd=dart4.xsd"
+          },
+          {
+            "title": "1. 보고자 및 특별관계자별 보유내역",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008000706&dcmNo=11608997&eleId=12&offset=65373&length=48721&dtd=dart4.xsd"
+          },
+          {
+            "title": "2. 보유주식등에 관한 계약",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008000706&dcmNo=11608997&eleId=15&offset=114098&length=41192&dtd=dart4.xsd"
+          },
+          {
+            "title": "3. 자기계정 및 고객계정별 보유내역(금융기관에 한함)",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008000706&dcmNo=11608997&eleId=19&offset=155294&length=4278&dtd=dart4.xsd"
+          },
+          {
+            "title": "제3부 직전보고일 이후 대량변동 내역",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008000706&dcmNo=11608997&eleId=20&offset=159590&length=95433&dtd=dart4.xsd"
+          },
+          {
+            "title": "1. 변동내역 총괄표",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008000706&dcmNo=11608997&eleId=21&offset=159775&length=22910&dtd=dart4.xsd"
+          },
+          {
+            "title": "2. 세부변동내역",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008000706&dcmNo=11608997&eleId=23&offset=182689&length=64725&dtd=dart4.xsd"
+          },
+          {
+            "title": "3. 취득에 필요한 자금등의 조성내역",
+            "url": "https://dart.fss.or.kr/report/viewer.do?rcpNo=20261008000706&dcmNo=11608997&eleId=25&offset=247418&length=7591&dtd=dart4.xsd"
+          }
+        ],
+        "viewer_characters": 34471,
+        "claims": [
+          {
+            "claim_index": 0,
+            "numeric_tokens_missing_from_live_viewer": []
+          }
+        ]
+      },
+      "claim_reviews": [
+        {
+          "claim_number": 1,
+          "status": "supported",
+          "reason": "The reporter table identifies Samsung C&T and the holding-purpose section states influence over management, present participation and no specific plan. The summary does not generalize this purpose to the separately excepted Samsung Life special account. Its evidence lies within the disclosed 12,000-character analyzed excerpt."
+        }
+      ]
+    }
+  ]
+}

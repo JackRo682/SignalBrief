@@ -7,7 +7,7 @@ import './company-profile.css';
 const safeURL=z.string().url().refine(value=>{const url=new URL(value);return url.protocol==='https:'&&!url.username&&!url.password;});
 const profileSchema=z.object({status:z.enum(['verified','not_available','unsupported']),fetched_at:z.string().optional(),provider:z.string().optional(),source_url:safeURL.optional(),source_sha256:z.string().optional(),profile:z.object({corp_code:z.string(),ticker:z.string(),name:z.string(),english_name:z.string().nullable(),ceo:z.string().nullable(),address:z.string().nullable(),website:safeURL.nullable(),established_on:z.string().nullable(),industry_description:z.string().nullable().optional(),industry_code:z.string().nullable(),fiscal_month:z.string().nullable()}).nullable()});
 type Result=z.infer<typeof profileSchema>;
-export default function CompanyProfile({id,ticker}:{id:string;ticker:string}){
+export default function CompanyProfile({id,ticker,hideUnavailable=false}:{id:string;ticker:string;hideUnavailable?:boolean}){
  const {token}=useAuth(),{text:t,date}=usePrefs();
  const scope=`${token}:${id}:${ticker}`;
  const [state,setState]=useState<{scope:string;data:Result|null;error:boolean}>({scope:'',data:null,error:false});
@@ -24,6 +24,7 @@ export default function CompanyProfile({id,ticker}:{id:string;ticker:string}){
  const current=state.scope===scope?state:null,data=current?.data,p=data?.status==='verified'?data.profile:null;
  const retry=()=>{setState({scope:'',data:null,error:false});setRevision(x=>x+1);};
  const fields=p?[[t('회사명','Company'),p.name],[t('영문명','English name'),p.english_name],[t('대표자','CEO'),p.ceo],[t('설립일','Established'),p.established_on],[t('업종','Industry'),p.industry_description??p.industry_code],[t('결산월','Fiscal year end month'),p.fiscal_month],[t('주소','Address'),p.address]]:[];
+ if(hideUnavailable&&current?.data&&!current.error&&!p)return null;
  return <section className="sb-company-profile" aria-label={t('기업 기본정보','Company profile')}>
   <h2>{t('기업 기본정보','Company profile')}</h2>
   {!token?<p role="status">{t('로그인 후 기업정보를 조회할 수 있습니다.','Sign in to load company information.')}</p>:!current?<p role="status">{t('기업정보를 불러오는 중입니다.','Loading company profile.')}</p>:current.error?<p role="status">{t('기업정보를 불러오지 못했습니다.','Company profile could not be loaded.')} <button type="button" aria-label={t('기업정보 다시 시도','Retry company profile')} onClick={retry}>{t('다시 시도','Retry')}</button></p>:!p?<p>{t('제공된 기업정보가 없습니다.','No company profile is available.')}</p>:<>
