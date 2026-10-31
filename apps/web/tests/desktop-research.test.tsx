@@ -59,7 +59,7 @@ afterEach(()=>{cleanup();vi.restoreAllMocks();});
 describe('desktop company and timeline',()=>{
  it('prefills exponent amounts exactly and keeps a denied edit until the API saves it',async()=>{
   mount(<DesktopCompany id={companyId}/>);fireEvent.click(await screen.findByRole('button',{name:'보유 정보 수정'}));
-  const dialog=screen.getByRole('dialog',{name:'보유 정보 입력'}),quantity=await within(dialog).findByLabelText('보유 수량');expect(quantity).toHaveValue(raw);expect(within(dialog).getByLabelText('평균 단가 (선택)')).toHaveValue('0.00000001');
+  const dialog=screen.getByRole('dialog',{name:'보유 정보 입력'}),quantity=await within(dialog).findByLabelText('보유 수량');await waitFor(()=>{expect(quantity).toHaveValue(raw);expect(within(dialog).getByLabelText('평균 단가 (선택)')).toHaveValue('0.00000001');expect(within(dialog).getByRole('button',{name:'저장'})).toBeEnabled();});
   fireEvent.change(quantity,{target:{value:'99999999999999999999.12345678'}});mocks.failPosition=true;fireEvent.click(within(dialog).getByRole('button',{name:'저장'}));expect(await within(dialog).findByRole('alert')).toHaveTextContent('Synthetic holding denied');expect(quantity).toHaveValue('99999999999999999999.12345678');
   mocks.failPosition=false;fireEvent.click(within(dialog).getByRole('button',{name:'저장'}));await waitFor(()=>expect(screen.queryByRole('dialog')).toBeNull());expect(holding).toEqual({quantity:'99999999999999999999.12345678',average_cost:'0.00000001',currency:'USD'});expect(screen.getByText('12,345,678,901,234,567,890.12345678')).toBeVisible();
  });
