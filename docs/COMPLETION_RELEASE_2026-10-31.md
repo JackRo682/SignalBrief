@@ -62,3 +62,9 @@ Source documentation used:
 - https://supabase.com/docs/guides/api/securing-your-api
 
 Local execution: all eight full-release-gate checks passed; 650 frontend tests and 340 backend tests passed, with 108 environment/PostgreSQL skips. Lint has zero errors and five pre-existing navigation warnings. TypeScript, production build and mobile-isolation checks passed. Provider transport remains synthetic, and new CI browser/PostgreSQL checks must pass before the follow-up release. Keep the configured pass variant, amount and currency stable while corresponding orders/refunds are outstanding; changing product identity needs an explicit ledger migration/reconciliation.
+
+## Production verification and widget policy follow-up
+
+PR #36 deployed at commit `0cd9dfa95ac4904719bb3fae0bc1b4e694acb09a`. All five CI workflows passed; browser results were 123 passed and 23 existing skips. Direct production HTTP checks confirmed `/api/release` served that commit, `/billing` returned 200 with the pass page, unauthenticated export returned 401, and checkout/webhook returned 503 `payments_not_configured`. Runtime error/fatal log counts were empty immediately after deployment.
+
+The HTTP header check caught that the two new company widget scripts were missing from the existing strict CSP. A follow-up explicitly permits only those two script URLs, retains the other restrictions, and adds policy plus browser request/frame lifecycle regression tests. The lifecycle fixture is synthetic and does not claim verified live vendor coverage. The pricing-link E2E failure was an ambiguous selector after adding billing navigation; the corrected test verifies billing and contact links separately.

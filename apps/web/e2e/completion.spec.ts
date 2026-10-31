@@ -15,3 +15,16 @@ test('calendar wider range queries real date boundaries',async({page})=>{
 test('billing never claims a return URL grants access',async({page})=>{
  await mobileFixture(page);await page.route('**/api/billing/status',route=>route.fulfill({json:{active:false,expires_at:null,test_active:false,test_expires_at:null,checkout:false,test:false}}));await page.goto('/billing?returned=1');await expect(page.getByText('활성 이용권 없음',{exact:true})).toBeVisible();await expect(page.getByText('결제 준비 중입니다.',{exact:false})).toBeVisible();await expect(page.getByRole('button',{name:'CSV 다운로드'})).toHaveCount(0);
 });
+
+// Synthetic script/frame content only. A requested script proves CSP permits the
+// embed lifecycle; it does not certify the provider's live symbol coverage.
+test('CSP permits company profile and fundamentals scripts before they mount frames',async({page})=>{
+ await mobileFixture(page);
+ for(const kind of ['financials','symbol-profile'])await page.route(`https://s3.tradingview.com/external-embedding/embed-widget-${kind}.js`,route=>route.fulfill({contentType:'application/javascript',body:"{const frame=document.createElement('iframe');frame.src='https://www.tradingview-widget.com/synthetic-completion';document.currentScript.parentElement.appendChild(frame);}"}));
+ await page.route('https://www.tradingview-widget.com/synthetic-completion',route=>route.fulfill({contentType:'text/html',body:'<p>Synthetic widget lifecycle fixture</p>'}));
+ const response=await page.goto(`/companies/${companyId}`);const policy=response?.headers()['content-security-policy']??'';
+ expect(policy).toContain('https://s3.tradingview.com/external-embedding/embed-widget-financials.js');expect(policy).toContain('https://s3.tradingview.com/external-embedding/embed-widget-symbol-profile.js');
+ const section=page.getByRole('region',{name:'외부 기업 자료'}),financialRequest=page.waitForRequest('https://s3.tradingview.com/external-embedding/embed-widget-financials.js',{timeout:10000});
+ await section.getByRole('button',{name:'외부 기업 자료 불러오기'}).click();await financialRequest;await expect(section.locator('iframe')).toHaveAttribute('title',/financials/);
+ const profileRequest=page.waitForRequest('https://s3.tradingview.com/external-embedding/embed-widget-symbol-profile.js',{timeout:10000});await section.getByRole('button',{name:'기업 소개',exact:true}).click();await profileRequest;await expect(section.locator('iframe')).toHaveAttribute('title',/profile/);
+});
