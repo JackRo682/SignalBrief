@@ -67,7 +67,7 @@ export async function secSubmissions(cik:string,contact:string,fetcher:Fetcher=f
  const filings:Row[]=[];
  for(let i=0;i<accessions.length&&filings.length<30;i++){
   const accession=str(accessions[i]),form=str(at('form',i)),filing_date=str(at('filingDate',i)),doc=str(at('primaryDocument',i)),report=str(at('reportDate',i));
-  if(!['10-K','10-Q','8-K','10-K/A','10-Q/A','8-K/A'].includes(form)||!/^\d{10}-\d{2}-\d{6}$/.test(accession)||!/^[A-Za-z0-9_.-]+$/.test(doc)||!/^\d{4}-\d{2}-\d{2}$/.test(filing_date)||filing_date>new Date().toISOString().slice(0,10))continue;
+  if(!['10-K','10-Q','8-K','10-K/A','10-Q/A','8-K/A','20-F','20-F/A','6-K','6-K/A','40-F','40-F/A'].includes(form)||!/^\d{10}-\d{2}-\d{6}$/.test(accession)||!/^[A-Za-z0-9_.-]+$/.test(doc)||!/^\d{4}-\d{2}-\d{2}$/.test(filing_date)||filing_date>new Date().toISOString().slice(0,10))continue;
   filings.push({accession,form,filing_date,report_date:/^\d{4}-\d{2}-\d{2}$/.test(report)?report:null,source_url:url.href,document_url:`https://www.sec.gov/Archives/edgar/data/${Number(cik)}/${accession.replaceAll('-','')}/${doc}`});
  }
  return {raw,filings,name:str(d.name),tickers:Array.isArray(d.tickers)?d.tickers.map(str):[]};

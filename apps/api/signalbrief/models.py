@@ -71,7 +71,7 @@ class User(Base, Identity):
 
 class Company(Base, Identity):
     __tablename__ = "companies"
-    name: Mapped[str] = mapped_column(String(200), index=True)
+    name: Mapped[str] = mapped_column(String(500), index=True)
     ticker: Mapped[str] = mapped_column(String(30), index=True)
     market: Mapped[str] = mapped_column(String(30))
     provider: Mapped[str] = mapped_column(String(20))

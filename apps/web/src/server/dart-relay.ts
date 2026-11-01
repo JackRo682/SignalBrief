@@ -1,7 +1,7 @@
 import {createHmac,timingSafeEqual} from 'node:crypto';
 import {request as httpsRequest} from 'node:https';
 
-export type DartRelayPayload={kind:'list'|'document'|'company';key:string;nonce:string;corp_code?:string;page?:number;receipt?:string;bgn_de?:string;end_de?:string};
+export type DartRelayPayload={kind:'list'|'document'|'company'|'directory';key:string;nonce:string;corp_code?:string;page?:number;receipt?:string;bgn_de?:string;end_de?:string};
 export function relaySignature(body:string,timestamp:string,secret:string):string {
  return createHmac('sha256',secret).update(timestamp+'\n'+body).digest('hex');
 }
@@ -13,8 +13,10 @@ export function verifyRelay(body:string,timestamp:string,signature:string,secret
  dartEndpoint(value);return value;
 }
 export function dartEndpoint(p:DartRelayPayload):URL {
- const url=new URL('https://opendart.fss.or.kr/api/'+(p.kind==='list'?'list.json':p.kind==='company'?'company.json':'document.xml'));
- if(p.kind==='company'){
+ const url=new URL('https://opendart.fss.or.kr/api/'+(p.kind==='list'?'list.json':p.kind==='company'?'company.json':p.kind==='directory'?'corpCode.xml':'document.xml'));
+ if(p.kind==='directory'){
+  if(Object.keys(p).some(k=>!['kind','key','nonce'].includes(k)))throw new Error('relay_invalid_request');
+ }else if(p.kind==='company'){
   if(!/^\d{8}$/.test(p.corp_code??''))throw new Error('relay_invalid_request');
   url.searchParams.set('corp_code',p.corp_code!);
  }else if(p.kind==='list'){

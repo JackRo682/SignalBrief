@@ -1,6 +1,7 @@
 import {ProviderError} from '../signalbrief-api/us-core.ts';
 export type ZipMember={name:string;size:number;crc:number};
-export function inspectDartZIP(bytes:Uint8Array):ZipMember[]{
+export function inspectDartZIP(bytes:Uint8Array,maxExpandedBytes=32000000):ZipMember[]{
+ if(!Number.isInteger(maxExpandedBytes)||maxExpandedBytes<1||maxExpandedBytes>80000000)throw new ProviderError('dart','expanded_size_limit');
  if(bytes.length<22||bytes.length>20_000_000)throw new ProviderError('dart','archive_size_limit');
  const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);let end=-1;
  for(let i=bytes.length-22;i>=Math.max(0,bytes.length-65557);i--)if(view.getUint32(i,true)===0x06054b50){end=i;break;}
@@ -12,8 +13,8 @@ export function inspectDartZIP(bytes:Uint8Array):ZipMember[]{
   if(position+46>end||view.getUint32(position,true)!==0x02014b50)throw new ProviderError('dart','invalid_directory');
   const flags=view.getUint16(position+8,true),method=view.getUint16(position+10,true),compressed=view.getUint32(position+20,true),uncompressed=view.getUint32(position+24,true),nameLength=view.getUint16(position+28,true),extra=view.getUint16(position+30,true),comment=view.getUint16(position+32,true);
   const name=new TextDecoder('utf-8',{fatal:true}).decode(bytes.subarray(position+46,position+46+nameLength));
-  if(flags&1||![0,8].includes(method)||!nameLength||!/^[A-Za-z0-9_.-]+\.xml$/i.test(name)||name.includes('..')||seen.has(name)||uncompressed>32_000_000||compressed>20_000_000||uncompressed>Math.max(compressed*250,1_000_000))throw new ProviderError('dart','unsafe_archive_member');
-  total+=uncompressed;if(total>32_000_000)throw new ProviderError('dart','expanded_size_limit');
+  if(flags&1||![0,8].includes(method)||!nameLength||!/^[A-Za-z0-9_.-]+\.xml$/i.test(name)||name.includes('..')||seen.has(name)||uncompressed>maxExpandedBytes||compressed>20_000_000||uncompressed>Math.max(compressed*250,1_000_000))throw new ProviderError('dart','unsafe_archive_member');
+  total+=uncompressed;if(total>maxExpandedBytes)throw new ProviderError('dart','expanded_size_limit');
   seen.add(name);members.push({name,size:uncompressed,crc:view.getUint32(position+16,true)});
   position+=46+nameLength+extra+comment;
  }

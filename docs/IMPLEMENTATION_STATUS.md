@@ -1,4 +1,6 @@
-> November 1, 2026: The ten Korean post-login screens from the screenshot package are implemented and deployed. The new dashboard/directory RPC and calendar-interest removal migration were applied. Release code: `7a7dbc1ef6d29edda60493039a35fba976c64b7b`. Historical status tables below are retained as originally recorded. See VERIFICATION for current validation and limits.
+> November 1, 2026 reliability repair: home date defaults, company discovery/collection recovery, normalized search, approved numeric-source excerpts, calendar scope/coverage, and personal-event company binding are implemented and regression-checked. See [POST_LOGIN_RELIABILITY_2026-11-01.md](POST_LOGIN_RELIABILITY_2026-11-01.md) for observed defects, deployment dependencies and remaining source-coverage limits. This implementation status is separate from live deployment verification.
+
+> Earlier November 1, 2026 release: The ten Korean post-login screens from the screenshot package were implemented and deployed. The new dashboard/directory RPC and calendar-interest removal migration were applied. Release code: `7a7dbc1ef6d29edda60493039a35fba976c64b7b`. Historical status tables below are retained as originally recorded. See VERIFICATION for current validation and limits.
 
 > New local execution results: [LOCAL_VERIFICATION_2026-10-02.md](LOCAL_VERIFICATION_2026-10-02.md). Supplier results below are historical.
 

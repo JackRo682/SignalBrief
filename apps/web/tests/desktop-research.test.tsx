@@ -34,6 +34,10 @@ let holding={quantity:'1.234567890123456789012345678e19',average_cost:'0.0000000
 const mount=(node:React.ReactNode)=>render(<div className="sb-pc">{node}</div>);
 beforeEach(()=>{
  pageDataCache.reset();vi.clearAllMocks();mocks.quoteReason="not_configured";mocks.historyEnabled=false;mocks.saved=false;mocks.watching=false;mocks.failSave=false;mocks.failLoad=false;mocks.failPosition=false;currentDocument=structuredClone(baseDocument);holding={quantity:'1.234567890123456789012345678e19',average_cost:'0.00000001',currency:'USD'};
+ vi.stubGlobal('fetch',vi.fn(async(input:RequestInfo|URL)=>{
+  if(input===`/api/company-profile?company_id=${companyId}`)return Response.json({status:'verified',provider:'SEC EDGAR',fetched_at:stamp,source_url:source,profile:{corp_code:'0000000001',ticker:'TEST',name:'Synthetic Company',english_name:null,ceo:null,address:null,website:null,established_on:null,industry_code:null,fiscal_month:'12'}});
+  throw new Error(`Unexpected synthetic fetch ${String(input)}`);
+ }));
  timeline=[{...event,published_at:new Date(Date.now()-86400000).toISOString()},{...event,id:'30000000-0000-4000-8000-000000000002',headline:'Older synthetic product event',event_type:'product',published_at:new Date(Date.now()-90*86400000).toISOString()}];
  window.history.replaceState({},'','/today');Object.defineProperty(HTMLDialogElement.prototype,'showModal',{configurable:true,value:function(this:HTMLDialogElement){this.setAttribute('open','');}});
  mocks.workspace.mockImplementation(async(_token,req)=>{
@@ -54,7 +58,7 @@ beforeEach(()=>{
   throw new Error(`Unexpected request ${path}`);
  });
 });
-afterEach(()=>{cleanup();vi.restoreAllMocks();});
+afterEach(()=>{cleanup();vi.restoreAllMocks();vi.unstubAllGlobals();});
 
 describe('desktop company and timeline',()=>{
  it('prefills exponent amounts exactly and keeps a denied edit until the API saves it',async()=>{

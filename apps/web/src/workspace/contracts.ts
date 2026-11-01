@@ -15,7 +15,8 @@ export const approvedFilingAnalysisSchema=z.object({resource:resourceSchema,anal
 export const contentNotificationSchema=z.object({id:z.string(),created_at:z.string(),read_at:z.string().nullable(),resource:resourceSchema});
 export const contentNotificationsSchema=z.object({items:z.array(contentNotificationSchema),unread_count:z.number().int().nonnegative()});
 export const savedSchema=z.object({items:z.array(resourceSchema),counts:z.object({event:z.number(),document:z.number(),analysis:z.number().default(0),history:z.number()})});
-export const companyDetailSchema=z.object({company:resourceSchema,events:z.array(resourceSchema),analyses:z.array(resourceSchema).default([]),documents:z.array(resourceSchema),facts:z.array(z.object({id:z.string(),field:z.string(),value_raw:z.string().nullable(),unit:z.string().nullable(),period:z.string().nullable(),basis:z.string(),quote:z.string(),event_id:z.string()})),watching:z.boolean(),holding:z.boolean()});
+export const numericEvidenceSchema=z.object({id:z.string(),filing_id:uuid,kind:z.enum(['us_analysis','dart_analysis']),title:z.string(),quote:z.string(),claim_text:z.string(),source_url:z.string(),published_at:z.string(),reviewed_at:z.string()});
+export const companyDetailSchema=z.object({company:resourceSchema,events:z.array(resourceSchema),analyses:z.array(resourceSchema).default([]),documents:z.array(resourceSchema),facts:z.array(z.object({id:z.string(),field:z.string(),value_raw:z.string().nullable(),unit:z.string().nullable(),period:z.string().nullable(),basis:z.string(),quote:z.string(),event_id:z.string()})),numeric_evidence:z.array(numericEvidenceSchema).default([]),watching:z.boolean(),holding:z.boolean()});
 export const documentDetailSchema=z.object({
  document:resourceSchema,
  approved_analyses:z.array(approvedFilingAnalysisSchema).default([]),

@@ -74,7 +74,7 @@ function useNews(company: string) {
 export default function Home() {
   const [today] = useState(() => koreaDate()),
     [company, setCompany] = useState(""),
-    [range, setRange] = useState({ start: today, end: today }),
+    [range, setRange] = useState({ start: rangeStart(today, 30), end: today }),
     [draft, setDraft] = useState(range),
     [rangeError, setRangeError] = useState("");
   const directory = useData(
@@ -255,6 +255,33 @@ export default function Home() {
       )}
       <DataState {...directory} retry={directory.reload} />
       <DataState {...data} retry={data.reload} />
+      {data.data && !data.error &&
+        data.data.filing_count === 0 &&
+        data.data.analysis_count === 0 &&
+        data.data.event_count === 0 && (
+          <div className="rd-note" role="status">
+            <p>
+              {range.start} ~ {range.end} 기간에 선택한 기업의 공개 자료가 없습니다.
+              날짜나 기업 필터를 바꾸거나 전체 이력을 확인해 주세요.
+            </p>
+            <button
+              className="rd-more"
+              type="button"
+              onClick={() => {
+                const recent = { start: rangeStart(today, 30), end: today };
+                setRange(recent);
+                setDraft(recent);
+                setCompany("");
+                setRangeError("");
+              }}
+            >
+              전체 기업의 최근 1개월 보기
+            </button>{" "}
+            <Link className="rd-more" href={`/search?sort=newest${companyQuery}`}>
+              전체 이력 보기
+            </Link>
+          </div>
+        )}
       <div className="rd-grid-two">
         <div id="disclosures">
           <Panel

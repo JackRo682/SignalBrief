@@ -13,8 +13,64 @@ import {
 const fields =
   "id,title,occurs_on,company_id,event_id,origin,quote,source_url,source_timezone,verified_at";
 type Query =
-  { id: string } | { from: string; until: string; companyId?: string };
+  | { id: string }
+  | {
+      from: string;
+      until: string;
+      companyId?: string;
+      companyIds?: string[];
+      includePersonal?: boolean;
+      order?: "asc" | "desc";
+    };
 type Result = { items: CalendarEntry[]; truncated: boolean };
+
+const coverageSchema = z.object({
+  registered_companies: z.number().int().nonnegative(),
+  covered_companies: z.number().int().nonnegative(),
+  selected: z.object({
+    company_id: z.string().uuid(),
+    source_count: z.number().int().nonnegative(),
+    last_success_at: z.string().nullable(),
+    has_error: z.boolean(),
+  }).nullable(),
+});
+
+/** Coverage is independent of date reads: a provider outage never erases verified dates. */
+export function useCalendarCoverage(companyId: string | null) {
+  const { token } = useAuth();
+  const [revision, setRevision] = useState(0);
+  const [state, setState] = useState<{
+    key: string; data: z.infer<typeof coverageSchema> | null; error: string;
+  }>({ key: "", data: null, error: "" });
+  const key = JSON.stringify([token, companyId, revision]);
+  const reload = useCallback(() => setRevision((value) => value + 1), []);
+  useEffect(() => {
+    if (!token) return;
+    let alive = true;
+    const controller = new AbortController();
+    void (async () => {
+      try {
+        if (companyId) z.string().uuid().parse(companyId);
+        const db = await initializeSupabase();
+        const response = await db.rpc("sb_calendar_coverage", { p_company_id: companyId })
+          .abortSignal(AbortSignal.any([controller.signal, AbortSignal.timeout(20000)]));
+        if (response.error) throw new Error("coverage_unavailable");
+        const data = coverageSchema.parse(response.data);
+        if (alive) setState({ key, data, error: "" });
+      } catch {
+        if (alive) setState({ key, data: null, error: "공식 일정 수집 범위를 확인하지 못했습니다. 일정 목록은 별도로 조회합니다." });
+      }
+    })();
+    return () => { alive = false; controller.abort(); };
+  }, [token, companyId, revision, key]);
+  const current = state.key === key;
+  return {
+    data: current ? state.data : null,
+    error: current ? state.error : "",
+    loading: Boolean(token && !current),
+    reload,
+  };
+}
 
 /** Uses the signed-in user's JWT and existing calendar RLS, never a service key. */
 export function useCalendarData(query: Query | null) {
@@ -40,6 +96,17 @@ export function useCalendarData(query: Query | null) {
     void (async () => {
       try {
         const input = JSON.parse(key) as Query;
+        const companyIds = "id" in input || input.companyIds === undefined
+          ? undefined
+          : z.array(z.string().uuid()).max(500).parse(input.companyIds);
+        if (!("id" in input)) {
+          const from = isoDaySchema.parse(input.from), until = isoDaySchema.parse(input.until);
+          if (from > until) throw new Error("Invalid range");
+          if (companyIds?.length === 0 && input.includePersonal === false) {
+            if (alive) setState({ key, token, data: { items: [], truncated: false }, loading: false, error: "" });
+            return;
+          }
+        }
         const db = await initializeSupabase();
         // calendar_items is RLS-protected: verified official rows, or this user's own rows.
         let request = db
@@ -58,9 +125,17 @@ export function useCalendarData(query: Query | null) {
               "company_id",
               z.string().uuid().parse(input.companyId),
             );
+          // Filter before LIMIT: unrelated companies must not displace selected dates.
+          if (companyIds !== undefined) {
+            if (input.includePersonal !== false) {
+              request = companyIds.length
+                ? request.or(`origin.eq.user,company_id.in.(${companyIds.join(",")})`)
+                : request.eq("origin", "user");
+            } else request = request.in("company_id", companyIds).neq("origin", "user");
+          } else if (input.includePersonal === false) request = request.neq("origin", "user");
         }
         const response = await request
-          .order("occurs_on")
+          .order("occurs_on", { ascending: "id" in input || input.order !== "desc" })
           .order("id")
           .limit("id" in input ? 1 : 501)
           .abortSignal(

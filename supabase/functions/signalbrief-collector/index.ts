@@ -50,13 +50,11 @@ export async function handleCollector(req:Request):Promise<Response>{
   const secrets=obj(await rpc('sb_us_secrets'));
   for(const key of ['OPENAI_API_KEY','FMP_API_KEY','RESEND_API_KEY','GNEWS_API_KEY','SEC_CONTACT_EMAIL','DART_API_KEY','RESEND_WEBHOOK_SECRET','KIS_APP_KEY','KIS_APP_SECRET'])if(env(key))secrets[key]=env(key);
   const result:Row={};
-  const selected=await db.from('companies').select('id,ticker,provider,provider_company_id').eq('is_demo',false).in('provider',['sec','dart']).order('last_ingested_at',{ascending:true,nullsFirst:true});
-  if(selected.error)throw new ProviderError('database','company_read_failed');
-  const companies=selected.data??[];
+  const companies=await rpc('sb_collection_candidates') as Row[];
   for(const provider of ['sec','dart']){
    const company=companies.find(c=>c.provider===provider);if(!company)continue;
    try{
-    const detail=provider==='sec'?await ingest(db,secrets,company.ticker):await dartIngest(company,str(secrets.DART_API_KEY),str(secrets.DART_RELAY_SECRET));
+    const detail=provider==='sec'?await ingest(db,secrets,str(company.ticker)):await dartIngest(company,str(secrets.DART_API_KEY),str(secrets.DART_RELAY_SECRET));
     result[provider]={status:'verified',...detail};await check(provider,'verified',detail);
    }catch(error){result[provider]={status:'blocked',code:code(error)};await check(provider,'blocked',{code:code(error)});}
   }

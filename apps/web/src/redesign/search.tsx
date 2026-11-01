@@ -15,6 +15,8 @@ import {
 import { usePrefs } from "@/workspace/preferences";
 import { DataState, useData } from "@/workspace/ui";
 import type { ResearchSearchProps } from "@/workspace/research-search";
+import CompanyDiscovery from "./company-discovery";
+import { normalizeCompanyQuery } from "./company-search";
 import {
   CompanyLogo,
   Heading,
@@ -79,7 +81,7 @@ export default function Search({
     ? initialCompany
     : "";
   const filters = {
-    q: initial,
+    q: normalizeCompanyQuery(initial),
     market: initialMarket,
     days: initialDays,
     sort: initialSort,
@@ -88,6 +90,10 @@ export default function Search({
     category: initialCategory,
   };
   const grouped = kind === "";
+  const scopedCompany = useData(
+    company ? { action: "catalog", p: { kind: "company", company_id: company, limit: 1 } } : null,
+    catalogSchema,
+  );
   const result = useData(
     {
       action: "catalog",
@@ -159,10 +165,18 @@ export default function Search({
     ["document", "공시", count(["filing", "document"])],
     ["analysis", "승인 분석", count(["event", "us_analysis", "dart_analysis"])],
   ] as const;
+  const resetScope = {
+    company_id: "", market: "", category: "", source: "", days: 0,
+  };
   return (
     <div data-screen="redesign-search">
       <Heading title="검색" />
-      <SearchForm initial={initial} onSubmit={(q) => change({ q })} />
+      <SearchForm initial={initial} onSubmit={(value) => {
+        const q = normalizeCompanyQuery(value);
+        // A new query starts a global search instead of inheriting an invisible
+        // company/category restriction from a company-detail shortcut.
+        change(q === filters.q ? { q } : { ...resetScope, kind: "", q });
+      }} />
       <nav className="rd-tabs" aria-label="검색 유형">
         {tabs.map(([key, title, n]) => (
           <button
@@ -226,20 +240,28 @@ export default function Search({
           <button
             className="rd-btn"
             onClick={() =>
-              change({
-                company_id: "",
-                market: "",
-                category: "",
-                source: "",
-                days: 0,
-              })
+              change(resetScope)
             }
           >
             필터 초기화
           </button>
         ) : null}
       </div>
+      {(company || initialMarket || initialCategory) && <div className="rd-search-scope">
+        <p>
+          {company && <>기업: {scopedCompany.data?.items[0]?.company_name ?? "선택한 기업"}</>}
+          {initialMarket && <>{company ? " · " : ""}시장: {initialMarket}</>}
+          {initialCategory && <>{company || initialMarket ? " · " : ""}자료 유형: {initialCategory}</>}
+        </p>
+        <button className="rd-btn" onClick={() => change({ ...resetScope, kind: "" })}>전체 기업에서 검색</button>
+      </div>}
       <DataState {...result} retry={result.reload} />
+      {(grouped || kind === "company") && !company && <CompanyDiscovery
+        query={filters.q}
+        provider={source}
+        market={initialMarket}
+        existingCompanies={(grouped ? companies.data : result.data)?.items.filter(item => item.kind === "company")}
+      />}
       {grouped ? (
         <>
           {[

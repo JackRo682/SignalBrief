@@ -37,7 +37,7 @@ export async function handleProfiles(req:Request):Promise<Response>{
   if(!['dart','sec'].includes(result.data.provider))return reply({status:'unsupported',profile:null});
   const company=result.data as CompanyIdentity;
   if(result.data.provider==='sec'){
-   if(!/^\d{1,10}$/.test(company.provider_company_id)||!(/^[A-Z][A-Z0-9.-]{0,9}$/).test(company.ticker))throw new ProfileError('invalid_company_mapping',409);
+   if(!/^\d{1,10}$/.test(company.provider_company_id)||!(/^[A-Z0-9][A-Z0-9.-]{0,14}$/).test(company.ticker))throw new ProfileError('invalid_company_mapping',409);
    const cacheKey=`profile:sec:v1:${id}:${company.provider_company_id}:${company.ticker}`;
    const cached=await rpc('sb_us_cache',{k:cacheKey});if(cached)return reply(cached);
    const secrets=await rpc('sb_us_secrets'),contact=env('SEC_CONTACT_EMAIL')||secrets.SEC_CONTACT_EMAIL;

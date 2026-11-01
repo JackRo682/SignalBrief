@@ -6,34 +6,12 @@ import { companyBusinessProfiles } from "@/lib/company-business-profiles";
 import { catalogSchema, sourceOverviewSchema } from "@/workspace/contracts";
 import { DataState, useData } from "@/workspace/ui";
 import { CompanyLogo, Heading, SearchForm, formatSourceDate } from "./ui";
-
-export function marketCategory(
-  value: string,
-): "kospi" | "kosdaq" | "overseas" | "unclassified" {
-  const market = value.toUpperCase();
-  if (["KOSPI", "코스피", "KRX:KOSPI"].includes(market)) return "kospi";
-  if (["KOSDAQ", "코스닥", "KRX:KOSDAQ"].includes(market)) return "kosdaq";
-  if (
-    [
-      "NASDAQ",
-      "NYSE",
-      "AMEX",
-      "NYSEARCA",
-      "NYSE ARCA",
-      "OTC",
-      "LSE",
-      "TSE",
-      "HKEX",
-    ].includes(market)
-  )
-    return "overseas";
-  return "unclassified";
-}
+import CompanyDiscovery from "./company-discovery";
+import { marketCategory, normalizeCompanyQuery, type MarketGroup } from "./company-search";
+export { marketCategory } from "./company-search";
 export default function Companies() {
   const [query, setQuery] = useState(""),
-    [market, setMarket] = useState<
-      "all" | "kospi" | "kosdaq" | "overseas" | "unclassified"
-    >("all"),
+    [market, setMarket] = useState<MarketGroup>("all"),
     [offset, setOffset] = useState(0);
   const directory = useData(
     {
@@ -59,7 +37,7 @@ export default function Companies() {
       <div className="rd-directory-tools">
         <SearchForm
           onSubmit={(q) => {
-            setQuery(q);
+            setQuery(normalizeCompanyQuery(q));
             setOffset(0);
           }}
         />
@@ -87,6 +65,7 @@ export default function Companies() {
       </div>
       <DataState {...directory} retry={directory.reload} />
       <DataState {...overview} retry={overview.reload} />
+      <CompanyDiscovery query={query} marketGroup={market} existingCompanies={rows} />
       {market === "unclassified" && (
         <p className="rd-note">
           거래소 정보가 세부 시장까지 확인되지 않은 기업입니다.

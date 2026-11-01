@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-01",
+  "baseline_commit": "7e9f0d665bdfca69c2f96a9b45e905a91a1a343a",
+  "scope": "Post-login home, company search/discovery/detail and calendar reliability",
+  "full_verifier": {
+    "command": "python scripts/verify.py --full",
+    "stages_passed": 8,
+    "backend_passed": 490,
+    "backend_failed": 0,
+    "backend_skipped": 0,
+    "postgres": "PostgreSQL 16.15; four disposable loopback databases; real migrations and RLS with synthetic rows"
+  },
+  "final_frontend_recheck": {
+    "reason": "Direct-reopen collection recovery was added after the full verifier; backend remained unchanged",
+    "unit_passed": 855,
+    "unit_failed": 0,
+    "test_files": 87,
+    "typecheck": "PASS",
+    "lint": "PASS",
+    "lint_errors": 0,
+    "existing_lint_warnings": 5,
+    "production_build": "PASS"
+  },
+  "new_migration_regressions": {
+    "passed": 12,
+    "included_in_backend_total": true
+  },
+  "edge_boundary_regressions": {
+    "passed": 22,
+    "included_in_frontend_total": true,
+    "boundaries": "Real handler/orchestration/parsers with simulated Auth, HTTP, Storage and database responses"
+  },
+  "deno_check": {
+    "status": "PASS",
+    "version": "2.9.6",
+    "entrypoints": ["signalbrief-discovery", "signalbrief-collector", "signalbrief-profiles"]
+  },
+  "browser_regressions": {
+    "focused_desktop_and_mobile_passed": 14,
+    "affected_rechecks_after_final_edit_passed": 4,
+    "browser": "Google Chrome 156.0.8078.79, driven by repository Playwright",
+    "network": "Synthetic HTTP fixtures; unexpected external requests blocked",
+    "unexpected_runtime_or_hydration_errors": 0,
+    "horizontal_overflow_cases": 0
+  },
+  "not_certified_by_these_checks": [
+    "Live SEC/OpenDART latency and availability",
+    "New-account OAuth login",
+    "Additional official calendar adapters beyond Microsoft and Samsung",
+    "Outbound notification delivery, payments, backup restore or commercial-scale load",
+    "Independent real-world analysis quality or a zero-bug guarantee"
+  ]
+}

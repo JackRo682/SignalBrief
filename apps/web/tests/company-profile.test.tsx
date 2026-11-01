@@ -22,4 +22,25 @@ describe('company profile display',()=>{
  });
  it('retries a failed lookup',async()=>{vi.mocked(fetch).mockResolvedValueOnce(new Response('',{status:502}));render(<CompanyProfile id={id} ticker="123456"/>);fireEvent.click(await screen.findByRole('button',{name:'기업정보 다시 시도'}));expect(await screen.findByText('Synthetic company')).toBeTruthy();expect(fetch).toHaveBeenCalledTimes(2);});
  it('does not retain the previous issuer while navigating',async()=>{const view=render(<CompanyProfile id={id} ticker="123456"/>);await screen.findByText('Synthetic company');vi.mocked(fetch).mockImplementationOnce(()=>new Promise(()=>{}));view.rerender(<CompanyProfile id="30000000-0000-4000-8000-000000000001" ticker="654321"/>);await waitFor(()=>expect(screen.queryByText('Synthetic company')).toBeNull());});
+ it('distinguishes fields absent from SEC metadata from a failed profile request',async()=>{
+  vi.mocked(fetch).mockResolvedValueOnce(Response.json({...data,provider:'SEC EDGAR',profile:{...data.profile,ticker:'AAPL',ceo:null,established_on:null}}));
+  render(<CompanyProfile id={id} ticker="AAPL"/>);
+  await screen.findByText('Synthetic company');
+  expect(screen.getAllByText('원천 데이터에서 미제공')).toHaveLength(2);
+  expect(screen.queryByRole('button',{name:'기업정보 다시 시도'})).toBeNull();
+  expect(screen.getByText(/SEC 기업정보 원천에는/)).toBeTruthy();
+ });
+ it('explains an unsupported profile provider without presenting a network failure',async()=>{
+  vi.mocked(fetch).mockResolvedValueOnce(Response.json({status:'unsupported',profile:null}));
+  render(<CompanyProfile id={id} ticker="123456"/>);
+  expect(await screen.findByText('이 출처의 기업 기본정보는 아직 지원하지 않습니다.')).toBeTruthy();
+  expect(screen.queryByRole('button',{name:'기업정보 다시 시도'})).toBeNull();
+ });
+ it('identifies a request limit and lets the user recover',async()=>{
+  vi.mocked(fetch).mockResolvedValueOnce(new Response('',{status:429}));
+  render(<CompanyProfile id={id} ticker="123456"/>);
+  expect((await screen.findByRole('alert')).textContent).toContain('요청 한도');
+  fireEvent.click(screen.getByRole('button',{name:'기업정보 다시 시도'}));
+  expect(await screen.findByText('Synthetic company')).toBeTruthy();
+ });
 });

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { z } from "zod";
 import { useAuth } from "@/components/auth";
 import { Icon } from "@/components/icons";
@@ -17,7 +17,7 @@ import { PcLogo, PcModal } from "@/desktop/ui";
 import { DataState, Notice, useMutation } from "@/workspace/ui";
 import { usePrefs } from "@/workspace/preferences";
 import { safeSource } from "@/workspace/contracts";
-import { useCalendarData } from "./calendar-data";
+import { useCalendarCoverage, useCalendarData } from "./calendar-data";
 import {
   addDays,
   calendarHref,
@@ -71,21 +71,41 @@ export default function RedesignCalendar() {
   const setSubscription = (value: z.infer<typeof subscriptionSchema> | null) =>
     setSubscriptionState(value ? { token, value } : null);
   const visible = visibleDays(anchor, view);
-  const calendar = useCalendarData({
-    from: visible[0],
-    until: visible[visible.length - 1],
-  });
-  const lists = useCalendarData({
-    from: addDays(today, -90),
-    until: addDays(today, 365),
-  });
   const catalog = useResource("/v1/companies?limit=100", companiesSchema);
+  const [companyQuery, setCompanyQuery] = useState("");
+  useEffect(() => {
+    const timer = setTimeout(() => setCompanyQuery(query.trim()), 250);
+    return () => clearTimeout(timer);
+  }, [query]);
+  const companySearch = useResource(
+    companyQuery ? `/v1/companies?q=${encodeURIComponent(companyQuery)}&limit=100` : null,
+    companiesSchema,
+  );
   const watchlist = useResource("/v1/watchlist", watchlistSchema);
   const companies = catalog.data ?? [];
-  const names = new Map(companies.map((company) => [company.id, company]));
+  const names = new Map([
+    ...companies,
+    ...(companySearch.data ?? []),
+    ...(watchlist.data?.items ?? []),
+  ].map((company) => [company.id, company]));
   const followed = new Set(
     watchlist.data?.items.map((company) => company.id) ?? [],
   );
+  const companyIds = scope === "all" ? undefined
+    : [...(scope === "following" ? followed : selectedCompanies)].sort();
+  const coverage = useCalendarCoverage(companyIds?.length === 1 ? companyIds[0] : null);
+  const scopeReady = scope !== "following" || Boolean(watchlist.data && !watchlist.error);
+  const scoped = { companyIds, includePersonal };
+  const calendar = useCalendarData(scopeReady ? {
+    from: visible[0], until: visible[visible.length - 1], ...scoped,
+  } : null);
+  // Independent ranges prevent historical records from consuming the future limit.
+  const futureDates = useCalendarData(scopeReady ? {
+    from: today, until: addDays(today, 365), ...scoped,
+  } : null);
+  const pastDates = useCalendarData(scopeReady ? {
+    from: addDays(today, -90), until: addDays(today, -1), order: "desc", ...scoped,
+  } : null);
   const filter = (item: CalendarEntry) =>
     matchesCalendarScope(
       item,
@@ -95,24 +115,16 @@ export default function RedesignCalendar() {
       includePersonal,
     );
   const entries = (calendar.data?.items ?? []).filter(filter);
-  const sideEntries = (lists.data?.items ?? []).filter(filter);
-  const upcoming = sideEntries
-    .filter((item) => item.occurs_on >= today)
-    .sort(
-      (a, b) =>
-        a.occurs_on.localeCompare(b.occurs_on) || a.id.localeCompare(b.id),
-    );
-  const past = sideEntries
-    .filter((item) => item.occurs_on < today)
-    .sort(
-      (a, b) =>
-        b.occurs_on.localeCompare(a.occurs_on) || a.id.localeCompare(b.id),
-    );
-  const shownCompanies = companies.filter((company) =>
-    `${company.name} ${company.ticker}`
-      .toLocaleLowerCase()
-      .includes(query.toLocaleLowerCase()),
-  );
+  const upcoming = (futureDates.data?.items ?? []).filter(filter);
+  const past = (pastDates.data?.items ?? []).filter(filter);
+  const nearest = [...upcoming, ...past].sort((a, b) =>
+    Math.abs(Date.parse(a.occurs_on) - Date.parse(anchor)) -
+    Math.abs(Date.parse(b.occurs_on) - Date.parse(anchor)) ||
+    a.occurs_on.localeCompare(b.occurs_on) || a.id.localeCompare(b.id),
+  )[0];
+  const searchPending = query.trim() !== companyQuery;
+  const companyResults = companyQuery ? companySearch : catalog;
+  const shownCompanies = searchPending ? [] : companyResults.data ?? [];
   const heading =
     view === "month"
       ? `${Number(anchor.slice(0, 4))}년 ${Number(anchor.slice(5, 7))}월`
@@ -150,7 +162,8 @@ export default function RedesignCalendar() {
       setAdding(false);
       setIncludePersonal(true);
       calendar.reload();
-      lists.reload();
+      futureDates.reload();
+      pastDates.reload();
     }, "개인 일정을 저장했습니다.");
   }
   function exportVisible() {
@@ -221,6 +234,18 @@ export default function RedesignCalendar() {
         <p>주요 기업의 공식 일정과 개인 일정을 한눈에 확인하세요.</p>
       </header>
       <Notice action={action} />
+      <DataState {...coverage} retry={coverage.reload} />
+      {coverage.data && (
+        <div className="rd-calendar-note" role="status">
+          <p>등록 기업 {coverage.data.registered_companies}개 중 {coverage.data.covered_companies}개 공식 일정 연결</p>
+          {coverage.data.selected?.source_count === 0 && (
+            <p>이 기업은 공식 일정 수집이 아직 연결되지 않았습니다. 공시·분석 자료와 일정 수집 범위는 다릅니다.</p>
+          )}
+          {coverage.data.selected?.has_error && (
+            <p>이 기업의 공식 일정 갱신에 실패했습니다. 이전에 확인된 일정은 계속 표시합니다.</p>
+          )}
+        </div>
+      )}
       <div className="rd-calendar-columns">
         <aside className="rd-calendar-filter rd-calendar-card">
           <h2>기업 범위</h2>
@@ -255,9 +280,9 @@ export default function RedesignCalendar() {
             />
           </label>
           <DataState
-            loading={catalog.loading}
-            error={catalog.error ?? ""}
-            retry={catalog.reload}
+            loading={searchPending || companyResults.loading}
+            error={companyResults.error ?? ""}
+            retry={companyResults.reload}
           />
           <div className="rd-calendar-company-list">
             {shownCompanies.map((company) => (
@@ -273,12 +298,12 @@ export default function RedesignCalendar() {
               </label>
             ))}
           </div>
-          {!catalog.loading && !catalog.error && !shownCompanies.length && (
+          {!searchPending && !companyResults.loading && !companyResults.error && !shownCompanies.length && (
             <p className="rd-calendar-empty">검색 결과가 없습니다.</p>
           )}
-          {companies.length === 100 && (
+          {shownCompanies.length === 100 && (
             <p className="rd-calendar-note">
-              기업 선택 목록은 최대 100개입니다.
+              검색 결과는 최대 100개입니다. 기업명이나 티커로 범위를 좁혀 주세요.
             </p>
           )}
           {scope === "following" && (
@@ -302,7 +327,7 @@ export default function RedesignCalendar() {
           <section className="rd-calendar-card">
             <header className="rd-calendar-section-head">
               <h2>
-                다가오는 일정 <span>{lists.data ? upcoming.length : "…"}</span>
+                다가오는 일정 <span>{futureDates.data ? `${upcoming.length}${futureDates.data.truncated ? "+" : ""}` : "…"}</span>
               </h2>
               <button
                 type="button"
@@ -312,9 +337,9 @@ export default function RedesignCalendar() {
                 {showUpcoming ? "간단히 보기" : "모두 보기"} ›
               </button>
             </header>
-            <DataState {...lists} retry={lists.reload} />
+            <DataState {...futureDates} retry={futureDates.reload} />
             {renderList(upcoming, showUpcoming)}
-            {lists.data && !upcoming.length && (
+            {futureDates.data && !upcoming.length && (
               <p className="rd-calendar-empty">확인된 예정 일정이 없습니다.</p>
             )}
             <p className="rd-calendar-note">오늘부터 1년간의 확인된 일정</p>
@@ -322,7 +347,7 @@ export default function RedesignCalendar() {
           <section className="rd-calendar-card">
             <header className="rd-calendar-section-head">
               <h2>
-                지난 일정 <span>{lists.data ? past.length : "…"}</span>
+                지난 일정 <span>{pastDates.data ? `${past.length}${pastDates.data.truncated ? "+" : ""}` : "…"}</span>
               </h2>
               <button
                 type="button"
@@ -332,13 +357,14 @@ export default function RedesignCalendar() {
                 {showPast ? "간단히 보기" : "모두 보기"} ›
               </button>
             </header>
+            <DataState {...pastDates} retry={pastDates.reload} />
             {renderList(past, showPast)}
-            {lists.data && !past.length && (
+            {pastDates.data && !past.length && (
               <p className="rd-calendar-empty">확인된 지난 일정이 없습니다.</p>
             )}
             <p className="rd-calendar-note">최근 90일의 확인된 일정</p>
           </section>
-          {lists.data?.truncated && (
+          {(futureDates.data?.truncated || pastDates.data?.truncated) && (
             <p className="rd-calendar-note" role="status">
               조회 한도 500개에 도달했습니다. 월·주·일 보기에서 기간별 전체
               일정을 확인하세요.
@@ -390,6 +416,21 @@ export default function RedesignCalendar() {
               </div>
             </div>
             <DataState {...calendar} retry={calendar.reload} />
+            {calendar.data && !calendar.error && !entries.length && (
+              <div className="rd-calendar-note" role="status">
+                <p>선택한 기간과 기업 범위에 수집된 일정이 없습니다.</p>
+                <p>공식 출처에서 확인하여 수집한 일정과 개인 일정만 표시합니다. 기업별 일정 수집 범위는 다릅니다.</p>
+                {scope === "selected" && !selectedCompanies.size && <p>왼쪽에서 기업을 선택해 주세요.</p>}
+                {nearest && (
+                  <button className="rd-calendar-button" type="button" onClick={() => {
+                    setAnchor(nearest.occurs_on);
+                    setView("month");
+                  }}>
+                    가장 가까운 일정 보기 · {nearest.occurs_on}
+                  </button>
+                )}
+              </div>
+            )}
             <div className={`rd-calendar-grid rd-calendar-grid-${view}`}>
               {view !== "day" &&
                 daysOfWeek.map((day) => (

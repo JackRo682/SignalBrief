@@ -36,6 +36,10 @@ const returnedAnswer:Answer={status:'abstained',message:'Synthetic evidence is i
 
 beforeEach(()=>{
  vi.clearAllMocks();mocks.analyticsConsent=false;mocks.historyEnabled=false;mocks.saved=false;mocks.failSave=false;mocks.failHolding=false;mocks.failHistory=false;mocks.history=[];
+ vi.stubGlobal('fetch',vi.fn(async(input:RequestInfo|URL)=>{
+  if(input===`/api/company-profile?company_id=${id}`)return Response.json({status:'verified',provider:'SEC EDGAR',fetched_at:stamp,source_url:source,profile:{corp_code:'0000000001',ticker:'TEST',name:'Synthetic Company',english_name:null,ceo:null,address:null,website:null,established_on:null,industry_code:null,fiscal_month:'12'}});
+  throw new Error(`Unexpected synthetic fetch ${String(input)}`);
+ }));
  window.history.replaceState({},'',`/events/${eventId}`);
  Object.defineProperty(HTMLElement.prototype,'scrollIntoView',{configurable:true,value:vi.fn()});
  Object.defineProperty(HTMLDialogElement.prototype,'showModal',{configurable:true,value:function(this:HTMLDialogElement){this.setAttribute('open','');}});
@@ -66,7 +70,7 @@ beforeEach(()=>{
   throw new Error(`Unexpected synthetic API route: ${path}`);
  });
 });
-afterEach(()=>{cleanup();vi.restoreAllMocks();});
+afterEach(()=>{cleanup();vi.restoreAllMocks();vi.unstubAllGlobals();});
 
 describe('mobile event actions use owned, persisted responses',()=>{
  it('saves and restores an event bookmark without recording disabled history',async()=>{
@@ -123,8 +127,10 @@ describe('desktop holding and direct-document regressions',()=>{
  });
  it('blocks a holding overwrite if existing data could not load',async()=>{
   mocks.failHolding=true;render(<CompanyOverview id={id}/>);fireEvent.click(await screen.findByRole('button',{name:'보유 정보 수정'}));
-  expect(await screen.findByRole('alert')).toHaveTextContent('기존 보유 정보를 불러오지 못했습니다');
-  expect(screen.getByRole('button',{name:'저장'})).toBeDisabled();
+  const dialog=screen.getByRole('dialog');
+  expect(within(dialog).getByRole('heading',{name:'보유 정보 입력'})).toBeVisible();
+  expect(await within(dialog).findByRole('alert')).toHaveTextContent('기존 보유 정보를 불러오지 못했습니다');
+  expect(within(dialog).getByRole('button',{name:'저장'})).toBeDisabled();
   expect(mocks.request.mock.calls.some(([path])=>path.startsWith('/v1/portfolio/positions/'))).toBe(false);
  });
  it.each([false,true])('records a direct document visit only when history is enabled: %s',async enabled=>{

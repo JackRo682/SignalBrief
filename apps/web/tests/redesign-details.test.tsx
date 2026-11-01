@@ -177,9 +177,75 @@ beforeEach(() => {
     return undefined;
   });
 });
-afterEach(cleanup);
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 describe("redesigned detail screens", () => {
+  it("shows issuer-level share-class semantics only after verifying the selected ticker", async () => {
+    window.history.replaceState({}, "", `/companies/${companyId}?selected_ticker=TEST.B`);
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json({ items: [{ company_id: companyId, ticker: "TEST.B" }] })));
+    render(<CompanyDetail id={companyId} />);
+    expect(await screen.findByText(/The official directory identifies the same issuer/)).toBeVisible();
+    expect(screen.getByText(/Selected ticker: TEST.B/)).toHaveTextContent("Representative ticker: TEST");
+  });
+
+  it("does not trust a valid-looking ticker query parameter as proof of the issuer mapping", async () => {
+    window.history.replaceState({}, "", `/companies/${companyId}?selected_ticker=UNRELATED`);
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json({ items: [{ company_id: "20000000-0000-4000-8000-000000000099", ticker: "UNRELATED" }] })));
+    render(<CompanyDetail id={companyId} />);
+    expect(await screen.findByText(/The selected ticker relationship could not be verified/)).toBeVisible();
+    expect(screen.queryByText(/The official directory identifies the same issuer/)).not.toBeInTheDocument();
+  });
+
+  it("rejects an invalid selected ticker without making a directory request", async () => {
+    window.history.replaceState({}, "", `/companies/${companyId}?selected_ticker=${encodeURIComponent('<script>')}`);
+    vi.stubGlobal("fetch", vi.fn());
+    render(<CompanyDetail id={companyId} />);
+    await screen.findByRole("tab", { name: "Overview" });
+    expect(fetch).not.toHaveBeenCalled();
+    expect(screen.queryByText(/Selected ticker/)).not.toBeInTheDocument();
+  });
+
+  it("refreshes failed initial collection without inventing a background success", async () => {
+    window.history.replaceState({}, "", `/companies/${companyId}?collection=unavailable`);
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json({ company_id: companyId, hydration_status: "ready" })));
+    render(<CompanyDetail id={companyId} />);
+    fireEvent.click(await screen.findByRole("button", { name: "Reload official data" }));
+    expect(await screen.findByText("Official data has been refreshed.")).toBeVisible();
+    expect(fetch).toHaveBeenCalledWith("/api/company-discovery", expect.objectContaining({ method: "POST", body: JSON.stringify({ company_id: companyId }) }));
+    expect(new URLSearchParams(window.location.search).has("collection")).toBe(false);
+  });
+
+  it("keeps manual collection recovery available on a direct company reopen without a status query", async () => {
+    window.history.replaceState({}, "", `/companies/${companyId}?tab=disclosures`);
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json({ company_id: companyId, hydration_status: "ready" })));
+    mocks.workspace.mockResolvedValueOnce({ company, documents: [], analyses: [], events: [], facts: [], watching: false, holding: false });
+    render(<CompanyDetail id={companyId} />);
+    const reload = await screen.findByRole("button", { name: "Reload official data" });
+    expect(screen.getAllByRole("button", { name: "Reload official data" })).toHaveLength(1);
+    expect(screen.queryByText(/its official data update could not be completed/)).not.toBeInTheDocument();
+    expect(fetch).not.toHaveBeenCalled();
+    fireEvent.click(reload);
+    expect(await screen.findByText("Official data has been refreshed.")).toBeVisible();
+    expect(fetch).toHaveBeenCalledWith("/api/company-discovery", expect.objectContaining({ method: "POST", body: JSON.stringify({ company_id: companyId }) }));
+    expect(new URLSearchParams(window.location.search).get("tab")).toBe("disclosures");
+    expect(new URLSearchParams(window.location.search).has("collection")).toBe(false);
+    expect(screen.getAllByRole("button", { name: "Reload official data" })).toHaveLength(1);
+  });
+
+  it("shows approved numeric quotations when legacy structured facts are empty without inventing units", async () => {
+    const quote = "The source reports an increase from 123 to 456.";
+    mocks.workspace.mockResolvedValueOnce({
+      company, documents: [filing], analyses: [analysisResource], events: [], facts: [], watching: false, holding: false,
+      numeric_evidence: [{ id: `${filingId}:1`, filing_id: filingId, kind: "us_analysis", title: "Synthetic reviewed numeric source", quote, claim_text: "The reviewed source contains a numeric change.", source_url: filing.source_url, published_at: "2026-10-01", reviewed_at: "2026-10-31T03:00:00Z" }],
+    });
+    render(<CompanyDetail id={companyId} />);
+    expect(await screen.findByRole("heading", { name: "Numeric evidence from approved analyses" })).toBeVisible();
+    expect(screen.getByText(quote).tagName).toBe("BLOCKQUOTE");
+    expect(screen.getByText(/They have not been normalized into comparable metrics/)).toBeVisible();
+    expect(screen.getByRole("link", { name: "Open approved analysis ↗" })).toHaveAttribute("href", `/documents/${filingId}?kind=filing&analysis=us`);
+    expect(screen.queryByText("USD")).not.toBeInTheDocument();
+    expect(screen.queryByText("IFRS")).not.toBeInTheDocument();
+  });
   it("preserves exact decimal strings and does not convert currency or round large values", () => {
     expect(exactDetailValue("9007199254740993.120000")).toBe(
       "9,007,199,254,740,993.120000",

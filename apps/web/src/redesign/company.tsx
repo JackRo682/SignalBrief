@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { z } from "zod";
 import { useAuth } from "@/components/auth";
 import { Icon, type IconName } from "@/components/icons";
@@ -22,6 +22,7 @@ import {
 import { usePrefs } from "@/workspace/preferences";
 import { DataState, Notice, useData, useMutation } from "@/workspace/ui";
 import "./detail.css";
+import { isSelectedTicker } from "./company-search";
 
 const tabs = [
   ["overview", "개요", "Overview"],
@@ -31,6 +32,10 @@ const tabs = [
   ["events", "일정", "Events"],
 ] as const;
 type Tab = (typeof tabs)[number][0];
+const collectionSchema = z.object({
+  company_id: z.string().uuid(),
+  hydration_status: z.enum(["ready", "pending", "unavailable"]),
+});
 const logos = new Set([
   "AAPL",
   "NVDA",
@@ -173,11 +178,51 @@ export default function CompanyDetail({ id }: { id: string }) {
   return <CompanyContent key={id} id={id} />;
 }
 
+const tickerDirectorySchema = z.object({ items: z.array(z.object({
+  company_id: z.string().uuid().nullable(), ticker: z.string(),
+})) });
+function IssuerTickerNotice({ id, ticker, selected }: { id: string; ticker: string; selected: string }) {
+  const { token } = useAuth();
+  const { text: t } = usePrefs();
+  const [status, setStatus] = useState<"checking" | "matched" | "unavailable">("checking");
+  const [revision, setRevision] = useState(0);
+  useEffect(() => {
+    if (!token) return;
+    let active = true;
+    const controller = new AbortController();
+    setStatus("checking");
+    void fetch(`/api/company-discovery?${new URLSearchParams({ q: selected })}`, {
+      headers: { Authorization: `Bearer ${token}` }, cache: "no-store", credentials: "omit",
+      signal: AbortSignal.any([controller.signal, AbortSignal.timeout(60000)]),
+    }).then(async response => {
+      if (!response.ok) throw new Error("ticker_lookup_failed");
+      const directory = tickerDirectorySchema.parse(await response.json());
+      if (active) setStatus(directory.items.some(item => item.company_id === id && item.ticker === selected) ? "matched" : "unavailable");
+    }).catch(() => { if (active) setStatus("unavailable"); });
+    return () => { active = false; controller.abort(); };
+  }, [id, selected, token, revision]);
+  return <div className="rd-detail-callout" role="status">
+    <p>{t("선택 종목코드", "Selected ticker")}: {selected} · {t("대표 종목코드", "Representative ticker")}: {ticker}</p>
+    <p>{status === "matched"
+      ? t("공식 기업목록에서 동일 발행사로 확인되었습니다. 이 화면의 기업정보와 공시는 발행사 단위로 제공합니다.", "The official directory identifies the same issuer. Company information and disclosures on this page are provided at issuer level.")
+      : status === "checking"
+        ? t("공식 기업목록에서 종목코드 연결을 확인하고 있습니다.", "Checking the ticker relationship against the official directory.")
+        : t("선택 코드의 발행사 연결을 확인하지 못했습니다. 아래 정보는 표시된 대표 코드의 기업정보입니다.", "The selected ticker relationship could not be verified. The information below belongs to the displayed representative ticker.")}</p>
+    {status === "unavailable" && <button type="button" className="rd-detail-text-button" onClick={() => setRevision(value => value + 1)}>{t("종목코드 다시 확인", "Recheck ticker")}</button>}
+  </div>;
+}
+
 function CompanyContent({ id }: { id: string }) {
   const { token } = useAuth();
   const { text: t, date, value } = usePrefs();
   const result = useData({ action: "company", p: { id } }, companyDetailSchema);
   const action = useMutation();
+  const collectionAction = useMutation();
+  const [collection, setCollection] = useState<"" | "pending" | "unavailable" | "ready">("");
+  const [profileRevision, setProfileRevision] = useState(0);
+  const [selectedTicker, setSelectedTicker] = useState("");
+  const collectionActive = useRef(true);
+  const collectionController = useRef<AbortController | null>(null);
   const [tab, setTab] = useState<Tab>("overview");
   const data = result.data,
     company = data?.company;
@@ -196,6 +241,11 @@ function CompanyContent({ id }: { id: string }) {
   );
 
   useEffect(() => {
+    collectionActive.current = true;
+    return () => { collectionActive.current = false; collectionController.current?.abort(); };
+  }, [token]);
+
+  useEffect(() => {
     const sync = () => {
       const requested = new URLSearchParams(window.location.search).get("tab");
       setTab(
@@ -203,6 +253,10 @@ function CompanyContent({ id }: { id: string }) {
           ? (requested as Tab)
           : "overview",
       );
+      const status = new URLSearchParams(window.location.search).get("collection");
+      setCollection(status === "pending" || status === "unavailable" ? status : "");
+      const selected = new URLSearchParams(window.location.search).get("selected_ticker") ?? "";
+      setSelectedTicker(isSelectedTicker(selected) ? selected : "");
     };
     sync();
     window.addEventListener("popstate", sync);
@@ -218,6 +272,28 @@ function CompanyContent({ id }: { id: string }) {
       ).catch(() => {});
     }
   }, [token, value.history_enabled, company?.id]);
+
+  async function retryCollection() {
+    const controller = new AbortController();
+    collectionController.current = controller;
+    const response = await fetch("/api/company-discovery", {
+      method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      credentials: "omit", cache: "no-store", body: JSON.stringify({ company_id: id }),
+      signal: AbortSignal.any([controller.signal, AbortSignal.timeout(60000)]),
+    });
+    if (!response.ok) throw new Error(t("공식 자료를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.", "Official data could not be loaded. Please retry shortly."));
+    const updated = collectionSchema.parse(await response.json());
+    if (updated.company_id !== id) throw new Error(t("기업정보의 일치 여부를 확인하지 못했습니다.", "The company identity could not be verified."));
+    if (!collectionActive.current || controller.signal.aborted) return;
+    setCollection(updated.hydration_status);
+    setProfileRevision(value => value + 1);
+    const url = new URL(window.location.href);
+    if (updated.hydration_status === "ready") url.searchParams.delete("collection");
+    else url.searchParams.set("collection", updated.hydration_status);
+    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+    result.reload();
+    if (tab === "events") events.reload();
+  }
 
   function changeTab(next: Tab) {
     setTab(next);
@@ -277,6 +353,16 @@ function CompanyContent({ id }: { id: string }) {
     >
       <DataState {...result} retry={result.reload} />
       <Notice action={action} />
+      <Notice action={collectionAction} />
+      {(company || collection !== "") && <div className="rd-detail-callout">
+        {(collection === "unavailable" || collection === "pending") && <p role="status">{collection === "pending"
+          ? t("공식 자료 수집이 대기 중입니다. 아직 수집되지 않은 자료는 표시되지 않습니다.", "Official data collection is queued. Data that has not been collected is not shown yet.")
+          : t("기업은 확인되었지만 공식 자료 업데이트를 완료하지 못했습니다.", "The company was identified, but its official data update could not be completed.")}</p>}
+        {collection === "ready" && <p role="status">{t("공식 자료를 다시 확인했습니다.", "Official data has been refreshed.")}</p>}
+        <button type="button" className="rd-detail-text-button" disabled={collectionAction.busy} onClick={() => void collectionAction.run(retryCollection)}>
+          {collectionAction.busy ? t("자료 확인 중", "Checking sources") : t("공식 자료 다시 불러오기", "Reload official data")}
+        </button>
+      </div>}
       {data && company && (
         <>
           <header className="rd-detail-company-hero">
@@ -323,6 +409,14 @@ function CompanyContent({ id }: { id: string }) {
                 : t("팔로우", "Follow")}
             </button>
           </header>
+          {selectedTicker && selectedTicker !== company.ticker && <IssuerTickerNotice
+            key={`${id}:${selectedTicker}:${token}`} id={id} ticker={company.ticker} selected={selectedTicker}
+          />}
+          <p className="rd-detail-muted">
+            {data.documents.length ? t("공시: 확인된 자료 있음", "Disclosures: source records available") : t("공시: 표시 가능한 자료 없음", "Disclosures: no collected records available")}
+            {" · "}
+            {data.analyses.length || data.events.length ? t("분석: 승인 자료 있음", "Analyses: approved content available") : t("분석: 승인 자료 없음", "Analyses: no approved content yet")}
+          </p>
           <nav
             className="rd-detail-tabs"
             role="tablist"
@@ -351,6 +445,9 @@ function CompanyContent({ id }: { id: string }) {
           >
             {tab === "overview" && (
               <div className="rd-detail-overview-grid">
+                {!profile && <div className="rd-detail-profile-wrap">
+                  <CompanyProfile key={profileRevision} id={id} ticker={company.ticker} />
+                </div>}
                 <DetailPanel
                   title={t("사업 소개", "Business overview")}
                   className="rd-detail-introduction"
@@ -459,9 +556,9 @@ function CompanyContent({ id }: { id: string }) {
                     </p>
                   )}
                 </DetailPanel>
-                <div className="rd-detail-profile-wrap">
-                  <CompanyProfile id={id} ticker={company.ticker} />
-                </div>
+                {profile && <div className="rd-detail-profile-wrap">
+                  <CompanyProfile key={profileRevision} id={id} ticker={company.ticker} />
+                </div>}
                 <DetailPanel title={t("주요 수치 정보", "Verified figures")}>
                   {facts.length ? (
                     <div className="rd-detail-table-scroll">
@@ -510,6 +607,22 @@ function CompanyContent({ id }: { id: string }) {
                     </p>
                   )}
                 </DetailPanel>
+                {(data.numeric_evidence ?? []).length > 0 && <DetailPanel title={t("승인 분석의 수치 근거", "Numeric evidence from approved analyses")}>
+                  <p className="rd-detail-muted">{t("숫자가 포함된 승인 분석의 원문 인용입니다. 단위·기간·회계 기준을 갖춘 비교 가능한 지표로 정규화된 자료는 아닙니다.", "These are exact source quotations from approved analyses. They have not been normalized into comparable metrics with verified units, periods and accounting bases.")}</p>
+                  {(data.numeric_evidence ?? []).map(evidence => <article className="rd-detail-citation" key={`${evidence.kind}:${evidence.id}`}>
+                    <h3>{evidence.title}</h3>
+                    <p>{evidence.claim_text}</p>
+                    <blockquote>{evidence.quote}</blockquote>
+                    <p className="rd-detail-muted">
+                      {t("공시 공개일", "Filing date")}: <time dateTime={evidence.published_at}>{date(evidence.published_at, "date")}</time>
+                      {" · "}{t("승인일", "Approval date")}: <time dateTime={evidence.reviewed_at}>{date(evidence.reviewed_at)}</time>
+                    </p>
+                    <DetailSource url={evidence.source_url}>{t("공식 원문", "Official source")}</DetailSource>
+                    {" · "}<Link href={`/documents/${encodeURIComponent(evidence.filing_id)}?kind=filing&analysis=${evidence.kind === "us_analysis" ? "us" : "dart"}`}>
+                      {t("승인 분석 열기", "Open approved analysis")} ↗
+                    </Link>
+                  </article>)}
+                </DetailPanel>}
                 <DetailPanel
                   title={t("최근 공시", "Recent disclosures")}
                   action={
