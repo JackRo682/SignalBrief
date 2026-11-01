@@ -193,6 +193,76 @@ test('signed-in research journey connects company tabs, evidence, saved items an
  expectClean(fixture);
 });
 
+test('first-save discovery keeps public sources separate and persists only explicit bookmarks',async({page},info)=>{
+ const fixture=await researchWorkspaceFixture(page);
+ fixture.state.preferences.history_enabled=false;
+ const saveCalls=()=>fixture.state.calls.filter(call=>call.action==='save').map(call=>call.p);
+ const noIncidentalWrites=()=>{
+  expect(fixture.state.watched.size).toBe(0);
+  expect(fixture.state.visits.size).toBe(0);
+  expect(fixture.state.preferences.history_enabled).toBe(false);
+  expect(fixture.state.calls.filter(call=>['visit','preferences_save','search_record','history_clear'].includes(call.action))).toEqual([]);
+  expect(fixture.state.apiCalls.filter(call=>call.method!=='GET')).toEqual([]);
+  expect(fixture.state.reminderCalls.every(call=>call.action==='list')).toBe(true);
+ };
+ await page.goto('/saved');
+ await expect(page.getByRole('heading',{name:'저장',exact:true})).toBeVisible();
+ const discovery=page.getByRole('region',{name:'저장할 자료 찾기',exact:true});
+ const documents=page.getByRole('region',{name:'북마크 문서',exact:true});
+ const analyses=page.getByRole('region',{name:'저장한 분석',exact:true});
+ await expect(discovery.getByRole('link',{name:filing.title,exact:true})).toBeVisible();
+ await expect(discovery.getByRole('link',{name:approved.title,exact:true})).toBeVisible();
+ await expect(discovery).toContainText('저장을 누른 자료만 내 저장 목록에 추가됩니다.');
+ await expect(documents.getByRole('link',{name:filing.title,exact:true})).toHaveCount(0);
+ await expect(analyses.getByRole('link',{name:approved.title,exact:true})).toHaveCount(0);
+ await expect(documents).toContainText('북마크한 문서가 없습니다.');
+ await expect(analyses).toContainText('저장한 분석이 없습니다.');
+ expect(fixture.state.saved.size).toBe(0);expect(saveCalls()).toEqual([]);
+ noIncidentalWrites();
+ await screenshot(page,info,'first-save-discovery');
+
+ await discovery.getByRole('button',{name:`${filing.title} 저장`,exact:true}).click();
+ const documentLink=documents.getByRole('link',{name:filing.title,exact:true});
+ await expect(documentLink).toHaveAttribute('href',`/documents/${sourceId}?kind=filing`);
+ await expect(discovery).toHaveCount(0);
+ expect(saveCalls()).toEqual([{id:sourceId,kind:'filing',saved:true}]);
+ expect([...fixture.state.saved]).toEqual([`filing:${sourceId}`]);
+ await expect(analyses.getByRole('link',{name:approved.title,exact:true})).toHaveCount(0);
+ await page.reload();
+ await expect(documentLink).toHaveAttribute('href',`/documents/${sourceId}?kind=filing`);
+ await expect(documents.getByRole('button',{name:`${filing.title} 저장 취소`,exact:true})).toHaveAttribute('aria-pressed','true');
+ const companyFilter=page.getByRole('combobox',{name:'저장 항목 회사',exact:true});
+ await expect(companyFilter.locator('option')).toHaveText(['전체 회사',companies[0].name]);
+ expect(fixture.state.calls.some(call=>call.action==='catalog'&&call.p.kind==='company')).toBe(false);
+ await companyFilter.selectOption(companyId);
+ await expect(companyFilter).toHaveValue(companyId);
+ const keyword=page.getByRole('textbox',{name:'저장 항목 키워드',exact:true});
+ await keyword.fill('nVdA');
+ await main(page).getByRole('button',{name:'검색',exact:true}).click();
+ await expect(documentLink).toBeVisible();
+ await keyword.fill('no-such-saved-fixture');
+ await main(page).getByRole('button',{name:'검색',exact:true}).click();
+ await expect(documents).toContainText('조건에 맞는 북마크 문서가 없습니다.');
+ await expect(documentLink).toHaveCount(0);
+ await expect(discovery).toHaveCount(0);
+ expect([...fixture.state.saved]).toEqual([`filing:${sourceId}`]);
+ await page.getByRole('button',{name:'저장 필터 초기화',exact:true}).click();
+ await expect(keyword).toHaveValue('');await expect(companyFilter).toHaveValue('');
+ await expect(documentLink).toBeVisible();
+ expect(saveCalls()).toHaveLength(1);
+ await screenshot(page,info,'first-save-persisted');
+
+ await documents.getByRole('button',{name:`${filing.title} 저장 취소`,exact:true}).click();
+ await expect(discovery.getByRole('link',{name:filing.title,exact:true})).toBeVisible();
+ await expect(documents).toContainText('북마크한 문서가 없습니다.');
+ expect(saveCalls()).toEqual([{id:sourceId,kind:'filing',saved:true},{id:sourceId,kind:'filing',saved:false}]);
+ expect(fixture.state.saved.size).toBe(0);
+ await page.reload();
+ await expect(discovery.getByRole('button',{name:`${filing.title} 저장`,exact:true})).toHaveAttribute('aria-pressed','false');
+ noIncidentalWrites();
+ expectClean(fixture);
+});
+
 test('service errors remain distinct from empty results and offer recovery without invented totals',async({page},info)=>{
  const fixture=await researchWorkspaceFixture(page,{emptyContent:true,overviewError:true,newsError:true});
  await page.goto('/today');

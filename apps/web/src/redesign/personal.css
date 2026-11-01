@@ -315,6 +315,7 @@
   line-height: 1.5;
 }
 .sb-redesign .rd-p-table-scroll {
+  position: relative;
   overflow: auto;
   border: 1px solid var(--rd-p-border);
   border-radius: 6px;

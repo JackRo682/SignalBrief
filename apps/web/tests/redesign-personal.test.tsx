@@ -335,11 +335,17 @@ describe("redesigned personal screens", () => {
       "synthetic-redesign-personal-token",
       {
         action: "saved_list",
-        p: { kind: "", q: "승인", company: companyId, sort: "oldest" },
+        p: { kind: "", sort: "oldest" },
       },
       expect.anything(),
       expect.anything(),
     );
+    expect(screen.getByLabelText("저장 항목 회사")).toHaveValue(companyId);
+    expect(screen.getByRole("link", { name: "검증용 승인 분석" })).toBeVisible();
+    // Filters operate on the complete owner-scoped response, preserving options
+    // for saved issuers that are not in a global directory's first page.
+    fireEvent.click(screen.getByRole("button", { name: "저장 필터 초기화" }));
+    expect(await screen.findByRole("link", { name: "검증용 원문 문서" })).toBeVisible();
     expect(screen.getByRole("heading", { name: "북마크 문서" })).toBeVisible();
   });
 

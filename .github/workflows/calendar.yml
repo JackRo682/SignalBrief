@@ -1,9 +1,9 @@
 name: official-calendar-verification
 on:
   push:
-    paths: ['supabase/functions/signalbrief-calendar/**', 'supabase/functions/signalbrief-api/**', 'supabase/migrations/*official_calendar*.sql', 'tests/test_calendar_ingestion.py', '.github/workflows/calendar.yml']
+    paths: ['supabase/functions/signalbrief-calendar/**', 'supabase/functions/signalbrief-api/**', 'supabase/migrations/*calendar*.sql', 'tests/test_*calendar*.py', '.github/workflows/calendar.yml']
   pull_request:
-    paths: ['supabase/functions/signalbrief-calendar/**', 'supabase/functions/signalbrief-api/**', 'supabase/migrations/*official_calendar*.sql', 'tests/test_calendar_ingestion.py', '.github/workflows/calendar.yml']
+    paths: ['supabase/functions/signalbrief-calendar/**', 'supabase/functions/signalbrief-api/**', 'supabase/migrations/*calendar*.sql', 'tests/test_*calendar*.py', '.github/workflows/calendar.yml']
 permissions:
   contents: read
 jobs:
@@ -28,4 +28,4 @@ jobs:
       - name: Official calendar ingestion and RLS regression
         env:
           SB_TEST_CALENDAR_POSTGRES_URL: postgresql://postgres:test-only@localhost:5432/calendar_ci_test
-        run: pytest -q tests/test_calendar_ingestion.py
+        run: pytest -q tests/test_calendar_ingestion.py tests/test_micron_calendar_ingestion.py tests/test_calendar_onboarding.py tests/test_calendar_dart_ingestion.py

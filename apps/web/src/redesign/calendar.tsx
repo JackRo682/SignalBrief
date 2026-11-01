@@ -45,7 +45,7 @@ type PickerCompany = Pick<SelectedCompany, "id" | "name" | "ticker" | "market" |
 
 export default function RedesignCalendar() {
   const { token } = useAuth(),
-    { value: preferences } = usePrefs(),
+    { value: preferences, date: formatDate } = usePrefs(),
     action = useMutation();
   const [now] = useState(() => Date.now());
   const today = dayInZone(now, preferences.timezone);
@@ -112,14 +112,25 @@ export default function RedesignCalendar() {
   const scoped = { companyIds, includePersonal };
   const calendar = useCalendarData(scopeReady ? {
     from: visible[0], until: visible[visible.length - 1], ...scoped,
-  } : null);
+  } : null, coverage.collectionRevision);
   // Independent ranges prevent historical records from consuming the future limit.
   const futureDates = useCalendarData(scopeReady ? {
     from: today, until: addDays(today, 365), ...scoped,
-  } : null);
+  } : null, coverage.collectionRevision);
   const pastDates = useCalendarData(scopeReady ? {
     from: addDays(today, -90), until: addDays(today, -1), order: "desc", ...scoped,
-  } : null);
+  } : null, coverage.collectionRevision);
+  const collectionPending = companyIds === undefined
+    ? (coverage.data?.pending_companies ?? 0) > 0
+    : Boolean(coverage.data?.selected?.pending)
+      || companyIds.some(id => coverage.data?.pending_company_ids?.includes(id));
+  function refreshCalendar() {
+    coverage.reload();
+    calendar.reload();
+    futureDates.reload();
+    pastDates.reload();
+    watchlist.reload();
+  }
   const filter = (item: CalendarEntry) =>
     matchesCalendarScope(
       item,
@@ -147,6 +158,11 @@ export default function RedesignCalendar() {
         ? `${visible[0]} ~ ${visible[6]}`
         : anchor;
   function chooseCompany(id: string) {
+    if (scope !== "selected") {
+      setScope("selected");
+      setSelectedCompanies(new Set([id]));
+      return;
+    }
     setScope("selected");
     setSelectedCompanies((previous) => {
       const next = new Set(previous);
@@ -254,16 +270,24 @@ export default function RedesignCalendar() {
         <p>주요 기업의 공식 일정과 개인 일정을 한눈에 확인하세요.</p>
       </header>
       <Notice action={action} />
-      <DataState {...coverage} retry={coverage.reload} />
+      <DataState {...coverage} retry={refreshCalendar} />
       {coverage.data && (
         <div className="rd-calendar-note" role="status">
           <p>등록 기업 {coverage.data.registered_companies}개 중 {coverage.data.covered_companies}개 공식 일정 연결</p>
-          {coverage.data.selected?.source_count === 0 && (
+          {collectionPending && <p>{coverage.polling
+            ? "공식 일정을 수집하고 있습니다. 완료되면 이 화면에 자동으로 표시됩니다."
+            : "공식 일정 수집이 계속 진행 중입니다. 잠시 후 일정 새로고침을 눌러 확인해 주세요."}</p>}
+          {coverage.data.selected?.source_count === 0 && !collectionPending && (
             <p>이 기업은 공식 일정 수집이 아직 연결되지 않았습니다. 공시·분석 자료와 일정 수집 범위는 다릅니다.</p>
           )}
-          {coverage.data.selected?.has_error && (
+          {coverage.data.selected?.has_error && !collectionPending && (
             <p>이 기업의 공식 일정 갱신에 실패했습니다. 이전에 확인된 일정은 계속 표시합니다.</p>
           )}
+          {coverage.data.selected?.last_success_at && <p>마지막 공식 일정 확인: <time dateTime={coverage.data.selected.last_success_at}>
+            {formatDate(coverage.data.selected.last_success_at)} ({preferences.timezone})
+          </time></p>}
+          <button type="button" className="rd-calendar-refresh" onClick={refreshCalendar}
+            disabled={coverage.loading || calendar.loading || futureDates.loading || pastDates.loading}>일정 새로고침</button>
         </div>
       )}
       {connectedCompanies.filter(company => selectedCompanies.has(company.id) && company.hydration_status === "unavailable").map(company =>
@@ -312,7 +336,7 @@ export default function RedesignCalendar() {
               <label key={company.id}>
                 <input
                   type="checkbox"
-                  checked={selectedCompanies.has(company.id)}
+                  checked={scope === "selected" && selectedCompanies.has(company.id)}
                   onChange={() => chooseCompany(company.id)}
                 />
                 <span>
@@ -329,7 +353,7 @@ export default function RedesignCalendar() {
             onSelect={(company) => {
               rememberCompany(company);
               setScope("selected");
-              setSelectedCompanies(previous => new Set([...previous, company.id]));
+              setSelectedCompanies(previous => new Set([...(scope === "selected" ? previous : []), company.id]));
               setQuery("");
             }} />}
           {shownCompanies.length === 100 && (
@@ -358,7 +382,7 @@ export default function RedesignCalendar() {
           <section className="rd-calendar-card">
             <header className="rd-calendar-section-head">
               <h2>
-                다가오는 일정 <span>{futureDates.data ? `${upcoming.length}${futureDates.data.truncated ? "+" : ""}` : "…"}</span>
+                다가오는 일정 <span>{futureDates.data && !(collectionPending && !upcoming.length) ? `${upcoming.length}${futureDates.data.truncated ? "+" : ""}` : "…"}</span>
               </h2>
               <button
                 type="button"
@@ -370,7 +394,7 @@ export default function RedesignCalendar() {
             </header>
             <DataState {...futureDates} retry={futureDates.reload} />
             {renderList(upcoming, showUpcoming)}
-            {futureDates.data && !upcoming.length && (
+            {futureDates.data && !upcoming.length && !collectionPending && (
               <p className="rd-calendar-empty">확인된 예정 일정이 없습니다.</p>
             )}
             <p className="rd-calendar-note">오늘부터 1년간의 확인된 일정</p>
@@ -378,7 +402,7 @@ export default function RedesignCalendar() {
           <section className="rd-calendar-card">
             <header className="rd-calendar-section-head">
               <h2>
-                지난 일정 <span>{pastDates.data ? `${past.length}${pastDates.data.truncated ? "+" : ""}` : "…"}</span>
+                지난 일정 <span>{pastDates.data && !(collectionPending && !past.length) ? `${past.length}${pastDates.data.truncated ? "+" : ""}` : "…"}</span>
               </h2>
               <button
                 type="button"
@@ -390,7 +414,7 @@ export default function RedesignCalendar() {
             </header>
             <DataState {...pastDates} retry={pastDates.reload} />
             {renderList(past, showPast)}
-            {pastDates.data && !past.length && (
+            {pastDates.data && !past.length && !collectionPending && (
               <p className="rd-calendar-empty">확인된 지난 일정이 없습니다.</p>
             )}
             <p className="rd-calendar-note">최근 90일의 확인된 일정</p>
@@ -447,7 +471,7 @@ export default function RedesignCalendar() {
               </div>
             </div>
             <DataState {...calendar} retry={calendar.reload} />
-            {calendar.data && !calendar.error && !entries.length && (
+            {calendar.data && !calendar.error && !entries.length && !collectionPending && (
               <div className="rd-calendar-note" role="status">
                 <p>선택한 기간과 기업 범위에 수집된 일정이 없습니다.</p>
                 <p>공식 출처에서 확인하여 수집한 일정과 개인 일정만 표시합니다. 기업별 일정 수집 범위는 다릅니다.</p>

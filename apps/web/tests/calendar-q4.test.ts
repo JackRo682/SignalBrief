@@ -4,9 +4,9 @@ import {runInNewContext} from 'node:vm';
 import ts from 'typescript';
 import {describe,expect,it,vi} from 'vitest';
 import {CalendarError,fetchSource,parseSource,sha256,type Source} from '../../../supabase/functions/signalbrief-calendar/core';
-import {calendarWindow,collectMicronQ4,MICRON_EVENTS_URL,micronFeedUrl,parseMicronPage} from '../../../supabase/functions/signalbrief-calendar/micron-q4';
+import {calendarWindow,collectMicronQ4,collectQ4,MICRON_EVENTS_URL,micronFeedUrl,parseMicronPage,q4FeedUrl} from '../../../supabase/functions/signalbrief-calendar/micron-q4';
 
-const source:Source={key:'micron-ir',ticker:'MU',market:'NASDAQ',url:MICRON_EVENTS_URL,adapter:'micron-q4'};
+const source:Source={key:'micron-ir',ticker:'MU',market:'NASDAQ',url:MICRON_EVENTS_URL,adapter:'micron-q4',company_id:'10000000-0000-4000-8000-000000000092',provider:'sec',provider_company_id:'0000723125',feed_url:'https://investors.micron.com/feed/Event.svc/GetEventList'};
 const today='2028-11-01',window=calendarWindow(today);
 const row=(id=1,patch:Record<string,unknown>={})=>({EventId:id,Title:`Synthetic issuer webcast ${id}`,StartDate:'10/21/2028 10:00:00',EndDate:'10/21/2028 11:00:00',TimeZone:'ET',TagsList:['webcast'],...patch});
 const raw=(rows:unknown[])=>new TextEncoder().encode(JSON.stringify({GetEventListResult:rows}));
@@ -95,11 +95,11 @@ describe('official Micron Q4 source and complete pagination',()=>{
 
 function handlerFixture(fetcher:typeof fetch,archiveError=false){
  const upload=vi.fn(async()=>({error:archiveError?{message:'Synthetic archive failure'}:null}));
- const rpc=vi.fn(async(name:string)=>({error:null,data:name==='sb_calendar_sources'?[source]:name==='sb_calendar_ingest_q4'?1:true}));
+ const rpc=vi.fn(async(name:string)=>({error:null,data:name==='sb_calendar_task_sources'?[source]:name==='sb_calendar_ingest_q4'?1:true}));
  const db={rpc,storage:{from:()=>({upload})}};
  let handler!:(request:Request)=>Promise<Response>;
  const code=readFileSync(new URL('../../../supabase/functions/signalbrief-calendar/index.ts',import.meta.url),'utf8').replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'');
- runInNewContext(ts.transpileModule(code,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None}}).outputText,{createClient:()=>db,CalendarError,fetchSource,parseSource,sha256,collectMicronQ4:(s:Source,_today:string,archive:Parameters<typeof collectMicronQ4>[2])=>collectMicronQ4(s,today,archive,fetcher),Response,Request,Headers,TextEncoder,TextDecoder,Date,Deno:{env:{get:()=> 'synthetic-env'},serve:(fn:typeof handler)=>{handler=fn;}}});
+ runInNewContext(ts.transpileModule(code,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None}}).outputText,{createClient:()=>db,CalendarError,fetchSource,parseSource,sha256,collectQ4:(s:Source,_today:string,archive:Parameters<typeof collectQ4>[2])=>collectQ4(s,today,archive,fetcher),Response,Request,Headers,TextEncoder,TextDecoder,Date,AbortSignal,fetch:fetcher,Deno:{env:{get:()=> 'synthetic-env'},serve:(fn:typeof handler)=>{handler=fn;}}});
  return {rpc,upload,call:()=>handler(new Request('https://fixture.invalid/calendar',{method:'POST',headers:{'x-signalbrief-task':'a'.repeat(64)}}))};
 }
 
@@ -109,6 +109,8 @@ describe('calendar task atomic source boundary',()=>{
   expect((await f.call()).status).toBe(200);expect(f.upload).toHaveBeenCalledTimes(3);
   expect(f.rpc).toHaveBeenCalledWith('sb_calendar_ingest_q4',expect.objectContaining({source:'micron-ir',object_key:expect.stringMatching(/\.json$/),manifest_text:expect.stringContaining('"complete":true')}));
   expect(f.rpc).not.toHaveBeenCalledWith('sb_calendar_ingest',expect.anything());
+  expect(f.rpc).toHaveBeenCalledWith('sb_calendar_task_sources',expect.objectContaining({h:expect.stringMatching(/^[a-f0-9]{64}$/)}));
+  expect(f.rpc.mock.calls.some(([name])=>name==='sb_calendar_sources'||name==='sb_us_secrets')).toBe(false);
  });
  it.each(['partial','archive'])('records a %s failure without ingestion or withdrawal',async mode=>{
   const fetcher=vi.fn<typeof fetch>().mockResolvedValueOnce(response([row()])).mockRejectedValueOnce(new Error('Synthetic provider failure'));
@@ -116,5 +118,31 @@ describe('calendar task atomic source boundary',()=>{
   expect(await result.json()).toMatchObject({results:[{source:'micron-ir',status:'failed'}]});
   expect(f.rpc.mock.calls.some(([name])=>name==='sb_calendar_ingest_q4'||name==='sb_calendar_ingest')).toBe(false);
   expect(f.rpc).toHaveBeenCalledWith('sb_calendar_source_error',expect.objectContaining({source:'micron-ir'}));
+ });
+});
+
+describe('reviewed Q4 source reuse',()=>{
+ const nvidia:Source={key:'nvidia-ir',ticker:'NVDA',market:'NASDAQ',url:'https://investor.nvidia.com/events-and-presentations/events-and-presentations/default.aspx',adapter:'q4-events',feed_url:'https://investor.nvidia.com/feed/Event.svc/GetEventList',company_id:'10000000-0000-4000-8000-000000000093',provider:'sec',provider_company_id:'0001045810'};
+ it('normalizes surrounding official title whitespace while retaining strict internal-control validation',()=>{
+  const [entry]=parseMicronPage(raw([row(1,{Title:'  Synthetic official webcast\t'})]),0,window).entries;
+  expect(entry.title).toBe('Synthetic official webcast');expect(entry.quote).toMatch(/^Synthetic official webcast \| /);
+  expect(()=>parseMicronPage(raw([row(1,{Title:'Synthetic\u0001event'})]),0,window)).toThrow('invalid_event');
+  expect(parseMicronPage(raw([row(1,{Title:'Synthetic history\t',StartDate:'01/01/2024 09:00:00',EndDate:'01/01/2024 10:00:00'})]),0,window).entries).toEqual([]);
+ });
+ it('preserves reviewed source and issuer identity in every generic Q4 manifest',async()=>{
+  const f=archiveFixture(),fetcher=vi.fn<typeof fetch>().mockResolvedValueOnce(response([row(1,{TimeZone:'PT'})])).mockResolvedValueOnce(response([]));
+  const result=await collectQ4(nvidia,today,f.archive,fetcher);
+  expect(result.manifest).toMatchObject({source_key:'nvidia-ir',source_url:nvidia.url,adapter:'q4-events',company_id:nvidia.company_id,provider:'sec',provider_company_id:'0001045810',ticker:'NVDA'});
+  expect(result.manifest.entries[0].timezone).toBe('America/Los_Angeles');
+  expect(fetcher.mock.calls.map(([url])=>String(url))).toEqual([0,1].map(page=>q4FeedUrl(nvidia.feed_url!,page)));
+ });
+ it.each(['PT','PDT','PST','MT','MDT','MST','CT','CDT','CST'])('uses only explicit recognized source timezone %s',zone=>{
+  const entry=parseMicronPage(raw([row(1,{TimeZone:zone})]),0,window).entries[0];
+  expect(entry.quote.endsWith(zone)).toBe(true);expect(entry.timezone).toMatch(/^America\/(Los_Angeles|Denver|Chicago)$/);
+ });
+ it.each(['https://other.example.invalid/feed/Event.svc/GetEventList','https://investor.nvidia.com/private/api','https://investor.nvidia.com/feed/Event.svc/GetEventList?key=secret','http://investor.nvidia.com/feed/Event.svc/GetEventList'])('rejects feed transport mismatch before fetching %s',async feed_url=>{
+  const f=archiveFixture(),fetcher=vi.fn<typeof fetch>();
+  await expect(collectQ4({...nvidia,feed_url},today,f.archive,fetcher)).rejects.toThrow('invalid_source_url');
+  expect(fetcher).not.toHaveBeenCalled();expect(f.archive).not.toHaveBeenCalled();
  });
 });

@@ -1,5 +1,5 @@
-export type Source = {key:string; ticker:string; market:string; url:string; adapter:string};
-export type Entry = {key:string; title:string; occurs_on:string; quote:string; timezone:string; location:string};
+export type Source = {key:string; ticker:string; market:string; url:string; adapter:string;company_id?:string;provider?:'sec'|'dart';provider_company_id?:string;feed_url?:string};
+export type Entry = {key:string; title:string; occurs_on:string; quote:string; timezone:string|null; location:string;source_url?:string;body_sha256?:string};
 export class CalendarError extends Error {}
 export const sha256=async(bytes:Uint8Array)=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new Uint8Array(bytes)))].map(x=>x.toString(16).padStart(2,'0')).join('');
 export function decode(text:string):string {

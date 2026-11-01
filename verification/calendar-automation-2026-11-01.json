@@ -1,0 +1,80 @@
+{
+  "report": "calendar-automation-and-saved-2026-11-01",
+  "baseline_release": "85d3667a1bed15e71a534cf6161686d58419d7f5",
+  "source_release": null,
+  "production_url": "https://signalbrief.online",
+  "release_state": "backend_deployed_web_pending",
+  "local_validation": {
+    "checked_at": "2026-11-01T10:39:32.910769+00:00",
+    "full_stages_passed": 8,
+    "backend": {
+      "passed": 620,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "frontend": {
+      "passed": 1143,
+      "files": 97,
+      "lint_errors": 0,
+      "existing_lint_warnings": 5,
+      "typecheck": "PASS",
+      "build": "PASS"
+    },
+    "deno_entrypoints_passed": [
+      "api",
+      "us",
+      "profiles",
+      "discovery",
+      "collector",
+      "calendar"
+    ],
+    "scope_guard": "PASS",
+    "browser": {
+      "passed": 90,
+      "desktop": 45,
+      "mobile": 45,
+      "duration_display": "3.7m",
+      "exit_code": 0
+    },
+    "generated_allowlist_mismatches": [],
+    "isolated_dev_port_open": false,
+    "production_acceptance": "separate parent-owned gate"
+  },
+  "migration_filename_verification": {
+    "tests": 76,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "deployment": {
+    "migration": {
+      "version": "20261101103903",
+      "name": "calendar_source_onboarding",
+      "file": "supabase/migrations/20261101103903_calendar_source_onboarding.sql",
+      "sha256": "c70489fc7f9ef1fd9fe26e372085058eaf8dd564f5c1050e69aea4b60dde5bb9"
+    },
+    "calendar_edge_version": 3,
+    "discovery_edge_version": 6,
+    "worker_enabled": true,
+    "initial_dispatched_sources": 2,
+    "vercel": null
+  },
+  "production_acceptance": {
+    "status": "in_progress"
+  },
+  "coverage_boundary": {
+    "reviewed_us_feeds": [
+      "MSFT",
+      "MU",
+      "NVDA"
+    ],
+    "reviewed_korean_html": [
+      "005930"
+    ],
+    "new_korean_issuers": "Canonical DART listed identity; validated standard99664 IR notices",
+    "unsupported_us_issuers": "No guessed source URL or date; explicit uncovered state until reviewed provider configuration exists",
+    "ambiguous_dart_corrections": "Fail closed and retain previously verified data",
+    "saved": "Only explicit saves persist; recent public material is separate; history consent is unchanged"
+  }
+}

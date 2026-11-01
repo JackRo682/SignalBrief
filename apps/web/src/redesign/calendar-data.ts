@@ -27,11 +27,14 @@ type Result = { items: CalendarEntry[]; truncated: boolean };
 const coverageSchema = z.object({
   registered_companies: z.number().int().nonnegative(),
   covered_companies: z.number().int().nonnegative(),
+  pending_companies: z.number().int().nonnegative().default(0),
+  pending_company_ids: z.array(z.string().uuid()).default([]),
   selected: z.object({
     company_id: z.string().uuid(),
     source_count: z.number().int().nonnegative(),
     last_success_at: z.string().nullable(),
     has_error: z.boolean(),
+    pending: z.boolean().default(false),
   }).nullable(),
 });
 
@@ -39,41 +42,63 @@ const coverageSchema = z.object({
 export function useCalendarCoverage(companyId: string | null) {
   const { token } = useAuth();
   const [revision, setRevision] = useState(0);
+  const [collectionRevision, setCollectionRevision] = useState(0);
   const [state, setState] = useState<{
-    key: string; data: z.infer<typeof coverageSchema> | null; error: string;
-  }>({ key: "", data: null, error: "" });
+    key: string; data: z.infer<typeof coverageSchema> | null; error: string; polling: boolean;
+  }>({ key: "", data: null, error: "", polling: false });
   const key = JSON.stringify([token, companyId, revision]);
   const reload = useCallback(() => setRevision((value) => value + 1), []);
   useEffect(() => {
     if (!token) return;
     let alive = true;
     const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout> | undefined;
     void (async () => {
       try {
         if (companyId) z.string().uuid().parse(companyId);
         const db = await initializeSupabase();
-        const response = await db.rpc("sb_calendar_coverage", { p_company_id: companyId })
-          .abortSignal(AbortSignal.any([controller.signal, AbortSignal.timeout(20000)]));
-        if (response.error) throw new Error("coverage_unavailable");
-        const data = coverageSchema.parse(response.data);
-        if (alive) setState({ key, data, error: "" });
+        // Poll only a server-confirmed pending collection, at most 12 more times.
+        // Each completed poll refreshes the independent date queries; no provider
+        // requests or queue writes are initiated by this read-only status hook.
+        for (let poll = 0; poll <= 12 && alive; poll++) {
+          const response = await db.rpc("sb_calendar_coverage", { p_company_id: companyId })
+            .abortSignal(AbortSignal.any([controller.signal, AbortSignal.timeout(20000)]));
+          if (response.error) throw new Error("coverage_unavailable");
+          const data = coverageSchema.parse(response.data);
+          if (!alive) return;
+          const pending = companyId ? data.selected?.pending === true : data.pending_companies > 0;
+          const polling = pending && poll < 12;
+          setState({ key, data, error: "", polling });
+          if (poll > 0) setCollectionRevision(value => value + 1);
+          if (!polling) return;
+          await new Promise<void>(resolve => {
+            const cancel = () => { clearTimeout(timer); resolve(); };
+            timer = setTimeout(() => {
+              controller.signal.removeEventListener("abort", cancel);
+              resolve();
+            }, 10000);
+            controller.signal.addEventListener("abort", cancel, { once: true });
+          });
+        }
       } catch {
-        if (alive) setState({ key, data: null, error: "공식 일정 수집 범위를 확인하지 못했습니다. 일정 목록은 별도로 조회합니다." });
+        if (alive) setState({ key, data: null, error: "공식 일정 수집 범위를 확인하지 못했습니다. 일정 목록은 별도로 조회합니다.", polling: false });
       }
     })();
-    return () => { alive = false; controller.abort(); };
+    return () => { alive = false; clearTimeout(timer); controller.abort(); };
   }, [token, companyId, revision, key]);
   const current = state.key === key;
   return {
     data: current ? state.data : null,
     error: current ? state.error : "",
     loading: Boolean(token && !current),
+    polling: current && state.polling,
+    collectionRevision,
     reload,
   };
 }
 
 /** Uses the signed-in user's JWT and existing calendar RLS, never a service key. */
-export function useCalendarData(query: Query | null) {
+export function useCalendarData(query: Query | null, collectionRevision = 0) {
   const { token } = useAuth();
   const key = JSON.stringify(query);
   const [revision, setRevision] = useState(0);
@@ -173,7 +198,7 @@ export function useCalendarData(query: Query | null) {
       alive = false;
       controller.abort();
     };
-  }, [key, token, revision]);
+  }, [key, token, revision, collectionRevision]);
   // Never show a previous account's or previous range's records during a transition.
   const current = state.key === key && state.token === token;
   return {

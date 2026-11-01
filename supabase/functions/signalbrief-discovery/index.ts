@@ -31,7 +31,15 @@ export async function handleDiscovery(req:Request):Promise<Response>{
   let value:unknown;try{value=JSON.parse(new TextDecoder().decode(bytes));}catch{throw new DiscoveryError('invalid_json',422);}
   const selection=parseSelection(value),company=obj(await discoveryRpc(db,'activate',{...selection,actor:actor.data.user.id}));
   const result=await hydrateCompany(db,await discoverySecrets(db),company);
-  return reply(result);
+  let calendar_refresh:{status:'pending'|'unsupported'|'not_pending'|'unavailable'}={status:'unavailable'};
+  try{
+   const requested=await db.rpc('sb_calendar_request_company',{company_id:company.id}).abortSignal(AbortSignal.timeout(2500));
+   const state=obj(requested.data);
+   if(!requested.error&&typeof state.supported==='boolean'&&typeof state.pending==='boolean'&&(state.supported||!state.pending)){
+    calendar_refresh={status:state.pending?'pending':state.supported?'not_pending':'unsupported'};
+   }
+  }catch{/* The company is already persisted; calendar scheduling has its own outcome and durable trigger. */}
+  return reply({...result,calendar_refresh});
  }catch(error){return reply({error:{code:error instanceof DiscoveryError?error.code:'discovery_unavailable'}},error instanceof DiscoveryError?error.status:502);}
 }
 Deno.serve(handleDiscovery);

@@ -71,7 +71,90 @@ describe("calendar source coverage", () => {
     expect(calendar.result.current.error).toBe("");
   });
 });
-afterEach(() => cleanup());
+afterEach(() => { cleanup(); vi.useRealTimers(); });
+
+describe("calendar pending collection refresh", () => {
+  const companyId = "00000000-0000-4000-8000-000000000002";
+  const coverage = (pending: boolean) => ({ data: {
+    registered_companies: 2, covered_companies: 2, pending_companies: pending ? 1 : 0,
+    selected: { company_id: companyId, source_count: 1, last_success_at: null, has_error: false, pending },
+  }, error: null });
+
+  it("refreshes the open date query when background collection finishes without a page reload", async () => {
+    vi.useFakeTimers();
+    mocks.coverage.mockResolvedValueOnce(coverage(true)).mockResolvedValue(coverage(false));
+    mocks.result.mockResolvedValueOnce({ data: [], error: null }).mockResolvedValue({ data: [row], error: null });
+    const { result } = renderHook(() => {
+      const status = useCalendarCoverage(companyId);
+      const dates = useCalendarData({ from: "2026-11-01", until: "2026-11-30" }, status.collectionRevision);
+      return { status, dates };
+    });
+    await act(async () => {});
+    expect(result.current.status.polling).toBe(true);
+    expect(result.current.dates.data?.items).toEqual([]);
+    await act(async () => { await vi.advanceTimersByTimeAsync(10000); });
+    expect(result.current.status.polling).toBe(false);
+    expect(result.current.status.data?.selected?.pending).toBe(false);
+    expect(result.current.dates.data?.items).toEqual([row]);
+    await act(async () => { await vi.advanceTimersByTimeAsync(60000); });
+    expect(mocks.coverage).toHaveBeenCalledTimes(2);
+    expect(mocks.from).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not poll an unsupported selected issuer just because another company is pending", async () => {
+    vi.useFakeTimers();
+    mocks.coverage.mockResolvedValue({ data: { ...coverage(false).data, pending_companies: 1,
+      selected: { ...coverage(false).data.selected, source_count: 0 } }, error: null });
+    const { result } = renderHook(() => useCalendarCoverage(companyId));
+    await act(async () => {});
+    await act(async () => { await vi.advanceTimersByTimeAsync(120000); });
+    expect(result.current.polling).toBe(false);
+    expect(mocks.coverage).toHaveBeenCalledTimes(1);
+  });
+
+  it("bounds automatic reads while preserving pending status and an explicit retry", async () => {
+    vi.useFakeTimers();
+    mocks.coverage.mockResolvedValue(coverage(true));
+    const { result } = renderHook(() => useCalendarCoverage(null));
+    await act(async () => {});
+    await act(async () => { await vi.advanceTimersByTimeAsync(120000); });
+    expect(mocks.coverage).toHaveBeenCalledTimes(13);
+    expect(result.current.data?.pending_companies).toBe(1);
+    expect(result.current.polling).toBe(false);
+    await act(async () => { await vi.advanceTimersByTimeAsync(120000); });
+    expect(mocks.coverage).toHaveBeenCalledTimes(13);
+    mocks.coverage.mockResolvedValue(coverage(false));
+    await act(async () => { result.current.reload(); });
+    expect(mocks.coverage).toHaveBeenCalledTimes(14);
+    expect(result.current.data?.pending_companies).toBe(0);
+  });
+
+  it("cancels pending polling when the selected company changes or the view unmounts", async () => {
+    vi.useFakeTimers();
+    mocks.coverage.mockResolvedValueOnce(coverage(true)).mockResolvedValue(coverage(false));
+    const { result, rerender, unmount } = renderHook(({ id }) => useCalendarCoverage(id), { initialProps: { id: companyId } });
+    await act(async () => {});
+    rerender({ id: "00000000-0000-4000-8000-000000000003" });
+    await act(async () => {});
+    expect(result.current.polling).toBe(false);
+    unmount();
+    await act(async () => { await vi.advanceTimersByTimeAsync(120000); });
+    expect(mocks.coverage).toHaveBeenCalledTimes(2);
+  });
+
+  it("stops automatic reads on a status error and keeps the date read independent", async () => {
+    vi.useFakeTimers();
+    mocks.coverage.mockResolvedValueOnce(coverage(true)).mockResolvedValue({ data: null, error: { message: "Unavailable" } });
+    const { result } = renderHook(() => useCalendarCoverage(companyId));
+    await act(async () => {});
+    await act(async () => { await vi.advanceTimersByTimeAsync(10000); });
+    expect(result.current.error).not.toBe("");
+    expect(result.current.polling).toBe(false);
+    await act(async () => { await vi.advanceTimersByTimeAsync(120000); });
+    expect(mocks.coverage).toHaveBeenCalledTimes(2);
+    expect(mocks.from).not.toHaveBeenCalled();
+  });
+});
 
 describe("calendar authenticated read states", () => {
   it("does not issue unauthenticated database reads", () => {

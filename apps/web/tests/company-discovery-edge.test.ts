@@ -75,8 +75,11 @@ function fixture() {
     error: name === "sb_require_mfa" && state.mfaDenied || name === "sb_rate_limit" && state.rateDenied ? { message: "Synthetic denial" } : null,
   }));
   const reader = { auth: { getUser: vi.fn(async () => ({ data: { user: state.authenticated ? { id: actorId } : null }, error: state.authenticated ? null : { message: "Expired JWT" } })) }, rpc: readerRpc };
+  const calendarResult:{data:unknown;error:{message:string}|null}={data:{supported:true,pending:true},error:null};
+  const calendarAbort=vi.fn(async(signal:AbortSignal)=>{expect(signal).toBeInstanceOf(AbortSignal);order.push("calendar_requested");return calendarResult;});
+  const calendarRpc=vi.fn((args:Row)=>{expect(args).toEqual({company_id:company.id});return {abortSignal:calendarAbort};});
   const db = {
-    rpc: adminRpc,
+    rpc: (name:string,args:Row={})=>name==='sb_calendar_request_company'?calendarRpc(args):adminRpc(name,args),
     from: vi.fn((table: string) => table === "companies" ? { update: timestamp } : { upsert: filings }),
     storage: { from: () => ({ upload: uploads, createSignedUrl: signedUrls }) },
   };
@@ -99,7 +102,7 @@ function fixture() {
     parseProfile, parseSecProfile, dartPage, koreaDate,
     secSubmissions, dartRelay, providerFetch: vi.fn(), createClient,
     fetch: vi.fn(() => { throw new Error("Unexpected real HTTP boundary"); }),
-    Response, Request, Headers, URL, Uint8Array, TextEncoder, TextDecoder, crypto, Date,
+    Response, Request, Headers, URL, Uint8Array, TextEncoder, TextDecoder, crypto, Date, AbortSignal,
     Deno: { env: { get: (key: string) => ({ SUPABASE_URL: "https://synthetic.supabase.co", SUPABASE_ANON_KEY: "synthetic-anon-key", SUPABASE_SERVICE_ROLE_KEY: "synthetic-service-key" })[key] ?? "" } },
   };
   const service = runInNewContext(source("../../../supabase/functions/signalbrief-discovery/service.ts") + "\n({ discoveryRpc, discoverySecrets, refreshDirectory, hydrateCompany });", globals) as Record<string, unknown>;
@@ -111,7 +114,7 @@ function fixture() {
   const get = () => handler(new Request("https://synthetic.test/?q=Synthetic", { headers: { Authorization: "Bearer " + "a".repeat(30) } }));
   const activations = () => adminRpc.mock.calls.filter(([name, args]) => name === "sb_discovery_admin" && args?.op === "activate");
   const completions = () => adminRpc.mock.calls.filter(([name, args]) => name === "sb_discovery_admin" && args?.op === "hydration_finish" && obj(args.p).code === null);
-  return { state, company, order, uploads, signedUrls, directoryBytes, directoryItems, discoveryResult, filings, timestamp, adminRpc, readerRpc, reader, createClient, secSubmissions, dartRelay, handler, get, post, activations, completions };
+  return { state, company, order, uploads, signedUrls, directoryBytes, directoryItems, discoveryResult, filings, timestamp, adminRpc, readerRpc, reader, createClient, secSubmissions, dartRelay, handler, get, post, activations, completions, calendarRpc, calendarAbort, calendarResult };
 }
 
 describe("discovery market scope", () => {
@@ -121,6 +124,7 @@ describe("discovery market scope", () => {
     expect(response.status).toBe(200);
     expect(f.readerRpc).toHaveBeenCalledWith("sb_company_discovery_filtered", { q: "Micron", p: { provider: "sec", market: "NASDAQ", market_group: "overseas" } });
     expect(f.activations()).toEqual([]);
+    expect(f.calendarRpc).not.toHaveBeenCalled();
   });
   it("rejects invalid filters before any provider refresh or search RPC", async () => {
     for (const suffix of ["provider=other", "market_group=arbitrary", "market=%27injected", "provider=sec&provider=dart"]) {
@@ -148,6 +152,7 @@ describe("directory refresh avoids full XML work in Edge", () => {
     const f = fixture(); f.state.directoryClaims.dart = true;
     expect((await f.get()).status).toBe(200);
     expect(f.order).toEqual(["directory_download", "archive", "signed:60", "directory_parse", "directory_saved"]);
+    expect(f.calendarRpc).not.toHaveBeenCalled();
     const digest = Buffer.from(await crypto.subtle.digest("SHA-256", f.directoryBytes)).toString("hex");
     const path = `directory/dart/${digest}.zip`;
     expect(f.uploads).toHaveBeenCalledWith(path, f.directoryBytes, { contentType: "application/zip", upsert: false });
@@ -185,6 +190,7 @@ describe("discovery edge authentication and activation boundaries", () => {
     expect(f.createClient).not.toHaveBeenCalled();
     expect(f.activations()).toHaveLength(0);
     expect(f.secSubmissions).not.toHaveBeenCalled();
+    expect(f.calendarRpc).not.toHaveBeenCalled();
   });
   it("rejects an expired or forged JWT before acquiring a service client", async () => {
     const f = fixture(); f.state.authenticated = false;
@@ -192,6 +198,7 @@ describe("discovery edge authentication and activation boundaries", () => {
     expect(f.createClient).toHaveBeenCalledTimes(1);
     expect(f.activations()).toHaveLength(0);
     expect(f.secSubmissions).not.toHaveBeenCalled();
+    expect(f.calendarRpc).not.toHaveBeenCalled();
   });
   it.each([["mfaDenied", 403], ["rateDenied", 429]] as const)("preserves %s enforcement before activation", async (flag, status) => {
     const f = fixture(); f.state[flag] = true;
@@ -199,6 +206,7 @@ describe("discovery edge authentication and activation boundaries", () => {
     expect(f.createClient).toHaveBeenCalledTimes(1);
     expect(f.activations()).toHaveLength(0);
     expect(f.adminRpc).not.toHaveBeenCalled();
+    expect(f.calendarRpc).not.toHaveBeenCalled();
   });
   it.each([
     { ...selection, actor: "10000000-0000-4000-8000-000000000099" },
@@ -211,6 +219,7 @@ describe("discovery edge authentication and activation boundaries", () => {
     expect((await f.post(value)).status).toBe(422);
     expect(f.activations()).toHaveLength(0);
     expect(f.secSubmissions).not.toHaveBeenCalled();
+    expect(f.calendarRpc).not.toHaveBeenCalled();
   });
   it("passes only the verified user as actor and preserves authoritative-directory rejection", async () => {
     const f = fixture(); f.state.activationDenied = true;
@@ -219,6 +228,7 @@ describe("discovery edge authentication and activation boundaries", () => {
     expect(await response.json()).toEqual({ error: { code: "company_not_in_official_directory" } });
     expect(f.activations()[0][1]).toEqual({ op: "activate", p: { ...selection, actor: actorId } });
     expect(f.secSubmissions).not.toHaveBeenCalled();
+    expect(f.calendarRpc).not.toHaveBeenCalled();
   });
   it("allows company-id refresh only through the same authorization and activation boundary", async () => {
     const f = fixture();
@@ -231,8 +241,9 @@ describe("discovery hydration completion", () => {
   it("archives sources, stores the validated profile and filings, and only then returns ready", async () => {
     const f = fixture();
     const response = await f.post();
-    expect(await response.json()).toEqual({ company_id: companyId, hydration_status: "ready" });
-    expect(f.order).toEqual(["archive", "profile", "filings", "timestamp", "complete"]);
+    expect(await response.json()).toEqual({ company_id: companyId, hydration_status: "ready", calendar_refresh:{status:"pending"} });
+    expect(f.order).toEqual(["archive", "profile", "filings", "timestamp", "complete", "calendar_requested"]);
+    expect(f.calendarRpc).toHaveBeenCalledExactlyOnceWith({company_id:companyId});
     expect(f.uploads).toHaveBeenCalledWith(expect.stringMatching(/^us\/sec\/submissions\/[a-f0-9]{64}\.json$/), expect.any(Uint8Array), expect.objectContaining({ upsert: false }));
     expect(f.completions()).toHaveLength(1);
   });
@@ -250,7 +261,8 @@ describe("discovery hydration completion", () => {
     const response = await f.post();
     expect(await response.json()).toMatchObject({ company_id: companyId, hydration_status: "unavailable" });
     expect(f.completions()).toHaveLength(0);
-    expect(f.order.at(-1)).toBe("failed");
+    expect(f.order.slice(-2)).toEqual(["failed","calendar_requested"]);
+    expect(f.calendarRpc).toHaveBeenCalledExactlyOnceWith({company_id:companyId});
   });
   it("does not hydrate twice when another request already holds the collection lease", async () => {
     const f = fixture(); f.state.claim = { ready: false, claimed: false };
@@ -260,8 +272,9 @@ describe("discovery hydration completion", () => {
   });
   it("uses prior confirmed completion without a duplicate provider call", async () => {
     const f = fixture(); f.state.claim = { ready: true, claimed: false };
-    expect(await (await f.post()).json()).toEqual({ company_id: companyId, hydration_status: "ready" });
+    expect(await (await f.post()).json()).toEqual({ company_id: companyId, hydration_status: "ready", calendar_refresh:{status:"pending"} });
     expect(f.secSubmissions).not.toHaveBeenCalled(); expect(f.uploads).not.toHaveBeenCalled();
+    expect(f.calendarRpc).toHaveBeenCalledExactlyOnceWith({company_id:companyId});
   });
   it("rejects a source for another ticker before archiving or writing company data", async () => {
     const f = fixture(); f.secSubmissions.mockResolvedValueOnce({ raw: "{}", name: "Wrong issuer", tickers: ["OTHER"], filings: [] });
@@ -283,5 +296,39 @@ describe("discovery hydration completion", () => {
     expect(f.uploads).toHaveBeenCalledTimes(1); // The profile source was archived before page 2 failed.
     expect(f.filings).not.toHaveBeenCalled(); expect(f.completions()).toHaveLength(0);
     expect(f.dartRelay).toHaveBeenCalledWith(expect.objectContaining({ page: 2 }), expect.any(String), 15000);
+  });
+});
+
+describe("discovery calendar scheduling outcome",()=>{
+  it.each([
+    [{supported:true,pending:true},"pending"],
+    [{supported:true,pending:false},"not_pending"],
+    [{supported:false,pending:false},"unsupported"],
+  ] as const)("reports scheduling %j independently of verified company hydration",async(data,status)=>{
+    const f=fixture();f.calendarResult.data=data;
+    const response=await f.post({company_id:companyId});
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({company_id:companyId,hydration_status:"ready",calendar_refresh:{status}});
+    expect(f.calendarRpc).toHaveBeenCalledExactlyOnceWith({company_id:companyId});
+    expect(f.readerRpc).not.toHaveBeenCalledWith("sb_calendar_request_company",expect.anything());
+  });
+  it("does not undo successful activation or expose provider details when scheduling is unavailable",async()=>{
+    const f=fixture();f.calendarResult.error={message:"https://private.test/?key=secret-never-reflect"};
+    const response=await f.post(),raw=await response.text();
+    expect(response.status).toBe(200);
+    expect(JSON.parse(raw)).toEqual({company_id:companyId,hydration_status:"ready",calendar_refresh:{status:"unavailable"}});
+    expect(f.completions()).toHaveLength(1);expect(raw).not.toContain("secret-never-reflect");expect(raw).not.toContain("private.test");
+  });
+  it.each([null,{supported:true},{supported:false,pending:true},{supported:"true",pending:true}])("does not invent a queued/ready calendar from malformed metadata %j",async data=>{
+    const f=fixture();f.calendarResult.data=data;
+    expect(await (await f.post()).json()).toMatchObject({hydration_status:"ready",calendar_refresh:{status:"unavailable"}});
+  });
+  it("bounds a stalled scheduling request and preserves the successful hydration result",async()=>{
+    const controller=new AbortController(),timeout=vi.spyOn(AbortSignal,"timeout").mockReturnValue(controller.signal),f=fixture();
+    f.calendarAbort.mockImplementation(signal=>new Promise((_,reject)=>signal.addEventListener("abort",()=>reject(new Error("secret-never-reflect")),{once:true})));
+    const pending=f.post();await vi.waitFor(()=>expect(f.calendarAbort).toHaveBeenCalledTimes(1));
+    expect(timeout).toHaveBeenCalledWith(2500);expect(f.completions()).toHaveLength(1);controller.abort();
+    const response=await pending;expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({hydration_status:"ready",calendar_refresh:{status:"unavailable"}});
   });
 });

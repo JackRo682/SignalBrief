@@ -49,6 +49,16 @@ const calendarEntries = [
   source_timezone: 'America/Los_Angeles', verified_at: fixtureNow,
   quote: `Synthetic official notice: ${item.title} on ${item.occurs_on}.`,
 }));
+const collectedCalendarEntries = [
+  { id: '80000000-0000-4000-8000-000000000094', company_id: companies[0].id,
+    title: 'Synthetic newly collected upcoming event', occurs_on: '2026-10-14' },
+  { id: '80000000-0000-4000-8000-000000000095', company_id: companies[0].id,
+    title: 'Synthetic newly collected past event', occurs_on: '2026-10-04' },
+].map(item => calendarEntrySchema.parse({
+  ...item, event_id: null, origin: 'official_ir', source_url: sourceUrl,
+  source_timezone: 'America/Los_Angeles', verified_at: fixtureNow,
+  quote: `Synthetic official notice: ${item.title} on ${item.occurs_on}.`,
+}));
 
 function matchesQuery(resource: Resource, query: string) {
   const normalized = query.normalize('NFKC').replace(/\s+/g, '').toLowerCase();
@@ -64,6 +74,8 @@ async function reliabilityFixture(page: Page) {
     dashboardFails: false, companyFails: false, profileFails: false,
     calendarFails: false, discoveryFails: false, resolutionFails: false,
     externalRegistered: false, externalReady: false,
+    collectionCompanyId: null as string | null, collectionPending: false, collectionReady: false,
+    coverageQueries: [] as (string | null)[],
     workspaceCalls: [] as { action: string; p: Record<string, unknown> }[],
     lookupQueries: [] as string[], calendarQueries: [] as string[],
     discoveryQueries: [] as string[], resolutionBodies: [] as Record<string, unknown>[],
@@ -155,7 +167,23 @@ async function reliabilityFixture(page: Page) {
     if (route.request().method() === 'OPTIONS') {
       await route.fulfill({ status: 204, headers }); return;
     }
-    await route.fulfill({ headers, json: { registered_companies: 2, covered_companies: 2, selected: null } });
+    expect(route.request().method()).toBe('POST');
+    expect(route.request().headers().authorization).toMatch(/^Bearer /);
+    const payload = route.request().postDataJSON() as { p_company_id: string | null };
+    expect(Object.keys(payload)).toEqual(['p_company_id']);
+    expect(payload.p_company_id === null || directory().some(item => item.id === payload.p_company_id)).toBe(true);
+    state.coverageQueries.push(payload.p_company_id);
+    const selected = state.collectionCompanyId && payload.p_company_id ? {
+      company_id: payload.p_company_id, source_count: 1, has_error: false,
+      pending: payload.p_company_id === state.collectionCompanyId && state.collectionPending,
+      last_success_at: payload.p_company_id === state.collectionCompanyId && !state.collectionReady ? null : fixtureNow,
+    } : null;
+    await route.fulfill({ headers, json: {
+      registered_companies: 2, covered_companies: 2,
+      pending_companies: state.collectionPending ? 1 : 0,
+      pending_company_ids: state.collectionPending && state.collectionCompanyId ? [state.collectionCompanyId] : [],
+      selected,
+    } });
   });
   await page.route('https://test-project.supabase.co/rest/v1/calendar_items?**', async route => {
     const request = route.request();
@@ -169,6 +197,7 @@ async function reliabilityFixture(page: Page) {
     }
     const url = new URL(request.url());
     state.calendarQueries.push(url.search);
+    expect(request.method()).toBe('GET');
     expect(request.headers().authorization).toMatch(/^Bearer /);
     expect(url.searchParams.get('calendar_status')).toBe('eq.confirmed');
     if (state.calendarFails) {
@@ -184,7 +213,11 @@ async function reliabilityFixture(page: Page) {
     const bounds = url.searchParams.getAll('occurs_on');
     const from = bounds.find(value => value.startsWith('gte.'))?.slice(4);
     const until = bounds.find(value => value.startsWith('lte.'))?.slice(4);
-    const rows = calendarEntries.filter(item => (!id || item.id === id)
+    const available = state.collectionCompanyId
+      ? [...calendarEntries.filter(item => item.company_id !== state.collectionCompanyId),
+        ...(state.collectionReady ? collectedCalendarEntries : [])]
+      : calendarEntries;
+    const rows = available.filter(item => (!id || item.id === id)
       && (!company || item.company_id === company)
       && (!companyList || companyList.includes(item.company_id!))
       && (!orCompanies || item.origin === 'user' || orCompanies.includes(item.company_id!))
@@ -285,6 +318,31 @@ async function finish(page: Page, info: TestInfo, fixture: Fixture) {
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth))
     .toBeLessThanOrEqual(1);
   await page.screenshot({ path: info.outputPath('verified-screen.png'), fullPage: true, animations: 'disabled' });
+}
+
+function calendarPanels(page: Page) {
+  const lists = page.locator('.rd-calendar-side-lists section');
+  return {
+    grid: page.locator('.rd-calendar-grid'),
+    upcoming: lists.filter({ has: page.getByRole('heading', { name: /^다가오는 일정/ }) }),
+    past: lists.filter({ has: page.getByRole('heading', { name: /^지난 일정/ }) }),
+  };
+}
+
+function expectNoCalendarWrites(fixture: Fixture, followed: string[] = []) {
+  expect([...fixture.base.state.watched].sort()).toEqual([...followed].sort());
+  expect(fixture.base.state.apiCalls.filter(call => call.method !== 'GET')).toEqual([]);
+  expect(fixture.base.state.reminderCalls.filter(call => call.action !== 'list')).toEqual([]);
+  expect(fixture.state.resolutionBodies).toEqual([]);
+}
+
+async function expectCollectedCalendar(page: Page) {
+  const panels = calendarPanels(page);
+  await expect(panels.grid.getByRole('link', { name: new RegExp(collectedCalendarEntries[0].title) })).toBeVisible();
+  await expect(panels.grid.getByRole('link', { name: new RegExp(collectedCalendarEntries[1].title) })).toBeVisible();
+  await expect(panels.upcoming.getByRole('link', { name: new RegExp(collectedCalendarEntries[0].title) })).toBeVisible();
+  await expect(panels.past.getByRole('link', { name: new RegExp(collectedCalendarEntries[1].title) })).toBeVisible();
+  await expect(page.getByText('공식 일정을 수집하고 있습니다. 완료되면 이 화면에 자동으로 표시됩니다.', { exact: true })).toHaveCount(0);
 }
 
 test('home opens recent records and can recover from an intentionally empty day filter', async ({ page }, info) => {
@@ -449,6 +507,159 @@ test('calendar aliases use server search and monthly navigation opens the correc
   await expect(page.getByRole('tabpanel')).toContainText('2026년 11월 15일 · 날짜 기준');
   await expect(page.getByRole('tabpanel')).toContainText('정확한 시간·장소는 공식 원문에서 확인하세요.');
   await expect(page.getByRole('tabpanel')).not.toContainText('원문에 확인된 세부 시간·장소 정보가 없습니다.');
+  await finish(page, info, fixture);
+});
+
+test('calendar collection polling fills all selected-company date ranges without reloading', async ({ page }, info) => {
+  await page.clock.install({ time: new Date(fixtureNow) });
+  const fixture = await reliabilityFixture(page);
+  fixture.state.collectionCompanyId = companies[0].id;
+  fixture.state.collectionPending = true;
+  fixture.state.externalRegistered = true;
+  const navigations: string[] = [];
+  page.on('request', request => {
+    if (request.isNavigationRequest() && request.resourceType() === 'document' && request.frame() === page.mainFrame()) navigations.push(request.url());
+  });
+  await page.goto('/calendar');
+  const main = page.locator('main'), panels = calendarPanels(page);
+  const nvidia = main.getByRole('checkbox', { name: `${companies[0].name} (${companies[0].ticker})`, exact: true });
+  const appleChoice = main.getByRole('checkbox', { name: 'Apple (AAPL)', exact: true });
+  const externalChoice = main.getByRole('checkbox', { name: 'Synthetic Orion Systems (ORNX)', exact: true });
+  const collecting = main.getByText('공식 일정을 수집하고 있습니다. 완료되면 이 화면에 자동으로 표시됩니다.', { exact: true });
+  await nvidia.check();
+  await expect(main.getByRole('radio', { name: '특정 기업 선택', exact: true })).toBeChecked();
+  await expect.poll(() => fixture.state.coverageQueries.at(-1)).toBe(companies[0].id);
+  await expect(main.getByText('공식 일정을 수집하고 있습니다. 완료되면 이 화면에 자동으로 표시됩니다.', { exact: true })).toBeVisible();
+  const refresh = main.getByRole('button', { name: '일정 새로고침', exact: true });
+  await expect(refresh).toBeEnabled();
+  await expect(panels.grid.getByRole('link')).toHaveCount(0);
+  await expect(panels.upcoming.getByRole('heading')).toHaveText(/다가오는 일정\s*…/);
+  await expect(panels.past.getByRole('heading')).toHaveText(/지난 일정\s*…/);
+  await expect(main.getByText('확인된 예정 일정이 없습니다.', { exact: true })).toHaveCount(0);
+  await expect(main.getByText('확인된 지난 일정이 없습니다.', { exact: true })).toHaveCount(0);
+  await expect(main.getByText('선택한 기간과 기업 범위에 수집된 일정이 없습니다.', { exact: true })).toHaveCount(0);
+  // A pending issuer must match the actual two-company selection, not merely
+  // the global pending count returned when no single company ID is supplied.
+  await appleChoice.check();
+  await expect(collecting).toBeVisible();
+  await expect(panels.past.getByRole('heading')).toHaveText(/지난 일정\s*…/);
+  await nvidia.uncheck();
+  await externalChoice.check();
+  await expect(refresh).toBeEnabled();
+  await expect(appleChoice).toBeChecked();await expect(externalChoice).toBeChecked();
+  await expect(collecting).toHaveCount(0);
+  await expect(panels.past.getByRole('heading')).toHaveText(/지난 일정\s*0/);
+  await expect(panels.past.getByText('확인된 지난 일정이 없습니다.', { exact: true })).toBeVisible();
+  await appleChoice.uncheck();
+  await nvidia.check();
+  await expect(nvidia).toBeChecked();await expect(externalChoice).toBeChecked();
+  await expect(appleChoice).not.toBeChecked();
+  await expect(collecting).toBeVisible();
+  await expect(refresh).toBeEnabled();
+  await expect(panels.grid.getByRole('link')).toHaveCount(0);
+  await expect(panels.past.getByRole('heading')).toHaveText(/지난 일정\s*…/);
+  const selection = `(origin.eq.user,company_id.in.(${[companies[0].id, externalId].sort().join(',')}))`;
+  const initialRanges = [...new Set(fixture.state.calendarQueries.filter(query => new URLSearchParams(query).get('or') === selection))].sort();
+  expect(initialRanges).toHaveLength(3);
+  const before = fixture.state.calendarQueries.length;
+  expectNoCalendarWrites(fixture);
+
+  fixture.state.collectionPending = false;
+  fixture.state.collectionReady = true;
+  await page.clock.runFor(10000);
+  await expectCollectedCalendar(page);
+  expect([...new Set(fixture.state.calendarQueries.slice(before))].sort()).toEqual(initialRanges);
+  await expect(panels.grid.getByRole('link', { name: /Synthetic October official event/ })).toHaveCount(0);
+  await expect(page).toHaveURL(/\/calendar$/);
+  expect(navigations).toHaveLength(1);
+  expectNoCalendarWrites(fixture);
+  await finish(page, info, fixture);
+});
+
+test('calendar collection keeps scope honest and stops polling until an explicit refresh', async ({ page }, info) => {
+  await page.clock.install({ time: new Date(fixtureNow) });
+  const fixture = await reliabilityFixture(page);
+  fixture.state.collectionCompanyId = companies[0].id;
+  fixture.state.collectionPending = true;
+  fixture.state.externalRegistered = true;
+  const followed = [companies[0].id, appleId];
+  followed.forEach(id => fixture.base.state.watched.add(id));
+  const navigations: string[] = [];
+  page.on('request', request => {
+    if (request.isNavigationRequest() && request.resourceType() === 'document' && request.frame() === page.mainFrame()) navigations.push(request.url());
+  });
+  await page.goto('/calendar');
+  const main = page.locator('main'), panels = calendarPanels(page);
+  const nvidia = main.getByRole('checkbox', { name: `${companies[0].name} (${companies[0].ticker})`, exact: true });
+  const appleChoice = main.getByRole('checkbox', { name: 'Apple (AAPL)', exact: true });
+  const all = main.getByRole('radio', { name: '전체 기업', exact: true });
+  const selected = main.getByRole('radio', { name: '특정 기업 선택', exact: true });
+  const refresh = main.getByRole('button', { name: '일정 새로고침', exact: true });
+  const collecting = main.getByText('공식 일정을 수집하고 있습니다. 완료되면 이 화면에 자동으로 표시됩니다.', { exact: true });
+  await nvidia.check();
+  await expect(selected).toBeChecked();
+  await all.check();
+  await expect(nvidia).not.toBeChecked();
+  await expect(appleChoice).not.toBeChecked();
+  await appleChoice.check();
+  await expect(selected).toBeChecked();
+  await expect(nvidia).not.toBeChecked();
+  await expect.poll(() => fixture.state.coverageQueries.at(-1)).toBe(appleId);
+  await expect.poll(() => fixture.state.calendarQueries.some(query => new URLSearchParams(query).get('or') === `(origin.eq.user,company_id.in.(${appleId}))`)).toBe(true);
+  await main.getByRole('radio', { name: '관심 기업', exact: true }).check();
+  await expect(appleChoice).not.toBeChecked();
+  await expect(nvidia).not.toBeChecked();
+  await expect(collecting).toBeVisible();
+  await expect(panels.past.getByRole('heading')).toHaveText(/지난 일정\s*…/);
+  expectNoCalendarWrites(fixture, followed);
+  // The server queue can move to an unrelated issuer while the owner's two
+  // followed companies remain unchanged. Refresh is a read, never a follow.
+  fixture.state.collectionCompanyId = externalId;
+  await expect(refresh).toBeEnabled();
+  await refresh.click();
+  await expect(refresh).toBeEnabled();
+  await expect(collecting).toHaveCount(0);
+  await expect(panels.past.getByRole('heading')).toHaveText(/지난 일정\s*0/);
+  await expect(panels.past.getByText('확인된 지난 일정이 없습니다.', { exact: true })).toBeVisible();
+  expect(fixture.state.collectionPending).toBe(true);
+  expectNoCalendarWrites(fixture, followed);
+  fixture.state.collectionCompanyId = companies[0].id;
+  await nvidia.check();
+  await expect(selected).toBeChecked();
+  await expect(nvidia).toBeChecked();
+  await expect(appleChoice).not.toBeChecked();
+  await expect.poll(() => fixture.state.coverageQueries.at(-1)).toBe(companies[0].id);
+  await all.check();
+  await expect(nvidia).not.toBeChecked();
+  await expect.poll(() => fixture.state.coverageQueries.at(-1)).toBe(null);
+  await expect(refresh).toBeEnabled();
+  await expect(panels.grid.getByRole('link', { name: /Synthetic October official event/ })).toBeVisible();
+  await expect(panels.past.getByRole('heading')).toHaveText(/지난 일정\s*…/);
+  const initialRanges = [...new Set(fixture.state.calendarQueries.filter(query => {
+    const params = new URLSearchParams(query); return !params.has('or') && !params.has('company_id') && !params.has('origin');
+  }))].sort();
+  expect(initialRanges).toHaveLength(3);
+  const initialCoverage = fixture.state.coverageQueries.length;
+  for (let poll = 1; poll <= 12; poll++) {
+    await page.clock.runFor(10000);
+    await expect.poll(() => fixture.state.coverageQueries.length).toBe(initialCoverage + poll);
+    await expect(refresh).toBeEnabled();
+  }
+  await expect(main.getByText('공식 일정 수집이 계속 진행 중입니다. 잠시 후 일정 새로고침을 눌러 확인해 주세요.', { exact: true })).toBeVisible();
+  await page.clock.runFor(30000);
+  expect(fixture.state.coverageQueries).toHaveLength(initialCoverage + 12);
+  const before = fixture.state.calendarQueries.length;
+  fixture.state.collectionPending = false;
+  fixture.state.collectionReady = true;
+  await refresh.click();
+  await expectCollectedCalendar(page);
+  await expect(panels.grid.getByRole('link', { name: /Synthetic October official event/ })).toBeVisible();
+  expect([...new Set(fixture.state.calendarQueries.slice(before))].sort()).toEqual(initialRanges);
+  await expect(all).toBeChecked();
+  await expect(nvidia).not.toBeChecked();
+  await expect(appleChoice).not.toBeChecked();
+  expect(navigations).toHaveLength(1);
+  expectNoCalendarWrites(fixture, followed);
   await finish(page, info, fixture);
 });
 

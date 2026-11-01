@@ -299,6 +299,18 @@
 .sb-redesign .rd-calendar-note a {
   color: #1677ff;
 }
+.sb-redesign .rd-calendar-refresh {
+  padding: 6px 10px;
+  border: 1px solid #d0d9e5;
+  border-radius: 6px;
+  background: #fff;
+  color: #344054;
+  cursor: pointer;
+}
+.sb-redesign .rd-calendar-refresh:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
 .sb-redesign .rd-calendar-empty {
   color: #7a869a;
   font-size: 13px;

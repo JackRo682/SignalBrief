@@ -31,6 +31,9 @@ import { CompanyLogo as Logo } from "./ui";
 import "./personal.css";
 
 type Section = "analysis" | "event" | "document" | "history";
+const savedCompanySchema = z.object({ id: z.string().uuid(), name: z.string(), ticker: z.string() });
+type SavedCompany = z.infer<typeof savedCompanySchema>;
+const savedCalendarSchema = calendarEntrySchema.extend({ company: savedCompanySchema.nullable().optional() });
 const sections: {
   key: Section;
   label: string;
@@ -63,7 +66,7 @@ function useSavedDates() {
     [revision, setRevision] = useState(0);
   const [state, setState] = useState<{
     token: string | null;
-    data: { items: CalendarEntry[]; unavailableIds: string[] } | null;
+    data: { items: CalendarEntry[]; unavailableIds: string[]; companies: SavedCompany[] } | null;
     loading: boolean;
     error: string;
   }>({ token: null, data: null, loading: false, error: "" });
@@ -91,12 +94,13 @@ function useSavedDates() {
           .parse(response.data)
           .map((item) => item.calendar_id);
         const items: CalendarEntry[] = [];
+        const companies: SavedCompany[] = [];
         // Bound each query rather than silently losing items at the REST row cap.
         for (let offset = 0; offset < ids.length; offset += 100) {
           const result = await db
             .from("calendar_items")
             .select(
-              "id,title,occurs_on,company_id,event_id,origin,quote,source_url,source_timezone,verified_at",
+              "id,title,occurs_on,company_id,event_id,origin,quote,source_url,source_timezone,verified_at,company:companies(id,name,ticker)",
             )
             .in("id", ids.slice(offset, offset + 100))
             .eq("calendar_status", "confirmed")
@@ -105,7 +109,13 @@ function useSavedDates() {
             );
           if (result.error)
             throw new Error("저장한 일정의 상세 정보를 불러오지 못했습니다.");
-          items.push(...z.array(calendarEntrySchema).parse(result.data));
+          const rows = z.array(savedCalendarSchema).parse(result.data);
+          for (const row of rows) {
+            if (row.company && row.company.id !== row.company_id)
+              throw new Error("저장한 일정의 기업 정보를 확인하지 못했습니다.");
+            if (row.company) companies.push(row.company);
+            items.push(row);
+          }
         }
         const visible = new Set(items.map((item) => item.id));
         if (alive)
@@ -113,6 +123,7 @@ function useSavedDates() {
             token,
             data: {
               items,
+              companies,
               unavailableIds: ids.filter((id) => !visible.has(id)),
             },
             loading: false,
@@ -222,7 +233,7 @@ function SavedCalendarItem({
 }
 
 /** Uses the existing owner-scoped save API; changes become visible only after persistence. */
-function SaveButton({ item, reload }: { item: Resource; reload: () => void }) {
+function SaveButton({ item, reload, labeled = false }: { item: Resource; reload: () => void; labeled?: boolean }) {
   const { token } = useAuth(),
     action = useMutation();
   if (item.kind === "company") return null;
@@ -230,7 +241,8 @@ function SaveButton({ item, reload }: { item: Resource; reload: () => void }) {
   return (
     <span className="rd-p-save-action">
       <button
-        className="rd-p-icon-button rd-p-bookmark"
+        type="button"
+        className={labeled ? "rd-p-button" : "rd-p-icon-button rd-p-bookmark"}
         aria-label={`${item.title} ${item.is_saved ? "저장 취소" : "저장"}`}
         aria-pressed={item.is_saved}
         disabled={action.busy}
@@ -249,6 +261,7 @@ function SaveButton({ item, reload }: { item: Resource; reload: () => void }) {
         }
       >
         <Bookmark filled={item.is_saved} />
+        {labeled && <span>{item.is_saved ? "저장 취소" : "저장"}</span>}
       </button>
       {action.error && (
         <small role="alert" className="rd-p-inline-error">
@@ -256,6 +269,35 @@ function SaveButton({ item, reload }: { item: Resource; reload: () => void }) {
         </small>
       )}
     </span>
+  );
+}
+
+function SaveDiscovery({ reload }: { reload: () => void }) {
+  const analyses = useData({ action: "catalog", p: { kind: "analysis", sort: "newest", limit: 3 } }, catalogSchema);
+  const documents = useData({ action: "catalog", p: { kind: "document", sort: "newest", limit: 3 } }, catalogSchema);
+  const { date } = usePrefs();
+  return (
+    <section className="rd-p-panel" aria-labelledby="rd-save-discovery-title">
+      <header className="rd-p-section-head"><h2 id="rd-save-discovery-title"><Icon name="star" />저장할 자료 찾기</h2></header>
+      <p className="rd-p-muted">아래는 최근 공개된 자료입니다. 저장을 누른 자료만 내 저장 목록에 추가됩니다.</p>
+      {([{ title: "최근 공개 분석", result: analyses, kinds: ["event", "us_analysis", "dart_analysis"] },
+        { title: "최근 공시·문서", result: documents, kinds: ["filing", "document"] }] as const).map(({ title, result, kinds }) => {
+        const items = result.data?.items.filter(item => (kinds as readonly string[]).includes(item.kind) && !item.is_saved) ?? [];
+        return <div key={title}>
+          <h3>{title}</h3>
+          <DataState {...result} retry={result.reload} />
+          <div className="rd-p-analysis-grid">
+            {items.map(item => <article key={`${item.kind}:${item.id}`} className="rd-p-analysis-card">
+              <header><span>{item.company_name} · {item.ticker}</span><SaveButton item={item} labeled reload={reload} /></header>
+              <Link className="rd-p-card-title" href={resourceHref(item)}>{item.title}</Link>
+              {item.summary && <p>{item.summary}</p>}
+              <footer>{item.kind === "event" ? "검토된 분석" : item.kind.endsWith("analysis") ? "승인된 분석" : "공식 문서"} · {date(item.published_at, item.publication_precision)}</footer>
+            </article>)}
+          </div>
+          {result.data && !result.error && !items.length && <p className="rd-p-muted">지금 표시할 공개 자료가 없습니다.</p>}
+        </div>;
+      })}
+    </section>
   );
 }
 
@@ -300,6 +342,11 @@ function SavedSection({
 }
 
 export default function Saved() {
+  const { token } = useAuth();
+  return <SavedContent key={token ?? "signed-out"} />;
+}
+
+function SavedContent() {
   const { token } = useAuth(),
     prefs = usePrefs(),
     action = useMutation();
@@ -311,16 +358,12 @@ export default function Saved() {
     [manage, setManage] = useState(false),
     [expanded, setExpanded] = useState<Section[]>([]);
   const saved = useData(
-    { action: "saved_list", p: { kind: "", q: query, company, sort } },
+    { action: "saved_list", p: { kind: "", sort } },
     savedSchema,
   );
   const history = useData(
-    { action: "saved_list", p: { kind: "history", q: query, company, sort } },
+    { action: "saved_list", p: { kind: "history", sort } },
     savedSchema,
-  );
-  const companies = useData(
-    { action: "catalog", p: { kind: "company", limit: 50 } },
-    catalogSchema,
   );
   const dates = useSavedDates();
   const reload = () => {
@@ -333,7 +376,13 @@ export default function Saved() {
         ? current.filter((x) => x !== key)
         : [...current, key],
     );
-  const items = saved.data?.items ?? [];
+  // The owner-scoped API returns the complete bounded archive: at most 500
+  // bookmarks and 100 history rows. Filtering it retains every saved company,
+  // including issuers outside the first page of the global directory.
+  const normalize = (value: string) => value.normalize("NFKC").trim().toLocaleLowerCase();
+  const matches = (item: Resource) => (!company || item.company_id === company)
+    && (!query || normalize(`${item.title} ${item.company_name} ${item.ticker}`).includes(normalize(query)));
+  const items = (saved.data?.items ?? []).filter(matches);
   // Published legacy events are reviewed analyses; calendar interests are separate records.
   const analyses = items.filter(
     (item) =>
@@ -345,18 +394,20 @@ export default function Saved() {
     (item) => item.kind === "filing" || item.kind === "document",
   );
   const hasFilters = Boolean(query || company);
-  const visits = history.data?.items ?? [];
-  const dateCompanies = new Map(
-    companies.data?.items.map((item) => [item.id, item]) ?? [],
-  );
+  const visits = (history.data?.items ?? []).filter(matches);
+  const dateCompanies = new Map<string, SavedCompany>();
+  for (const item of [...(saved.data?.items ?? []), ...(history.data?.items ?? [])]) {
+    if (item.company_id) dateCompanies.set(item.company_id, { id: item.company_id, name: item.company_name || item.title, ticker: item.ticker });
+  }
+  for (const item of dates.data?.companies ?? []) dateCompanies.set(item.id, item);
+  const companies = [...dateCompanies.values()].sort((a, b) => a.name.localeCompare(b.name));
   const calendarItems = (dates.data?.items ?? [])
     .filter(
       (item) =>
         (!company || item.company_id === company) &&
         (!query ||
-          `${item.title} ${dateCompanies.get(item.company_id ?? "")?.title ?? ""} ${dateCompanies.get(item.company_id ?? "")?.ticker ?? ""}`
-            .toLocaleLowerCase()
-            .includes(query.toLocaleLowerCase())),
+          normalize(`${item.title} ${dateCompanies.get(item.company_id ?? "")?.name ?? ""} ${dateCompanies.get(item.company_id ?? "")?.ticker ?? ""}`)
+            .includes(normalize(query))),
     )
     .sort((a, b) =>
       sort === "newest"
@@ -424,9 +475,9 @@ export default function Saved() {
             onChange={(event) => setCompany(event.target.value)}
           >
             <option value="">전체 회사</option>
-            {companies.data?.items.map((item) => (
+            {companies.map((item) => (
               <option key={item.id} value={item.id}>
-                {item.title}
+                {item.name}
               </option>
             ))}
           </select>
@@ -468,14 +519,7 @@ export default function Saved() {
         </button>
       </form>
       <DataState {...saved} retry={saved.reload} />
-      {companies.error && (
-        <div role="alert" className="rd-p-inline-error">
-          회사 필터를 불러오지 못했습니다.{" "}
-          <button className="rd-p-link" onClick={companies.reload}>
-            다시 시도
-          </button>
-        </div>
-      )}
+      {!hasFilters && saved.data && !saved.error && saved.data.items.length === 0 && <SaveDiscovery reload={reload} />}
       <div className="rd-p-saved-stack">
         <SavedSection
           id="analysis"
@@ -695,7 +739,7 @@ export default function Saved() {
                 item={item}
                 reload={dates.reload}
                 companyName={
-                  dateCompanies.get(item.company_id ?? "")?.title ??
+                  dateCompanies.get(item.company_id ?? "")?.name ??
                   (item.origin === "user" ? "개인 일정" : "기업 일정")
                 }
               />

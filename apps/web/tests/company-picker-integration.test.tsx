@@ -133,9 +133,95 @@ describe("official company selection in each product surface", () => {
     fireEvent.click(choose);
     expect(await screen.findByRole("checkbox", { name: `${issuer.name} (${issuer.ticker})` })).toBeChecked();
     expect(mocks.coverage).toHaveBeenCalledWith(id);
-    expect(mocks.dates).toHaveBeenCalledWith(expect.objectContaining({ companyIds: [id] }));
+    expect(mocks.dates).toHaveBeenCalledWith(expect.objectContaining({ companyIds: [id] }), undefined);
     expect(writes()).toHaveLength(0); expect(mocks.push).not.toHaveBeenCalled();
     expect(screen.getByText(/이 기업은 공식 일정 수집이 아직 연결되지 않았습니다/)).toBeVisible();
+  });
+
+  it("keeps checkbox state consistent with the active scope and starts an explicit company selection afresh", async () => {
+    registered = [{ id: lsId, name: "LS", ticker: "006260", market: "KOSPI", provider: "dart", is_demo: false, last_ingested_at: null }];
+    render(<Calendar />);
+    const company = await screen.findByRole("checkbox", { name: "LS (006260)" });
+    fireEvent.click(company);
+    expect(company).toBeChecked();
+    expect(screen.getByRole("radio", { name: "특정 기업 선택" })).toBeChecked();
+    fireEvent.click(screen.getByRole("radio", { name: "전체 기업" }));
+    expect(company).not.toBeChecked();
+    fireEvent.click(company);
+    expect(company).toBeChecked();
+    expect(mocks.dates).toHaveBeenLastCalledWith(expect.objectContaining({ companyIds: [lsId] }), undefined);
+    fireEvent.click(screen.getByRole("radio", { name: "관심 기업" }));
+    expect(company).not.toBeChecked();
+    expect(writes()).toHaveLength(0);
+  });
+
+  it("shows collection in progress instead of a false zero and refreshes every date range on completion", async () => {
+    const reload = vi.fn();
+    mocks.coverage.mockReturnValue({ data: { registered_companies: 1, covered_companies: 1, pending_companies: 1, selected: null },
+      loading: false, error: "", polling: true, collectionRevision: 0, reload });
+    const view = render(<Calendar />);
+    expect(screen.getByText(/공식 일정을 수집하고 있습니다/)).toBeVisible();
+    expect(screen.getByRole("heading", { name: "다가오는 일정 …" })).toBeVisible();
+    expect(screen.queryByText("확인된 예정 일정이 없습니다.")).not.toBeInTheDocument();
+    expect(screen.queryByText("선택한 기간과 기업 범위에 수집된 일정이 없습니다.")).not.toBeInTheDocument();
+    mocks.coverage.mockReturnValue({ data: { registered_companies: 1, covered_companies: 1, pending_companies: 0, selected: null },
+      loading: false, error: "", polling: false, collectionRevision: 1, reload });
+    view.rerender(<Calendar />);
+    expect(screen.queryByText(/공식 일정을 수집하고 있습니다/)).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "다가오는 일정 0" })).toBeVisible();
+    expect(mocks.dates.mock.calls.slice(-3).every(call => call[1] === 1)).toBe(true);
+    await waitFor(() => expect(mocks.request).toHaveBeenCalled());
+    expect(writes()).toHaveLength(0);
+  });
+
+  it("does not restore a hidden previous selection when discovering a new issuer from all companies", async () => {
+    registered = [{ id: lsId, name: "LS", ticker: "006260", market: "KOSPI", provider: "dart", is_demo: false, last_ingested_at: null }];
+    render(<Calendar />);
+    fireEvent.click(await screen.findByRole("checkbox", { name: "LS (006260)" }));
+    fireEvent.click(screen.getByRole("radio", { name: "전체 기업" }));
+    fireEvent.change(screen.getByLabelText("기업명 또는 티커 검색"), { target: { value: "micron" } });
+    fireEvent.click(await screen.findByRole("button", { name: "MICRON TECHNOLOGY INC 일정 조회 기업으로 선택" }));
+    expect(await screen.findByRole("checkbox", { name: "MICRON TECHNOLOGY INC (MU)" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "LS (006260)" })).not.toBeChecked();
+    expect(mocks.dates).toHaveBeenLastCalledWith(expect.objectContaining({ companyIds: [muId] }), undefined);
+    expect(writes()).toHaveLength(0);
+  });
+
+  it("shows pending collection for matching followed or multiple selected companies, without treating unrelated work as an empty-scope load", async () => {
+    registered = [
+      { id: lsId, name: "LS", ticker: "006260", market: "KOSPI", provider: "dart", is_demo: false, last_ingested_at: null },
+      { id: muId, name: "MICRON TECHNOLOGY INC", ticker: "MU", market: "NASDAQ", provider: "sec", is_demo: false, last_ingested_at: null },
+    ];
+    watched = [...registered];
+    mocks.coverage.mockReturnValue({ data: { registered_companies: 2, covered_companies: 2, pending_companies: 1,
+      pending_company_ids: [muId], selected: null }, loading: false, error: "", polling: true, collectionRevision: 0, reload: vi.fn() });
+    render(<Calendar />);
+    const ls = await screen.findByRole("checkbox", { name: "LS (006260)" });
+    await waitFor(() => expect(mocks.request).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole("radio", { name: "관심 기업" }));
+    expect(screen.getByText(/공식 일정을 수집하고 있습니다/)).toBeVisible();
+    expect(screen.getByRole("heading", { name: "다가오는 일정 …" })).toBeVisible();
+    fireEvent.click(ls);
+    expect(screen.queryByText(/공식 일정을 수집하고 있습니다/)).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "다가오는 일정 0" })).toBeVisible();
+    fireEvent.click(screen.getByRole("checkbox", { name: "MICRON TECHNOLOGY INC (MU)" }));
+    expect(screen.getByText(/공식 일정을 수집하고 있습니다/)).toBeVisible();
+    expect(mocks.dates).toHaveBeenLastCalledWith(expect.objectContaining({ companyIds: [lsId, muId] }), 0);
+    expect(writes()).toHaveLength(0);
+  });
+
+  it.each([false, true])("offers one read-only refresh for all date reads and membership, including failed status retry (%s)", async failedStatus => {
+    const reload = vi.fn(), coverageReload = vi.fn();
+    mocks.coverage.mockReturnValue({ data: failedStatus ? null : { registered_companies: 1, covered_companies: 1, pending_companies: 0, selected: null }, loading: false, error: failedStatus ? "Synthetic coverage read failed" : "", reload: coverageReload });
+    mocks.dates.mockReturnValue({ data: { items: [], truncated: false }, loading: false, error: "", reload });
+    render(<Calendar />);
+    await waitFor(() => expect(mocks.request).toHaveBeenCalledWith("/v1/watchlist", expect.anything(), expect.anything(), expect.anything()));
+    const before = mocks.request.mock.calls.filter(([path]) => path === "/v1/watchlist").length;
+    fireEvent.click(screen.getByRole("button", { name: failedStatus ? "다시 시도" : "일정 새로고침" }));
+    expect(reload).toHaveBeenCalledTimes(3);
+    expect(coverageReload).toHaveBeenCalledOnce();
+    await waitFor(() => expect(mocks.request.mock.calls.filter(([path]) => path === "/v1/watchlist")).toHaveLength(before + 1));
+    expect(writes()).toHaveLength(0);
   });
 
   it("does not submit on company-search Enter and saves the selected company only on Save", async () => {

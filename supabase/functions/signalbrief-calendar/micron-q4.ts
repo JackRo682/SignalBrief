@@ -6,14 +6,18 @@ const PAGE_SIZE=100,MAX_PAGES=10,MAX_PAGE_BYTES=1000000,MAX_TOTAL_BYTES=4000000;
 export type CalendarArchive=(path:string,bytes:Uint8Array,contentType:string)=>Promise<void>;
 type Page={url:string;page_number:number;raw_sha256:string;object_key:string;count:number};
 export type Q4Manifest={
- schema:'signalbrief.calendar.q4.v1';source_key:string;source_url:string;adapter:'micron-q4';
+ schema:'signalbrief.calendar.q4.v1';source_key:string;source_url:string;adapter:string;
+ company_id?:string;provider?:string;provider_company_id?:string;ticker?:string;
  complete:true;page_size:number;window:{start:string;end:string};pages:Page[];entries:Entry[];
 };
 const record=(value:unknown):value is Record<string,unknown>=>typeof value==='object'&&value!==null&&!Array.isArray(value);
 
 export function micronFeedUrl(page:number):string{
+ return q4FeedUrl(FEED_URL,page);
+}
+export function q4FeedUrl(feed:string,page:number):string{
  if(!Number.isInteger(page)||page<0||page>=MAX_PAGES)throw new CalendarError('invalid_page');
- const url=new URL(FEED_URL);
+ const url=new URL(feed);
  url.search=new URLSearchParams({LanguageId:'1',eventSelection:'3',eventDateFilter:'3',includeFinancialReports:'false',includePresentations:'false',includePressReleases:'false',sortOperator:'1',pageSize:String(PAGE_SIZE),pageNumber:String(page),tagList:'',includeTags:'true',year:'-1',excludeSelection:'1'}).toString();
  return url.href;
 }
@@ -45,13 +49,16 @@ export function parseMicronPage(bytes:Uint8Array,page:number,window:{start:strin
   const id=String(row.EventId);ids.push(id);
   // The issuer's own event classification is required. Publication-only risk-factor rows are not calendar events.
   if(!row.TagsList.includes('webcast')||row.TagsList.includes('risk-factor'))continue;
-  if(typeof row.Title!=='string'||row.Title.trim().length===0||row.Title.length>200||/[\u0000-\u001f]/.test(row.Title))throw new CalendarError('invalid_event');
+  if(typeof row.Title!=='string')throw new CalendarError('invalid_event');
+  const title=row.Title.trim();
+  if(title.length===0||title.length>200||/[\u0000-\u001f]/.test(title))throw new CalendarError('invalid_event');
   const start=sourceDate(row.StartDate),end=sourceDate(row.EndDate);
   if(end.local<start.local)throw new CalendarError('conflicting_dates');
   if(start.day<window.start||start.day>window.end)continue;
-  if(typeof row.TimeZone!=='string'||!['ET','EDT','EST'].includes(row.TimeZone))throw new CalendarError('unknown_timezone');
+  const zones:Record<string,string>={ET:'America/New_York',EDT:'America/New_York',EST:'America/New_York',PT:'America/Los_Angeles',PDT:'America/Los_Angeles',PST:'America/Los_Angeles',MT:'America/Denver',MDT:'America/Denver',MST:'America/Denver',CT:'America/Chicago',CDT:'America/Chicago',CST:'America/Chicago'};
+  if(typeof row.TimeZone!=='string'||!zones[row.TimeZone])throw new CalendarError('unknown_timezone');
   // Preserve the explicit local clock and zone in the quote; the calendar's existing date-only contract makes no UTC/all-day inference.
-  entries.push({key:id,title:row.Title,occurs_on:start.day,quote:`${row.Title} | ${row.StartDate} ${row.TimeZone}`,timezone:'America/New_York',location:`pages[${page}].GetEventListResult[${index}]`});
+  entries.push({key:id,title,occurs_on:start.day,quote:`${title} | ${row.StartDate} ${row.TimeZone}`,timezone:zones[row.TimeZone],location:`pages[${page}].GetEventListResult[${index}]`});
  }
  return {ids,entries,count:data.GetEventListResult.length};
 }
@@ -68,10 +75,22 @@ async function fetchPage(url:string,fetcher:typeof fetch,signal:AbortSignal):Pro
 
 export async function collectMicronQ4(source:Source,today:string,archive:CalendarArchive,fetcher:typeof fetch=fetch):Promise<{raw_sha:string;object_key:string;manifest_text:string;manifest:Q4Manifest}>{
  if(source.key!=='micron-ir'||source.adapter!=='micron-q4'||source.ticker!=='MU'||source.url!==MICRON_EVENTS_URL)throw new CalendarError('invalid_source_url');
+ return collectQ4({...source,feed_url:FEED_URL},today,archive,fetcher);
+}
+
+/** Source/issuer binding comes only from the private reviewed registry, never a request URL. */
+export async function collectQ4(source:Source,today:string,archive:CalendarArchive,fetcher:typeof fetch=fetch):Promise<{raw_sha:string;object_key:string;manifest_text:string;manifest:Q4Manifest}>{
+ let feed:URL,origin:URL;
+ try{feed=new URL(source.feed_url??'');origin=new URL(source.url);}catch{throw new CalendarError('invalid_source_url');}
+ if(!['micron-q4','q4-events'].includes(source.adapter)||feed.protocol!=='https:'||feed.origin!==origin.origin||origin.protocol!=='https:'
+  ||feed.username||feed.password||origin.username||origin.password||feed.port||feed.search||feed.hash
+  ||feed.pathname!=='/feed/Event.svc/GetEventList'||!/[a-z]/i.test(feed.hostname)||!feed.hostname.includes('.')
+  ||/^(?:localhost|127\.|0\.|10\.|169\.254\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\.)/.test(feed.hostname)
+  ||/\.(?:localhost|local|internal)$/.test(feed.hostname))throw new CalendarError('invalid_source_url');
  const window=calendarWindow(today),pages:Page[]=[],entries:Entry[]=[],seen=new Set<string>(),signal=AbortSignal.timeout(30000);
  let totalBytes=0,complete=false,shortPage=false;
  for(let page=0;page<MAX_PAGES;page++){
-  const url=micronFeedUrl(page),bytes=await fetchPage(url,fetcher,signal);
+  const url=q4FeedUrl(feed.href,page),bytes=await fetchPage(url,fetcher,signal);
   totalBytes+=bytes.length;if(totalBytes>MAX_TOTAL_BYTES)throw new CalendarError('source_too_large');
   const hash=await sha256(bytes),path=`calendar/${source.key}/pages/${hash}.json`;
   // Keep exact original bytes, including the terminal empty page. Failure here must prevent ingestion/withdrawal.
@@ -88,7 +107,7 @@ export async function collectMicronQ4(source:Source,today:string,archive:Calenda
   shortPage=parsed.count<PAGE_SIZE;
  }
  if(!complete)throw new CalendarError('incomplete_pagination');
- const manifest:Q4Manifest={schema:'signalbrief.calendar.q4.v1',source_key:source.key,source_url:source.url,adapter:'micron-q4',complete:true,page_size:PAGE_SIZE,window,pages,entries};
+ const manifest:Q4Manifest={schema:'signalbrief.calendar.q4.v1',source_key:source.key,source_url:source.url,adapter:source.adapter,company_id:source.company_id,provider:source.provider,provider_company_id:source.provider_company_id,ticker:source.ticker,complete:true,page_size:PAGE_SIZE,window,pages,entries};
  const manifest_text=JSON.stringify(manifest),bytes=new TextEncoder().encode(manifest_text),raw_sha=await sha256(bytes),object_key=`calendar/${source.key}/${raw_sha}.json`;
  await archive(object_key,bytes,'application/json');
  return {raw_sha,object_key,manifest_text,manifest};
