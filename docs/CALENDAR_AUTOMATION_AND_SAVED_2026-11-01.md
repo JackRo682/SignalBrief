@@ -2,13 +2,30 @@
 
 ## Release state
 
-Implementation and verification are in progress. The baseline production release is
-`85d3667a1bed15e71a534cf6161686d58419d7f5`; this report does not yet claim that the
-follow-up has been deployed. Times below are Korea Standard Time (UTC+9).
+The web follow-up is live at **https://signalbrief.online** on commit
+`a28ca633990b2e6dcd3dbeb54b7080e0566ecdeb`. Vercel deployment
+`dpl_8iTtkirZK81iz1mrPci8vgHrUHVk` is **READY**. Its exact-commit CI and all
+90 browser scenarios passed. The earlier production baseline for the reproduced
+issues below was `85d3667a1bed15e71a534cf6161686d58419d7f5`.
+
+The subsequent DART correction repair is active in **calendar Edge v4**, alongside
+**discovery Edge v6**. Migrations `20261101103903` (source onboarding) and
+`20261101111341` (correction lineage) are applied, and the collection worker is
+enabled. Actual Kakao and SK hynix correction collection has succeeded. At this
+reporting checkpoint the correction code is still uncommitted: its new exact
+source commit, CI and promotion are **PENDING**. They must not be confused with
+the already passed `a28ca633` web release gates.
+
+Final correction-phase local verification passed all eight stages: **660 backend
+tests, zero skips; 1,162 frontend tests in 97 files**. A fresh LG Electronics
+registration and its automatic collection acceptance also passed, and temporary
+Saved/follow test data has been removed. Production collection times below are
+stated in UTC.
 
 ## Reproduced production behavior
 
-The signed-in calendar at `https://signalbrief.online/calendar` reported 11
+On the earlier baseline, the signed-in calendar at
+`https://signalbrief.online/calendar` reported 11
 registered companies and only three connected official calendar sources.
 Selecting NVIDIA reproduced **0 upcoming and 0 past events**, together with a
 source-not-connected notice. All companies returned one upcoming and nine recent
@@ -46,13 +63,46 @@ until the new worker is deployed. At most two workers run concurrently, each for
 one source, with leases, bounded retries and minute-by-minute queue recovery.
 Company activation also requests a refresh after hydration, including cached
 hydration, without turning a calendar scheduling failure into a failed company
-registration. The exact deployed coverage and live results will be recorded after
-acceptance.
+registration. Verified deployed results and remaining source boundaries are
+recorded separately below.
 
 Every accepted occurrence must retain its canonical issuer, official source URL,
 raw SHA-256, immutable original, retrieval timestamp and normalized evidence
 location. A partial collection or archive failure must not erase previously
 verified dates. Public material is not sent to a model for inferred event dates.
+
+### DART corrections: the failure found during real registration
+
+Registering Kakao through the live calendar picker correctly created its canonical
+DART identity and queued `dart-ir-00258801`, but the first collector rejected the
+company's corrected IR notice as `ambiguous_correction`. SK hynix encountered the
+same restriction. This was a real supported-source compatibility failure, not a
+reason to fabricate dates or silently skip a correction.
+
+`supabase/functions/signalbrief-calendar/dart-ir.ts` now uses the v2 correction
+manifest. Each official main page must corroborate the same family through its
+explicit `#family` receipt list and literal `alertInvestNotice` current receipt,
+document number, root receipt and correction flag. Every member's corporation,
+receipt, main page and full body are checked and archived. The newest member must
+be present in the complete receipt-window scan; an explicitly linked older root
+may predate that window. A family is bounded to eight documents, all collection
+work to forty documents, four MB and the existing thirty-second deadline.
+
+The parser reads the complete replacement schedule below the correction table.
+It does not select an old date from a before/after comparison. The event key stays
+the original receipt; the latest corrected receipt, URL and body SHA are separate
+provenance. The database updates that same calendar row in place, preserving its
+ID and saved references. A corrected date outside the current display window is
+still updated, so an obsolete original date cannot remain visible by omission.
+
+The additive migration
+`supabase/migrations/20261101111341_calendar_dart_correction_lineage.sql` preserves
+v1 evidence, permits an unchanged singleton upgrade, and rejects stale revisions,
+inconsistent or forked families, and contradictory evidence for the same selected
+receipt. A v1 refresh cannot downgrade an accepted v2 correction. Missing linked
+documents, failed archives, unknown correction forms, and unsupported withdrawals
+remain closed. Acceptance requires explicit evidence; the source safeguards were
+not generally relaxed.
 
 ### Calendar refresh and scope
 
@@ -100,32 +150,121 @@ table and its save-cancel controls.
 
 ## Verification
 
-The full local release verifier completed at 2026-11-01 19:34:23 KST. All eight
-stages passed: 620 backend tests with zero skips, 1,143 frontend tests in 97 files,
-Python compilation, OpenAPI export, Ruff, frontend ESLint, TypeScript and the
-production build. ESLint reported zero errors and five existing warnings.
-The separate workspace scope guard and all six Deno entrypoints also passed.
+| Gate | Verified result | Scope |
+|---|---|---|
+| Final local full verifier | All eight stages PASS; backend 660, zero skips; frontend 1,162 in 97 files | Includes the correction repair; compilation, OpenAPI export, Ruff, ESLint, TypeScript and production build passed |
+| Correction parser | 58 tests PASS; TypeScript, ESLint and Deno check PASS | Synthetic regressions plus a separate replay of actual public Kakao/SK original bytes |
+| Independent correction SQL | 40 tests PASS | Real disposable PostgreSQL; stable IDs, source identity, archives, stale/forked/conflicting denial |
+| Combined calendar PostgreSQL after migration filename alignment | 116 tests PASS | Ledger-matching migration paths; no change to the applied SQL bytes |
+| Exact `a28ca633` CI and browser selection | PASS; 90/90 browser cases, 45 desktop and 45 mobile | Deployed web follow-up, before the later correction-source commit |
+| New correction source commit, its CI and promotion | PENDING | Not replaced by earlier CI results |
 
-Focused evidence includes:
+Earlier in this follow-up, the pre-correction full local gate passed 620 backend
+tests with zero skips and 1,143 frontend tests in 97 files; its six Deno entrypoints
+and scope guard also passed. The Saved focused regressions passed 36 tests, and
+the first-save browser workflow passed on desktop and mobile, including persistence,
+reload, filters, removal, mobile width and no incidental writes. Four targeted
+calendar browser cases covered pending/completion, scope and manual refresh. These
+overlapping focused counts are not added to the full-suite totals.
 
-- Calendar status/scope and picker regressions: 31 passed.
-- Saved focused unit regressions: 36 passed.
-- Saved desktop/mobile first-save workflow: 2 passed, including save, reload,
-  company/ticker filter, reset and explicit removal; no incidental user-data writes.
-- Calendar desktop/mobile pending, completion, scope and manual-refresh workflows:
-  4 passed, including the automatic polling limit and no incidental user-data writes.
-- DART parser and discovery POST scheduling regressions: 79 passed.
-- Independent DART ingestion/visibility regressions on actual PostgreSQL:
-  31 passed with zero skips.
-- Onboarding, queue, Q4 and DART PostgreSQL regressions: 18 passed.
-- Calendar worker, Q4, DART and discovery Edge unit regressions: 133 passed.
-- Changed calendar and Saved TypeScript/ESLint checks passed.
+## Actual production acceptance
 
-The complete desktop/mobile browser selection passed: **90 of 90** cases, with
-45 desktop and 45 mobile cases. After the migration filename was aligned to the
-actual deployment ledger, all four calendar PostgreSQL suites passed again:
-**76 tests, zero skips**. The SQL SHA-256 stayed unchanged. Exact-commit CI and
-actual-account production acceptance remain to be recorded.
+### Calendar
+
+| Checked scope/source | Observed result | Evidence boundary |
+|---|---|---|
+| NVIDIA, Selected | 1 upcoming and 3 past events | Live calendar and official future call verified |
+| All companies | 3 upcoming and 20 past | Snapshot before the Korean correction ingestion; not a claimed final global count |
+| All companies, final post-correction UI | 4 upcoming and 27 past | Actual signed-in view; 13 registered / 10 connected companies |
+| Following | 2 upcoming and 7 past | Temporary acceptance-test follow membership; not the account's permanent scope |
+| LS / DART `00105952` | Successful source check, 0 events | No invented event; no verified recent qualifying IR notice |
+| Kakao / DART `00258801` | Successful at approximately 11:15 UTC; final Selected UI shows 1 upcoming / 5 past | Original `20261008800604` and latest correction `20261016800407` are one Oct13 event; independent `20261014800334` supplies Nov5, also verified in the month grid |
+| SK hynix / DART `00164779` | Successful at 11:14:56 UTC; 1 past event on Oct28 | Stable root `20261014800385`, latest correction `20261028800052` |
+| Fresh LG Electronics / DART `00401731`, ticker `066570` | PASS; first attempt succeeded at 11:27:25.340421 UTC; 0 upcoming and 1 past | Registered through the actual calendar official picker, with no per-company source/admin setup or manual refresh/service call; the open screen changed from collecting to the completed result automatically |
+
+The fresh LG Electronics row is canonical company
+`6730b557-eaa6-4475-aa98-f1e26b43fd8e`, market KOSPI. Its confirmed past occurrence
+is Oct28, **LG전자 · 2026년 3분기 경영실적 발표**. The durable source
+`dart-ir-00401731` ended idle after one attempt, with no error and one visible
+event. Its receipt is `20261007800158`. Current observed coverage is
+**13 registered companies / 10 connected**. The captured LG screenshot shows the
+Oct28 grid entry, 0 upcoming / 1 past, and the official last-check time of
+20:27 Asia/Seoul; the corresponding database timestamp is 11:27 UTC above.
+
+A separate read-only production check confirmed that all current Kakao6 + SK1 +
+LG1 v2 events have their archived manifest and every referenced main/viewer
+original present. The verified manifest SHA-256 values are:
+
+| Source | Archived manifest SHA-256 |
+|---|---|
+| Kakao | `ec61f3c08d8926ff20c1b0e64a5479b0314c39bba7cfa7cfae88cd0d436c185b` |
+| SK hynix | `883e7cc09a3ed8e60da1555af7f3ff0122530c80a13288f382fa26cb584a5019` |
+| LG Electronics | `fec6850425ca015a07baf9d0b6e9e1d5713e90283efd2b8afe5d3ea4fcf060d9` |
+
+Kakao's corrected disclosure also describes a second meeting in narrative text.
+The current standard-table adapter does not turn that paragraph into an additional
+structured calendar occurrence. DART dates remain date-only when the original
+does not explicitly state a timezone; clock text in the quotation is not an
+invented all-day event or a timezone-converted instant.
+
+Official correction sources:
+
+- Kakao original: https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008800604
+- Kakao correction: https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016800407
+- Kakao independent upcoming notice: https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261014800334
+- SK hynix original: https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261014800385
+- SK hynix correction: https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028800052
+
+### Saved
+
+The actual signed-in account explicitly saved **one Hyundai analysis, one Samsung
+document and one NVIDIA calendar item**. A reload retained all three. Selecting
+NVIDIA alone and then searching `nvda` retained the calendar item; resetting the
+filters restored all three. All three acceptance-test saves were then explicitly
+removed. History remained **OFF** throughout. This verifies both real persistence
+and calendar-only company/ticker filtering; it does not claim that an initially
+empty account already owned saved items. The temporary NVIDIA follow was also
+removed: its company button returned to **팔로우**, and the original Following
+scope was restored to **1 upcoming / 4 past**.
+
+Screenshots captured by the production acceptance run:
+
+| File | SHA-256 |
+|---|---|
+| [calendar-nvidia-live.jpg](verification/2026-11-01/calendar-nvidia-live.jpg) | `19130bf3985813f53c543a71b869f89c959747198262e8c934ccf75ec091376e` |
+| [saved-persisted-live.jpg](verification/2026-11-01/saved-persisted-live.jpg) | `91fbbc980fc83c289b272fce0881d0511a05605cee74ea0ab68ddcbc2bd02ecf` |
+| [calendar-lg-automatic-live.jpg](verification/2026-11-01/calendar-lg-automatic-live.jpg) | `f2e27d87ac5f9ea90ea5c56f956895e3d030b775e270955865cae0f272a3d60e` |
+
+## Source coverage and remaining release work
+
+Reviewed US feeds are Microsoft, Micron and NVIDIA. **Apple, Tesla and SNDK do not
+have configured calendar feeds** in this release; their uncovered state is explicit.
+Issuer search and successful profile/disclosure collection do not imply calendar
+feed coverage. Korean canonical DART issuers use the shared validated IR-notice
+path, subject to its complete-list, template and correction-evidence bounds.
+
+Samsung's configured HTML source still reports `no_confirmed_dates` and preserves
+its two prior verified events. A bounded read of the actual official response
+confirmed a closed, empty November2026 upcoming list; its apparent sample event
+rows were comments, and its schedule script only filters existing DOM rows. The
+page still lists Oct29 and Oct8 in Past Events. This is not proof that every future
+event is absent: there is no explicit all-future completeness statement. Returning
+success with zero rows would currently permit blanket withdrawal of missing future
+Samsung rows, so that condition was not weakened.
+
+Samsung public-source check: HTTP200, 412,509 original bytes, SHA-256
+`963e29aaf97cf2de5e3130d02353c37bb26f1e67686db6c5c8019ec07d51ff61`, from
+https://www.samsung.com/global/ir/ir-events-presentations/events/.
+
+Post-v2 advisor counts match the post-v1 checkpoint; no additional warning count
+was introduced. Existing findings remain: security INFO `no-policy`27, WARN
+`anon-definer`6 / `auth-definer`32 / `leaked-password`1; performance INFO
+`FK`32 / `unused-index`20 and WARN `multiple-permissive`16. This comparison does
+not claim a clean security report or resolution of those pre-existing findings.
+
+The **new correction-source commit, exact-commit CI and promotion remain PENDING**
+at this checkpoint. Fresh-company acceptance, screenshot evidence and test-data
+cleanup are complete.
 
 ## Interpretation
 

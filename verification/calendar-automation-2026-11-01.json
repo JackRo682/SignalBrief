@@ -1,10 +1,11 @@
 {
   "report": "calendar-automation-and-saved-2026-11-01",
   "baseline_release": "85d3667a1bed15e71a534cf6161686d58419d7f5",
-  "source_release": null,
+  "deployed_web_release": "a28ca633990b2e6dcd3dbeb54b7080e0566ecdeb",
+  "correction_source_commit": null,
   "production_url": "https://signalbrief.online",
-  "release_state": "backend_deployed_web_pending",
-  "local_validation": {
+  "release_state": "web_live_correction_backend_verified_new_source_ci_promotion_pending",
+  "previous_local_validation": {
     "checked_at": "2026-11-01T10:39:32.910769+00:00",
     "full_stages_passed": 8,
     "backend": {
@@ -41,27 +42,282 @@
     "isolated_dev_port_open": false,
     "production_acceptance": "separate parent-owned gate"
   },
+  "local_validation": {
+    "phase": "final_correction_candidate_before_new_source_commit",
+    "checked_at": "2026-11-01T11:11:46.142039+00:00",
+    "time_note": "Final correction full-verifier timestamp, independently read from its checks.json artifact.",
+    "full_stages_passed": 8,
+    "backend": {
+      "passed": 660,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "frontend": {
+      "passed": 1162,
+      "files": 97,
+      "lint": "PASS",
+      "typecheck": "PASS",
+      "build": "PASS"
+    },
+    "python_compile": "PASS",
+    "openapi_export": "PASS",
+    "ruff": "PASS",
+    "focused": {
+      "dart_parser": {
+        "passed": 58,
+        "failed": 0,
+        "deno_check": "PASS",
+        "typecheck": "PASS",
+        "eslint": "PASS"
+      },
+      "independent_correction_postgres": {
+        "passed": 40,
+        "failed": 0
+      },
+      "calendar_postgres_after_filename_alignment": {
+        "passed": 116,
+        "failed": 0
+      }
+    },
+    "counts_overlap": "Focused and full-suite counts overlap and must not be summed."
+  },
+  "exact_commit_ci": {
+    "commit": "a28ca633990b2e6dcd3dbeb54b7080e0566ecdeb",
+    "status": "PASS",
+    "browser": {
+      "passed": 90,
+      "desktop": 45,
+      "mobile": 45
+    },
+    "scope": "Deployed web follow-up before the subsequent correction-source commit"
+  },
+  "correction_release_gates": {
+    "source_commit": "PENDING",
+    "exact_commit_ci": "PENDING",
+    "promotion": "PENDING"
+  },
   "migration_filename_verification": {
-    "tests": 76,
+    "tests": 116,
     "failures": 0,
-    "errors": 0,
-    "skipped": 0
+    "sql_bytes_preserved": true
   },
   "deployment": {
-    "migration": {
-      "version": "20261101103903",
-      "name": "calendar_source_onboarding",
-      "file": "supabase/migrations/20261101103903_calendar_source_onboarding.sql",
-      "sha256": "c70489fc7f9ef1fd9fe26e372085058eaf8dd564f5c1050e69aea4b60dde5bb9"
+    "migrations": [
+      {
+        "version": "20261101103903",
+        "name": "calendar_source_onboarding",
+        "file": "supabase/migrations/20261101103903_calendar_source_onboarding.sql",
+        "sha256": "c70489fc7f9ef1fd9fe26e372085058eaf8dd564f5c1050e69aea4b60dde5bb9",
+        "status": "APPLIED"
+      },
+      {
+        "version": "20261101111341",
+        "name": "calendar_dart_correction_lineage",
+        "file": "supabase/migrations/20261101111341_calendar_dart_correction_lineage.sql",
+        "sha256": "7284a32498a09c191975e0f7f48b90250229df2f6f3d63c4f5df7768f67d5b77",
+        "status": "APPLIED"
+      }
+    ],
+    "calendar_edge": {
+      "version": 4,
+      "status": "ACTIVE"
     },
-    "calendar_edge_version": 3,
-    "discovery_edge_version": 6,
+    "discovery_edge": {
+      "version": 6,
+      "status": "ACTIVE"
+    },
     "worker_enabled": true,
-    "initial_dispatched_sources": 2,
-    "vercel": null
+    "vercel": {
+      "id": "dpl_8iTtkirZK81iz1mrPci8vgHrUHVk",
+      "state": "READY",
+      "commit": "a28ca633990b2e6dcd3dbeb54b7080e0566ecdeb",
+      "url": "https://signalbrief.online"
+    }
   },
   "production_acceptance": {
-    "status": "in_progress"
+    "status": "PASS_FOR_RECORDED_FLOWS_NEW_SOURCE_RELEASE_GATES_PENDING",
+    "calendar": {
+      "nvidia_selected": {
+        "upcoming": 1,
+        "past": 3,
+        "status": "PASS"
+      },
+      "all_before_korean_correction": {
+        "upcoming": 3,
+        "past": 20,
+        "scope_note": "Historical snapshot before Korean correction ingestion; not the final global count."
+      },
+      "following_with_temporary_nvidia_follow": {
+        "upcoming": 2,
+        "past": 7
+      },
+      "following_after_cleanup": {
+        "upcoming": 1,
+        "past": 4,
+        "nvidia_company_button": "팔로우"
+      },
+      "ls": {
+        "provider": "dart",
+        "provider_company_id": "00105952",
+        "collection_status": "SUCCESS",
+        "visible_events": 0,
+        "meaning": "Checked source without a verified recent qualifying IR occurrence; no event fabricated."
+      },
+      "kakao": {
+        "provider": "dart",
+        "provider_company_id": "00258801",
+        "source_key": "dart-ir-00258801",
+        "collection_status": "SUCCESS",
+        "observed_success_utc": "2026-11-01 11:15 UTC",
+        "time_precision": "minute",
+        "visible_events": 6,
+        "upcoming": 1,
+        "correction": {
+          "root_receipt_no": "20261008800604",
+          "latest_receipt_no": "20261016800407",
+          "occurs_on": "2026-10-13"
+        },
+        "independent_upcoming": {
+          "receipt_no": "20261014800334",
+          "occurs_on": "2026-11-05",
+          "month_grid_verified": true
+        },
+        "manifest_sha256": "ec61f3c08d8926ff20c1b0e64a5479b0314c39bba7cfa7cfae88cd0d436c185b",
+        "all_manifest_main_viewer_archives_verified": true,
+        "past": 5,
+        "selected_ui": "PASS: 1 upcoming / 5 past"
+      },
+      "sk_hynix": {
+        "provider": "dart",
+        "provider_company_id": "00164779",
+        "source_key": "dart-ir-00164779",
+        "collection_status": "SUCCESS",
+        "observed_success_utc": "2026-11-01T11:14:56Z",
+        "visible_events": 1,
+        "past": 1,
+        "correction": {
+          "root_receipt_no": "20261014800385",
+          "latest_receipt_no": "20261028800052",
+          "occurs_on": "2026-10-28"
+        },
+        "manifest_sha256": "883e7cc09a3ed8e60da1555af7f3ff0122530c80a13288f382fa26cb584a5019",
+        "all_manifest_main_viewer_archives_verified": true
+      },
+      "fresh_lg_electronics_registration": {
+        "status": "PASS",
+        "company_id": "6730b557-eaa6-4475-aa98-f1e26b43fd8e",
+        "provider": "dart",
+        "provider_company_id": "00401731",
+        "ticker": "066570",
+        "market": "KOSPI",
+        "source_key": "dart-ir-00401731",
+        "entrypoint": "Actual signed-in calendar official company picker",
+        "manual_source_setup": false,
+        "manual_refresh_or_service_call": false,
+        "automatic_ui_transition": "collecting -> last official check and completed calendar result",
+        "last_success_at": "2026-11-01T11:27:25.340421+00:00",
+        "worker_state": "idle",
+        "attempts": 1,
+        "error": null,
+        "visible_events": 1,
+        "upcoming": 0,
+        "past": 1,
+        "event": {
+          "title": "LG전자 · 2026년 3분기 경영실적 발표",
+          "occurs_on": "2026-10-28",
+          "receipt_no": "20261007800158"
+        },
+        "screenshot": "docs/verification/2026-11-01/calendar-lg-automatic-live.jpg",
+        "screenshot_last_check_display": "20:27 Asia/Seoul",
+        "manifest_sha256": "fec6850425ca015a07baf9d0b6e9e1d5713e90283efd2b8afe5d3ea4fcf060d9",
+        "all_manifest_main_viewer_archives_verified": true
+      },
+      "coverage_after_fresh_registration": {
+        "registered_companies": 13,
+        "connected_companies": 10
+      },
+      "production_archive_integrity": {
+        "status": "PASS",
+        "method": "Read-only production database verification",
+        "v2_events": {
+          "kakao": 6,
+          "sk_hynix": 1,
+          "lg_electronics": 1
+        },
+        "every_manifest_and_referenced_main_viewer_original_archived": true
+      },
+      "all_final_post_correction_ui": {
+        "status": "PASS",
+        "upcoming": 4,
+        "past": 27,
+        "registered_companies": 13,
+        "connected_companies": 10
+      }
+    },
+    "saved": {
+      "status": "PASS",
+      "explicit_items": [
+        {
+          "type": "analysis",
+          "company": "Hyundai",
+          "count": 1
+        },
+        {
+          "type": "document",
+          "company": "Samsung",
+          "count": 1
+        },
+        {
+          "type": "calendar",
+          "company": "NVIDIA",
+          "count": 1
+        }
+      ],
+      "reload_persisted_count": 3,
+      "nvidia_company_filter": "PASS",
+      "nvda_keyword_filter": "PASS",
+      "reset_restored_count": 3,
+      "explicit_removal_count": 3,
+      "history_enabled": false,
+      "temporary_nvidia_follow_cleanup": "PASS",
+      "fake_saves_seeded": false
+    }
+  },
+  "screenshots": [
+    {
+      "file": "docs/verification/2026-11-01/calendar-nvidia-live.jpg",
+      "sha256": "19130bf3985813f53c543a71b869f89c959747198262e8c934ccf75ec091376e"
+    },
+    {
+      "file": "docs/verification/2026-11-01/saved-persisted-live.jpg",
+      "sha256": "91fbbc980fc83c289b272fce0881d0511a05605cee74ea0ab68ddcbc2bd02ecf"
+    },
+    {
+      "file": "docs/verification/2026-11-01/calendar-lg-automatic-live.jpg",
+      "bytes": 95609,
+      "sha256": "f2e27d87ac5f9ea90ea5c56f956895e3d030b775e270955865cae0f272a3d60e"
+    }
+  ],
+  "correction_evidence_contract": {
+    "schema": "signalbrief.calendar.dart-ir.v2",
+    "stable_event_key": "Explicit original root receipt number",
+    "selected_source": "Latest receipt corroborated by the official family list and literal current/document/root/correction metadata",
+    "archive": "Every original/corrected main page and full body, raw SHA-256, and final manifest are preserved before ingest",
+    "identity": "Canonical issuer and identical bounded family checked for every member; no title/date fuzzy join",
+    "date": "Explicit complete replacement schedule; comparison-table dates are not occurrences",
+    "out_of_display_window": "Update the same root row with the corrected date; do not leave an obsolete original date by omission",
+    "denials": [
+      "stale earlier revision",
+      "forked or inconsistent family",
+      "same-receipt conflicting facts/evidence",
+      "v1 downgrade of a v2 correction",
+      "missing linked original",
+      "archive failure",
+      "unknown correction form",
+      "unsupported withdrawal"
+    ],
+    "no_broad_fail_closed_weakening": true
   },
   "coverage_boundary": {
     "reviewed_us_feeds": [
@@ -72,9 +328,52 @@
     "reviewed_korean_html": [
       "005930"
     ],
-    "new_korean_issuers": "Canonical DART listed identity; validated standard99664 IR notices",
-    "unsupported_us_issuers": "No guessed source URL or date; explicit uncovered state until reviewed provider configuration exists",
-    "ambiguous_dart_corrections": "Fail closed and retain previously verified data",
-    "saved": "Only explicit saves persist; recent public material is separate; history consent is unchanged"
+    "new_korean_issuers": "Canonical DART listed identity with complete bounded receipt lists and validated standard99664 IR originals/correction families; fresh LG Electronics automatic collection verified.",
+    "unsupported_us_calendar_feeds": [
+      "AAPL",
+      "TSLA",
+      "SNDK"
+    ],
+    "unsupported_us_behavior": "Explicit uncovered state; no guessed source URL or date. Search/profile/disclosure support does not imply a calendar feed.",
+    "samsung": {
+      "source_url": "https://www.samsung.com/global/ir/ir-events-presentations/events/",
+      "current_status": "no_confirmed_dates",
+      "prior_verified_events_preserved": 2,
+      "public_response": {
+        "status": 200,
+        "bytes": 412509,
+        "sha256": "963e29aaf97cf2de5e3130d02353c37bb26f1e67686db6c5c8019ec07d51ff61"
+      },
+      "finding": "November2026 upcoming list is structurally empty; apparent events are commented samples; schedule JavaScript only filters existing DOM. Past Events still lists Oct29 and Oct8.",
+      "limit": "No explicit all-future completeness statement; no success-zero or blanket withdrawal change made."
+    },
+    "date_precision": "Date only unless an explicit supported source timezone is available; quoted clock text does not imply all-day duration or a converted instant.",
+    "narrative_events": "Additional narrative-only occurrences in a DART disclosure are not synthesized into separate structured dates.",
+    "saved": "Only explicit saves persist. Public discovery is separate, initially empty is not retrieval loss, and history consent/follow prerequisite remain unchanged.",
+    "commercial_readiness": "Verified scopes and gates do not guarantee every issuer has a supported feed or that the entire product is free of bugs."
+  },
+  "production_advisors": {
+    "comparison": "Post-v2 counts identical to post-v1",
+    "new_warning_counts": 0,
+    "security": {
+      "INFO": {
+        "no_policy": 27
+      },
+      "WARN": {
+        "anon_definer": 6,
+        "auth_definer": 32,
+        "leaked_password": 1
+      }
+    },
+    "performance": {
+      "INFO": {
+        "foreign_key": 32,
+        "unused_index": 20
+      },
+      "WARN": {
+        "multiple_permissive": 16
+      }
+    },
+    "interpretation": "Existing findings remain; unchanged counts do not establish that the security report is clean or that those findings are resolved."
   }
 }

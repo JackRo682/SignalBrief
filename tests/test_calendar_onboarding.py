@@ -15,6 +15,7 @@ NVDA = '10000000-0000-4000-8000-000000000093'
 DART = '10000000-0000-4000-8000-000000000094'
 DART_CODE = '00999991'
 MIGRATION = ROOT / 'supabase/migrations/20261101103903_calendar_source_onboarding.sql'
+CORRECTIONS_MIGRATION = ROOT / 'supabase/migrations/20261101111341_calendar_dart_correction_lineage.sql'
 
 
 @pytest.fixture
@@ -35,6 +36,7 @@ def onboard_db(calendar_db, request):
         cur.execute("""INSERT INTO companies(id,name,ticker,market,provider,provider_company_id,is_demo,created_at)
             VALUES(%s,'Synthetic reviewed Q4 issuer','NVDA','NASDAQ','sec','0001045810',false,now())""", (NVDA,))
     cur.execute(MIGRATION.read_text(), prepare=False)
+    cur.execute(CORRECTIONS_MIGRATION.read_text(), prepare=False)
     yield connection, cur
 
 

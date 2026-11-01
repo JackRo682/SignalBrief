@@ -12,7 +12,7 @@ const encode=(value:string)=>new TextEncoder().encode(value);
 const digest=(bytes:Uint8Array)=>createHash('sha256').update(bytes).digest('hex');
 const row=(receipt=filing.receipt)=>({corp_code:source.provider_company_id,stock_code:source.ticker,corp_name:filing.company_name,report_nm:filing.report_name,rcept_no:receipt,rcept_dt:filing.receipt_date.replaceAll('-',''),rm:''});
 const page=(rows:Record<string,unknown>[]= [row()],pageNo=1,total=rows.length)=>encode(JSON.stringify({status:'000',page_no:pageNo,page_count:100,total_count:total,total_page:Math.ceil(total/100),list:rows}));
-const main=(receipt=filing.receipt)=>`<!doctype html><html><head><title>Synthetic Korea/기업설명회(IR)개최(안내공시)/2026.10.20</title></head><body><span onclick="openCorpInfoNew('12345678', 'winCorpInfo', '/dsae001/selectPopup.ax');">Synthetic Korea</span><select><option value="rcpNo=${receipt}">현재 본문</option></select><script>viewDoc("${receipt}", "11112222", "0", "0", "0", "HTML", ""); alertJungJung("G", "99664");</script></body></html>`;
+const main=(receipt=filing.receipt)=>`<!doctype html><html><head><title>Synthetic Korea/기업설명회(IR)개최(안내공시)/2026.10.20</title></head><body><span onclick="openCorpInfoNew('12345678', 'winCorpInfo', '/dsae001/selectPopup.ax');">Synthetic Korea</span><select id="family"><option value="rcpNo=${receipt}" selected title="기업설명회(IR)개최(안내공시)">2026.10.20 기업설명회(IR)개최(안내공시)</option></select><script>viewDoc("${receipt}", "11112222", "0", "0", "0", "HTML", ""); alertJungJung("G", "99664"); alertInvestNotice("${receipt}", "11112222", "${receipt}", "0", "99664", "HTML");</script></body></html>`;
 const occurrence=(day='2026-11-12')=>`<tr><td rowspan="2">1. 일시 및 장소</td><td>일시</td><td><span>${day}</span></td><td>09:00</td></tr>`;
 const body=(day='2026-11-12')=>`<!doctype html><html><head><meta charset="utf-8"><title>Synthetic Korea/기업설명회(IR) 개최(안내공시)/(2026.10.20)</title></head><body><div class="xforms"><div class="xforms_title">기업설명회(IR) 개최(안내공시)</div><table><tbody>${occurrence(day)}<tr><td>장소</td><td colspan="2">온라인</td></tr><tr><td colspan="2">2. 참가 대상자</td><td colspan="2">신청자</td></tr><tr><td colspan="2">3. 개최목적</td><td colspan="2">Synthetic quarterly briefing</td></tr><tr><td>4. 개최방법</td><td>컨퍼런스콜</td></tr><tr><td>5. 후원기관</td><td>자사 주관</td></tr><tr><td>6. 주요 설명회내용(요약)</td><td>Synthetic facts and Q&amp;A</td></tr><tr><td>7. 결정일자</td><td>2026-10-20</td></tr><tr><td>8. IR 자료</td><td>게재일시</td><td>2026-11-11</td></tr><tr><td>9. 기타 투자판단과 관련한 중요사항</td><td>공식 원문 확인</td></tr></tbody></table></div></body></html>`;
 const htmlResponse=(html:string)=>new Response(html,{headers:{'content-type':'text/html; charset=utf-8'}});
@@ -26,6 +26,30 @@ function fixture(options:{list?:Uint8Array;main?:string;body?:string}={}){
   return htmlResponse(value.includes('/dsaf001/')?options.main??main():options.body??body());
  }) as unknown as typeof fetch;
  return {archives,archive,listPage,fetcher,collect:()=>collectDartIR(source,today,archive,listPage,fetcher)};
+}
+
+const receiptDay=(receipt:string)=>`${receipt.slice(0,4)}-${receipt.slice(4,6)}-${receipt.slice(6,8)}`;
+function familyMain(receipts:string[],current:string){
+ const root=receipts[0],options=[...receipts].reverse().map(receipt=>`<option value="rcpNo=${receipt}" ${receipt===current?'selected':''} title="기업설명회(IR)개최(안내공시)">${receiptDay(receipt).replaceAll('-','.')} ${receipt===root?'':'[정정]'} 기업설명회(IR)개최(안내공시)</option>`).join('');
+ return main(current).replace('2026.10.20',receiptDay(current).replaceAll('-','.'))
+  .replace(/<select[\s\S]*?<\/select>/,`<select id="family">${options}</select>`)
+  .replace(`alertInvestNotice("${current}", "11112222", "${current}", "0"`,`alertInvestNotice("${current}", "11112222", "${root}", "${current===root?0:1}"`);
+}
+function familyBody(receipts:string[],current:string,day='2026-11-13'){
+ const root=receipts[0],corrected=current!==root;
+ const correction=`<table><tr><td>정정일자</td><td>${receiptDay(current)}</td></tr></table><table><tr><td>1. 정정관련 공시서류</td><td>기업설명회(IR) 개최(안내공시)</td></tr><tr><td>2. 정정관련 공시서류제출일</td><td>${receiptDay(root)}</td></tr><tr><td>3. 정정사유</td><td>행사 일시 및 안내 경로 변경</td></tr><tr><td>4. 정정사항</td></tr><tr><td>정정항목</td><td>정정전</td><td>정정후</td></tr><tr><td>1. 일시 및 장소</td><td>2026-11-12 09:00</td><td>${day} 09:00</td></tr><tr><td>9. 기타 투자판단과 관련한 중요사항</td><td>기존 안내</td><td>수정된 안내</td></tr></table>`;
+ return body(day).replace('2026.10.20',receiptDay(current).replaceAll('-','.')).replace('<div class="xforms">',`${corrected?correction:''}<div class="xforms">`);
+}
+function correctionFixture(receipts=['20261008000001','20261016000001'],listed=receipts){
+ const f=fixture(),mains=new Map(receipts.map(receipt=>[receipt,familyMain(receipts,receipt)])),bodies=new Map(receipts.map(receipt=>[receipt,familyBody(receipts,receipt,receipt===receipts[0]?'2026-11-12':'2026-11-13')]));
+ const filings=listed.map(receipt=>({...row(receipt),rcept_dt:receipt.slice(0,8),report_nm:(receipt===receipts[0]?'':'[기재정정]')+filing.report_name,rm:receipt===receipts[0]&&receipts.length>1?'정':''}));
+ f.listPage.mockResolvedValue(page(filings));
+ const fetcher=vi.fn(async(value:string|URL|Request,init?:RequestInit)=>{
+  expect(init?.redirect).toBe('error');const url=new URL(String(value));expect(url.origin).toBe('https://dart.fss.or.kr');
+  const receipt=url.searchParams.get('rcpNo')!,content=(url.pathname==='/dsaf001/main.do'?mains:bodies).get(receipt);
+  if(!content)throw new Error('Synthetic family member unavailable');return htmlResponse(content);
+ }) as unknown as typeof fetch;
+ return {...f,mains,bodies,fetcher,collect:()=>collectDartIR(source,today,f.archive,f.listPage,fetcher)};
 }
 
 describe('DART IR source semantics',()=>{
@@ -106,7 +130,7 @@ describe('DART collection and immutable provenance',()=>{
  it('archives every exact input and only then returns a complete date-only manifest',async()=>{
   const f=fixture(),result=await f.collect(),m=result.manifest;
   expect(f.listPage).toHaveBeenCalledWith('12345678',1,'20260803','20261101',expect.any(AbortSignal));
-  expect(m).toMatchObject({schema:'signalbrief.calendar.dart-ir.v1',company_id:source.company_id,provider:'dart',provider_company_id:'12345678',ticker:'0000A1',complete:true,page_size:100,receipt_window:window});
+  expect(m).toMatchObject({schema:'signalbrief.calendar.dart-ir.v2',company_id:source.company_id,provider:'dart',provider_company_id:'12345678',ticker:'0000A1',complete:true,page_size:100,receipt_window:window});
   expect(m.entries).toHaveLength(1);expect(m.entries[0]).toMatchObject({key:filing.receipt,occurs_on:'2026-11-12',timezone:null,source_url:`https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${filing.receipt}`,body_sha256:digest(encode(body()))});
   expect(m.documents[0]).toMatchObject({receipt_no:filing.receipt,main_sha256:digest(encode(main())),body_sha256:digest(encode(body()))});
   for(const [path,{bytes}] of f.archives)expect(path).toContain(digest(bytes));
@@ -129,13 +153,17 @@ describe('DART collection and immutable provenance',()=>{
   expect(m.pages[0]).toMatchObject({count:0,total_count:0,total_page:0});expect(m.documents).toEqual([]);expect(m.entries).toEqual([]);
   expect(m).not.toHaveProperty('withdraw');expect(f.fetcher).not.toHaveBeenCalled();
  });
- it('retains raw out-of-occurrence-window evidence without inventing an in-window date',async()=>{
+ it('preserves the exact selected date outside the display window instead of retaining a stale earlier date',async()=>{
   const f=fixture({body:body('2028-12-01')}),m=(await f.collect()).manifest;
-  expect(m.documents).toHaveLength(1);expect(m.entries).toEqual([]);
+  expect(m.documents).toHaveLength(1);expect(m.entries).toHaveLength(1);expect(m.entries[0].occurs_on).toBe('2028-12-01');
  });
- it.each([{report_nm:'[기재정정]기업설명회(IR)개최(안내공시)'},{rm:'정'},{rm:'철'}])('fails correction/withdrawal ambiguity closed before document fetch %j',change=>{
+ it.each([{report_nm:'[기재정정]기업설명회(IR)개최(안내공시)'},{rm:'정'}])('rejects correction metadata without explicit consistent official lineage %j',change=>{
   const f=fixture({list:page([{...row(),...change}])});
-  return expect(f.collect()).rejects.toThrow('ambiguous_correction').then(()=>{expect(f.fetcher).not.toHaveBeenCalled();expect([...f.archives.keys()].every(path=>path.includes('/lists/'))).toBe(true);});
+  return expect(f.collect()).rejects.toThrow('ambiguous_correction').then(()=>{expect(f.archive.mock.calls.some(([path])=>/^calendar\/[^/]+\/[a-f0-9]{64}\.json$/.test(path))).toBe(false);});
+ });
+ it('keeps unsupported withdrawals closed before document fetch',async()=>{
+  const f=fixture({list:page([{...row(),rm:'철'}])});
+  await expect(f.collect()).rejects.toThrow('ambiguous_correction');expect(f.fetcher).not.toHaveBeenCalled();
  });
  it('rejects a duplicate identity across full pages without returning a partial manifest',async()=>{
   const f=fixture(),rows=Array.from({length:100},(_,i)=>({...row(`20261020${String(i+1).padStart(6,'0')}`),report_nm:'Synthetic other disclosure'}));
@@ -177,5 +205,85 @@ describe('DART collection and immutable provenance',()=>{
   const f=fixture();f.listPage.mockImplementation(()=>new Promise<Uint8Array>(()=>{}));
   const pending=f.collect();controller.abort();
   await expect(pending).rejects.toThrow('source_timeout');expect(f.archive).not.toHaveBeenCalled();
+ });
+});
+
+describe('explicit DART correction-family identity',()=>{
+ const receipts=['20261008000001','20261016000001'],root=receipts[0],latest=receipts[1];
+ const latestFiling={...filing,receipt:latest,receipt_date:receiptDay(latest),report_name:'[기재정정]'+filing.report_name};
+ it('requires both the selected family list and the literal official root proof',()=>{
+  const html=familyMain(receipts,latest),parsed=parseDartIRMain(html,source,latestFiling);
+  expect(parsed).toMatchObject({root_receipt_no:root,corrected:true,family_receipts:receipts});
+  for(const replacement of [
+   html.replace(`"${root}", "1", "99664"`,`"20261007000001", "1", "99664"`),
+   html.replace(`"${root}", "1", "99664"`,`"${root}", "0", "99664"`),
+   html.replace(`alertInvestNotice("${latest}", "11112222"`,`alertInvestNotice("${latest}", "99992222"`),
+   html.replace(`value="rcpNo=${root}"  title`,`value="rcpNo=${root}" selected title`),
+   html.replace('id="family"','id="unrelated"'),
+  ])expect(()=>parseDartIRMain(replacement,source,latestFiling)).toThrow('ambiguous_correction');
+ });
+ it('reads only the complete replacement schedule, never an old date in the comparison table',()=>{
+  const lineage=parseDartIRMain(familyMain(receipts,latest),source,latestFiling);
+  const parsed=parseDartIRBody(familyBody(receipts,latest,'2026-11-14'),latestFiling,lineage);
+  expect(parsed.occurs_on).toBe('2026-11-14');expect(parsed.quote).toBe('1. 일시 및 장소 일시 2026-11-14 09:00');
+  expect(parsed.quote).not.toContain('2026-11-12');
+ });
+ it.each(['date','submitted','reason','comparison','schedule'])('rejects incomplete or unsupported correction evidence: %s',part=>{
+  const lineage=parseDartIRMain(familyMain(receipts,latest),source,latestFiling);
+  let html=familyBody(receipts,latest);
+  if(part==='date')html=html.replace(`<td>정정일자</td><td>${receiptDay(latest)}</td>`,'<td>정정일자</td><td>2026-10-17</td>');
+  if(part==='submitted')html=html.replace(`<td>${receiptDay(root)}</td>`,'<td>2026-10-07</td>');
+  if(part==='reason')html=html.replace('행사 일시 및 안내 경로 변경','행사 취소');
+  if(part==='comparison')html=html.replace('<td>정정후</td>','<td>확인 불가</td>');
+  if(part==='schedule')html=html.replace(occurrence('2026-11-13'),'');
+  expect(()=>parseDartIRBody(html,latestFiling,lineage)).toThrow();
+ });
+ it('emits one stable root event with latest source evidence and archives every family member first',async()=>{
+  const f=correctionFixture(),result=await f.collect(),m=result.manifest;
+  expect(m.families).toEqual([{root_receipt_no:root,latest_receipt_no:latest,receipt_nos:receipts}]);
+  expect(m.documents).toHaveLength(2);expect(m.entries).toHaveLength(1);
+  expect(m.entries[0]).toMatchObject({key:root,receipt_no:latest,occurs_on:'2026-11-13',source_url:`https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${latest}`,body_sha256:digest(encode(f.bodies.get(latest)!))});
+  for(const document of m.documents){
+   expect(document).toMatchObject({root_receipt_no:root,corrected:document.receipt_no!==root,family_receipts:receipts});
+   expect(f.archives.get(document.main_object_key)?.bytes).toEqual(encode(f.mains.get(document.receipt_no)!));
+   expect(f.archives.get(document.body_object_key)?.bytes).toEqual(encode(f.bodies.get(document.receipt_no)!));
+  }
+  expect(f.fetcher).toHaveBeenCalledTimes(4);expect(f.archive.mock.calls.at(-1)?.[0]).toBe(result.object_key);
+ });
+ it('uses the same stable root when the explicitly linked original predates the receipt scan',async()=>{
+  const older=['20260701000001',latest],f=correctionFixture(older,[latest]),m=(await f.collect()).manifest;
+  expect(m.pages[0].count).toBe(1);expect(m.documents).toHaveLength(2);
+  expect(m.entries[0]).toMatchObject({key:older[0],receipt_no:latest});
+  expect(f.fetcher).toHaveBeenCalledTimes(4);
+ });
+ it('supports multiple explicitly marked corrections with one current replacement event',async()=>{
+  const chain=[root,'20261012000001',latest],f=correctionFixture(chain),m=(await f.collect()).manifest;
+  expect(m.documents).toHaveLength(3);expect(m.entries).toHaveLength(1);
+  expect(m.families[0].receipt_nos).toEqual(chain);expect(m.entries[0].receipt_no).toBe(latest);
+ });
+ it('does not overwrite an old date by omission when a correction moves outside the display window',async()=>{
+  const f=correctionFixture();f.bodies.set(latest,familyBody(receipts,latest,'2028-12-01'));
+  const m=(await f.collect()).manifest;expect(m.entries).toHaveLength(1);
+  expect(m.entries[0]).toMatchObject({key:root,receipt_no:latest,occurs_on:'2028-12-01'});
+ });
+ it('does not pair an independent same-title filing with the correction family',async()=>{
+  const independent='20261014000001',f=correctionFixture();
+  f.mains.set(independent,familyMain([independent],independent));f.bodies.set(independent,familyBody([independent],independent));
+  f.listPage.mockResolvedValue(page([...receipts,independent].map(receipt=>({...row(receipt),rcept_dt:receipt.slice(0,8),report_nm:(receipt===latest?'[기재정정]':'')+filing.report_name}))));
+  const m=(await f.collect()).manifest;expect(m.families).toHaveLength(2);
+  expect(m.entries.map(item=>item.key)).toEqual([root,independent]);expect(m.entries[0].receipt_no).toBe(latest);
+ });
+ it.each(['missing_current','missing_original','inconsistent','cross_issuer','body_failure','archive_failure'])('returns no complete manifest for %s family evidence',async mode=>{
+  const f=mode==='missing_current'?correctionFixture(receipts,[root]):mode==='missing_original'?correctionFixture(receipts,[latest]):correctionFixture();
+  if(mode==='inconsistent'){f.mains.set(root,familyMain([root],root));f.listPage.mockResolvedValue(page(receipts.map(receipt=>({...row(receipt),rcept_dt:receipt.slice(0,8),report_nm:(receipt===latest?'[기재정정]':'')+filing.report_name}))));}
+  if(mode==='cross_issuer')f.mains.set(root,f.mains.get(root)!.replace('12345678','87654321'));
+  if(mode==='body_failure')f.bodies.delete(root);
+  if(mode==='archive_failure')f.archive.mockImplementation(async(path:string)=>{if(path===`calendar/${source.key}/documents/${digest(encode(f.bodies.get(root)!))}.html`)throw new Error('Synthetic archive denied');});
+  await expect(f.collect()).rejects.toThrow();
+  expect(f.archive.mock.calls.some(([path])=>/^calendar\/[^/]+\/[a-f0-9]{64}\.json$/.test(path))).toBe(false);
+ });
+ it('bounds official family expansion rather than truncating a ninth correction member',()=>{
+  const chain=Array.from({length:9},(_,index)=>`202610${String(index+1).padStart(2,'0')}000001`),current=chain.at(-1)!;
+  expect(()=>parseDartIRMain(familyMain(chain,current),source,{...latestFiling,receipt:current,receipt_date:receiptDay(current)})).toThrow('ambiguous_correction');
  });
 });
