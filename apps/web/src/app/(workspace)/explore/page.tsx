@@ -1,4 +1,2 @@
-import {DesktopExplore} from '@/desktop/search';
-import ResponsiveScreen from '@/mobile/responsive';
-import MobileExplore from '@/mobile/search';
-export default function Page(){return <ResponsiveScreen mobile={<MobileExplore/>} desktop={<DesktopExplore/>}/>;}
+import Companies from '@/redesign/companies';
+export default function Page(){return <Companies/>;}

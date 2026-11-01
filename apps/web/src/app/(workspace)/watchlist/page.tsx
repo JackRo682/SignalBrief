@@ -1,4 +1,2 @@
-import DesktopWatchlist from '@/desktop/watchlist';
-import ResponsiveScreen from '@/mobile/responsive';
-import MobileWatchlist from '@/mobile/watchlist';
-export default function Page(){return <ResponsiveScreen mobile={<MobileWatchlist/>} desktop={<DesktopWatchlist/>}/>;}
+import Watchlist from '@/redesign/watchlist';
+export default function Page(){return <Watchlist/>;}

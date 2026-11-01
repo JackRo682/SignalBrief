@@ -40,6 +40,8 @@ const idPayload=z.object({id:uuid}).strict();
 const decimalString=z.string().regex(/^\d{1,20}(\.\d{1,8})?$/);
 const onboardingPosition=z.object({company_id:uuid,quantity:decimalString.refine(v=>/[1-9]/.test(v),'Quantity must be positive'),average_cost:decimalString.nullable(),currency:z.enum(['USD','KRW','EUR','JPY','GBP','AUD','CAD','HKD','CNY','CHF'])}).strict();
 export const workspaceRequest=z.discriminatedUnion('action',[
+ z.object({action:z.literal('design_dashboard'),p:z.object({start_date:z.string().regex(/^\d{4}-\d{2}-\d{2}$/),end_date:z.string().regex(/^\d{4}-\d{2}-\d{2}$/),company_id:uuid.or(z.literal('')).optional()}).strict()}),
+ z.object({action:z.literal('design_directory'),p:z.object({q:z.string().max(100).optional(),market_group:z.enum(['all','kospi','kosdaq','overseas','unclassified']).optional(),offset:z.number().int().min(0).max(10000).optional(),limit:z.number().int().min(1).max(50).optional()}).strict()}),
  z.object({action:z.literal('preferences'),p:empty}),
  z.object({action:z.literal('source_overview'),p:z.object({scope:z.enum(['all','following']).optional(),company_id:uuid.optional(),days:z.number().int().min(0).max(3650).optional()}).strict()}),
  z.object({action:z.literal('company_lookup'),p:z.object({q:z.string().max(100).optional(),market:z.string().max(32).optional(),limit:z.number().int().min(1).max(100).optional()}).strict()}),

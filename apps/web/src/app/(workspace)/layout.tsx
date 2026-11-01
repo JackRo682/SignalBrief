@@ -8,10 +8,13 @@ import ResearchShell from '@/research/shell';
 import {disabledWorkspaceRoute} from '@/lib/workspace-features';
 import WorkspaceUnavailable from '@/workspace/unavailable';
 import {DesktopShell} from '@/desktop/shell';
+import RedesignShell from '@/redesign/shell';
 import '@/workspace/monitoring.css';
 export default function WorkspaceLayout({children}:{children:React.ReactNode}){
  const path=usePathname();
  const mobile=useMobileViewport();
+ const redesigned=['/today','/explore','/watchlist','/calendar','/saved','/search','/alerts'].includes(path)||/^\/(companies|events|documents)\/[^/]+$/.test(path);
+ if(redesigned)return <RedesignShell>{children}</RedesignShell>;
  if(mobile===null)return null;
  if(path.startsWith('/ops/'))return <ResearchShell>{children}</ResearchShell>;
  if(mobile&&!path.startsWith('/ops'))return <MobileShell>{disabledWorkspaceRoute(path)?<WorkspaceUnavailable/>:children}</MobileShell>;
