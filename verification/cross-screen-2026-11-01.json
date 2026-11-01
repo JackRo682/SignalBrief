@@ -77,7 +77,8 @@
     "production_build": "PASS",
     "typescript": "PASS",
     "ruff": "PASS",
-    "browser_e2e_included_in_script": false
+    "browser_e2e_included_in_script": false,
+    "applies_to_commit": "83802e717a5a6e431a799faf656468e2b979bb9e"
   },
   "separate_completed_checks": {
     "scope_guard": {
@@ -180,7 +181,8 @@
   "calendar_coverage": {
     "deployed_adapters_at_recording": [
       "Microsoft",
-      "Samsung"
+      "Samsung",
+      "Micron"
     ],
     "issuer_discovery_does_not_invent_events": true,
     "micron_public_q4_feed_found": true,
@@ -192,22 +194,35 @@
   "release_gates": {
     "browser_e2e": {
       "status": "PASS",
+      "commit": "85d3667a1bed15e71a534cf6161686d58419d7f5",
       "expected_cases": 84,
-      "passed": 84,
-      "failed": 0,
       "desktop": 42,
       "mobile": 42,
-      "duration_minutes": 3.3,
-      "log": "/tmp/signalbrief-personal-integration-browser-v3.log",
-      "source_scope": "Final runtime UI including official date precision copy; later changes are server or test-only.",
-      "prior_assertion_corrections": [
-        "Calendar selection query correctly uses the existing personal-or-company SQL scope; asserted exact OR expression.",
-        "Removed registered-only empty banner must be absent while authoritative directory empty result and zero cards remain asserted."
-      ]
+      "includes_directory_history_sidebar_and_enter_guard": true,
+      "passed": 84,
+      "failed": 0,
+      "duration_minutes": 3.5,
+      "log": "/tmp/signalbrief-final-navigation-sidebar-browser.log",
+      "artifacts": "/tmp/signalbrief-final-navigation-sidebar-browser-results",
+      "source_scope": "Exact85d3667 runtime/test bytes including all three follow-up changes and the locator-only correction."
     },
     "exact_new_commit_ci": {
-      "status": "PENDING",
-      "commit": null
+      "status": "PASS",
+      "commit": "85d3667a1bed15e71a534cf6161686d58419d7f5",
+      "verification_url": "https://github.com/JackRo682/SignalBrief/actions/runs/41286660215",
+      "financial_url": "https://github.com/JackRo682/SignalBrief/actions/runs/41286660192",
+      "calendar_and_collector": "Not triggered by path filters for the UI-only follow-up; unchanged server source passed in83802e7.",
+      "postgres_job_scope": {
+        "passed": 69,
+        "skipped": 130,
+        "deselected": 372,
+        "reason": "This CI job lacks calendar/workspace/hosted disposable URL environment variables; it is not the zero-skip database evidence. Separate local backend571 covers all four disposable PostgreSQL databases."
+      },
+      "browser_passed": 84,
+      "browser_duration_minutes": 3.1,
+      "browser_completed_at": "2026-11-01T08:01:14Z",
+      "web_job_id": 124789226406,
+      "financial_status": "PASS"
     },
     "migrations": {
       "status": "APPLIED",
@@ -227,14 +242,54 @@
       "version": 5
     },
     "frontend_deployment": {
-      "status": "PENDING",
-      "deployment_id": null,
-      "commit": null,
-      "url": "https://signalbrief.online"
+      "status": "READY",
+      "deployment_id": "dpl_5GwC4oZFMor1g7Wxuzq1CArKQMLT",
+      "commit": "85d3667a1bed15e71a534cf6161686d58419d7f5",
+      "url": "https://signalbrief.online",
+      "release_endpoint_status": 200,
+      "release_endpoint_commit": "85d3667a1bed15e71a534cf6161686d58419d7f5",
+      "release_endpoint_branch": "main"
     },
     "signed_in_production_acceptance": {
-      "status": "PENDING",
-      "verified_at": null
+      "status": "VERIFIED_WITH_ONE_EXTERNAL_BROWSER_LIMIT",
+      "first_verified_commit": "83802e717a5a6e431a799faf656468e2b979bb9e",
+      "final_verified_commit": "85d3667a1bed15e71a534cf6161686d58419d7f5",
+      "flows": {
+        "watchlist_ls_main": "PASS: ls shows official LS result",
+        "watchlist_ls_add_reload": "PASS:006260 explicit follow survives reload; KOSPI, DART profile and disclosures hydrate",
+        "overseas_micron": "PASS: MU shown under overseas filter without contradictory empty copy",
+        "naver_ls_micron_profiles": "PASS: official business overview, products, coverage and sources visible",
+        "sndk_generic_profile": "PASS:Computer Storage Devices, SEC source and retrieval time visible without a hardcoded SNDK profile",
+        "calendar_ls": "PASS: issuer selectable; unconnected official source explained",
+        "calendar_micron": "PASS:micron and MU selectable,3 past events,0 upcoming; nearest action opens2026-10-21",
+        "calendar_micron_detail": "PASS: exact official title/date/source quote displayed",
+        "saved_roundtrip": "PASS:filing,approved US analysis,legacy reviewed analysis and calendar event in correct sections after reload",
+        "saved_filter": "PASS:LS filter explains empty match; reset restores4 items",
+        "personal_company_selection": "PASS:LS canonical ID selected, form cancelled without creating a personal event",
+        "home": "PASS:default2026-10-03..2026-11-01;85 disclosures,26 approved analyses,4 confirmed events",
+        "followup_directory_history": "AUTOMATED_PASS_LIVE_BLOCKED:Cold Turkey blocked the search URL before the final production detail/Back/reload check; no live PASS claim.",
+        "followup_sidebars": "PASS:Micron calendar-event and filing sidebars display business introduction, source and verification date on85d3667.",
+        "followup_personal_enter": "PASS:with a filled title, Enter in related-company search kept form open; LS canonical ID selected and form cancelled with no production personal event created.",
+        "final_saved_cleanup": "PASS:final85d3667 Saved screen has no test bookmarks or saved calendar events; existing history setting retained."
+      },
+      "cleanup": {
+        "ls_test_follow_removed": true,
+        "micron_test_follow_removed": true,
+        "test_saves_removed": 4,
+        "history_remains_disabled": true,
+        "production_personal_event_created": false,
+        "verified_public_company_data_retained": true,
+        "original_follows_retained": true
+      },
+      "verified_at": "2026-11-01T08:09:56Z",
+      "external_browser_limit": {
+        "product": "Cold Turkey",
+        "observed_title": "Blocked by Cold Turkey",
+        "blocked_url": "https://signalbrief.online/explore?q=micron&market_group=overseas",
+        "settings_changed": false,
+        "bypass_attempted": false,
+        "affected_final_step": "production directory detail/Back/reload; same scenario passed automated desktop/mobile and exact-SHA CI"
+      }
     },
     "deployment_order": [
       "company_official_overview migration",
@@ -267,6 +322,51 @@
         "authenticated_security_definer_function_executable": 32,
         "auth_leaked_password_protection": 1
       }
+    },
+    "anonymous_discovery": {
+      "status": 401,
+      "code": "authentication_required",
+      "path": "/api/company-discovery?q=LS"
+    },
+    "runtime_logs": {
+      "deployment_id": "dpl_5GwC4oZFMor1g7Wxuzq1CArKQMLT",
+      "provider": "Vercel",
+      "levels": [
+        "error",
+        "fatal"
+      ],
+      "window_start": "2026-11-01T07:53:28.431Z",
+      "window_end": "2026-11-01T08:08:28.431Z",
+      "matching_logs": 0,
+      "not_an_all_system_error_free_guarantee": true
+    },
+    "main_repeat_ci": {
+      "status": "PASS",
+      "commit": "85d3667a1bed15e71a534cf6161686d58419d7f5",
+      "verification_url": "https://github.com/JackRo682/SignalBrief/actions/runs/41287164831",
+      "browser_passed": 84,
+      "browser_duration_minutes": 4.3,
+      "browser_completed_at": "2026-11-01T08:11:32Z",
+      "web_job_id": 124790695045,
+      "financial_url": "https://github.com/JackRo682/SignalBrief/actions/runs/41287164845",
+      "hosted_schema_url": "https://github.com/JackRo682/SignalBrief/actions/runs/41287164943",
+      "reference_url": "https://github.com/JackRo682/SignalBrief/actions/runs/41287164919",
+      "release_qa_url": "https://github.com/JackRo682/SignalBrief/actions/runs/41287165049"
+    },
+    "production_health_ci": {
+      "status": "PASS",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41287202101",
+      "origin": "https://signalbrief.online",
+      "commit": "85d3667a1bed15e71a534cf6161686d58419d7f5",
+      "branch_label_note": "Deployment-status run retains repair-branch label; completed log explicitly checks the production origin and exact commit.",
+      "checks": [
+        "HTTPS pages",
+        "release identity",
+        "live Edge/database",
+        "proxy readiness",
+        "no demo authentication",
+        "required login"
+      ]
     }
   },
   "source_snapshots": {
@@ -318,7 +418,7 @@
     "new_regressions": 3,
     "typescript": "PASS",
     "changed_file_lint": "PASS",
-    "full_ci_and_browser_status": "Included in final full gate and84-case browser PASS; exact commit CI pending."
+    "full_ci_and_browser_status": "Date precision change passed full local gate and84-case local/branch/main CI on first release83802e717a5a6e431a799faf656468e2b979bb9e; final follow-up evidence is recorded separately."
   },
   "previous_local_gate": {
     "checked_at": "2026-11-01T06:59:08.266944+00:00",
@@ -371,16 +471,16 @@
       }
     ],
     "backend": {
-      "passed": 571,
+      "passed": 545,
       "failed": 0,
       "skipped": 0,
       "existing_deprecation_warnings": 2,
       "database_environment": "Four disposable loopback PostgreSQL databases; no production test data."
     },
     "frontend": {
-      "passed": 1041,
+      "passed": 1005,
       "failed": 0,
-      "test_files": 94
+      "test_files": 93
     },
     "frontend_lint": {
       "errors": 0,
@@ -397,5 +497,118 @@
     "focused_file_passed": 10,
     "independent_focused_runs": 5,
     "final_full_gate": "PASS"
+  },
+  "first_operational_release": {
+    "commit": "83802e717a5a6e431a799faf656468e2b979bb9e",
+    "deployment_id": "dpl_DHDAaUAxQ2AFPj9KEbKB7r6zsA8P",
+    "state": "READY",
+    "release_endpoint": "MATCH",
+    "exact_branch_ci": {
+      "status": "PASS",
+      "commit": "83802e717a5a6e431a799faf656468e2b979bb9e",
+      "verification_url": "https://github.com/JackRo682/SignalBrief/actions/runs/41284733771",
+      "financial_url": "https://github.com/JackRo682/SignalBrief/actions/runs/41284733626",
+      "calendar_url": "https://github.com/JackRo682/SignalBrief/actions/runs/41284733731",
+      "collector_url": "https://github.com/JackRo682/SignalBrief/actions/runs/41284733663"
+    },
+    "main_verification_url": "https://github.com/JackRo682/SignalBrief/actions/runs/41285171094",
+    "production_health_url": "https://github.com/JackRo682/SignalBrief/actions/runs/41285247573",
+    "branch_browser_passed": 84,
+    "main_browser_passed": 84,
+    "local_browser_e2e": {
+      "status": "PASS",
+      "expected_cases": 84,
+      "passed": 84,
+      "failed": 0,
+      "desktop": 42,
+      "mobile": 42,
+      "duration_minutes": 3.3,
+      "log": "/tmp/signalbrief-personal-integration-browser-v3.log",
+      "source_scope": "First release83802e7 UI including official date precision; excludes later directory-history, sidebar-introduction and personal-search Enter changes.",
+      "prior_assertion_corrections": [
+        "Calendar selection query correctly uses the existing personal-or-company SQL scope; asserted exact OR expression.",
+        "Removed registered-only empty banner must be absent while authoritative directory empty result and zero cards remain asserted."
+      ],
+      "commit": "83802e717a5a6e431a799faf656468e2b979bb9e"
+    }
+  },
+  "followup_source": {
+    "commit": "85d3667a1bed15e71a534cf6161686d58419d7f5",
+    "tree": "470bbac12b1478859e5a8a8f9abc9af4e7124d5e",
+    "parent": "7043dd7eb6c333d76c1250c789a701c1e04baadd",
+    "source_files": 10,
+    "local_index_exact_match": true,
+    "changes": [
+      "URL-backed company directory filters for Back/reload",
+      "Shared sourced company introductions in calendar/document/analysis sidebars",
+      "Block implicit personal-event form submission from company-search Enter"
+    ],
+    "runtime_commit": "7043dd7eb6c333d76c1250c789a701c1e04baadd",
+    "runtime_parent": "83802e717a5a6e431a799faf656468e2b979bb9e"
+  },
+  "followup_local_full_gate_before_enter_guard": {
+    "status": "PASS",
+    "completed_at": "2026-11-01T07:45:19Z",
+    "stages_passed": 8,
+    "backend_passed": 571,
+    "backend_skipped": 0,
+    "frontend_passed": 1054,
+    "frontend_files": 94,
+    "final_enter_guard_included": false,
+    "evidence_prefix": "/tmp/signalbrief-final-navigation-sidebar-"
+  },
+  "final_frontend_checks": {
+    "status": "PASS",
+    "frontend_passed": 1054,
+    "frontend_files": 94,
+    "typescript": "PASS",
+    "lint_errors": 0,
+    "existing_lint_warnings": 5,
+    "production_build": "PASS",
+    "scope_guard": "PASS",
+    "final_enter_guard_included": true,
+    "build_environment_note": "Restricted build failed to parse TypeScript --showConfig output; unchanged source passed in the approved full-verifier execution context. Both logs preserved.",
+    "successful_build_log": "/tmp/signalbrief-final-navigation-sidebar-frontend-final-build-approved-context.log"
+  },
+  "screenshots": [
+    {
+      "path": "docs/verification/2026-11-01/naver-introduction.png",
+      "commit": "83802e717a5a6e431a799faf656468e2b979bb9e",
+      "public_content_only": true
+    },
+    {
+      "path": "docs/verification/2026-11-01/saved-roundtrip.png",
+      "commit": "83802e717a5a6e431a799faf656468e2b979bb9e",
+      "test_created_bookmarks_only": true,
+      "captured_before_cleanup": true
+    },
+    {
+      "path": "docs/verification/2026-11-01/micron-calendar-detail.png",
+      "commit": "85d3667a1bed15e71a534cf6161686d58419d7f5",
+      "public_content_only": true
+    }
+  ],
+  "followup_browser_locator_correction": {
+    "file": "apps/web/e2e/redesign-reliability.spec.ts",
+    "change": "getByLabel exact to getByRole combobox exact",
+    "runtime_changed": false,
+    "assertions_removed": false,
+    "focused_desktop_mobile_passed": 2,
+    "focused_log": "/tmp/signalbrief-final-navigation-sidebar-enter-guard-v2.log",
+    "superseded_candidate": "7043dd7eb6c333d76c1250c789a701c1e04baadd"
+  },
+  "followup_focused_checks": {
+    "counts_overlap_do_not_sum": true,
+    "directory_related_unit_passed": 41,
+    "sidebar_related_unit_passed": 38,
+    "personal_picker_unit_passed": 9,
+    "directory_desktop_mobile_passed": 2,
+    "enter_desktop_mobile_passed": 2
+  },
+  "local_cleanup": {
+    "dev_server_stopped": true,
+    "port_3210_closed": true,
+    "generated_allowlist_paths_restored": 12,
+    "runtime_source_changed_by_final_report": false
   }
 }
