@@ -27,6 +27,25 @@ unreviewed administrative source files. CSS checks require a positive scope clas
 on the subject or an ancestor; a class inside `:not()`, an attribute string, or a
 selector-list pseudo-class does not count as isolation.
 
+### November 1 calendar and notification route reconciliation
+
+The already-deployed redesign at commit
+`7e9f0d665bdfca69c2f96a9b45e905a91a1a343a` mounts the calendar and notification
+screens directly inside the existing authenticated workspace layout. Those two
+route files are unchanged by the reliability repair. Their former manifest
+entries still required a `workspaceFeatures.portfolio` reference, even though
+these working screens are independent of the disabled portfolio feature.
+
+The guard now compares these two route files with their exact SHA-256 hashes
+from that audited commit under `verified_customer_entry_points`. It rejects
+changes or deletion of either route. No public/admin/auth hash, retained source
+hash, disabled feature flag, portfolio/onboarding feature gate, or authenticated
+shell check is removed or changed. Negative regressions also verify that enabling
+portfolio or removing the portfolio route's gate still fails. The existing
+desktop/mobile browser cases independently exercise the calendar and notification
+behavior; the hash checks protect the route definitions rather than replacing
+those runtime checks.
+
 The historical `scripts/verify_desktop_isolation.py` and
 `docs/desktop-mobile-baseline.json` remain unchanged. Their original contract
 required a desktop-only release to leave the mobile implementation unchanged.

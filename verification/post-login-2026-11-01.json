@@ -11,8 +11,8 @@
     "postgres": "PostgreSQL 16.15; four disposable loopback databases; real migrations and RLS with synthetic rows"
   },
   "final_frontend_recheck": {
-    "reason": "Direct-reopen collection recovery was added after the full verifier; backend remained unchanged",
-    "unit_passed": 855,
+    "reason": "Final gates after the restored consented event analytics, populated mobile grid, and cumulative pending search-filter fixes; backend remained unchanged",
+    "unit_passed": 875,
     "unit_failed": 0,
     "test_files": 87,
     "typecheck": "PASS",
@@ -23,7 +23,8 @@
   },
   "new_migration_regressions": {
     "passed": 12,
-    "included_in_backend_total": true
+    "included_in_backend_total": true,
+    "post_ledger_filename_alignment_recheck_passed": 12
   },
   "edge_boundary_regressions": {
     "passed": 22,
@@ -33,7 +34,11 @@
   "deno_check": {
     "status": "PASS",
     "version": "2.9.6",
-    "entrypoints": ["signalbrief-discovery", "signalbrief-collector", "signalbrief-profiles"]
+    "entrypoints": [
+      "signalbrief-discovery",
+      "signalbrief-collector",
+      "signalbrief-profiles"
+    ]
   },
   "browser_regressions": {
     "focused_desktop_and_mobile_passed": 14,
@@ -41,7 +46,11 @@
     "browser": "Google Chrome 156.0.8078.79, driven by repository Playwright",
     "network": "Synthetic HTTP fixtures; unexpected external requests blocked",
     "unexpected_runtime_or_hydration_errors": 0,
-    "horizontal_overflow_cases": 0
+    "horizontal_overflow_cases": 0,
+    "complete_ci_suite_passed": 80,
+    "desktop_passed": 40,
+    "mobile_passed": 40,
+    "ci_spec_count": 11
   },
   "not_certified_by_these_checks": [
     "Live SEC/OpenDART latency and availability",
@@ -49,5 +58,25 @@
     "Additional official calendar adapters beyond Microsoft and Samsung",
     "Outbound notification delivery, payments, backup restore or commercial-scale load",
     "Independent real-world analysis quality or a zero-bug guarantee"
-  ]
+  ],
+  "release_scope_guard": {
+    "status": "PASS",
+    "regression_tests_passed": 24,
+    "protected_public_admin_auth_files": 90,
+    "retained_feature_files": 17,
+    "verified_unchanged_customer_routes": 2,
+    "disabled_feature_flags": 8,
+    "customer_route_baseline_commit": "7e9f0d665bdfca69c2f96a9b45e905a91a1a343a"
+  },
+  "production_migration_ledger_alignment": {
+    "sql_bytes_unchanged": true,
+    "discovery": {
+      "version": "20261101041747",
+      "sha256": "6686bafaa474f25618cea368552089c627188c6c2d9edd7f9730ddf726593bab"
+    },
+    "calendar": {
+      "version": "20261101041751",
+      "sha256": "1e94028384e250a4c9ef5e22ade18580974da4299ce2bf005e4affba878af57a"
+    }
+  }
 }

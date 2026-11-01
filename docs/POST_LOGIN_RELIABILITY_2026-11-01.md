@@ -31,6 +31,7 @@ range, filtering defects, and request failures. They are not interchangeable.
 | --- | --- | --- |
 | Home date selection | Default to the inclusive previous 30 days. Explain a genuinely empty range and provide recent/all-history navigation. Keep request failures visible. | `apps/web/src/redesign/home.tsx` |
 | Company search | Normalize Unicode, spaces and punctuation consistently in all three SQL search projections. A new search query clears inherited company/category/source/date scope. | `company-search.ts`, `search.tsx`, discovery migration |
+| Rapid search filters | Compose pending tab/source/date changes until navigation acknowledges them. Preserve later choices across intermediate commits and discard them on unrelated navigation or browser history changes. | `search.tsx`, `search-scope.test.tsx` |
 | Company coverage | Search a separate official SEC/OpenDART directory. Activate only an identity selected by the user. Do not register the entire directory as collection work. | `signalbrief-discovery/*`, `company-discovery.tsx`, `/api/company-discovery` |
 | Company detail collection | Collect validated provider profile and filing metadata for the selected issuer; archive the original source first. Return `ready` only after persistence completes. Expose failures and allow retries. | `signalbrief-discovery/service.ts`, `company.tsx` |
 | Issuer/share-class identity | Preserve the existing canonical issuer record; verify a selected alternative ticker against the official directory before describing it as the same issuer. | `company-discovery.tsx`, `company.tsx` |
@@ -41,6 +42,7 @@ range, filtering defects, and request failures. They are not interchangeable.
 | Personal calendar item | Validate and persist the submitted company ID while retaining ownership checks and existing mutation limits. | calendar reliability migration |
 | Calendar coverage | Expose authenticated, sanitized coverage counts and selected-company source state. Coverage lookup failure does not suppress the event list. | calendar reliability migration, `calendar-data.ts` |
 | Collector fairness | Prioritize overdue followed/held companies without increasing the existing per-run provider collection budget. | discovery migration, `signalbrief-collector/index.ts` |
+| Populated mobile home | Allow grid tracks to shrink with `minmax(0, 1fr)` so wide tables stay inside their own scroll containers. The observed 96-pixel page overflow is covered by the retained user-journey assertion. | `styles.css`, `research-workspace.spec.ts` |
 
 ## Source and access boundaries
 
@@ -80,12 +82,44 @@ The final verification and deployed-state results are recorded in
   through real browser rendering, with synthetic HTTP fixtures. These tests do
   not claim live provider or new OAuth-login verification.
 
+### Release-gate reconciliation
+
+GitHub's independent run of the first repair commit passed its full repository
+verifier, backend, PostgreSQL, dependency audit, collector, calendar and evidence
+checks. Its subsequent scope guard exposed two stale rules: the already-shipped
+calendar and alerts routes mounted their authenticated redesign screens, while
+the manifest still expected legacy portfolio gates. Their route files remain
+byte-identical to `7e9f0d6`; the guard now verifies their exact audited hashes.
+All 90 public/admin/auth hashes, 17 retained implementations, eight disabled
+feature flags and remaining feature gates remain enforced.
+
+The browser gate had not run after that guard failure. Its existing research
+journeys and fixtures were updated to the already-shipped screen contracts while
+retaining source provenance, state persistence, authentication, disabled-provider,
+consent and unexpected-request assertions. It also found an omitted existing
+consented analytics hook on the redesign event page. That hook now accepts only
+loaded, matching, published non-demo analyses; calendar occurrence IDs and
+unconsented sessions are excluded. Evidence engagement requires a real opening
+or source/document click and remains deduplicated.
+
+The populated mobile journey exposed a 96-pixel home overflow, repaired by
+allowing the grid tracks to shrink within the viewport. Rapid tab/source changes
+also reproduced lost filter choices when navigation had not committed. Focused
+regressions first failed on the original merge behavior and now cover cumulative
+pending choices, intermediate commits, new-query scope clearing and history or
+external-route resets. The sequential browser journey additionally waits for
+each selected tab to commit before its next action.
+
+The new reliability browser spec is included alongside all ten existing CI
+specs. Test fixtures use synthetic identities and intercepted HTTP boundaries;
+these checks do not write production user records.
+
 ## Release order
 
 1. Pass the repository full verification gate, Deno type checks, focused browser
    regressions, and the new real-PostgreSQL migration regressions.
-2. Apply `20261101034637_company_discovery_reliability.sql`, then
-   `20261101040435_calendar_reliability.sql`. Both preserve existing content;
+2. Apply `20261101041747_company_discovery_reliability.sql`, then
+   `20261101041751_calendar_reliability.sql`. Both preserve existing content;
    expected-function guards stop application if the live definition has drifted.
 3. Deploy the new discovery function and affected existing Edge Functions with
    their complete relative dependencies and pinned runtime imports.
@@ -95,6 +129,14 @@ The final verification and deployed-state results are recorded in
 5. Verify authenticated home, Korean/English/company-code search, company
    selection and detail, calendar scope/date navigation, source status, provider
    snapshots and post-release runtime errors.
+
+The two database migrations are already applied to the existing production
+project as versions `20261101041747` and `20261101041751`. The files were renamed
+to match the actual migration ledger without changing SQL bytes; do not reapply
+them under their earlier draft timestamps. Discovery v1, collector v16,
+profiles v4 and US v21 were deployed before the frontend release. Their
+application authentication policies remain unchanged. Live directory warming
+waits until the production frontend includes the directory relay operation.
 
 Rollback the Vercel deployment and affected Edge versions together if a new
 request boundary fails. The additive private tables and nullable-compatible

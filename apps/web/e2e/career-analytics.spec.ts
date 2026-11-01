@@ -3,7 +3,7 @@ import {eventId, eventTitle, mobileFixture} from './mobile-fixture';
 
 // Isolated browser fixtures: no real sign-in, customer events or external analytics.
 for (const consent of [false, true]) {
-  test(`mobile detail engagement respects analytics consent=${consent}`, async ({page}) => {
+  test(`event detail engagement respects analytics consent=${consent}`, async ({page}) => {
     await page.setViewportSize({width:390,height:844});
     const events: unknown[]=[];
     page.on('request', req => {
@@ -14,12 +14,20 @@ for (const consent of [false, true]) {
     const fixture=await mobileFixture(page,{analyticsConsent:consent});
     await page.goto(`/events/${eventId}`);
     await expect(page.getByRole('heading',{level:1,name:eventTitle})).toBeVisible();
-    await page.getByRole('button',{name:/원문 인용 보기/}).click();
-    await expect(page.getByRole('heading',{name:'원문 인용과 검증 근거'})).toBeVisible();
+    const evidence=page.locator('.rd-event-evidence').first();
+    await expect(evidence).not.toHaveAttribute('open');
+    await evidence.locator('summary').click();
+    await expect(evidence).toHaveAttribute('open');
+    await expect(evidence.locator('blockquote')).toBeVisible();
+    // Closing and opening the same evidence must not create duplicate engagement.
+    await evidence.locator('summary').click();
+    await expect(evidence).not.toHaveAttribute('open');
+    await evidence.locator('summary').click();
+    await expect(evidence.locator('blockquote')).toBeVisible();
     if (consent) {
       await expect.poll(()=>events).toEqual([
-        {event_name:'brief_opened',properties:{event_id:eventId,screen:'mobile_detail'}},
-        {event_name:'evidence_opened',properties:{event_id:eventId,screen:'mobile_detail'}},
+        {event_name:'brief_opened',properties:{event_id:eventId,screen:'event_detail'}},
+        {event_name:'evidence_opened',properties:{event_id:eventId,screen:'event_detail'}},
       ]);
       await expect.poll(()=>fixture.state.researchCalls.some(c=>c.p.kind==='view'&&c.p.screen==='event')).toBe(true);
       expect(JSON.stringify(fixture.state.researchCalls)).not.toContain(eventId);

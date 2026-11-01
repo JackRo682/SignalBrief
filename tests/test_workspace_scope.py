@@ -12,6 +12,7 @@ def scope_copy(tmp_path):
     manifest = json.loads((ROOT / MANIFEST).read_text())
     names = set(manifest["protected_files"]) | set(manifest["retained_files"])
     names.update(manifest["feature_entry_points"])
+    names.update(manifest["verified_customer_entry_points"])
     names.update([MANIFEST, "apps/web/src/lib/workspace-features.ts", "apps/web/src/app/(workspace)/layout.tsx", "apps/web/src/desktop/research.tsx"])
     names.update(str(path.relative_to(ROOT)) for path in (ROOT / "apps/web/src/desktop").glob("*.css"))
     names.update(f"apps/web/src/{name}" for name in ["components/research-workspace.css", "workspace/monitoring.css", "workspace/daily-digest.css"])
@@ -26,6 +27,8 @@ def scope_copy(tmp_path):
     ("apps/web/src/components/auth.tsx", "// unauthorized auth edit", "Protected public/admin/auth source changed"),
     ("apps/web/src/mobile/today-legacy.tsx", None, "Retained feature implementation changed or removed"),
     ("apps/web/src/lib/workspace-features.ts", ("marketData: false", "marketData: true"), "Unverified customer feature enabled: marketData"),
+    ("apps/web/src/lib/workspace-features.ts", ("portfolio: false", "portfolio: true"), "Unverified customer feature enabled: portfolio"),
+    ("apps/web/src/app/(workspace)/portfolio/page.tsx", ("workspaceFeatures.portfolio", "true"), "Missing customer feature gate"),
     ("apps/web/src/desktop/escaped.css", "body{color:red}", "Unscoped workspace CSS"),
     ("apps/web/src/app/(workspace)/layout.tsx", ("disabledWorkspaceRoute(path)?<WorkspaceUnavailable/>", "false?<WorkspaceUnavailable/>"), "Disabled workspace routes must be blocked"),
 ])
@@ -48,6 +51,27 @@ def test_workspace_guard_rejects_new_unreviewed_admin_source(scope_copy):
     (scope_copy / "apps/web/src/research/unreviewed.ts").write_text("export const changed=true;")
     result = verify(scope_copy)
     assert any("Unreviewed public/admin/auth source added" in item for item in result["failures"])
+
+
+def test_workspace_guard_accepts_reviewed_customer_routes_without_enabling_portfolio(scope_copy):
+    result = verify(scope_copy)
+    assert result["status"] == "PASS", result["failures"]
+    assert result["verified_customer_entry_points"] == 2
+    assert result["verified_customer_entry_points_baseline_commit"] == "7e9f0d665bdfca69c2f96a9b45e905a91a1a343a"
+
+
+@pytest.mark.parametrize("route", ["calendar", "alerts"])
+@pytest.mark.parametrize("mutation", ["change", "delete"])
+def test_workspace_guard_rejects_changed_or_deleted_verified_routes(scope_copy, route, mutation):
+    name = f"apps/web/src/app/(workspace)/{route}/page.tsx"
+    path = scope_copy / name
+    if mutation == "delete":
+        path.unlink()
+    else:
+        path.write_text("export default function Page(){return null;}\n")
+    result = verify(scope_copy)
+    assert result["status"] == "FAIL"
+    assert f"Verified customer entry point changed or removed: {name}" in result["failures"]
 
 
 @pytest.mark.parametrize("selector", [

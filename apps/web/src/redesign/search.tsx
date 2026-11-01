@@ -89,6 +89,24 @@ export default function Search({
     company_id: company,
     category: initialCategory,
   };
+  const routeKey = JSON.stringify({ ...filters, kind, offset: initialOffset });
+  const pendingNavigation = useRef<{
+    value: Record<string, string | number>;
+    targets: Set<string>;
+  } | null>(null);
+  useEffect(() => {
+    const pending = pendingNavigation.current;
+    // Keep later choices while an earlier push commits. An acknowledged target
+    // or an unrelated route replaces the pending intent with the actual route.
+    if (pending && (routeKey === JSON.stringify(pending.value) || !pending.targets.has(routeKey))) {
+      pendingNavigation.current = null;
+    }
+  }, [routeKey]);
+  useEffect(() => {
+    const reset = () => { pendingNavigation.current = null; };
+    window.addEventListener("popstate", reset);
+    return () => window.removeEventListener("popstate", reset);
+  }, []);
   const grouped = kind === "";
   const scopedCompany = useData(
     company ? { action: "catalog", p: { kind: "company", company_id: company, limit: 1 } } : null,
@@ -142,13 +160,21 @@ export default function Search({
     }
   }, [token, initial, prefs.loaded, prefs.value.history_enabled]);
   function change(patch: Record<string, string | number>) {
-    const params = new URLSearchParams();
-    for (const [k, v] of Object.entries({
-      ...filters,
-      kind,
+    const pending = pendingNavigation.current;
+    const base = pending?.value ?? { ...filters, kind, offset: initialOffset };
+    const next = {
+      ...base,
       offset: 0,
+      // A new query is global even when a previous filter navigation is pending.
+      ...(patch.q !== undefined && patch.q !== base.q ? { ...resetScope, kind: "" } : {}),
       ...patch,
-    }))
+    };
+    pendingNavigation.current = {
+      value: next,
+      targets: new Set([...(pending?.targets ?? []), JSON.stringify(next)]),
+    };
+    const params = new URLSearchParams();
+    for (const [k, v] of Object.entries(next))
       if (v !== "" && v !== 0) params.set(k, String(v));
     router.push(`/search?${params}`);
   }
@@ -172,10 +198,7 @@ export default function Search({
     <div data-screen="redesign-search">
       <Heading title="검색" />
       <SearchForm initial={initial} onSubmit={(value) => {
-        const q = normalizeCompanyQuery(value);
-        // A new query starts a global search instead of inheriting an invisible
-        // company/category restriction from a company-detail shortcut.
-        change(q === filters.q ? { q } : { ...resetScope, kind: "", q });
+        change({ q: normalizeCompanyQuery(value) });
       }} />
       <nav className="rd-tabs" aria-label="검색 유형">
         {tabs.map(([key, title, n]) => (

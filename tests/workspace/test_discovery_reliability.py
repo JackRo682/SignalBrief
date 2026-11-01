@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 @pytest.fixture
 def discovery(own):
     own.exec_driver_sql('RESET ROLE')
-    for name in ('20261101014441_screenshot_dashboard.sql', '20261101034637_company_discovery_reliability.sql'):
+    for name in ('20261101014441_screenshot_dashboard.sql', '20261101041747_company_discovery_reliability.sql'):
         with own.connection.driver_connection.cursor() as cursor:
             cursor.execute((ROOT / 'supabase/migrations' / name).read_text(), prepare=False)
     own.exec_driver_sql('SET LOCAL ROLE authenticated')

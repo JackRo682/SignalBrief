@@ -1,7 +1,9 @@
-import {type Page} from '@playwright/test';
+import {expect,type Page,type Route} from '@playwright/test';
 import {mobileFixture,companies,companyId,companyResources,eventDetails,events,fixtureNow} from './mobile-fixture';
 import {catalogSchema,companyDetailSchema,contentNotificationsSchema,documentDetailSchema,resourceSchema,savedSchema,sourceOverviewSchema,workspaceRequest,type Resource} from '../src/workspace/contracts';
 import {newsResponse} from '../src/lib/news-contract';
+import {dashboardSchema,koreaDate} from '../src/redesign/dashboard-contract';
+import {calendarEntrySchema} from '../src/redesign/calendar-utils';
 
 // Synthetic browser data only. This fixture never contacts a financial provider or a real account.
 export const sourceId='40000000-0000-4000-8000-000000000101';
@@ -10,18 +12,44 @@ export const sourceQuote='Synthetic fixture: The company reported revenue of USD
 export const filing=resourceSchema.parse({...companyResources[0],id:sourceId,kind:'filing',title:'Synthetic NVIDIA source filing',summary:'Synthetic official-source record used only for browser verification.',source_url:sourceUrl,published_at:'2025-12-15T12:00:00.000Z',category:'10-Q',provider:'sec'});
 export const approved=resourceSchema.parse({...filing,kind:'us_analysis',title:'Synthetic reviewed NVIDIA excerpt',summary:'A reviewed excerpt with a linked source quotation.',reviewed_at:fixtureNow,coverage:'excerpt',filing_id:sourceId});
 export const upcoming={id:'80000000-0000-4000-8000-000000000701',company_id:companyId,title:'Synthetic verified future company event',occurs_on:'2026-11-14',source_url:sourceUrl,source_timezone:'America/New_York',verified_at:fixtureNow};
-export const historical={...upcoming,id:'80000000-0000-4000-8000-000000000702',title:'Synthetic historical official event',occurs_on:'2025-10-05'};
+export const historical={...upcoming,id:'80000000-0000-4000-8000-000000000702',title:'Synthetic historical official event',occurs_on:'2026-10-05'};
 
 export async function researchWorkspaceFixture(page:Page,options:{emptyContent?:boolean;following?:boolean;overviewError?:boolean;newsError?:boolean}={}){
  const fixture=await mobileFixture(page,{empty:true,watchIds:options.following?[companyId]:[],holdingIds:[]});
  const {state}=fixture;state.preferences.locale='en';state.digestPreferences.available=false;
  const control={emptyContent:!!options.emptyContent,overviewError:!!options.overviewError,newsError:!!options.newsError,newsEmpty:false};
- const blockedRequests:string[]=[],newsCompanyIds:string[]=[];
+ const blockedRequests:string[]=[],newsCompanyIds:string[]=[],calendarQueries:string[]=[];
  const notifications=options.following?[{id:'80000000-0000-4000-8000-000000000703',created_at:fixtureNow,read_at:null as string|null,resource:approved}]:[];
- page.on('request',request=>{const url=new URL(request.url());if(/\/(?:api\/market|api\/us\/(?:indices|reference-rate)|v1\/portfolio)(?:[/?]|$)/.test(url.pathname)||/tradingview/i.test(url.hostname)||/embed-widget/i.test(url.pathname))blockedRequests.push(request.url());});
+ page.on('request',request=>{const url=new URL(request.url());if(/\/(?:api\/market|api\/us\/(?:indices|reference-rate|ingest|analyze|review|verify|dart-retry)|v1\/portfolio)(?:[/?]|$)/.test(url.pathname)||/tradingview/i.test(url.hostname)||/embed-widget/i.test(url.pathname))blockedRequests.push(request.url());});
  const saved=(resource:Resource)=>({...resource,is_saved:state.saved.has(`${resource.kind}:${resource.id}`)});
  const resources=()=>[...companyResources,...(control.emptyContent?[]:[filing,approved])];
  const unread=()=>notifications.filter(item=>!item.read_at).length;
+ const calendarRows=[upcoming,historical].map(item=>calendarEntrySchema.parse({...item,event_id:null,origin:'official_ir',quote:`Synthetic official notice: ${item.title} on ${item.occurs_on}.`}));
+ const cors=(route:Route)=>({'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, POST, OPTIONS','Access-Control-Allow-Headers':route.request().headers()['access-control-request-headers']??'authorization,apikey,content-type,x-client-info'});
+ await page.route('**/api/company-discovery**',async route=>{
+  expect(route.request().headers().authorization).toMatch(/^Bearer /);
+  expect(route.request().method()).toBe('GET');
+  const q=(new URL(route.request().url()).searchParams.get('q')??'').toLowerCase();
+  const items=companies.filter(item=>`${item.name} ${item.ticker}`.toLowerCase().includes(q)).map((item,index)=>({provider:'sec',provider_company_id:String(index+1).padStart(10,'0'),ticker:item.ticker,name:item.name,market:item.market,company_id:item.id}));
+  await route.fulfill({json:{items,total:items.length,source_status:'ready'}});
+ });
+ await page.route('https://test-project.supabase.co/rest/v1/rpc/sb_calendar_coverage',async route=>{
+  const headers=cors(route);if(route.request().method()==='OPTIONS'){await route.fulfill({status:204,headers});return;}
+  expect(route.request().headers().authorization).toMatch(/^Bearer /);
+  await route.fulfill({headers,json:{registered_companies:companies.length,covered_companies:1,selected:null}});
+ });
+ await page.route('https://test-project.supabase.co/rest/v1/calendar_items?**',async route=>{
+  const headers=cors(route);if(route.request().method()==='OPTIONS'){await route.fulfill({status:204,headers});return;}
+  expect(route.request().method()).toBe('GET');expect(route.request().headers().authorization).toMatch(/^Bearer /);
+  const url=new URL(route.request().url());calendarQueries.push(url.search);
+  expect(url.searchParams.get('calendar_status')).toBe('eq.confirmed');
+  const bounds=url.searchParams.getAll('occurs_on'),from=bounds.find(value=>value.startsWith('gte.'))?.slice(4),until=bounds.find(value=>value.startsWith('lte.'))?.slice(4);
+  const filter=url.searchParams.get('company_id'),selected=filter?.startsWith('eq.')?filter.slice(3):null;
+  const ids=filter?.startsWith('in.')?filter.slice(4,-1).split(','):url.searchParams.get('or')?.match(/company_id\.in\.\(([^)]*)\)/)?.[1].split(',');
+  const rows=(control.emptyContent?[]:calendarRows).filter(item=>(!from||item.occurs_on>=from)&&(!until||item.occurs_on<=until)&&(!selected||item.company_id===selected)&&(!ids||ids.includes(item.company_id!))&&url.searchParams.get('origin')!=='eq.user');
+  rows.sort((a,b)=>(url.searchParams.get('order')?.startsWith('occurs_on.desc')?b.occurs_on.localeCompare(a.occurs_on):a.occurs_on.localeCompare(b.occurs_on))||a.id.localeCompare(b.id));
+  await route.fulfill({headers,json:rows.slice(0,Number(url.searchParams.get('limit')??500))});
+ });
  await page.route('**/api/news?**',async route=>{
   const id=new URL(route.request().url()).searchParams.get('company_id');
   if(!id||!companies.some(company=>company.id===id)||!route.request().headers().authorization){state.unexpected.push('invalid company news request');await route.fulfill({status:400,json:{error:'invalid_company'}});return;}
@@ -34,10 +62,23 @@ export async function researchWorkspaceFixture(page:Page,options:{emptyContent?:
   const parsed=workspaceRequest.safeParse(route.request().postDataJSON());
   if(!parsed.success){await route.fallback();return;}
   const {action,p}=parsed.data;
-  const overridden=['source_overview','catalog','company','resource','document_detail','saved_list','content_notifications','content_notification_read'];
+  const overridden=['design_dashboard','design_directory','source_overview','catalog','company','resource','document_detail','saved_list','content_notifications','content_notification_read'];
   if(!overridden.includes(action)){await route.fallback();return;}
+  expect(route.request().headers().authorization).toMatch(/^Bearer /);
   state.calls.push(parsed.data);
   switch(action){
+   case 'design_dashboard':{
+    if(control.overviewError){await route.fulfill({status:503,json:{error:{code:'service_unavailable'}}});return;}
+    const inRange=(day:string)=>day>=p.start_date&&day<=p.end_date,hasContent=!control.emptyContent&&(!p.company_id||p.company_id===companyId);
+    const filings=hasContent&&inRange(koreaDate(new Date(filing.published_at!)))?[saved(filing)]:[];
+    const analyses=hasContent&&inRange(koreaDate(new Date(approved.reviewed_at!)))?[saved(approved)]:[];
+    const calendar=hasContent?[upcoming,historical].filter(item=>inRange(item.occurs_on)).map(item=>({...item,company_name:companies[0].name})):[];
+    await route.fulfill({json:dashboardSchema.parse({as_of:fixtureNow,timezone:'Asia/Seoul',start_date:p.start_date,end_date:p.end_date,filing_count:filings.length,analysis_count:analyses.length,event_count:calendar.length,filings,analyses,events:calendar})});return;
+   }
+   case 'design_directory':{
+    const q=(p.q??'').toLowerCase(),offset=p.offset??0,limit=p.limit??20,items=companyResources.filter(item=>(!q||`${item.title} ${item.ticker}`.toLowerCase().includes(q))&&['all','overseas'].includes(p.market_group??'all'));
+    await route.fulfill({json:catalogSchema.parse({items:items.slice(offset,offset+limit),total:items.length,counts:{company:items.length},markets:['NASDAQ'],next_offset:offset+limit<items.length?offset+limit:null})});return;
+   }
    case 'source_overview':{
     if(control.overviewError){await route.fulfill({status:503,json:{error:{code:'service_unavailable'}}});return;}
     const fallback=p.scope!=='all'&&state.watched.size===0,scope=p.scope==='all'||fallback?'all':'following';
@@ -78,6 +119,6 @@ export async function researchWorkspaceFixture(page:Page,options:{emptyContent?:
    case 'content_notification_read':for(const item of notifications)if(p.all||p.id===item.id)item.read_at=fixtureNow;await route.fulfill({json:{read:true}});return;
   }
  });
- return {...fixture,control,blockedRequests,newsCompanyIds};
+ return {...fixture,control,blockedRequests,newsCompanyIds,calendarQueries};
 }
 export type ResearchFixture=Awaited<ReturnType<typeof researchWorkspaceFixture>>;

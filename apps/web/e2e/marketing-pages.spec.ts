@@ -61,8 +61,10 @@ test('signed-in visitors open their real workspace from a feature card',async({p
  const fixture=await researchWorkspaceFixture(page);
  await page.goto('/features');const calendar=page.locator('.v-widget-calendar').getByRole('link',{name:'알림 설정'});await expect(calendar).toHaveAttribute('href','/calendar');
  await calendar.click();await expect(page).toHaveURL(/\/calendar$/);
- await expect(page.locator('[data-screen="research-calendar"]')).toBeVisible();
- await expect(page.getByRole('heading',{name:'Calendar',exact:true})).toBeVisible();
- await expect(page.getByRole('link',{name:upcoming.title,exact:true})).toBeVisible();
+ await expect(page.locator('[data-screen="redesign-calendar"]')).toBeVisible();
+ await expect(page.getByRole('heading',{name:'캘린더',exact:true})).toBeVisible();
+ const event=page.getByRole('link').filter({hasText:upcoming.title}).first();
+ await expect(event).toBeVisible();
+ await expect(event).toHaveAttribute('href',`/events/${upcoming.id}?kind=calendar`);
  expect(fixture.blockedRequests).toEqual([]);expect(fixture.state.unexpected).toEqual([]);expect(fixture.state.runtimeErrors).toEqual([]);
 });

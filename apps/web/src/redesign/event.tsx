@@ -11,6 +11,7 @@ import { body, emptySchema, request } from "@/lib/api";
 import { detailSchema } from "@/lib/contracts";
 import { downloadText } from "@/lib/product";
 import { initializeSupabase } from "@/lib/supabase";
+import { useEventAnalytics } from "@/lib/use-event-analytics";
 import { PcLogo, PcModal } from "@/desktop/ui";
 import { workspace } from "@/workspace/client";
 import {
@@ -90,6 +91,14 @@ function EventContent({
   );
   const occurrence = scheduled.data?.items[0] ?? null;
   const eventDetail = published.data;
+  const analyticsEventId = !isCalendar && !published.loading && !published.error &&
+    eventDetail?.event.id === id && eventDetail.event.state === "published" && !eventDetail.event.is_demo
+    ? eventDetail.event.id : null;
+  const engageEvidence = useEventAnalytics(
+    analyticsEventId,
+    panel === "evidence" && (tab === "overview" || tab === "documents") && Boolean(eventDetail?.evidence.length),
+    "event_detail",
+  );
   const companyId = occurrence?.company_id ?? eventDetail?.event.company.id;
   const company = useData(
     companyId ? { action: "company", p: { id: companyId } } : null,
@@ -336,7 +345,7 @@ function EventContent({
                   : `공개일 ${formatDate(eventDetail!.event.published_at, eventDetail!.event.publication_precision)}`}
               </span>
               {source && (
-                <a href={source} target="_blank" rel="noopener noreferrer">
+                <a href={source} target="_blank" rel="noopener noreferrer" onClick={engageEvidence}>
                   공식 출처 ↗
                 </a>
               )}
@@ -441,6 +450,7 @@ function EventContent({
                     href={source}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={engageEvidence}
                   >
                     공식 일정 원문 확인 ↗
                   </a>
@@ -454,6 +464,7 @@ function EventContent({
                   <div className="rd-event-resources">
                     <Link
                       href={`/documents/${eventDetail.document.id}?kind=document`}
+                      onClick={engageEvidence}
                     >
                       <span className="rd-event-file">
                         <Icon name="file" size={20} />
@@ -480,6 +491,7 @@ function EventContent({
                     href={source}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={engageEvidence}
                   >
                     <Icon name="file" size={22} />
                     <span>공식 일정 원문</span>
@@ -494,6 +506,7 @@ function EventContent({
                         className="rd-event-evidence"
                         key={`${item.fact_id}:${index}`}
                         open={panel === "evidence"}
+                        onToggle={(event) => { if (event.currentTarget.open) engageEvidence(); }}
                       >
                         <summary>
                           {item.source_name} · {item.location}
@@ -504,6 +517,7 @@ function EventContent({
                             href={safeSource(item.source_url)}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={engageEvidence}
                           >
                             출처 확인 ↗
                           </a>

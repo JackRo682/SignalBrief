@@ -167,6 +167,11 @@
     "customerExperiments",
     "teamPlans"
   ],
+  "verified_customer_entry_points_baseline_commit": "7e9f0d665bdfca69c2f96a9b45e905a91a1a343a",
+  "verified_customer_entry_points": {
+    "apps/web/src/app/(workspace)/calendar/page.tsx": "0bcc2d797f060d2025f9e496acca7cb346befe7d72a841905fa17f67e706df82",
+    "apps/web/src/app/(workspace)/alerts/page.tsx": "f9825a0811adb853e355d6df878e846851c6a820813cdc51dd9eb84fd6450b0d"
+  },
   "feature_entry_points": {
     "apps/web/src/desktop/today.tsx": "marketData",
     "apps/web/src/mobile/today.tsx": "marketData",
@@ -179,8 +184,6 @@
     "apps/web/src/desktop/watchlist.tsx": "marketData",
     "apps/web/src/mobile/watchlist.tsx": "marketData",
     "apps/web/src/app/(workspace)/portfolio/page.tsx": "portfolio",
-    "apps/web/src/app/(workspace)/onboarding/page.tsx": "portfolio",
-    "apps/web/src/app/(workspace)/calendar/page.tsx": "portfolio",
-    "apps/web/src/app/(workspace)/alerts/page.tsx": "portfolio"
+    "apps/web/src/app/(workspace)/onboarding/page.tsx": "portfolio"
   }
 }

@@ -21,6 +21,73 @@ beforeEach(() => {
 });
 afterEach(cleanup);
 describe("search scope recovery", () => {
+  it("preserves consecutive filter choices before navigation commits", () => {
+    render(<Search initial="NVDA" initialKind="" initialOffset={20} />);
+    fireEvent.click(screen.getByRole("button", { name: /^승인 분석/ }));
+    fireEvent.change(screen.getByLabelText("출처"), { target: { value: "dart" } });
+    fireEvent.change(screen.getByLabelText("기간"), { target: { value: "30" } });
+    const params = new URL(mocks.push.mock.calls.at(-1)![0], "https://example.test").searchParams;
+    expect(params.get("q")).toBe("NVDA");
+    expect(params.get("kind")).toBe("analysis");
+    expect(params.get("source")).toBe("dart");
+    expect(params.get("days")).toBe("30");
+    expect(params.has("offset")).toBe(false);
+  });
+  it("retains the latest choices when an earlier navigation commits first", () => {
+    const page = render(<Search initial="NVDA" initialKind="" />);
+    fireEvent.click(screen.getByRole("button", { name: /^승인 분석/ }));
+    fireEvent.change(screen.getByLabelText("출처"), { target: { value: "dart" } });
+    page.rerender(<Search initial="NVDA" initialKind="analysis" />);
+    fireEvent.change(screen.getByLabelText("기간"), { target: { value: "90" } });
+    const params = new URL(mocks.push.mock.calls.at(-1)![0], "https://example.test").searchParams;
+    expect(params.get("kind")).toBe("analysis");
+    expect(params.get("source")).toBe("dart");
+    expect(params.get("days")).toBe("90");
+  });
+  it("uses an external route change instead of abandoned pending filters", () => {
+    const page = render(<Search initial="NVDA" initialKind="" />);
+    fireEvent.click(screen.getByRole("button", { name: /^승인 분석/ }));
+    fireEvent.change(screen.getByLabelText("출처"), { target: { value: "dart" } });
+    page.rerender(<Search initial="AAPL" initialKind="company" initialSource="sec" />);
+    fireEvent.change(screen.getByLabelText("기간"), { target: { value: "30" } });
+    const params = new URL(mocks.push.mock.calls.at(-1)![0], "https://example.test").searchParams;
+    expect(params.get("q")).toBe("AAPL");
+    expect(params.get("kind")).toBe("company");
+    expect(params.get("source")).toBe("sec");
+  });
+  it("stops retaining a filter once its completed navigation is replaced", () => {
+    const page = render(<Search initial="NVDA" initialKind="" />);
+    fireEvent.click(screen.getByRole("button", { name: /^승인 분석/ }));
+    fireEvent.change(screen.getByLabelText("출처"), { target: { value: "dart" } });
+    page.rerender(<Search initial="NVDA" initialKind="analysis" initialSource="dart" />);
+    page.rerender(<Search initial="NVDA" initialKind="analysis" />);
+    fireEvent.change(screen.getByLabelText("기간"), { target: { value: "30" } });
+    const params = new URL(mocks.push.mock.calls.at(-1)![0], "https://example.test").searchParams;
+    expect(params.get("kind")).toBe("analysis");
+    expect(params.has("source")).toBe(false);
+  });
+  it("discards pending choices when browser history takes over", () => {
+    render(<Search initial="NVDA" initialKind="" />);
+    fireEvent.click(screen.getByRole("button", { name: /^승인 분석/ }));
+    fireEvent.change(screen.getByLabelText("출처"), { target: { value: "dart" } });
+    fireEvent.popState(window);
+    fireEvent.change(screen.getByLabelText("기간"), { target: { value: "30" } });
+    const params = new URL(mocks.push.mock.calls.at(-1)![0], "https://example.test").searchParams;
+    expect(params.get("q")).toBe("NVDA");
+    expect(params.has("kind")).toBe(false);
+    expect(params.has("source")).toBe(false);
+  });
+  it("keeps a new global query and its cleared scope during overlapping changes", () => {
+    render(<Search initial="old query" initialKind="document" initialCompany={id} initialCategory="10-K" initialSource="sec" initialMarket="NASDAQ" initialDays={30} initialOffset={20} />);
+    fireEvent.click(screen.getByRole("button", { name: /^승인 분석/ }));
+    fireEvent.change(screen.getByRole("textbox", { name: "기업명, 티커 또는 키워드 검색" }), { target: { value: "NVDA" } });
+    fireEvent.click(screen.getByRole("button", { name: "검색" }));
+    fireEvent.change(screen.getByLabelText("출처"), { target: { value: "dart" } });
+    const params = new URL(mocks.push.mock.calls.at(-1)![0], "https://example.test").searchParams;
+    expect(params.get("q")).toBe("NVDA");
+    expect(params.get("source")).toBe("dart");
+    for (const key of ["kind", "company_id", "category", "market", "days", "offset"]) expect(params.has(key)).toBe(false);
+  });
   it("makes the active company and category visible and clears them on a new global query", () => {
     render(<Search initial="old query" initialKind="document" initialCompany={id} initialCategory="10-K" initialSource="sec" initialMarket="NASDAQ" initialDays={30} initialOffset={20} />);
     expect(screen.getByText(/기업: Scoped issuer/)).toBeVisible();

@@ -100,6 +100,53 @@ export async function mobileFixture(page: Page, options: Options = {}) {
   });
   await page.route('**/api/auth-config', route => route.fulfill({json: {url: 'https://test-project.supabase.co', publishableKey: 'sb_publishable_isolated_fixture'}}));
   await page.route('**/api/company-profile?**',route=>route.fulfill({json:{status:'not_available',profile:null}}));
+  // The current calendar/event pages use authenticated PostgREST reads. Keep
+  // these synthetic boundaries explicit; unrelated requests still fail closed.
+  await page.route('https://test-project.supabase.co/rest/v1/calendar_items?**',async route=>{
+    const req=route.request(),params=new URL(req.url()).searchParams;
+    const headers={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, OPTIONS','Access-Control-Allow-Headers':req.headers()['access-control-request-headers']??'authorization,apikey,content-type,x-client-info'};
+    if(req.method()==='OPTIONS'){await route.fulfill({status:204,headers});return;}
+    if(req.method()!=='GET'||req.headers().authorization!=='Bearer '+token||params.get('calendar_status')!=='eq.confirmed'){
+      await unknown(route,'invalid confirmed-calendar request');return;
+    }
+    const allowed=new Set(['select','calendar_status','id','company_id','origin','or','occurs_on','order','limit']);
+    if([...params.keys()].some(key=>!allowed.has(key))){await unknown(route,'unknown calendar query');return;}
+    let items=[...state.calendar];
+    for(const field of ['id','company_id'] as const){
+      const value=params.get(field);if(!value)continue;
+      if(value.startsWith('eq.')){const id=z.string().uuid().parse(value.slice(3));items=items.filter(item=>item[field]===id);}
+      else if(field==='company_id'&&/^in\.\([a-f0-9,-]*\)$/.test(value)){
+        const ids=z.array(z.string().uuid()).parse(value.slice(4,-1).split(',').filter(Boolean));items=items.filter(item=>item.company_id&&ids.includes(item.company_id));
+      }else {await unknown(route,'invalid calendar identity filter');return;}
+    }
+    const either=params.get('or');
+    if(either){
+      const match=/^\(origin\.eq\.user,company_id\.in\.\(([a-f0-9,-]+)\)\)$/.exec(either);
+      if(!match){await unknown(route,'invalid personal-calendar scope');return;}
+      const ids=z.array(z.string().uuid()).parse(match[1].split(','));items=items.filter(item=>item.origin==='user'||item.company_id&&ids.includes(item.company_id));
+    }
+    const origin=params.get('origin');
+    if(origin==='eq.user')items=items.filter(item=>item.origin==='user');
+    else if(origin==='neq.user')items=items.filter(item=>item.origin!=='user');
+    else if(origin){await unknown(route,'invalid calendar origin');return;}
+    for(const range of params.getAll('occurs_on')){
+      if(!/^(gte|lte)\.\d{4}-\d{2}-\d{2}$/.test(range)){await unknown(route,'invalid calendar date range');return;}
+      items=items.filter(item=>range.startsWith('gte.')?item.occurs_on>=range.slice(4):item.occurs_on<=range.slice(4));
+    }
+    const descending=params.get('order')?.startsWith('occurs_on.desc')??false;
+    items.sort((a,b)=>(descending?-1:1)*a.occurs_on.localeCompare(b.occurs_on)||a.id.localeCompare(b.id));
+    const limit=z.coerce.number().int().min(1).max(501).parse(params.get('limit')??501);
+    await route.fulfill({json:items.slice(0,limit),headers});
+  });
+  await page.route('https://test-project.supabase.co/rest/v1/rpc/sb_calendar_coverage',async route=>{
+    const req=route.request(),headers={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Allow-Headers':route.request().headers()['access-control-request-headers']??'authorization,apikey,content-type,x-client-info'};
+    if(req.method()==='OPTIONS'){await route.fulfill({status:204,headers});return;}
+    if(req.method()!=='POST'||req.headers().authorization!=='Bearer '+token){await unknown(route,'invalid calendar coverage authorization');return;}
+    const {p_company_id:id}=z.object({p_company_id:z.string().uuid().nullable()}).strict().parse(req.postDataJSON());
+    if(id&&!companies.some(company=>company.id===id)){await unknown(route,'unknown coverage company');return;}
+    const covered=new Set(state.calendar.filter(item=>item.origin==='official').map(item=>item.company_id));
+    await route.fulfill({json:{registered_companies:companies.length,covered_companies:covered.size,selected:id?{company_id:id,source_count:covered.has(id)?1:0,last_success_at:covered.has(id)?fixtureNow:null,has_error:false}:null},headers});
+  });
   await page.route('https://test-project.supabase.co/rest/v1/rpc/sb_digest_preferences',async route=>{
     const headers={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Allow-Headers':route.request().headers()['access-control-request-headers']??'authorization,apikey,content-type,x-client-info'};
     if(route.request().method()==='OPTIONS'){await route.fulfill({status:204,headers});return;}

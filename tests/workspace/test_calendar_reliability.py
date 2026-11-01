@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 def calendar_fix(own):
     own.exec_driver_sql('RESET ROLE')
     with own.connection.driver_connection.cursor() as cursor:
-        cursor.execute((ROOT / 'supabase/migrations/20261101040435_calendar_reliability.sql').read_text(), prepare=False)
+        cursor.execute((ROOT / 'supabase/migrations/20261101041751_calendar_reliability.sql').read_text(), prepare=False)
     own.exec_driver_sql('SET LOCAL ROLE authenticated')
     return own
 

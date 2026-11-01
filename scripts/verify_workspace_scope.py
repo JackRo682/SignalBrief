@@ -143,6 +143,13 @@ def verify(root: Path = ROOT) -> dict:
         path = root / name
         if not path.is_file() or digest(path) != expected:
             failures.append(f"Retained feature implementation changed or removed: {name}")
+    # These reviewed routes mount working calendar/notification screens without
+    # enabling the disabled portfolio feature. Protect their exact audited bytes
+    # instead of requiring an unrelated, obsolete portfolio gate reference.
+    for name, expected in manifest["verified_customer_entry_points"].items():
+        path = root / name
+        if not path.is_file() or digest(path) != expected:
+            failures.append(f"Verified customer entry point changed or removed: {name}")
 
     flags = (root / "apps/web/src/lib/workspace-features.ts").read_text()
     match = re.search(r"Object\.freeze\(\{(.*?)\}\)", flags, re.DOTALL)
@@ -171,6 +178,8 @@ def verify(root: Path = ROOT) -> dict:
         "protected_baseline_commit": manifest["baseline_commit"],
         "protected_public_admin_auth_files": len(protected),
         "retained_feature_files": len(manifest["retained_files"]),
+        "verified_customer_entry_points": len(manifest["verified_customer_entry_points"]),
+        "verified_customer_entry_points_baseline_commit": manifest["verified_customer_entry_points_baseline_commit"],
         "status": "FAIL" if failures else "PASS",
         "failures": failures,
     }
