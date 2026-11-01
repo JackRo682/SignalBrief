@@ -1,5 +1,6 @@
 import {createClient} from '@supabase/supabase-js';
 import {verifyRelay,dartEndpoint,downloadDart} from '@/server/dart-relay';
+import {directorySourceUrl,parseArchivedDartDirectory} from '@/server/dart-directory-archive';
 export const runtime='nodejs';export const dynamic='force-dynamic';export const maxDuration=35;
 const headers={'Cache-Control':'no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'};
 export async function POST(req:Request):Promise<Response>{
@@ -9,9 +10,11 @@ export async function POST(req:Request):Promise<Response>{
   if(reader)while(true){const {done,value}=await reader.read();if(done)break;count+=value.length;if(count>4096){await reader.cancel();return Response.json({error:'body_too_large'},{status:413,headers});}chunks.push(value);}
   const body=Buffer.concat(chunks).toString('utf8'),timestamp=req.headers.get('x-sb-timestamp')??'',signature=req.headers.get('x-sb-signature')??'';
   const payload=verifyRelay(body,timestamp,signature,process.env.DART_RELAY_SECRET??'');
+  if(payload.kind==='directory_parse')directorySourceUrl(payload,process.env.NEXT_PUBLIC_SUPABASE_URL??'');
   const db=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,{auth:{persistSession:false,autoRefreshToken:false}});
   const claim=await db.rpc('sb_dart_relay_claim',{body_text:body,request_timestamp:timestamp,signature});
   if(claim.error||claim.data!==true)return Response.json({error:'relay_unauthorized'},{status:401,headers});
+  if(payload.kind==='directory_parse')return Response.json(await parseArchivedDartDirectory(payload,process.env.NEXT_PUBLIC_SUPABASE_URL??''),{headers});
   const result=await downloadDart(dartEndpoint(payload),payload.kind==='company'?128_000:payload.kind==='list'?2_000_000:20_000_000);
   return new Response(new Uint8Array(result.bytes),{headers:{...headers,'Content-Type':result.type}});
  }catch(error){

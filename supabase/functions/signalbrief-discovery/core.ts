@@ -1,4 +1,3 @@
-import {SaxesParser} from 'npm:saxes@6.0.0';
 export type DirectoryEntry={provider_company_id:string;ticker:string;name:string;market:string;official_english_name?:string};
 export class DiscoveryError extends Error {constructor(public code:string,public status=502){super(code);}}
 
@@ -21,31 +20,26 @@ export function parseSecDirectory(raw:string):DirectoryEntry[]{
  return [...entries.values()];
 }
 
-/** Parse the official registry, retaining only records with a listed security code. */
-export function parseDartDirectory(xml:string):DirectoryEntry[]{
- if(/<!DOCTYPE|<!ENTITY/i.test(xml)||xml.length>80000000)throw new DiscoveryError('invalid_dart_directory');
- const entries=new Map<string,DirectoryEntry>();let current:Record<string,string>|null=null,tag='',root=false;
- try{
-  const parser=new SaxesParser({xmlns:false});
-  parser.on('error',()=>{throw new Error('invalid_xml');});
-  parser.on('opentag',node=>{tag=node.name;if(node.name==='result')root=true;if(node.name==='list')current={};});
-  const append=(text:string)=>{if(current&&['corp_code','corp_name','corp_eng_name','stock_code'].includes(tag))current[tag]=(current[tag]??'')+text;};
-  parser.on('text',append);parser.on('cdata',append);
-  parser.on('closetag',node=>{
-   if(node.name==='list'&&current){
-    const ticker=(current.stock_code??'').trim(),id=(current.corp_code??'').trim(),name=(current.corp_name??'').trim();
-    if(ticker){
-     if(!/^\d{6}$/.test(ticker)||!/^\d{8}$/.test(id)||!name||name.length>500)throw new Error('invalid_identity');
-     const englishName=(current.corp_eng_name??'').trim();
-     if(englishName.length>500)throw new Error('invalid_english_name');
-     entries.set(id+':'+ticker,{provider_company_id:id,ticker,name,market:'KR',...(englishName?{official_english_name:englishName}:{})});
-    }
-    current=null;
-   }tag='';
-  });parser.write(xml).close();
- }catch{throw new DiscoveryError('invalid_dart_directory');}
- if(!root||!entries.size||entries.size>50000)throw new DiscoveryError('invalid_dart_directory');
- return [...entries.values()];
+/** Verify the bounded Node parser result without inflating/parsing the full XML in Edge. */
+export function parseDartDirectoryResult(raw:string,expectedSha:string):DirectoryEntry[]{
+ let value:unknown;try{value=JSON.parse(raw);}catch{throw new DiscoveryError('invalid_dart_directory_result');}
+ if(!value||typeof value!=='object'||Array.isArray(value)||!/^[a-f0-9]{64}$/.test(expectedSha))throw new DiscoveryError('invalid_dart_directory_result');
+ const result=value as Record<string,unknown>;
+ if(Object.keys(result).some(key=>!['source_sha256','items'].includes(key))||result.source_sha256!==expectedSha||!Array.isArray(result.items)||result.items.length>50000)throw new DiscoveryError('invalid_dart_directory_result');
+ const seen=new Set<string>();
+ for(const value of result.items){
+  if(!value||typeof value!=='object'||Array.isArray(value))throw new DiscoveryError('invalid_dart_directory_result');
+  const row=value as Record<string,unknown>;
+  if(Object.keys(row).some(key=>!['provider_company_id','ticker','name','market','official_english_name'].includes(key))||
+   typeof row.provider_company_id!=='string'||!/^\d{8}$/.test(row.provider_company_id)||typeof row.ticker!=='string'||!/^\d{6}$/.test(row.ticker)||
+   typeof row.name!=='string'||!row.name.trim()||row.name.length>500||row.market!=='KR'||
+   row.official_english_name!==undefined&&(typeof row.official_english_name!=='string'||!row.official_english_name.trim()||row.official_english_name.length>500))throw new DiscoveryError('invalid_dart_directory_result');
+  const identity=row.provider_company_id+':'+row.ticker;
+  if(seen.has(identity))throw new DiscoveryError('invalid_dart_directory_result');
+  seen.add(identity);
+ }
+ if(result.items.length<100)throw new DiscoveryError('incomplete_official_directory');
+ return result.items as DirectoryEntry[];
 }
 
 export function parseSelection(value:unknown):{company_id:string}|{provider:'sec'|'dart';provider_company_id:string;ticker:string}{

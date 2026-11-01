@@ -1,15 +1,21 @@
 import {createHmac,timingSafeEqual} from 'node:crypto';
 import {request as httpsRequest} from 'node:https';
+import type {DirectoryParsePayload} from './dart-directory-archive';
 
 export type DartRelayPayload={kind:'list'|'document'|'company'|'directory';key:string;nonce:string;corp_code?:string;page?:number;receipt?:string;bgn_de?:string;end_de?:string};
 export function relaySignature(body:string,timestamp:string,secret:string):string {
  return createHmac('sha256',secret).update(timestamp+'\n'+body).digest('hex');
 }
-export function verifyRelay(body:string,timestamp:string,signature:string,secret:string,now=Date.now()):DartRelayPayload {
+export function verifyRelay(body:string,timestamp:string,signature:string,secret:string,now=Date.now()):DartRelayPayload|DirectoryParsePayload {
  if(secret.length<64||!/^\d{13}$/.test(timestamp)||Math.abs(now-Number(timestamp))>60000||!/^([a-f0-9]{64})$/.test(signature)||body.length>4096)throw new Error('relay_unauthorized');
  if(!timingSafeEqual(Buffer.from(signature,'hex'),Buffer.from(relaySignature(body,timestamp,secret),'hex')))throw new Error('relay_unauthorized');
- const value=JSON.parse(body) as DartRelayPayload;
- if(!value||!/^([a-f0-9]{40})$/i.test(value.key)||!/^([a-f0-9]{64})$/.test(value.nonce))throw new Error('relay_invalid_request');
+ let value:DartRelayPayload|DirectoryParsePayload;try{value=JSON.parse(body);}catch{throw new Error('relay_invalid_request');}
+ if(!value||typeof value!=='object'||Array.isArray(value)||typeof value.nonce!=='string'||!/^([a-f0-9]{64})$/.test(value.nonce))throw new Error('relay_invalid_request');
+ if(value.kind==='directory_parse'){
+  if(Object.keys(value).some(k=>!['kind','source_url','sha','nonce'].includes(k))||typeof value.source_url!=='string'||value.source_url.length>3584||typeof value.sha!=='string'||!/^([a-f0-9]{64})$/.test(value.sha))throw new Error('relay_invalid_request');
+  return value;
+ }
+ if(typeof value.key!=='string'||!/^([a-f0-9]{40})$/i.test(value.key))throw new Error('relay_invalid_request');
  dartEndpoint(value);return value;
 }
 export function dartEndpoint(p:DartRelayPayload):URL {

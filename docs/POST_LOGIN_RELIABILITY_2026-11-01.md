@@ -32,8 +32,9 @@ range, filtering defects, and request failures. They are not interchangeable.
 | Home date selection | Default to the inclusive previous 30 days. Explain a genuinely empty range and provide recent/all-history navigation. Keep request failures visible. | `apps/web/src/redesign/home.tsx` |
 | Company search | Normalize Unicode, spaces and punctuation consistently in all three SQL search projections. A new search query clears inherited company/category/source/date scope. | `company-search.ts`, `search.tsx`, discovery migration |
 | Rapid search filters | Compose pending tab/source/date changes until navigation acknowledges them. Preserve later choices across intermediate commits and discard them on unrelated navigation or browser history changes. | `search.tsx`, `search-scope.test.tsx` |
-| Official English names | Preserve OpenDART `corp_eng_name` separately from the primary name and match it across discovery, lookup, catalog and directory by provider plus official company ID. | `signalbrief-discovery/core.ts`, official-directory-English-names migration |
+| Official English names | Preserve OpenDART `corp_eng_name` separately from the primary name and match it across discovery, lookup, catalog and directory by provider plus official company ID. | `server/dart-directory.ts`, official-directory-English-names migration |
 | Company coverage | Search a separate official SEC/OpenDART directory. Activate only an identity selected by the user. Do not register the entire directory as collection work. | `signalbrief-discovery/*`, `company-discovery.tsx`, `/api/company-discovery` |
+| DART directory CPU limit | Archive the original ZIP first; send its hash and a short-lived private read URL through the HMAC relay. Node validates, inflates and parses the complete archive; Edge validates only the bounded listed-company result before saving. | `signalbrief-discovery/service.ts`, `server/dart-directory-archive.ts`, `/api/internal/dart` |
 | Company detail collection | Collect validated provider profile and filing metadata for the selected issuer; archive the original source first. Return `ready` only after persistence completes. Expose failures and allow retries. | `signalbrief-discovery/service.ts`, `company.tsx` |
 | Issuer/share-class identity | Preserve the existing canonical issuer record; verify a selected alternative ticker against the official directory before describing it as the same issuer. | `company-discovery.tsx`, `company.tsx` |
 | Profile errors | Distinguish an unavailable provider field from a failed profile request, with a retry for the latter. SEC fields absent from the source remain unknown. | `components/company-profile.tsx` |
@@ -77,6 +78,10 @@ The final verification and deployed-state results are recorded in
 - `apps/web/tests/company-discovery-edge.test.ts`: executes actual Edge handler
   and orchestration code with simulated external boundaries; authentication,
   MFA, rate limits, identity spoofing, partial providers and persistence failure.
+- `apps/web/tests/dart-directory-integration.test.ts`: connects the real Edge
+  orchestration/HMAC client to the real Node route/parser, with synthetic provider,
+  storage and database boundaries; checks a complete large registry, original hash
+  preservation, substituted-byte rejection and the Edge import graph.
 - Discovery parser/route/UI, search-scope, detail/profile and calendar regression
   files cover failure/retry states and the public contracts.
 - `apps/web/e2e/redesign-reliability.spec.ts`: desktop/mobile user interaction
@@ -123,22 +128,23 @@ these checks do not write production user records.
    `20261101041751_calendar_reliability.sql`. Both preserve existing content;
    expected-function guards stop application if the live definition has drifted.
    Then apply `20261101050721_official_directory_english_names.sql` before deploying the English-name-aware discovery parser.
-3. Deploy the new discovery function and affected existing Edge Functions with
-   their complete relative dependencies and pinned runtime imports.
-4. Build the reviewed Git commit in the existing Vercel project. The production
-   DART relay must accept the new fixed `directory` operation before warming the
-   directory, because the Edge relay client uses the existing production origin.
+3. Build and deploy the reviewed Git commit in the existing Vercel project first.
+   The production Node `/api/internal/dart` route must accept both fixed
+   `directory` and `directory_parse` operations before deploying the CPU-offload
+   discovery Edge version: its relay client uses the existing production origin.
+4. Deploy discovery and affected existing Edge Functions with their complete
+   relative dependencies and pinned imports, then verify an actual DART cold
+   directory warm. Successful local parsing does not establish live completion.
 5. Verify authenticated home, Korean/English/company-code search, company
    selection and detail, calendar scope/date navigation, source status, provider
    snapshots and post-release runtime errors.
 
-The first two database migrations are already applied to the existing production
-project as versions `20261101041747` and `20261101041751`. The files were renamed
-to match the actual migration ledger without changing SQL bytes; do not reapply
-them under their earlier draft timestamps. Discovery v1, collector v16,
-profiles v4 and US v21 were deployed before the frontend release. Their
-application authentication policies remain unchanged. Live directory warming
-waits until the production frontend includes the directory relay operation.
+The first two database migrations are applied as versions `20261101041747` and
+`20261101041751`, and the English-name migration as `20261101050721`. Filenames
+match the actual ledger; do not reapply earlier draft timestamps. Discovery v2
+was deployed with the English-name change. Its first live DART refresh hit the
+CPU limit described below; the replacement requires the Node-first deployment
+order above. Application authentication policies remain unchanged.
 
 Rollback the Vercel deployment and affected Edge versions together if a new
 request boundary fails. The additive private tables and nullable-compatible
@@ -166,6 +172,44 @@ remain applicable to those areas.
 
 OpenDART documents `corp_eng_name` in its [corporation-code directory contract](https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS001&apiId=2019018). The parser now retains this authoritative field, including XML entities and CDATA, without replacing the primary display name. The optional private field is validated and saved with the original snapshot hash and timestamp. Matching uses the official provider identity so a different issuer sharing a ticker cannot inherit a name. Missing or malformed values and removal on a later snapshot are tested.
 
-The additive migration is applied in production as version `20261101050721`; its filename matches that ledger entry. The directory was verified cold before application. The updated discovery function must be deployed before the first directory warm. No additional aliases, source facts or calendar dates are generated.
+The additive migration is applied in production as version `20261101050721`; its filename matches that ledger entry. The directory was verified cold before application. Discovery v2 was deployed, and the first live refresh exposed the resource limit below. No additional aliases, source facts or calendar dates are generated.
 
 The follow-up passed the complete eight-stage verifier: 506 backend tests with zero skips, 877 frontend tests in 87 files, TypeScript, ESLint and production build. Deno discovery checking passed. The unchanged UI has the 80-case desktop/mobile result and independent successful GitHub verification at `9708e0d`. The release still requires actual authenticated provider and post-deployment screen checks.
+
+## Production CPU failure and offload verification
+
+The production discovery v2 log at **2026-11-01 05:12:13 UTC** recorded
+**2,002 ms CPU time**, HTTP **546**, and `WORKER_RESOURCE_LIMIT` during the full
+DART directory refresh. SEC had successfully saved **10,430 entries**. This was
+a live resource failure that the earlier small parser fixtures did not expose.
+
+The repaired flow archives the original ZIP with `upsert: false`, creates a
+60-second signed read URL for that exact private object, and authenticates the
+fixed `directory_parse` operation with HMAC and the existing nonce claim. Node
+checks the object URL, original SHA-256, ZIP bounds/CRC and complete XML before
+returning at most 4 MB of listed identities. Edge verifies the response hash and
+identities before saving; its import graph no longer includes ZIP inflation or
+full XML parsing. A substituted storage response fails without publishing a
+snapshot. The browser receives no signed URL or provider credential.
+
+The final **local** eight-stage verifier passed: **506 backend tests, zero skips**
+against four disposable PostgreSQL databases; **930 frontend tests in 90 files**;
+TypeScript, Ruff, production Next build and ESLint (**zero errors, five existing
+warnings**). Deno checks passed for discovery, collector and profiles. The last
+browser result remains **80/80 desktop/mobile cases** from the unchanged UI;
+the server-only CPU repair did not rerun that browser suite.
+
+The cross-boundary integration generated **224,000 synthetic issuers**, including
+**4,000 listed identities**, as **52,391,577 XML bytes / 2,081,460 ZIP bytes**.
+The actual Node route/parser returned **593,874 bytes**, taking **1,173.32 ms wall
+time / 1,271.36 ms CPU time**; the complete synthetic refresh took **1,228.87 ms**.
+These measurements use local compute and synthetic HTTP/storage/database
+boundaries. They are not production latency or Supabase CPU measurements.
+
+Separately, the production UI at `9708e0d` was checked: the default home range
+showed **63 disclosures, 26 analyses and three events**; the calendar Apple picker,
+coverage message, nearest-event navigation to **October 29**, and Microsoft
+future-event detail worked. Apple's manual official-data refresh succeeded at
+**14:22 KST (05:22 UTC)** on November 1. These observations do not establish DART
+registry completion. **An actual DART cold warm after the Node-first deployment
+is still pending.**

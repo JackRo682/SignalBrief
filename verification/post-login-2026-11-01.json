@@ -11,10 +11,10 @@
     "postgres": "PostgreSQL 16.15; four disposable loopback databases; real migrations and RLS with synthetic rows"
   },
   "final_frontend_recheck": {
-    "reason": "Latest full verifier includes official English-name parser and private search migration; UI source is unchanged from the 80-case browser run",
-    "unit_passed": 877,
+    "reason": "Latest full verifier includes DART full-registry CPU offload to the authenticated Node relay; UI source is unchanged from the last 80-case browser run",
+    "unit_passed": 930,
     "unit_failed": 0,
-    "test_files": 87,
+    "test_files": 90,
     "typecheck": "PASS",
     "lint": "PASS",
     "lint_errors": 0,
@@ -27,7 +27,7 @@
     "post_ledger_filename_alignment_recheck_passed": 12
   },
   "edge_boundary_regressions": {
-    "passed": 22,
+    "passed": 28,
     "included_in_frontend_total": true,
     "boundaries": "Real handler/orchestration/parsers with simulated Auth, HTTP, Storage and database responses"
   },
@@ -50,7 +50,8 @@
     "complete_ci_suite_passed": 80,
     "desktop_passed": 40,
     "mobile_passed": 40,
-    "ci_spec_count": 11
+    "ci_spec_count": 11,
+    "latest_run_note": "Last 80-case result remains applicable to unchanged UI; browser suite was not rerun for the server-only CPU-offload follow-up"
   },
   "not_certified_by_these_checks": [
     "Live SEC/OpenDART latency and availability",
@@ -93,5 +94,73 @@
     "verification_run": 41274746996,
     "evidence_run": 41274746989,
     "status": "SUCCESS"
+  },
+  "dart_cpu_offload_followup": {
+    "production_failure": {
+      "function": "signalbrief-discovery",
+      "deployed_version": 2,
+      "timestamp_utc": "2026-11-01T05:12:13Z",
+      "cpu_time_ms": 2002,
+      "http_status": 546,
+      "error": "WORKER_RESOURCE_LIMIT",
+      "sec_entries_saved_before_failure": 10430
+    },
+    "pipeline": [
+      "Download the official DART ZIP through the existing signed relay",
+      "Archive immutable original ZIP bytes under their SHA-256 before parsing",
+      "Create a 60-second signed private-object read URL",
+      "Send fixed directory_parse operation, object URL and SHA through HMAC and nonce verification",
+      "Node validates source URL/hash/ZIP bounds/CRC and parses complete XML",
+      "Edge validates the bounded hash-bound listed-identity result before saving the snapshot"
+    ],
+    "deployment_order": [
+      "Vercel Node /api/internal/dart route with directory_parse",
+      "Updated signalbrief-discovery Edge function",
+      "Actual authenticated DART cold directory warm"
+    ],
+    "integration_regressions_passed": 3,
+    "included_in_frontend_total": true,
+    "integration_test": "apps/web/tests/dart-directory-integration.test.ts",
+    "integration_assertions": [
+      "Original bytes and SHA retained through archive, signed read, Node parse and snapshot save",
+      "Substituted source bytes fail without snapshot publication",
+      "Discovery Edge import graph excludes ZIP inflation and full XML parser dependencies"
+    ],
+    "local_synthetic_workload": {
+      "source": "Deterministically generated synthetic registry; real Edge orchestration/HMAC client and Node route/parser, simulated provider/storage/database boundaries",
+      "issuer_count": 224000,
+      "listed_count": 4000,
+      "unlisted_count": 220000,
+      "expanded_xml_bytes": 52391577,
+      "archive_bytes": 2081460,
+      "response_bytes": 593874,
+      "node_parse_wall_ms": 1173.32,
+      "node_parse_cpu_ms": 1271.36,
+      "total_refresh_wall_ms": 1228.87,
+      "production_or_supabase_timing_claim": false
+    },
+    "actual_dart_cold_warm": "PENDING_AFTER_NODE_FIRST_DEPLOYMENT",
+    "cpu_offload_commit_ci": "PENDING"
+  },
+  "production_ui_smoke": {
+    "frontend_commit": "9708e0d8e783cbb650927ac8fd36fd0a7b4284f9",
+    "method": "Authenticated production browser inspection",
+    "home_default_range": {
+      "disclosures": 63,
+      "analyses": 26,
+      "events": 3
+    },
+    "calendar": {
+      "apple_picker": "PASS",
+      "coverage_message": "PASS",
+      "nearest_event_navigation_date": "2026-10-29",
+      "microsoft_future_event_detail": "PASS"
+    },
+    "apple_manual_official_data_refresh": {
+      "status": "PASS",
+      "local_time": "2026-11-01 14:22 Asia/Seoul",
+      "utc_minute": "2026-11-01T05:22Z"
+    },
+    "establishes_dart_registry_completion": false
   }
 }

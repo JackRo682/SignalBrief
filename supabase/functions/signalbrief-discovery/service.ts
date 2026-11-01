@@ -1,11 +1,9 @@
 import type {SupabaseClient} from 'npm:@supabase/supabase-js@2.117.2';
-import {unzipSync} from 'npm:fflate@0.8.2';
 import {providerFetch,secSubmissions,ProviderError,obj,str,type Row} from '../signalbrief-api/us-core.ts';
 import {dartRelay} from '../signalbrief-collector/dart-relay.ts';
 import {dartPage,koreaDate} from '../signalbrief-collector/core.ts';
-import {inspectDartZIP,crc32} from '../signalbrief-collector/dart-document-core.ts';
 import {parseProfile,parseSecProfile,type CompanyIdentity} from '../signalbrief-profiles/core.ts';
-import {parseSecDirectory,parseDartDirectory,DiscoveryError} from './core.ts';
+import {parseSecDirectory,parseDartDirectoryResult,DiscoveryError} from './core.ts';
 
 const env=(key:string)=>Deno.env.get(key)??'';
 const sha=async(bytes:Uint8Array)=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new Uint8Array(bytes)))].map(b=>b.toString(16).padStart(2,'0')).join('');
@@ -30,22 +28,27 @@ export async function refreshDirectory(db:SupabaseClient,secrets:Row,provider:'s
  if(await discoveryRpc(db,'claim',{provider,lease})!==true)return {provider,status:'cached_or_refreshing'};
  try{
   await rpc(db,'sb_us_reserve',{p:provider,amount:0,smoke:false});
-  let bytes:Uint8Array,entries;
+  let bytes:Uint8Array,entries,digest:string,path:string;
   if(provider==='sec'){
    const contact=str(secrets.SEC_CONTACT_EMAIL);if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact))throw new DiscoveryError('sec_contact_required',503);
    const raw=await providerFetch(new URL('https://www.sec.gov/files/company_tickers_exchange.json'),'sec',{headers:{'User-Agent':`SignalBrief/0.3 ${contact}`,Accept:'application/json'}},fetch,10000000);
    bytes=new TextEncoder().encode(raw);entries=parseSecDirectory(raw);
+   digest=await sha(bytes);path=`directory/sec/${digest}.json`;
+   await archive(db,path,bytes,'application/json');
   }else{
    const key=str(secrets.DART_API_KEY);if(!/^[a-f0-9]{40}$/i.test(key))throw new DiscoveryError('dart_not_configured',503);
-   bytes=await dartRelay({kind:'directory',key},str(secrets.DART_RELAY_SECRET));
-   const members=inspectDartZIP(bytes,80000000);if(members.length!==1||members[0].name.toUpperCase()!=='CORPCODE.XML')throw new DiscoveryError('invalid_dart_archive');
-   const content=unzipSync(bytes)[members[0].name];
-   if(!content||content.length!==members[0].size||crc32(content)!==members[0].crc)throw new DiscoveryError('invalid_dart_archive');
-   entries=parseDartDirectory(new TextDecoder('utf-8',{fatal:true}).decode(content));
+   const relaySecret=str(secrets.DART_RELAY_SECRET);
+   bytes=await dartRelay({kind:'directory',key},relaySecret,15000);
+   digest=await sha(bytes);path=`directory/dart/${digest}.zip`;
+   // Archive immutable source bytes before parsing. The Node relay receives only
+   // a short-lived read capability for this exact private object, never service keys.
+   await archive(db,path,bytes,'application/zip');
+   const signed=await db.storage.from('signalbrief-raw').createSignedUrl(path,60);
+   if(signed.error||!signed.data?.signedUrl)throw new DiscoveryError('archive_signing_failed',500);
+   const parsed=await dartRelay({kind:'directory_parse',source_url:signed.data.signedUrl,sha:digest},relaySecret,20000);
+   entries=parseDartDirectoryResult(new TextDecoder('utf-8',{fatal:true}).decode(parsed),digest);
   }
   if(entries.length<100)throw new DiscoveryError('incomplete_official_directory');
-  const digest=await sha(bytes),path=`directory/${provider}/${digest}.${provider==='sec'?'json':'zip'}`;
-  await archive(db,path,bytes,provider==='sec'?'application/json':'application/zip');
   await discoveryRpc(db,'save',{provider,lease,sha:digest,object_key:path,items:entries});
   return {provider,status:'ready',count:entries.length};
  }catch(error){await discoveryRpc(db,'fail',{provider,lease,code:code(error)});return {provider,status:'unavailable',code:code(error)};}

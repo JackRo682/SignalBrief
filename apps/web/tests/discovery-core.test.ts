@@ -1,10 +1,21 @@
 // @vitest-environment node
 import {describe,it,expect} from 'vitest';
-import {parseSecDirectory,parseDartDirectory,parseSelection} from '../../../supabase/functions/signalbrief-discovery/core';
+import {parseSecDirectory,parseDartDirectoryResult,parseSelection} from '../../../supabase/functions/signalbrief-discovery/core';
+import {parseDartDirectory} from '../src/server/dart-directory';
 import {dartEndpoint,relaySignature,verifyRelay} from '../src/server/dart-relay';
 import {secSubmissions} from '../../../supabase/functions/signalbrief-api/us-core';
 
 describe('official issuer directory parsing',()=>{
+ it('accepts only a hash-bound bounded parser result with validated official identities',()=>{
+  const digest='a'.repeat(64),items=Array.from({length:100},(_,i)=>({provider_company_id:String(i+100).padStart(8,'0'),ticker:String(i+100).padStart(6,'0'),name:`합성기업${i}`,market:'KR',official_english_name:`Synthetic ${i}`}));
+  expect(parseDartDirectoryResult(JSON.stringify({source_sha256:digest,items}),digest)).toEqual(items);
+  for(const changes of [{provider_company_id:'123'}, {ticker:'ABCDEF'}, {name:''}, {market:'KOSPI'}, {official_english_name:false}, {official_english_name:'x'.repeat(501)}, {source_url:'https://attacker.invalid'}]){
+   const invalid=[{...items[0],...changes},...items.slice(1)];
+   expect(()=>parseDartDirectoryResult(JSON.stringify({source_sha256:digest,items:invalid}),digest)).toThrow('invalid_dart_directory_result');
+  }
+  expect(()=>parseDartDirectoryResult(JSON.stringify({source_sha256:'b'.repeat(64),items}),digest)).toThrow('invalid_dart_directory_result');
+  expect(()=>parseDartDirectoryResult(JSON.stringify({source_sha256:digest,items:items.slice(1)}),digest)).toThrow('incomplete_official_directory');
+ });
  it('uses named SEC columns, preserves share classes and unknown exchange truthfully',()=>{
   const raw=JSON.stringify({fields:['name','cik','exchange','ticker'],data:[['Synthetic Corp',12,'Nasdaq','TEST'],['Synthetic Corp',12,null,'TEST.B']]});
   expect(parseSecDirectory(raw)).toEqual([
