@@ -2,25 +2,36 @@
 
 ## Release state
 
-The web follow-up is live at **https://signalbrief.online** on commit
-`a28ca633990b2e6dcd3dbeb54b7080e0566ecdeb`. Vercel deployment
-`dpl_8iTtkirZK81iz1mrPci8vgHrUHVk` is **READY**. Its exact-commit CI and all
-90 browser scenarios passed. The earlier production baseline for the reproduced
-issues below was `85d3667a1bed15e71a534cf6161686d58419d7f5`.
+The final correction source is published as
+`1541494637d89b46e2b2c53b15186c0e51f3ec62`, tree
+`037126e89ec683718a0127bd181414a0f3d757f5`. All four required exact-source CI
+workflows completed successfully, and main was promoted from `a28ca633` to this
+commit. Vercel deployment `dpl_FxrMLugDeAVgk9s2rS5onQLt8Sd5` is **READY**, targets
+production, and serves **https://signalbrief.online**. Its metadata matches this
+commit and main. An independent public GET of
+https://signalbrief.online/api/release returned HTTP200 and the exact
+`1541494637d89b46e2b2c53b15186c0e51f3ec62` / `main` identity. Runtime promotion is
+complete. The preceding web release was `a28ca633990b2e6dcd3dbeb54b7080e0566ecdeb`;
+the earlier reproduction baseline below was
+`85d3667a1bed15e71a534cf6161686d58419d7f5`.
 
 The subsequent DART correction repair is active in **calendar Edge v4**, alongside
 **discovery Edge v6**. Migrations `20261101103903` (source onboarding) and
 `20261101111341` (correction lineage) are applied, and the collection worker is
-enabled. Actual Kakao and SK hynix correction collection has succeeded. At this
-reporting checkpoint the correction code is still uncommitted: its new exact
-source commit, CI and promotion are **PENDING**. They must not be confused with
-the already passed `a28ca633` web release gates.
+enabled. Actual Kakao and SK hynix correction collection has succeeded. Readiness
+and the production migration ledger have been verified. The queue checkpoint has
+seven idle sources and one failed source: Samsung, `no_confirmed_dates`, attempt3.
+That bounded source limitation is retained below; not every source is reported
+healthy.
 
 Final correction-phase local verification passed all eight stages: **660 backend
 tests, zero skips; 1,162 frontend tests in 97 files**. A fresh LG Electronics
 registration and its automatic collection acceptance also passed, and temporary
 Saved/follow test data has been removed. Production collection times below are
-stated in UTC.
+stated in UTC. The local full-gate artifact records completion at
+**2026-11-01 11:11:46.142039 UTC**. This report's final publication will be a
+documentation-only child of the source commit; a report commit is not represented
+as the deployed runtime commit.
 
 ## Reproduced production behavior
 
@@ -157,7 +168,21 @@ table and its save-cancel controls.
 | Independent correction SQL | 40 tests PASS | Real disposable PostgreSQL; stable IDs, source identity, archives, stale/forked/conflicting denial |
 | Combined calendar PostgreSQL after migration filename alignment | 116 tests PASS | Ledger-matching migration paths; no change to the applied SQL bytes |
 | Exact `a28ca633` CI and browser selection | PASS; 90/90 browser cases, 45 desktop and 45 mobile | Deployed web follow-up, before the later correction-source commit |
-| New correction source commit, its CI and promotion | PENDING | Not replaced by earlier CI results |
+| Exact `15414946` source CI and main promotion | PASS; all four required workflows terminal SUCCESS | Includes a new 90/90 browser run and 116-test calendar PostgreSQL job |
+| Vercel deployment for `15414946` | READY / production PASS | Production alias, metadata SHA/main and HTTP200 `/api/release` exact SHA/main independently verified |
+
+Exact final-source CI evidence:
+
+| Workflow | Run / job | Terminal result |
+|---|---|---|
+| Verification | [41302244390](https://github.com/JackRo682/SignalBrief/actions/runs/41302244390), web job [124835444392](https://github.com/JackRo682/SignalBrief/actions/runs/41302244390/job/124835444392) | SUCCESS; 90 browser cases passed in 4.9m; browser log timestamp 11:41:02.6922501 UTC, workflow completed 11:41:11 UTC |
+| Calendar | [41302244275](https://github.com/JackRo682/SignalBrief/actions/runs/41302244275), job [124835443991](https://github.com/JackRo682/SignalBrief/actions/runs/41302244275/job/124835443991) | SUCCESS; 116 passed, two warnings, 10.70s; log timestamp 11:32:09 UTC |
+| Collector | [41302244250](https://github.com/JackRo682/SignalBrief/actions/runs/41302244250) | SUCCESS |
+| Financial | [41302244287](https://github.com/JackRo682/SignalBrief/actions/runs/41302244287) | SUCCESS |
+
+The branch Production health run
+[41302276659](https://github.com/JackRo682/SignalBrief/actions/runs/41302276659)
+was skipped as expected. That skip is not counted as a successful required check.
 
 Earlier in this follow-up, the pre-correction full local gate passed 620 backend
 tests with zero skips and 1,143 frontend tests in 97 files; its six Deno entrypoints
@@ -227,15 +252,21 @@ empty account already owned saved items. The temporary NVIDIA follow was also
 removed: its company button returned to **팔로우**, and the original Following
 scope was restored to **1 upcoming / 4 past**.
 
+After cleanup, the actual empty Saved archive displayed **three real public
+analyses and three real public documents** in the separate discovery panel. These
+are suggestions with explicit Save actions, not pre-populated personal bookmarks.
+The final empty-archive screenshot records that usable first-save state.
+
 Screenshots captured by the production acceptance run:
 
 | File | SHA-256 |
 |---|---|
-| [calendar-nvidia-live.jpg](verification/2026-11-01/calendar-nvidia-live.jpg) | `19130bf3985813f53c543a71b869f89c959747198262e8c934ccf75ec091376e` |
+| [calendar-nvidia-live.jpg](verification/2026-11-01/calendar-nvidia-live.jpg) | `0a75d4084fb6f26de2fb352642bf3c0f62cc4955d4212c63a9957a411839f820` |
 | [saved-persisted-live.jpg](verification/2026-11-01/saved-persisted-live.jpg) | `91fbbc980fc83c289b272fce0881d0511a05605cee74ea0ab68ddcbc2bd02ecf` |
 | [calendar-lg-automatic-live.jpg](verification/2026-11-01/calendar-lg-automatic-live.jpg) | `f2e27d87ac5f9ea90ea5c56f956895e3d030b775e270955865cae0f272a3d60e` |
+| [saved-empty-discovery-live.jpg](verification/2026-11-01/saved-empty-discovery-live.jpg) | `0167cef69d103afb956f7eccace4df4fb58d7f16bc02f00c314a4ac60c41e0bd` |
 
-## Source coverage and remaining release work
+## Source coverage and operational limitations
 
 Reviewed US feeds are Microsoft, Micron and NVIDIA. **Apple, Tesla and SNDK do not
 have configured calendar feeds** in this release; their uncovered state is explicit.
@@ -262,9 +293,26 @@ was introduced. Existing findings remain: security INFO `no-policy`27, WARN
 `FK`32 / `unused-index`20 and WARN `multiple-permissive`16. This comparison does
 not claim a clean security report or resolution of those pre-existing findings.
 
-The **new correction-source commit, exact-commit CI and promotion remain PENDING**
-at this checkpoint. Fresh-company acceptance, screenshot evidence and test-data
-cleanup are complete.
+Relevant remediation references are Supabase's
+[database advisor guide](https://supabase.com/docs/guides/database/database-linter)
+and [password-strength and leaked-password protection guide](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
+They are follow-up references, not a claim that policies, permissions, indexes or
+password-protection settings were changed by this release.
+
+The source commit, exact-source CI, main promotion, Vercel READY and production
+release response are verified. Fresh-company acceptance and test-data cleanup are
+complete. A fresh Calendar navigation after the final production release again
+showed All **4 upcoming / 27 past**, then Selected NVIDIA **1 upcoming / 3 past**
+and its Nov17 month-grid entry, with coverage **13 registered / 10 connected**.
+The NVIDIA screenshot above was replaced with that final-deployment capture. The
+final report publication is a documentation-only child of `15414946`; it does not
+change the deployed runtime identity.
+
+The release owner also queried error/fatal runtime logs for
+`dpl_FxrMLugDeAVgk9s2rS5onQLt8Sd5` over
+**2026-11-01 11:27:53.523–11:42:53.523 UTC** and received no matching records.
+This is a bounded observation of a newly created deployment, not a claim that no
+error can occur or that unrelated deployments and earlier periods were checked.
 
 ## Interpretation
 

@@ -1,10 +1,10 @@
 {
   "report": "calendar-automation-and-saved-2026-11-01",
   "baseline_release": "85d3667a1bed15e71a534cf6161686d58419d7f5",
-  "deployed_web_release": "a28ca633990b2e6dcd3dbeb54b7080e0566ecdeb",
-  "correction_source_commit": null,
+  "deployed_web_release": "1541494637d89b46e2b2c53b15186c0e51f3ec62",
+  "correction_source_commit": "1541494637d89b46e2b2c53b15186c0e51f3ec62",
   "production_url": "https://signalbrief.online",
-  "release_state": "web_live_correction_backend_verified_new_source_ci_promotion_pending",
+  "release_state": "deployed_runtime_verified_report_finalized",
   "previous_local_validation": {
     "checked_at": "2026-11-01T10:39:32.910769+00:00",
     "full_stages_passed": 8,
@@ -43,9 +43,9 @@
     "production_acceptance": "separate parent-owned gate"
   },
   "local_validation": {
-    "phase": "final_correction_candidate_before_new_source_commit",
+    "phase": "final_correction_runtime_source",
     "checked_at": "2026-11-01T11:11:46.142039+00:00",
-    "time_note": "Final correction full-verifier timestamp, independently read from its checks.json artifact.",
+    "time_note": "Final correction full-verifier timestamp, independently read by the release owner from its checks.json artifact.",
     "full_stages_passed": 8,
     "backend": {
       "passed": 660,
@@ -83,19 +83,55 @@
     "counts_overlap": "Focused and full-suite counts overlap and must not be summed."
   },
   "exact_commit_ci": {
-    "commit": "a28ca633990b2e6dcd3dbeb54b7080e0566ecdeb",
-    "status": "PASS",
-    "browser": {
-      "passed": 90,
-      "desktop": 45,
-      "mobile": 45
+    "commit": "1541494637d89b46e2b2c53b15186c0e51f3ec62",
+    "tree": "037126e89ec683718a0127bd181414a0f3d757f5",
+    "status": "SUCCESS",
+    "required_workflows": {
+      "verification": {
+        "run_id": 41302244390,
+        "status": "SUCCESS",
+        "completed_at": "2026-11-01T11:41:11Z",
+        "web_job_id": 124835444392,
+        "browser": {
+          "passed": 90,
+          "desktop": 45,
+          "mobile": 45,
+          "duration_display": "4.9m",
+          "log_timestamp": "2026-11-01T11:41:02.6922501Z"
+        }
+      },
+      "calendar": {
+        "run_id": 41302244275,
+        "job_id": 124835443991,
+        "status": "SUCCESS",
+        "postgres_passed": 116,
+        "warnings": 2,
+        "duration_seconds": 10.7,
+        "log_timestamp": "2026-11-01T11:32:09Z"
+      },
+      "collector": {
+        "run_id": 41302244250,
+        "status": "SUCCESS"
+      },
+      "financial": {
+        "run_id": 41302244287,
+        "status": "SUCCESS"
+      }
     },
-    "scope": "Deployed web follow-up before the subsequent correction-source commit"
+    "branch_production_health": {
+      "run_id": 41302276659,
+      "status": "SKIPPED",
+      "expected": true,
+      "counts_as_required_success": false
+    },
+    "terminal_results_independently_read_by_release_owner": true
   },
   "correction_release_gates": {
-    "source_commit": "PENDING",
-    "exact_commit_ci": "PENDING",
-    "promotion": "PENDING"
+    "source_commit": "PASS",
+    "exact_commit_ci": "PASS",
+    "main_promotion": "PASS",
+    "vercel_ready": "PASS",
+    "production_release_response": "PASS"
   },
   "migration_filename_verification": {
     "tests": 116,
@@ -129,14 +165,47 @@
     },
     "worker_enabled": true,
     "vercel": {
+      "id": "dpl_FxrMLugDeAVgk9s2rS5onQLt8Sd5",
+      "state": "READY",
+      "commit": "1541494637d89b46e2b2c53b15186c0e51f3ec62",
+      "url": "https://signalbrief.online",
+      "target": "production",
+      "aliases": [
+        "signalbrief.online"
+      ],
+      "metadata_commit": "1541494637d89b46e2b2c53b15186c0e51f3ec62",
+      "metadata_branch": "main"
+    },
+    "previous_vercel": {
       "id": "dpl_8iTtkirZK81iz1mrPci8vgHrUHVk",
       "state": "READY",
       "commit": "a28ca633990b2e6dcd3dbeb54b7080e0566ecdeb",
       "url": "https://signalbrief.online"
+    },
+    "worker_readiness": true,
+    "migration_ledger_verified": true,
+    "production_release_response": {
+      "url": "https://signalbrief.online/api/release",
+      "http_status": 200,
+      "commit": "1541494637d89b46e2b2c53b15186c0e51f3ec62",
+      "branch": "main",
+      "independently_checked_by_release_owner": true
+    },
+    "runtime_log_observation": {
+      "deployment_id": "dpl_FxrMLugDeAVgk9s2rS5onQLt8Sd5",
+      "levels": [
+        "error",
+        "fatal"
+      ],
+      "window_start": "2026-11-01T11:27:53.523Z",
+      "window_end": "2026-11-01T11:42:53.523Z",
+      "matching_records": 0,
+      "checked_by_release_owner": true,
+      "limitation": "Bounded observation of a newly created deployment; not a guarantee of no errors, and not an inspection of other deployments or earlier periods."
     }
   },
   "production_acceptance": {
-    "status": "PASS_FOR_RECORDED_FLOWS_NEW_SOURCE_RELEASE_GATES_PENDING",
+    "status": "PASS_FOR_RECORDED_FLOWS_AND_FINAL_PRODUCTION_RELEASE",
     "calendar": {
       "nvidia_selected": {
         "upcoming": 1,
@@ -253,6 +322,37 @@
         "past": 27,
         "registered_companies": 13,
         "connected_companies": 10
+      },
+      "collection_queue_checkpoint": {
+        "idle": 7,
+        "failed": 1,
+        "failed_sources": [
+          {
+            "source_key": "samsung-ir",
+            "error": "no_confirmed_dates",
+            "attempt": 3
+          }
+        ]
+      },
+      "final_web_deployment_recheck": {
+        "status": "PASS",
+        "commit": "1541494637d89b46e2b2c53b15186c0e51f3ec62",
+        "after_ready_and_exact_public_release_check": true,
+        "fresh_navigation": true,
+        "all": {
+          "upcoming": 4,
+          "past": 27
+        },
+        "nvidia_selected": {
+          "upcoming": 1,
+          "past": 3,
+          "nov17_month_grid_verified": true
+        },
+        "coverage": {
+          "registered_companies": 13,
+          "connected_companies": 10
+        },
+        "screenshot": "docs/verification/2026-11-01/calendar-nvidia-live.jpg"
       }
     },
     "saved": {
@@ -281,13 +381,24 @@
       "explicit_removal_count": 3,
       "history_enabled": false,
       "temporary_nvidia_follow_cleanup": "PASS",
-      "fake_saves_seeded": false
+      "fake_saves_seeded": false,
+      "after_cleanup_discovery": {
+        "status": "PASS",
+        "personal_archive_empty": true,
+        "public_analysis_suggestions": 3,
+        "public_document_suggestions": 3,
+        "automatically_saved": false,
+        "screenshot": "docs/verification/2026-11-01/saved-empty-discovery-live.jpg"
+      }
     }
   },
   "screenshots": [
     {
       "file": "docs/verification/2026-11-01/calendar-nvidia-live.jpg",
-      "sha256": "19130bf3985813f53c543a71b869f89c959747198262e8c934ccf75ec091376e"
+      "sha256": "0a75d4084fb6f26de2fb352642bf3c0f62cc4955d4212c63a9957a411839f820",
+      "bytes": 65355,
+      "verified_runtime_commit": "1541494637d89b46e2b2c53b15186c0e51f3ec62",
+      "capture_scope": "Fresh Calendar navigation after final production READY and exact public release response; NVIDIA selected, 1 upcoming / 3 past, Nov17 grid."
     },
     {
       "file": "docs/verification/2026-11-01/saved-persisted-live.jpg",
@@ -297,6 +408,11 @@
       "file": "docs/verification/2026-11-01/calendar-lg-automatic-live.jpg",
       "bytes": 95609,
       "sha256": "f2e27d87ac5f9ea90ea5c56f956895e3d030b775e270955865cae0f272a3d60e"
+    },
+    {
+      "file": "docs/verification/2026-11-01/saved-empty-discovery-live.jpg",
+      "bytes": 98969,
+      "sha256": "0167cef69d103afb956f7eccace4df4fb58d7f16bc02f00c314a4ac60c41e0bd"
     }
   ],
   "correction_evidence_contract": {
@@ -374,6 +490,31 @@
         "multiple_permissive": 16
       }
     },
-    "interpretation": "Existing findings remain; unchanged counts do not establish that the security report is clean or that those findings are resolved."
+    "interpretation": "Existing findings remain; unchanged counts do not establish that the security report is clean or that those findings are resolved.",
+    "remediation_references": [
+      "https://supabase.com/docs/guides/database/database-linter",
+      "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection"
+    ]
+  },
+  "source_tree": "037126e89ec683718a0127bd181414a0f3d757f5",
+  "previous_exact_commit_ci": {
+    "commit": "a28ca633990b2e6dcd3dbeb54b7080e0566ecdeb",
+    "status": "PASS",
+    "browser": {
+      "passed": 90,
+      "desktop": 45,
+      "mobile": 45
+    },
+    "scope": "Deployed web follow-up before the subsequent correction-source commit"
+  },
+  "main_promotion": {
+    "from": "a28ca633990b2e6dcd3dbeb54b7080e0566ecdeb",
+    "to": "1541494637d89b46e2b2c53b15186c0e51f3ec62",
+    "status": "COMPLETE"
+  },
+  "report_publication": {
+    "kind": "documentation_only_child_of_runtime_source",
+    "runtime_source_parent": "1541494637d89b46e2b2c53b15186c0e51f3ec62",
+    "report_commit_is_deployed_runtime": false
   }
 }
