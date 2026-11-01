@@ -11,8 +11,8 @@
     "postgres": "PostgreSQL 16.15; four disposable loopback databases; real migrations and RLS with synthetic rows"
   },
   "final_frontend_recheck": {
-    "reason": "Combined official alphanumeric code, sanitized relay diagnostics and asynchronous mobile scroll assertion repair; actual official archive also replayed locally",
-    "unit_passed": 958,
+    "reason": "Full gate includes default news capability selection, all prior discovery/profile/calendar corrections and the asynchronous mobile assertion repair",
+    "unit_passed": 961,
     "unit_failed": 0,
     "test_files": 90,
     "typecheck": "PASS",
@@ -51,10 +51,10 @@
     "desktop_passed": 40,
     "mobile_passed": 40,
     "ci_spec_count": 11,
-    "latest_run_note": "c1d43da repair-branch CI independently passed all 80 cases; latest compatibility commit still requires its own CI browser run"
+    "latest_run_note": "ccc0ca4 repair-branch and main CI each passed all80 cases; the home-news follow-up will run the same80-case gate on its own commit"
   },
   "not_certified_by_these_checks": [
-    "Live SEC/OpenDART latency and availability",
+    "Sustained provider uptime and latency under commercial-scale load",
     "New-account OAuth login",
     "Additional official calendar adapters beyond Microsoft and Samsung",
     "Outbound notification delivery, payments, backup restore or commercial-scale load",
@@ -94,14 +94,15 @@
     "frontend_source_unchanged_from_80_case_browser_run": true
   },
   "github_verification": {
-    "commit": "c1d43daf801679c4b6c316ab1a23bc880d618810",
-    "verification_run": 41277174962,
-    "evidence_run": 41277174870,
-    "edge_run": 41277174871,
+    "commit": "ccc0ca41809e3f214f575203781af6acbc9e21b1",
+    "verification_run": 41278773986,
+    "evidence_run": 41278773962,
+    "edge_run": 41278773966,
     "status": "SUCCESS",
     "browser_cases_passed": 80,
-    "main_repeat_run": 41277618842,
-    "main_repeat_status": "FAILURE_DIAGNOSED_AS_ASYNC_TEST_RACE; LOCAL_COMBINED_FIX_VERIFIED"
+    "main_repeat_run": 41279216764,
+    "main_repeat_status": "SUCCESS",
+    "main_repeat_browser_cases_passed": 80
   },
   "dart_cpu_offload_followup": {
     "production_failure": {
@@ -147,14 +148,14 @@
       "total_refresh_wall_ms": 1228.87,
       "production_or_supabase_timing_claim": false
     },
-    "actual_dart_cold_warm": "PENDING_AFTER_NODE_FIRST_DEPLOYMENT",
-    "cpu_offload_commit_ci": "PENDING"
+    "actual_dart_cold_warm": "PASS_AFTER_COMPATIBILITY_CORRECTION",
+    "cpu_offload_commit_ci": "SUCCESS"
   },
   "production_ui_smoke": {
-    "frontend_commit": "9708e0d8e783cbb650927ac8fd36fd0a7b4284f9",
+    "frontend_commit": "ccc0ca41809e3f214f575203781af6acbc9e21b1",
     "method": "Authenticated production browser inspection",
     "home_default_range": {
-      "disclosures": 63,
+      "disclosures": 76,
       "analyses": 26,
       "events": 3
     },
@@ -169,9 +170,30 @@
       "local_time": "2026-11-01 14:22 Asia/Seoul",
       "utc_minute": "2026-11-01T05:22Z"
     },
-    "establishes_dart_registry_completion": false,
+    "establishes_dart_registry_completion": true,
     "hyundai_approved_numeric_evidence_without_legacy_figures": "PASS",
-    "sec_discovery_preserves_results_during_dart_failure": "PASS"
+    "sec_discovery_preserves_results_during_dart_failure": "PASS",
+    "official_directory": {
+      "sec_entries": 10430,
+      "dart_entries": 4009,
+      "dart_alphanumeric_entries": 72,
+      "source_errors": null
+    },
+    "naver": {
+      "search": "PASS",
+      "official_id": "00266961",
+      "ticker": "035420",
+      "market": "KOSPI",
+      "profile": "PASS",
+      "disclosures_persisted": 37,
+      "reload": "PASS",
+      "ticker_search_and_kospi_filter": "PASS",
+      "hydration_succeeded_at": "2026-11-01T06:04:59.813013Z"
+    },
+    "alphanumeric_search": {
+      "ticker": "0068Y0",
+      "status": "PASS"
+    }
   },
   "dart_alphanumeric_followup": {
     "production_migration_version": "20261101055057",
@@ -200,7 +222,7 @@
       "isolated_rechecks_passed": 5
     },
     "final_full_gate": "PASS",
-    "actual_production_directory_warm": "PENDING",
+    "actual_production_directory_warm": "PASS",
     "backend_tests_passed": 517,
     "backend_tests_skipped": 0,
     "frontend_tests_passed": 958,
@@ -208,5 +230,23 @@
     "deno_entrypoints_passed": 3,
     "scope_guard": "PASS",
     "independent_node_review": "PASS"
+  },
+  "home_news_default_followup": {
+    "coverage_expanded": false,
+    "provider_budget_changed": false,
+    "default": "First catalog company supported by shared companyNewsQueries",
+    "explicit_selection": "Preserved even if unsupported",
+    "all_uncovered": "Truthful no-coverage message; no news request",
+    "new_regressions": 3,
+    "regressions_failed_before_fix": 2,
+    "focused_tests_passed": 20,
+    "full_local_gate": "PASS",
+    "latest_commit_browser_ci": "PENDING",
+    "live_home_check": "PENDING",
+    "backend_tests_passed": 517,
+    "backend_tests_skipped": 0,
+    "frontend_tests_passed": 961,
+    "frontend_test_files": 90,
+    "independent_review": "PASS"
   }
 }

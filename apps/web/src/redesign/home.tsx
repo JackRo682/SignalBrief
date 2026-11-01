@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth";
 import { Icon, type IconName } from "@/components/icons";
-import { newsResponse, type NewsResponse } from "@/lib/news-contract";
+import { companyNewsQueries, newsResponse, type NewsResponse } from "@/lib/news-contract";
 import { catalogSchema } from "@/workspace/contracts";
 import { DataState, useData } from "@/workspace/ui";
 import {
@@ -88,9 +88,11 @@ export default function Home() {
     },
     dashboardSchema,
   );
-  const selected =
-    directory.data?.items.find((c) => c.id === company) ??
-    directory.data?.items[0];
+  const selected = company
+    ? directory.data?.items.find((c) => c.id === company)
+    : directory.data?.items.find((c) =>
+        Object.hasOwn(companyNewsQueries, c.ticker.toUpperCase()),
+      );
   const news = useNews(selected?.id ?? "");
   const metrics: {
     title: string;
@@ -422,7 +424,7 @@ export default function Home() {
                 </>
               )}
               {!selected && !directory.loading && (
-                <p className="rd-empty">뉴스를 조회할 등록 기업이 없습니다.</p>
+                <p className="rd-empty">뉴스 검색이 연결된 기업이 없습니다.</p>
               )}
             </div>
           </Panel>

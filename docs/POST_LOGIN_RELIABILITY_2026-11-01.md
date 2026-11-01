@@ -30,6 +30,7 @@ range, filtering defects, and request failures. They are not interchangeable.
 | Boundary | Repair | Principal files |
 | --- | --- | --- |
 | Home date selection | Default to the inclusive previous 30 days. Explain a genuinely empty range and provide recent/all-history navigation. Keep request failures visible. | `apps/web/src/redesign/home.tsx` |
+| Home news selection | In the all-company view, choose the first company covered by the shared news-query allowlist. Preserve an explicitly selected company and explain when no company has coverage. | `home.tsx`, `redesign-discovery.test.tsx` |
 | Company search | Normalize Unicode, spaces and punctuation consistently in all three SQL search projections. A new search query clears inherited company/category/source/date scope. | `company-search.ts`, `search.tsx`, discovery migration |
 | Rapid search filters | Compose pending tab/source/date changes until navigation acknowledges them. Preserve later choices across intermediate commits and discard them on unrelated navigation or browser history changes. | `search.tsx`, `search-scope.test.tsx` |
 | Official English names | Preserve OpenDART `corp_eng_name` separately from the primary name and match it across discovery, lookup, catalog and directory by provider plus official company ID. | `server/dart-directory.ts`, official-directory-English-names migration |
@@ -268,3 +269,45 @@ despite no legacy structured figures, and SEC discovery returned official result
 outside the original seven registered companies while DART was unavailable.
 Official names and tickers are source-backed; directory support does not imply
 arbitrary Korean transliterations or universal calendar/analysis coverage.
+
+
+## Production acceptance and home news default
+
+The `ccc0ca4` repair-branch and main verification runs both passed their complete
+80-case browser commands. Its production deployment and discovery v4/profiles v5
+were then exercised through the authenticated UI:
+
+- OpenDART saved **4,009 listed identities**, including **72 alphanumeric codes**,
+  under the original archive hash at **06:04:15 UTC**. SEC retained **10,430
+  official entries**; both source error codes are null.
+- Searching NAVER found the official `035420` / corporation `00266961` identity.
+  Opening it completed profile/disclosure hydration, classified it as KOSPI and
+  persisted **37 disclosures**. A full page reload retained its profile and
+  recent disclosures. The same company appeared under ticker search and the
+  KOSPI filter. The alphanumeric query `0068Y0` also returned its official match.
+- Home still defaulted to the recent month and displayed **76 disclosures,
+  26 approved analyses and three confirmed events** after that import.
+- The live discovery requests returned HTTP 200; the checked post-release log
+  window contained no repeated resource-limit error. Unauthenticated discovery
+  still returned HTTP 401 with private/no-store caching.
+
+Returning home exposed a separate default-selection problem: new companies can
+precede the seven companies in the existing news-query allowlist. The all-company
+news panel selected the first company regardless of its news coverage and showed
+`company_news_not_supported`, hiding existing available news. The correction
+selects the first covered catalog company using the shared allowlist. An explicit
+company choice remains authoritative; no alternative company's news is substituted.
+If no catalog company has news coverage, the page explains that state and sends
+no request. Provider queries, company-news coverage and budgets are unchanged.
+
+Two new regressions failed before this fix; the explicit-selection case already
+passed and is retained. After the change, the component and news API suites
+passed **20/20**, with TypeScript and focused ESLint passing. The full local
+gate and independent browser CI for this small UI follow-up are recorded in
+VERIFICATION and the structured summary. Its final live home check is separate
+from the already completed directory/profile acceptance above.
+
+The home-news follow-up full local gate passed all eight stages with **517 backend
+tests and zero skips, 961 frontend tests in 90 files**, TypeScript, Ruff, lint,
+production build and the scope guard. Independent local review found no blocker.
+Its exact commit will run the complete 80-case CI browser gate before promotion.

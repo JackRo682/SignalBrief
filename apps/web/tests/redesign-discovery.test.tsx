@@ -59,6 +59,14 @@ const company: Resource = {
   category: "",
   is_saved: false,
 };
+const newsCompany: Resource = {
+  ...company,
+  id: "22000000-0000-4000-8000-000000000002",
+  company_id: "22000000-0000-4000-8000-000000000002",
+  company_name: "Synthetic news-covered company",
+  ticker: "aapl",
+  market: "US",
+};
 const filing: Resource = {
   ...company,
   id: "33000000-0000-4000-8000-000000000001",
@@ -67,9 +75,11 @@ const filing: Resource = {
   published_at: "2026-11-01T00:00:00Z",
 };
 let failure = false;
+let catalogCompanies: Resource[];
 beforeEach(() => {
   vi.clearAllMocks();
   failure = false;
+  catalogCompanies = [newsCompany];
   vi.stubGlobal("fetch", mocks.fetch);
   mocks.fetch.mockResolvedValue({
     ok: true,
@@ -108,7 +118,7 @@ beforeEach(() => {
                 ? {
                     items:
                       req.p.kind === "company"
-                        ? [company]
+                        ? catalogCompanies
                         : req.p.kind === "analysis"
                           ? []
                           : [filing],
@@ -164,6 +174,40 @@ describe("screenshot discovery behavior", () => {
     fireEvent.click(screen.getByRole("button", { name: "다시 시도" }));
     expect(mocks.reload).toHaveBeenCalled();
     await waitFor(() => expect(mocks.fetch).toHaveBeenCalled());
+  });
+  it("defaults all-company news to the first covered company when an unsupported company comes first", async () => {
+    catalogCompanies = [company, newsCompany];
+    render(<Home />);
+    await screen.findByText(/선택 기업의 최신 검색결과 0건입니다/);
+    expect(screen.getByLabelText("기업 필터")).toHaveValue("");
+    expect(screen.getByText("Synthetic news-covered company · 최신 검색")).toBeVisible();
+    expect(mocks.fetch).toHaveBeenCalledExactlyOnceWith(
+      `/api/news?company_id=${newsCompany.id}`,
+      expect.objectContaining({ headers: { Authorization: "Bearer test-redesign-token" } }),
+    );
+  });
+  it("preserves an explicitly selected unsupported company and shows its news limitation", async () => {
+    catalogCompanies = [newsCompany, company];
+    render(<Home />);
+    await screen.findByText(/선택 기업의 최신 검색결과 0건입니다/);
+    mocks.fetch.mockResolvedValueOnce({ ok: false, status: 422 });
+    fireEvent.change(screen.getByLabelText("기업 필터"), { target: { value: company.id } });
+    expect(await screen.findByText("이 기업의 뉴스 검색은 아직 지원하지 않습니다.")).toBeVisible();
+    expect(screen.getByLabelText("기업 필터")).toHaveValue(company.id);
+    expect(screen.getByText("Synthetic company · 최신 검색")).toBeVisible();
+    expect(screen.queryByText("Synthetic news-covered company · 최신 검색")).not.toBeInTheDocument();
+    expect(mocks.fetch.mock.calls.map(([url]) => url)).toEqual([
+      `/api/news?company_id=${newsCompany.id}`,
+      `/api/news?company_id=${company.id}`,
+    ]);
+  });
+  it("explains missing news coverage without requesting news when all registered companies are unsupported", () => {
+    catalogCompanies = [company];
+    render(<Home />);
+    expect(screen.getByText("뉴스 검색이 연결된 기업이 없습니다.")).toBeVisible();
+    expect(screen.queryByText("뉴스를 조회할 등록 기업이 없습니다.")).not.toBeInTheDocument();
+    expect(screen.getByRole("option", { name: company.company_name })).toBeInTheDocument();
+    expect(mocks.fetch).not.toHaveBeenCalled();
   });
   it("does not invent KOSPI membership and sends market filters to the server", () => {
     expect(marketCategory("KRX")).toBe("unclassified");
