@@ -15,7 +15,8 @@ ROOT = Path(__file__).resolve().parents[2]
 @pytest.fixture
 def discovery(own):
     own.exec_driver_sql('RESET ROLE')
-    for name in ('20261101014441_screenshot_dashboard.sql', '20261101041747_company_discovery_reliability.sql'):
+    for name in ('20261101014441_screenshot_dashboard.sql', '20261101041747_company_discovery_reliability.sql',
+                 '20261101050721_official_directory_english_names.sql'):
         with own.connection.driver_connection.cursor() as cursor:
             cursor.execute((ROOT / 'supabase/migrations' / name).read_text(), prepare=False)
     own.exec_driver_sql('SET LOCAL ROLE authenticated')
@@ -29,7 +30,8 @@ def admin(conn, op, payload):
 
 
 def test_directory_is_private_and_mutations_are_service_only(discovery):
-    for sql in ('select * from app_private.company_directory', "select public.sb_discovery_admin('activate','{}')"):
+    for sql in ('select * from app_private.company_directory', "select public.sb_discovery_admin('activate','{}')",
+                "select app_private.sb_company_official_search_names('anything')"):
         point = discovery.begin_nested()
         with pytest.raises(Exception) as caught:
             discovery.exec_driver_sql(sql)
@@ -41,6 +43,82 @@ def test_directory_is_private_and_mutations_are_service_only(discovery):
         discovery.exec_driver_sql("select public.sb_company_discovery('TEST')")
     point.rollback()
     assert caught.value.orig.sqlstate == '42501'
+
+
+def dart_snapshot(conn, english='Alpine Synthetic Research', lease='90000000-0000-4000-8000-000000000003'):
+    items = [{'provider_company_id': str(i).zfill(8), 'ticker': str(i).zfill(6),
+              'name': f'합성기업{i}', 'market': 'KR'} for i in range(100, 200)]
+    items[1]['official_english_name'] = english
+    assert admin(conn, 'claim', {'provider': 'dart', 'lease': lease}) is True
+    return {'provider': 'dart', 'lease': lease, 'sha': 'b' * 64,
+            'object_key': 'directory/dart/' + 'b' * 64 + '.zip', 'items': items}
+
+
+def test_official_english_names_find_the_same_identity_in_discovery_and_registered_search(discovery):
+    discovery.exec_driver_sql('RESET ROLE')
+    snapshot = dart_snapshot(discovery)
+    assert admin(discovery, 'save', snapshot)['count'] == 100
+    discovery.exec_driver_sql('SET LOCAL ROLE authenticated')
+    before = discovery.exec_driver_sql("select public.sb_company_discovery('alpine-synthetic research')").scalar()
+    assert before['total'] == 1
+    assert before['items'][0]['name'] == '합성기업101'
+    assert before['items'][0]['company_id'] is None
+    # Search is read-only; activation retains the official primary display name.
+    discovery.exec_driver_sql('RESET ROLE')
+    selected = {'provider': 'dart', 'provider_company_id': '00000101', 'ticker': '000101'}
+    company = admin(discovery, 'activate', selected)
+    assert company['name'] == '합성기업101'
+    stored = discovery.exec_driver_sql("select official_english_name,source_sha256 from app_private.company_directory where provider='dart' and ticker='000101'").one()
+    assert tuple(stored) == ('Alpine Synthetic Research', 'b' * 64)
+    # Same ticker with a different official identity must not acquire the alias.
+    discovery.exec_driver_sql("""insert into public.companies(id,name,ticker,market,provider,provider_company_id,is_demo,created_at)
+      values ('20000000-0000-4000-8000-000000000093','Unrelated synthetic issuer','000101','KR','dart','99999999',false,now())""")
+    discovery.exec_driver_sql('SET LOCAL ROLE authenticated')
+    for query in ('ALPINE Synthetic Research', 'alpine-synthetic', '합성기업101', '000101'):
+        payload = json.dumps({'q': query})
+        found = discovery.execute(text('select public.sb_company_discovery(:q)'), {'q': query}).scalar()
+        assert found['items'][0]['company_id'] == company['id']
+        for function, action in (('sb_workspace', 'company_lookup'), ('sb_redesign_workspace', 'design_directory'),
+                                 ('sb_customer_workspace', 'catalog')):
+            result = discovery.execute(text(f"select public.{function}(:a,cast(:p as jsonb))"), {'a': action, 'p': payload}).scalar()
+            rows = result if isinstance(result, list) else result['items']
+            assert any(row['id'] == company['id'] for row in rows)
+            if 'alpine' in query.lower():
+                assert {row['id'] for row in rows} == {company['id']}
+    assert 'official_english_name' not in before['items'][0]
+    assert 'source_sha256' not in str(before) and 'raw_object_key' not in str(before)
+
+
+@pytest.mark.parametrize('invalid', [False, 123, ['injected'], {'name': 'injected'}, '', ' ', 'X' * 501])
+def test_invalid_official_english_name_cannot_replace_a_valid_snapshot(discovery, invalid):
+    discovery.exec_driver_sql('RESET ROLE')
+    snapshot = dart_snapshot(discovery)
+    admin(discovery, 'save', snapshot)
+    discovery.exec_driver_sql("update app_private.company_directory_sources set last_success_at=null,last_attempt_at=null where provider='dart'")
+    invalid_snapshot = dart_snapshot(discovery, invalid, '90000000-0000-4000-8000-000000000004')
+    point = discovery.begin_nested()
+    with pytest.raises(Exception) as caught:
+        admin(discovery, 'save', invalid_snapshot)
+    point.rollback()
+    assert caught.value.orig.sqlstate == 'PT422'
+    assert discovery.exec_driver_sql("select official_english_name from app_private.company_directory where provider='dart' and ticker='000101'").scalar() == 'Alpine Synthetic Research'
+    assert discovery.exec_driver_sql('select count(*) from app_private.company_directory where active').scalar() == 100
+
+
+def test_missing_names_and_snapshot_updates_preserve_display_names_and_remove_old_aliases(discovery):
+    discovery.exec_driver_sql('RESET ROLE')
+    snapshot = dart_snapshot(discovery)
+    admin(discovery, 'save', snapshot)
+    selected = {'provider': 'dart', 'provider_company_id': '00000101', 'ticker': '000101'}
+    company = admin(discovery, 'activate', selected)
+    discovery.exec_driver_sql("update app_private.company_directory_sources set last_success_at=null,last_attempt_at=null where provider='dart'")
+    replacement = dart_snapshot(discovery, None, '90000000-0000-4000-8000-000000000004')
+    admin(discovery, 'save', replacement)
+    assert discovery.exec_driver_sql("select official_english_name from app_private.company_directory where provider='dart' and ticker='000101'").scalar() is None
+    assert discovery.execute(text('select name from public.companies where id=:id'), {'id': company['id']}).scalar() == '합성기업101'
+    discovery.exec_driver_sql('SET LOCAL ROLE authenticated')
+    assert discovery.exec_driver_sql("select public.sb_company_discovery('Alpine Synthetic Research')").scalar()['items'] == []
+    assert discovery.exec_driver_sql("select public.sb_workspace('company_lookup','{\"q\":\"Alpine Synthetic Research\"}')").scalar() == []
 
 
 def test_normalized_queries_work_in_all_live_search_projections(discovery):

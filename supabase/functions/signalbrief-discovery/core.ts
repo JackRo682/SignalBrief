@@ -1,5 +1,5 @@
 import {SaxesParser} from 'npm:saxes@6.0.0';
-export type DirectoryEntry={provider_company_id:string;ticker:string;name:string;market:string};
+export type DirectoryEntry={provider_company_id:string;ticker:string;name:string;market:string;official_english_name?:string};
 export class DiscoveryError extends Error {constructor(public code:string,public status=502){super(code);}}
 
 /** Official SEC exchange directory. Keep each share-class ticker; identity is CIK. */
@@ -29,13 +29,16 @@ export function parseDartDirectory(xml:string):DirectoryEntry[]{
   const parser=new SaxesParser({xmlns:false});
   parser.on('error',()=>{throw new Error('invalid_xml');});
   parser.on('opentag',node=>{tag=node.name;if(node.name==='result')root=true;if(node.name==='list')current={};});
-  parser.on('text',text=>{if(current&&['corp_code','corp_name','stock_code'].includes(tag))current[tag]=(current[tag]??'')+text;});
+  const append=(text:string)=>{if(current&&['corp_code','corp_name','corp_eng_name','stock_code'].includes(tag))current[tag]=(current[tag]??'')+text;};
+  parser.on('text',append);parser.on('cdata',append);
   parser.on('closetag',node=>{
    if(node.name==='list'&&current){
     const ticker=(current.stock_code??'').trim(),id=(current.corp_code??'').trim(),name=(current.corp_name??'').trim();
     if(ticker){
      if(!/^\d{6}$/.test(ticker)||!/^\d{8}$/.test(id)||!name||name.length>500)throw new Error('invalid_identity');
-     entries.set(id+':'+ticker,{provider_company_id:id,ticker,name,market:'KR'});
+     const englishName=(current.corp_eng_name??'').trim();
+     if(englishName.length>500)throw new Error('invalid_english_name');
+     entries.set(id+':'+ticker,{provider_company_id:id,ticker,name,market:'KR',...(englishName?{official_english_name:englishName}:{})});
     }
     current=null;
    }tag='';

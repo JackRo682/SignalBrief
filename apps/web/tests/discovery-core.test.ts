@@ -20,6 +20,18 @@ describe('official issuer directory parsing',()=>{
   const xml='<result><list><corp_code>00123456</corp_code><corp_name>시험 &amp; 기업</corp_name><stock_code>123456</stock_code></list><list><corp_code>00123457</corp_code><corp_name>비상장</corp_name><stock_code> </stock_code></list></result>';
   expect(parseDartDirectory(xml)).toEqual([{provider_company_id:'00123456',ticker:'123456',name:'시험 & 기업',market:'KR'}]);
  });
+ it('retains the official English name separately without changing Korean display name or identity',()=>{
+  for(const english of [' Synthetic &amp; Research Co. ','<![CDATA[ Synthetic & Research Co. ]]>']){
+   const xml=`<result><list><corp_code>00123456</corp_code><corp_name>시험기업</corp_name><corp_eng_name>${english}</corp_eng_name><stock_code>123456</stock_code></list></result>`;
+   expect(parseDartDirectory(xml)).toEqual([{provider_company_id:'00123456',ticker:'123456',name:'시험기업',market:'KR',official_english_name:'Synthetic & Research Co.'}]);
+  }
+ });
+ it('accepts missing or blank English names but rejects an oversized listed-company alias',()=>{
+  const xml=(name:string)=>`<result><list><corp_code>00123456</corp_code><corp_name>시험기업</corp_name>${name}<stock_code>123456</stock_code></list></result>`;
+  for(const field of ['', '<corp_eng_name> \n\t </corp_eng_name>'])expect(parseDartDirectory(xml(field))[0]).not.toHaveProperty('official_english_name');
+  expect(parseDartDirectory(xml(`<corp_eng_name>${'A'.repeat(500)}</corp_eng_name>`))[0].official_english_name).toHaveLength(500);
+  expect(()=>parseDartDirectory(xml(`<corp_eng_name>${'A'.repeat(501)}</corp_eng_name>`))).toThrow('invalid_dart_directory');
+ });
  it('rejects XML entities, malformed XML, and provider error responses',()=>{
   expect(()=>parseDartDirectory('<!DOCTYPE result [<!ENTITY x SYSTEM "file:///etc/passwd">]><result>&x;</result>')).toThrow();
   expect(()=>parseDartDirectory('<result><list>')).toThrow();

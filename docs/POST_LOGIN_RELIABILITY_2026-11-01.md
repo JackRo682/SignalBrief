@@ -32,6 +32,7 @@ range, filtering defects, and request failures. They are not interchangeable.
 | Home date selection | Default to the inclusive previous 30 days. Explain a genuinely empty range and provide recent/all-history navigation. Keep request failures visible. | `apps/web/src/redesign/home.tsx` |
 | Company search | Normalize Unicode, spaces and punctuation consistently in all three SQL search projections. A new search query clears inherited company/category/source/date scope. | `company-search.ts`, `search.tsx`, discovery migration |
 | Rapid search filters | Compose pending tab/source/date changes until navigation acknowledges them. Preserve later choices across intermediate commits and discard them on unrelated navigation or browser history changes. | `search.tsx`, `search-scope.test.tsx` |
+| Official English names | Preserve OpenDART `corp_eng_name` separately from the primary name and match it across discovery, lookup, catalog and directory by provider plus official company ID. | `signalbrief-discovery/core.ts`, official-directory-English-names migration |
 | Company coverage | Search a separate official SEC/OpenDART directory. Activate only an identity selected by the user. Do not register the entire directory as collection work. | `signalbrief-discovery/*`, `company-discovery.tsx`, `/api/company-discovery` |
 | Company detail collection | Collect validated provider profile and filing metadata for the selected issuer; archive the original source first. Return `ready` only after persistence completes. Expose failures and allow retries. | `signalbrief-discovery/service.ts`, `company.tsx` |
 | Issuer/share-class identity | Preserve the existing canonical issuer record; verify a selected alternative ticker against the official directory before describing it as the same issuer. | `company-discovery.tsx`, `company.tsx` |
@@ -121,6 +122,7 @@ these checks do not write production user records.
 2. Apply `20261101041747_company_discovery_reliability.sql`, then
    `20261101041751_calendar_reliability.sql`. Both preserve existing content;
    expected-function guards stop application if the live definition has drifted.
+   Then apply `20261101050721_official_directory_english_names.sql` before deploying the English-name-aware discovery parser.
 3. Deploy the new discovery function and affected existing Edge Functions with
    their complete relative dependencies and pinned runtime imports.
 4. Build the reviewed Git commit in the existing Vercel project. The production
@@ -130,7 +132,7 @@ these checks do not write production user records.
    selection and detail, calendar scope/date navigation, source status, provider
    snapshots and post-release runtime errors.
 
-The two database migrations are already applied to the existing production
+The first two database migrations are already applied to the existing production
 project as versions `20261101041747` and `20261101041751`. The files were renamed
 to match the actual migration ledger without changing SQL bytes; do not reapply
 them under their earlier draft timestamps. Discovery v1, collector v16,
@@ -159,3 +161,11 @@ New-account OAuth, payments, outbound notification delivery, backup restoration,
 load at commercial scale, and independent real-world analysis quality are not
 certified by this repair. The earlier project's broader release requirements
 remain applicable to those areas.
+
+## Official English-name follow-up
+
+OpenDART documents `corp_eng_name` in its [corporation-code directory contract](https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS001&apiId=2019018). The parser now retains this authoritative field, including XML entities and CDATA, without replacing the primary display name. The optional private field is validated and saved with the original snapshot hash and timestamp. Matching uses the official provider identity so a different issuer sharing a ticker cannot inherit a name. Missing or malformed values and removal on a later snapshot are tested.
+
+The additive migration is applied in production as version `20261101050721`; its filename matches that ledger entry. The directory was verified cold before application. The updated discovery function must be deployed before the first directory warm. No additional aliases, source facts or calendar dates are generated.
+
+The follow-up passed the complete eight-stage verifier: 506 backend tests with zero skips, 877 frontend tests in 87 files, TypeScript, ESLint and production build. Deno discovery checking passed. The unchanged UI has the 80-case desktop/mobile result and independent successful GitHub verification at `9708e0d`. The release still requires actual authenticated provider and post-deployment screen checks.

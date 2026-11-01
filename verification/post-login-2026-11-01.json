@@ -5,14 +5,14 @@
   "full_verifier": {
     "command": "python scripts/verify.py --full",
     "stages_passed": 8,
-    "backend_passed": 490,
+    "backend_passed": 506,
     "backend_failed": 0,
     "backend_skipped": 0,
     "postgres": "PostgreSQL 16.15; four disposable loopback databases; real migrations and RLS with synthetic rows"
   },
   "final_frontend_recheck": {
-    "reason": "Final gates after the restored consented event analytics, populated mobile grid, and cumulative pending search-filter fixes; backend remained unchanged",
-    "unit_passed": 875,
+    "reason": "Latest full verifier includes official English-name parser and private search migration; UI source is unchanged from the 80-case browser run",
+    "unit_passed": 877,
     "unit_failed": 0,
     "test_files": 87,
     "typecheck": "PASS",
@@ -22,7 +22,7 @@
     "production_build": "PASS"
   },
   "new_migration_regressions": {
-    "passed": 12,
+    "passed": 21,
     "included_in_backend_total": true,
     "post_ledger_filename_alignment_recheck_passed": 12
   },
@@ -78,5 +78,20 @@
       "version": "20261101041751",
       "sha256": "1e94028384e250a4c9ef5e22ade18580974da4299ce2bf005e4affba878af57a"
     }
+  },
+  "official_english_name_followup": {
+    "production_migration_version": "20261101050721",
+    "migration_sha256": "e1bfaf9c21cc843f9e3733247634f59c22683c04bdf3bf4a59b6334bac9cec53",
+    "parser_and_edge_regressions_passed": 31,
+    "discovery_postgres_regressions_passed": 15,
+    "deno_check": "PASS",
+    "independent_review": "PASS",
+    "frontend_source_unchanged_from_80_case_browser_run": true
+  },
+  "github_verification": {
+    "commit": "9708e0d8e783cbb650927ac8fd36fd0a7b4284f9",
+    "verification_run": 41274746996,
+    "evidence_run": 41274746989,
+    "status": "SUCCESS"
   }
 }
