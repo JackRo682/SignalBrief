@@ -1,0 +1,401 @@
+{
+  "schema_version": 1,
+  "scope": "Cross-screen company discovery, source-backed company introductions, and saved-content reliability",
+  "baseline_frontend_commit": "16a3c7466e101465ccf71c0d52c262a28e98cd85",
+  "baseline_ci": {
+    "branch": "PASS",
+    "main": "PASS",
+    "verification": "Release coordinator verified the previous commit's independent CI.",
+    "applies_to_new_release": false
+  },
+  "local_gate": {
+    "checked_at": "2026-11-01T07:21:04.423841+00:00",
+    "status": "PASS",
+    "command": "python scripts/verify.py --full",
+    "stages_passed": 8,
+    "evidence_snapshot_directory": "/tmp/signalbrief-cross-screen-final-full-v2-results/verification",
+    "evidence_checks": "/tmp/signalbrief-cross-screen-final-full-v2-results/verification/checks.json",
+    "tracked_historical_logs_relabelled_as_current": false,
+    "stages": [
+      {
+        "check": "python_compile",
+        "status": "PASS",
+        "returncode": 0
+      },
+      {
+        "check": "backend_tests",
+        "status": "PASS",
+        "returncode": 0
+      },
+      {
+        "check": "openapi_export",
+        "status": "PASS",
+        "returncode": 0
+      },
+      {
+        "check": "backend_lint",
+        "status": "PASS",
+        "returncode": 0
+      },
+      {
+        "check": "frontend_lint",
+        "status": "PASS",
+        "returncode": 0
+      },
+      {
+        "check": "frontend_typecheck",
+        "status": "PASS",
+        "returncode": 0
+      },
+      {
+        "check": "frontend_unit_tests",
+        "status": "PASS",
+        "returncode": 0
+      },
+      {
+        "check": "frontend_build",
+        "status": "PASS",
+        "returncode": 0
+      }
+    ],
+    "backend": {
+      "passed": 571,
+      "failed": 0,
+      "skipped": 0,
+      "existing_deprecation_warnings": 2,
+      "database_environment": "Four disposable loopback PostgreSQL databases; no production test data."
+    },
+    "frontend": {
+      "passed": 1041,
+      "failed": 0,
+      "test_files": 94
+    },
+    "frontend_lint": {
+      "errors": 0,
+      "existing_warnings": 5
+    },
+    "production_build": "PASS",
+    "typescript": "PASS",
+    "ruff": "PASS",
+    "browser_e2e_included_in_script": false
+  },
+  "separate_completed_checks": {
+    "scope_guard": {
+      "status": "PASS",
+      "protected_public_admin_auth_files": 90,
+      "retained_feature_files": 17,
+      "entrypoints": 2
+    },
+    "deno": {
+      "status": "PASS",
+      "entrypoints": [
+        "supabase/functions/signalbrief-api/index.ts",
+        "supabase/functions/signalbrief-us/index.ts",
+        "supabase/functions/signalbrief-profiles/index.ts",
+        "supabase/functions/signalbrief-discovery/index.ts",
+        "supabase/functions/signalbrief-collector/index.ts",
+        "supabase/functions/signalbrief-calendar/index.ts"
+      ]
+    }
+  },
+  "focused_checks": {
+    "counts_overlap_do_not_sum": true,
+    "search_and_picker_related_frontend": {
+      "passed": 101,
+      "files": 8
+    },
+    "new_picker_journeys_included_above": {
+      "passed": 8,
+      "file": "apps/web/tests/company-picker-integration.test.tsx"
+    },
+    "search_filter_real_postgres": {
+      "passed": 10,
+      "skipped": 0,
+      "file": "tests/workspace/test_company_picker_discovery.py"
+    },
+    "official_overview_real_postgres": {
+      "passed": 18,
+      "file": "tests/workspace/test_company_official_overview.py"
+    },
+    "official_overview_frontend_and_profile": {
+      "passed": 60
+    },
+    "new_saved_regressions": {
+      "passed": 17,
+      "file": "apps/web/tests/redesign-saved-reliability.test.tsx"
+    },
+    "saved_with_existing_personal_and_details": {
+      "passed": 43
+    },
+    "existing_saved_ownership_and_canonical_real_postgres": {
+      "passed": 3
+    },
+    "micron_calendar": {
+      "typescript_passed": 33,
+      "postgres_passed": 27,
+      "new_postgres_cases": 26,
+      "existing_html_rls_case": 1,
+      "skipped": 0,
+      "independent_review": "PASS",
+      "source_replay": {
+        "page_counts": [
+          39,
+          0
+        ],
+        "historical_events": 3,
+        "future_events": 0,
+        "dates": [
+          "2026-10-21",
+          "2026-09-30",
+          "2026-09-30"
+        ],
+        "timezone": "America/New_York",
+        "source_clock_preserved_in_quote": true,
+        "source_url": "https://investors.micron.com/events-and-presentations/",
+        "source_page_hashes": [
+          "1615da22e7d8cd0985e43908e897708ec5faa7949a31f70480f53742c3793ea4",
+          "4484ebcb5a5e5095e5e283fe0e986de5de71db7fef11747998505402dad1f8bb"
+        ],
+        "replay_manifest_sha256": "06f6818ceddd709b39dab5c0e1cbe835ffc1d9143c1cbe1baa4372caf44e3cc8",
+        "not_production_ingestion": true
+      }
+    }
+  },
+  "reproduced_production_baseline": {
+    "commit": "16a3c7466e101465ccf71c0d52c262a28e98cd85",
+    "watchlist_ls_main_and_add_dialog": "Official LS issuer could not be selected through registered-company-only pickers.",
+    "calendar_ls_and_micron": "Official issuers were absent from registered-company-only selection.",
+    "overseas_micron": "Official MU result appeared together with contradictory registered-company empty copy.",
+    "naver": "Basic profile fields present; business overview/products/areas absent.",
+    "saved": "No saves in the inspected account; history explicitly disabled. No confirmed persistence loss.",
+    "sndk": {
+      "method": "Production SQL, code inspection and signed-in browser DOM at 07:09 UTC",
+      "verified_profile_cache": true,
+      "industry_description": "Computer Storage Devices",
+      "industry_code": "3572",
+      "live_detail_screenshot_verified": false,
+      "live_detail_screen_verified": true
+    }
+  },
+  "calendar_coverage": {
+    "deployed_adapters_at_recording": [
+      "Microsoft",
+      "Samsung"
+    ],
+    "issuer_discovery_does_not_invent_events": true,
+    "micron_public_q4_feed_found": true,
+    "micron_adapter_status": "DEPLOYED_SOURCE_REFRESH_VERIFIED",
+    "micron_adapter_completion_claimed": true,
+    "ls_recent_or_upcoming_date_verified": false,
+    "samsung_existing_state": "The current official Upcoming Events list is empty; existing fail-closed no_confirmed_dates remains. No claim that all calendar source errors were cleared."
+  },
+  "release_gates": {
+    "browser_e2e": {
+      "status": "PASS",
+      "expected_cases": 84,
+      "passed": 84,
+      "failed": 0,
+      "desktop": 42,
+      "mobile": 42,
+      "duration_minutes": 3.3,
+      "log": "/tmp/signalbrief-personal-integration-browser-v3.log",
+      "source_scope": "Final runtime UI including official date precision copy; later changes are server or test-only.",
+      "prior_assertion_corrections": [
+        "Calendar selection query correctly uses the existing personal-or-company SQL scope; asserted exact OR expression.",
+        "Removed registered-only empty banner must be absent while authoritative directory empty result and zero cards remain asserted."
+      ]
+    },
+    "exact_new_commit_ci": {
+      "status": "PENDING",
+      "commit": null
+    },
+    "migrations": {
+      "status": "APPLIED",
+      "local_files": [
+        "20261101072153_company_official_overview.sql",
+        "20261101072155_company_picker_discovery_filters.sql",
+        "20261101072157_micron_q4_calendar.sql"
+      ],
+      "deployed_versions": [
+        "20261101072153",
+        "20261101072155",
+        "20261101072157"
+      ]
+    },
+    "discovery_edge": {
+      "status": "ACTIVE",
+      "version": 5
+    },
+    "frontend_deployment": {
+      "status": "PENDING",
+      "deployment_id": null,
+      "commit": null,
+      "url": "https://signalbrief.online"
+    },
+    "signed_in_production_acceptance": {
+      "status": "PENDING",
+      "verified_at": null
+    },
+    "deployment_order": [
+      "company_official_overview migration",
+      "company_picker_discovery_filters migration",
+      "micron_q4_calendar migration",
+      "discovery Edge5",
+      "calendar Edge2",
+      "official calendar refresh",
+      "exact commit CI",
+      "frontend deployment",
+      "signed-in acceptance"
+    ],
+    "calendar_edge": {
+      "status": "ACTIVE",
+      "version": 2
+    },
+    "calendar_production_refresh": {
+      "status": "MICRON_VERIFIED",
+      "request_id": 5695,
+      "finished_at": "2026-11-01T07:23:04.153494Z",
+      "micron_items": 3,
+      "microsoft_items": 5,
+      "samsung_code": "no_confirmed_dates"
+    },
+    "security_advisors": {
+      "new_findings": 0,
+      "baseline_and_after_counts": {
+        "rls_enabled_no_policy": 24,
+        "anon_security_definer_function_executable": 6,
+        "authenticated_security_definer_function_executable": 32,
+        "auth_leaked_password_protection": 1
+      }
+    }
+  },
+  "source_snapshots": {
+    "durable_archive_status": "SAVED",
+    "storage_identifiers_not_embedded": true,
+    "sources": [
+      {
+        "company": "NAVER",
+        "ticker": "035420",
+        "source_url": "https://www.navercorp.com/company/about",
+        "format": "html",
+        "captured_at": "2026-11-01T06:45:27.661700Z",
+        "bytes": 143094,
+        "sha256": "45d679064a24e882daf17b71d03a18f1dca011e30b3e66099e8678edbc77e747",
+        "location": "소개 / SEARCH / COMMERCE / FINTECH / 주요 사업"
+      },
+      {
+        "company": "LS",
+        "ticker": "006260",
+        "source_url": "https://lsholdings.co.kr/en/about/status",
+        "format": "web_retrieved_text_excerpt",
+        "captured_at": "2026-11-01T06:47:57.385012Z",
+        "bytes": 6445,
+        "sha256": "4b606fef04ec4311ac4d75f1c49fed307f13831ae94fe4179db5568e8fc079e8",
+        "direct_html_capture": "unavailable_http_999",
+        "location": "Retrieved lines 65–68 and 89–95",
+        "scope": "Holding-company and affiliate activities; power cables wording retained, communications cables not claimed."
+      },
+      {
+        "company": "Micron",
+        "ticker": "MU",
+        "source_url": "https://www.micron.com/about/company/corporate-profile",
+        "format": "html",
+        "captured_at": "2026-11-01T06:45:29.376865Z",
+        "bytes": 268701,
+        "sha256": "817c028f8000200ffb880dd1ee352b09a1f58285ba857233e68ce8178c773891",
+        "location": "Who we are; Products; Market & Industries"
+      }
+    ]
+  },
+  "post_gate_date_precision_correction": {
+    "status": "FOCUSED_PASS",
+    "reason": "Official events with source clock times are displayed at DATE precision, not asserted to last all day.",
+    "runtime_files": [
+      "apps/web/src/redesign/calendar.tsx",
+      "apps/web/src/redesign/event.tsx"
+    ],
+    "focused_tests_passed": 37,
+    "new_regressions": 3,
+    "typescript": "PASS",
+    "changed_file_lint": "PASS",
+    "full_ci_and_browser_status": "Included in final full gate and84-case browser PASS; exact commit CI pending."
+  },
+  "previous_local_gate": {
+    "checked_at": "2026-11-01T06:59:08.266944+00:00",
+    "status": "PASS",
+    "command": "python scripts/verify.py --full",
+    "stages_passed": 8,
+    "evidence_snapshot_directory": "/tmp/signalbrief-personal-integration-full-results/verification",
+    "evidence_checks": "/tmp/signalbrief-personal-integration-full-results/verification/checks.json",
+    "tracked_historical_logs_relabelled_as_current": false,
+    "stages": [
+      {
+        "check": "python_compile",
+        "status": "PASS",
+        "returncode": 0
+      },
+      {
+        "check": "backend_tests",
+        "status": "PASS",
+        "returncode": 0
+      },
+      {
+        "check": "openapi_export",
+        "status": "PASS",
+        "returncode": 0
+      },
+      {
+        "check": "backend_lint",
+        "status": "PASS",
+        "returncode": 0
+      },
+      {
+        "check": "frontend_lint",
+        "status": "PASS",
+        "returncode": 0
+      },
+      {
+        "check": "frontend_typecheck",
+        "status": "PASS",
+        "returncode": 0
+      },
+      {
+        "check": "frontend_unit_tests",
+        "status": "PASS",
+        "returncode": 0
+      },
+      {
+        "check": "frontend_build",
+        "status": "PASS",
+        "returncode": 0
+      }
+    ],
+    "backend": {
+      "passed": 571,
+      "failed": 0,
+      "skipped": 0,
+      "existing_deprecation_warnings": 2,
+      "database_environment": "Four disposable loopback PostgreSQL databases; no production test data."
+    },
+    "frontend": {
+      "passed": 1041,
+      "failed": 0,
+      "test_files": 94
+    },
+    "frontend_lint": {
+      "errors": 0,
+      "existing_warnings": 5
+    },
+    "production_build": "PASS",
+    "typescript": "PASS",
+    "ruff": "PASS",
+    "browser_e2e_included_in_script": false
+  },
+  "test_harness_correction": {
+    "file": "apps/web/tests/desktop-questions.test.tsx",
+    "reason": "Wait for persisted first response before second suggested-question interaction; no runtime code, timeout or assertion removed.",
+    "focused_file_passed": 10,
+    "independent_focused_runs": 5,
+    "final_full_gate": "PASS"
+  }
+}

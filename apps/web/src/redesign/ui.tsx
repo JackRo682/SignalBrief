@@ -199,8 +199,23 @@ export function SaveButton({
 }) {
   const { token } = useAuth(),
     action = useMutation(),
-    [saved, setSaved] = useState(item.is_saved);
-  useEffect(() => setSaved(item.is_saved), [item.is_saved]);
+    [selection, setSelection] = useState({
+      token,
+      id: item.id,
+      kind: item.kind,
+      value: item.is_saved,
+    });
+  useEffect(
+    () =>
+      setSelection({ token, id: item.id, kind: item.kind, value: item.is_saved }),
+    [token, item.id, item.kind, item.is_saved],
+  );
+  const saved =
+    selection.token === token &&
+    selection.id === item.id &&
+    selection.kind === item.kind
+      ? selection.value
+      : item.is_saved;
   if (item.kind === "company") return null;
   const kind = item.kind;
   return (
@@ -218,7 +233,7 @@ export function SaveButton({
               { action: "save", p: { id: item.id, kind, saved: !saved } },
               saveResult,
             );
-            setSaved(value.saved);
+            setSelection({ token, id: item.id, kind, value: value.saved });
             onSaved?.();
           })
         }

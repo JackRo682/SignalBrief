@@ -334,13 +334,17 @@ export default function Saved() {
         : [...current, key],
     );
   const items = saved.data?.items ?? [];
+  // Published legacy events are reviewed analyses; calendar interests are separate records.
   const analyses = items.filter(
-    (item) => item.kind === "us_analysis" || item.kind === "dart_analysis",
+    (item) =>
+      item.kind === "event" ||
+      item.kind === "us_analysis" ||
+      item.kind === "dart_analysis",
   );
   const documents = items.filter(
     (item) => item.kind === "filing" || item.kind === "document",
   );
-  const events = items.filter((item) => item.kind === "event");
+  const hasFilters = Boolean(query || company);
   const visits = history.data?.items ?? [];
   const dateCompanies = new Map(
     companies.data?.items.map((item) => [item.id, item]) ?? [],
@@ -441,6 +445,19 @@ export default function Saved() {
           <Icon name="search" size={17} />
           검색
         </button>
+        {hasFilters && (
+          <button
+            className="rd-p-button"
+            type="button"
+            onClick={() => {
+              setQuery("");
+              setDraft("");
+              setCompany("");
+            }}
+          >
+            저장 필터 초기화
+          </button>
+        )}
         <button
           className="rd-p-button"
           type="button"
@@ -494,7 +511,7 @@ export default function Saved() {
                 </Link>
                 {item.summary && <p>{item.summary}</p>}
                 <div className="rd-p-tags">
-                  <span>승인된 분석</span>
+                  <span>{item.kind === "event" ? "검토된 분석" : "승인된 분석"}</span>
                   {item.category && <span>{item.category}</span>}
                   {item.coverage === "excerpt" && <span>발췌 분석</span>}
                 </div>
@@ -509,8 +526,18 @@ export default function Saved() {
           </div>
           {saved.data && !analyses.length && !saved.error && (
             <Empty
-              title="저장한 분석이 없습니다."
-              description="승인된 분석에서 저장 버튼을 눌러 모아 보세요."
+              title={
+                hasFilters
+                  ? "조건에 맞는 저장한 분석이 없습니다."
+                  : "저장한 분석이 없습니다."
+              }
+              description={
+                hasFilters
+                  ? "키워드나 회사 필터를 바꾸거나 초기화해 보세요."
+                  : "공개된 분석에서 저장 버튼을 눌러 모아 보세요."
+              }
+              href={hasFilters ? undefined : "/search?kind=analysis"}
+              label="분석 찾아보기"
             />
           )}
         </SavedSection>
@@ -576,7 +603,20 @@ export default function Saved() {
             </table>
           </div>
           {saved.data && !documents.length && !saved.error && (
-            <Empty title="북마크한 문서가 없습니다." />
+            <Empty
+              title={
+                hasFilters
+                  ? "조건에 맞는 북마크 문서가 없습니다."
+                  : "북마크한 문서가 없습니다."
+              }
+              description={
+                hasFilters
+                  ? "키워드나 회사 필터를 바꾸거나 초기화해 보세요."
+                  : "공시 상세에서 저장 버튼을 눌러 모아 보세요."
+              }
+              href={hasFilters ? undefined : "/search?kind=filing"}
+              label="공시 찾아보기"
+            />
           )}
         </SavedSection>
         <SavedSection
@@ -635,11 +675,7 @@ export default function Saved() {
           id="event"
           title="저장한 일정"
           icon="calendar"
-          total={Math.max(
-            events.length,
-            calendarItems.length,
-            unavailableDates.length,
-          )}
+          total={Math.max(calendarItems.length, unavailableDates.length)}
           expanded={expanded.includes("event")}
           toggle={() => toggle("event")}
         >
@@ -688,47 +724,23 @@ export default function Saved() {
               ))}
             </div>
           )}
-          {events.length > 0 && (
-            <>
-              <h3>저장한 검토 이벤트</h3>
-              <div className="rd-p-event-list">
-                {page(events, "event").map((item) => (
-                  <article key={`${item.kind}:${item.id}`}>
-                    <span className="rd-p-tile green">
-                      <Icon name="calendar" />
-                    </span>
-                    <div>
-                      <Link
-                        href={resourceHref(item)}
-                        className="rd-p-card-title"
-                        onClick={() => track(item)}
-                      >
-                        {item.title}
-                      </Link>
-                      <p>
-                        {item.company_name} ·{" "}
-                        {prefs.date(
-                          item.published_at,
-                          item.publication_precision,
-                        )}
-                      </p>
-                    </div>
-                    <SaveButton item={item} reload={reload} />
-                  </article>
-                ))}
-              </div>
-            </>
-          )}
-          {saved.data &&
-            dates.data &&
-            !events.length &&
+          {dates.data &&
             !calendarItems.length &&
             !unavailableDates.length &&
-            !saved.error &&
             !dates.error && (
               <Empty
-                title="저장한 일정이 없습니다."
-                description="캘린더에서 관심 일정을 저장해 보세요."
+                title={
+                  hasFilters
+                    ? "조건에 맞는 저장한 일정이 없습니다."
+                    : "저장한 일정이 없습니다."
+                }
+                description={
+                  hasFilters
+                    ? "키워드나 회사 필터를 바꾸거나 초기화해 보세요."
+                    : "캘린더에서 관심 일정을 저장해 보세요."
+                }
+                href={hasFilters ? undefined : "/calendar"}
+                label="캘린더 열기"
               />
             )}
         </SavedSection>

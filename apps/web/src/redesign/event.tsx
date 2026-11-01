@@ -341,7 +341,7 @@ function EventContent({
               <span>
                 <Icon name="calendar" size={17} />
                 {occurrence
-                  ? `${formatDate(occurrence.occurs_on, "date")} · 종일`
+                  ? `${formatDate(occurrence.occurs_on, "date")} · ${occurrence.origin === "user" ? "종일" : "날짜 기준"}`
                   : `공개일 ${formatDate(eventDetail!.event.published_at, eventDetail!.event.publication_precision)}`}
               </span>
               {source && (
@@ -398,7 +398,7 @@ function EventContent({
                     <dt>{occurrence ? "일정" : "공개일"}</dt>
                     <dd>
                       {occurrence
-                        ? `${formatDate(occurrence.occurs_on, "date")} · 종일`
+                        ? `${formatDate(occurrence.occurs_on, "date")} · ${occurrence.origin === "user" ? "종일" : "날짜 기준"}`
                         : formatDate(
                             eventDetail!.event.published_at,
                             eventDetail!.event.publication_precision,
@@ -408,7 +408,11 @@ function EventContent({
                   {occurrence && (
                     <div>
                       <dt>시간·장소</dt>
-                      <dd>원문에 확인된 세부 시간·장소 정보가 없습니다.</dd>
+                      <dd>
+                        {occurrence.origin === "user"
+                          ? "시간을 지정하지 않은 개인 일정입니다."
+                          : "정확한 시간·장소는 공식 원문에서 확인하세요."}
+                      </dd>
                     </div>
                   )}
                   <div>
@@ -630,7 +634,7 @@ function EventContent({
                 </time>
                 <div>
                   <strong>{item.title}</strong>
-                  <p>{formatDate(item.occurs_on, "date")} · 종일</p>
+                  <p>{formatDate(item.occurs_on, "date")} · {item.origin === "user" ? "종일" : "날짜 기준"}</p>
                   <span>
                     {item.origin === "user" ? "개인 일정" : "공식 일정"}
                   </span>
@@ -726,7 +730,11 @@ function EventContent({
               알림을 관리합니다. SignalBrief가 예약 이메일·푸시를 발송하는
               기능은 아닙니다.
             </p>
-            <p>이 일정은 시간 정보가 없는 종일 일정입니다.</p>
+            <p>
+              {occurrence.origin === "user"
+                ? "이 일정은 시간 정보가 없는 종일 일정입니다."
+                : "이 일정은 날짜 기준으로 표시하고 내보냅니다. 정확한 시간은 공식 원문에서 확인하세요."}
+            </p>
             <label>
               알림 시점
               <select

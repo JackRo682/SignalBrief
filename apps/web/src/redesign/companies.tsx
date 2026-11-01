@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Icon } from "@/components/icons";
 import { companyBusinessProfiles } from "@/lib/company-business-profiles";
+import { CompanyIntroduction } from "@/components/company-introduction";
 import { catalogSchema, sourceOverviewSchema } from "@/workspace/contracts";
 import { DataState, useData } from "@/workspace/ui";
 import { CompanyLogo, Heading, SearchForm, formatSourceDate } from "./ui";
@@ -87,11 +88,9 @@ export default function Companies() {
                     </p>
                   </div>
                 </Link>
-                <p className="rd-company-description">
-                  {profile?.description[0] ||
-                    c.summary ||
-                    "확인된 기업 소개가 아직 없습니다."}
-                </p>
+                {profile?.description[0] || c.summary ? <p className="rd-company-description">{profile?.description[0] || c.summary}</p>
+                  : c.official_overview ? <CompanyIntroduction company={c} />
+                  : <p className="rd-company-description">확인된 기업 소개가 아직 없습니다.</p>}
                 <div className="rd-company-links">
                   <Link href={`/search?kind=document&company_id=${c.id}`}>
                     <Icon name="file" />
@@ -148,7 +147,7 @@ export default function Companies() {
           );
         })}
       </div>
-      {!directory.loading && !directory.error && !rows.length && (
+      {!query && !directory.loading && !directory.error && !rows.length && (
         <p className="rd-empty">조건에 맞는 등록 기업이 없습니다.</p>
       )}
       {(offset > 0 || directory.data?.next_offset != null) && (

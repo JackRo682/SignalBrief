@@ -16,6 +16,7 @@ import {
   type Resource,
 } from "../src/workspace/contracts";
 import { pageDataCache } from "../src/lib/page-data-cache";
+import { companyBusinessProfiles } from "../src/lib/company-business-profiles";
 
 const mocks = vi.hoisted(() => ({ workspace: vi.fn(), request: vi.fn() }));
 vi.mock("@/components/auth", () => ({
@@ -61,6 +62,14 @@ const company: Resource = {
   publication_precision: "date",
   category: "company",
   is_saved: false,
+};
+const officialOverview = {
+  kind: "profile" as const, provider: "SEC EDGAR" as const,
+  company_id: companyId, provider_company_id: "0000000001", ticker: "TEST",
+  name: "Synthetic sourced legal name", english_name: null, industry_description: "Synthetic sourced industry",
+  industry_code: "1234", established_on: null, ceo: null, website: null,
+  source_url: "https://www.sec.gov/edgar/browse/?CIK=0000000001",
+  source_sha256: "b".repeat(64), fetched_at: "2026-10-18T09:30:00Z",
 };
 const filing: Resource = {
   ...company,
@@ -245,6 +254,27 @@ describe("redesigned detail screens", () => {
     expect(screen.getByRole("link", { name: "Open approved analysis ↗" })).toHaveAttribute("href", `/documents/${filingId}?kind=filing&analysis=us`);
     expect(screen.queryByText("USD")).not.toBeInTheDocument();
     expect(screen.queryByText("IFRS")).not.toBeInTheDocument();
+  });
+  it("shows a sourced factual introduction for an uncurated discovered company", async () => {
+    mocks.workspace.mockResolvedValueOnce({
+      company: { ...company, official_overview: officialOverview }, documents: [], analyses: [], events: [], facts: [], watching: false, holding: false,
+    });
+    render(<CompanyDetail id={companyId} />);
+    expect(await screen.findByRole("heading", { name: "Official company introduction" })).toBeVisible();
+    expect(screen.getByText(/Synthetic sourced legal name.*Synthetic sourced industry/)).toBeVisible();
+    expect(screen.getByRole("link", { name: "Official company facts · SEC EDGAR" })).toHaveAttribute("href", officialOverview.source_url);
+    expect(screen.getByText(/2026-10-18T09:30:00Z/)).toBeVisible();
+    expect(screen.queryByText(/No reviewed business description is available/)).not.toBeInTheDocument();
+    expect(screen.getByText("No sourced product information is available.")).toBeVisible();
+  });
+  it("keeps reviewed business content ahead of the factual profile fallback", async () => {
+    mocks.workspace.mockResolvedValueOnce({
+      company: { ...company, ticker: "AAPL", official_overview: { ...officialOverview, ticker: "AAPL" } }, documents: [], analyses: [], events: [], facts: [], watching: false, holding: false,
+    });
+    render(<CompanyDetail id={companyId} />);
+    expect(await screen.findByText(companyBusinessProfiles.AAPL.description[1])).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Business overview" })).toBeVisible();
+    expect(screen.queryByText(/Synthetic sourced legal name/)).not.toBeInTheDocument();
   });
   it("preserves exact decimal strings and does not convert currency or round large values", () => {
     expect(exactDetailValue("9007199254740993.120000")).toBe(

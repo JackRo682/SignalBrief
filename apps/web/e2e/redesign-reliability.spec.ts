@@ -136,6 +136,16 @@ async function reliabilityFixture(page: Page) {
       provider: 'sec', is_demo: false, last_ingested_at: fixtureNow,
     })) });
   });
+  await page.route('**/v1/watchlist', async route => {
+    expect(route.request().method()).toBe('GET');
+    await route.fulfill({ json: {
+      id: '10000000-0000-4000-8000-000000000002', name: 'Synthetic watchlist',
+      items: directory().filter(item => base.state.watched.has(item.id)).map(item => ({
+        id: item.id, name: item.company_name, ticker: item.ticker, market: item.market,
+        provider: 'sec', is_demo: false, last_ingested_at: fixtureNow,
+      })),
+    } });
+  });
   await page.route('https://test-project.supabase.co/rest/v1/rpc/sb_calendar_coverage', async route => {
     const headers = {
       'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -425,7 +435,9 @@ test('calendar aliases use server search and monthly navigation opens the correc
   await expect(page.getByRole('heading', { name: calendarEntries[1].title, exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: '공식 출처 ↗', exact: true })).toHaveAttribute('href', sourceUrl);
   await expect(page.getByRole('tabpanel')).toContainText(calendarEntries[1].quote!);
-  await expect(page.getByRole('tabpanel')).toContainText('2026년 11월 15일 · 종일');
+  await expect(page.getByRole('tabpanel')).toContainText('2026년 11월 15일 · 날짜 기준');
+  await expect(page.getByRole('tabpanel')).toContainText('정확한 시간·장소는 공식 원문에서 확인하세요.');
+  await expect(page.getByRole('tabpanel')).not.toContainText('원문에 확인된 세부 시간·장소 정보가 없습니다.');
   await finish(page, info, fixture);
 });
 
@@ -440,5 +452,49 @@ test('calendar request errors remain visible and retry restores the month', asyn
   await grid.getByRole('alert').getByRole('button', { name: '다시 시도', exact: true }).click();
   await expect(grid.getByRole('alert')).toHaveCount(0);
   await expect(grid.getByRole('link', { name: /Synthetic October official event/ })).toBeVisible();
+  await finish(page, info, fixture);
+});
+
+test('watchlist discovers an unregistered issuer, follows explicitly, and persists before removal', async ({ page }, info) => {
+  const fixture = await reliabilityFixture(page);
+  await page.goto('/watchlist');
+  const main = page.locator('main');
+  await main.getByRole('textbox', { name: '관심 기업 검색', exact: true }).fill('ORNX');
+  const select = main.getByRole('button', { name: 'Synthetic Orion Systems 관심 기업에 추가', exact: true });
+  await expect(select).toBeVisible();
+  expect(fixture.state.resolutionBodies).toEqual([]);
+  expect(fixture.base.state.watched.size).toBe(0);
+  await select.click();
+  const card = main.locator('.rd-p-watch-card').filter({ hasText: externalIssuer.name });
+  await expect(card).toBeVisible();
+  await expect(page).toHaveURL(/\/watchlist$/);
+  expect(fixture.state.resolutionBodies).toHaveLength(1);
+  expect(fixture.base.state.watched.has(externalId)).toBe(true);
+  expect(fixture.base.state.apiCalls.filter(call => call.method === 'PUT'
+    && call.path === `/v1/watchlist/${externalId}`)).toHaveLength(1);
+  await page.reload();
+  await expect(card).toBeVisible();
+  await card.locator('summary').click();
+  await card.getByRole('button', { name: 'Synthetic Orion Systems 팔로우 취소', exact: true }).click();
+  await expect(card).toHaveCount(0);
+  expect(fixture.base.state.watched.has(externalId)).toBe(false);
+  await finish(page, info, fixture);
+});
+
+test('calendar discovers an unregistered issuer and queries its identity without creating personal data', async ({ page }, info) => {
+  const fixture = await reliabilityFixture(page);
+  await page.goto('/calendar');
+  const main = page.locator('main');
+  await main.getByRole('textbox', { name: '기업명 또는 티커 검색', exact: true }).fill('ORNX');
+  await main.getByRole('button', { name: 'Synthetic Orion Systems 일정 조회 기업으로 선택', exact: true }).click();
+  await expect(main.getByRole('radio', { name: '특정 기업 선택', exact: true })).toBeChecked();
+  await expect(main.getByRole('checkbox', { name: 'Synthetic Orion Systems (ORNX)', exact: true })).toBeChecked();
+  await expect.poll(() => fixture.state.calendarQueries.some(query =>
+    new URLSearchParams(query).get('or') === `(origin.eq.user,company_id.in.(${externalId}))`)).toBe(true);
+  await expect(main.locator('.rd-calendar-grid').getByRole('link')).toHaveCount(0);
+  await expect(page).toHaveURL(/\/calendar$/);
+  expect(fixture.state.resolutionBodies).toHaveLength(1);
+  expect(fixture.base.state.watched.size).toBe(0);
+  expect(fixture.base.state.apiCalls.filter(call => call.method !== 'GET')).toEqual([]);
   await finish(page, info, fixture);
 });

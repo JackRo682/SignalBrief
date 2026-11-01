@@ -18,6 +18,50 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 describe("official company discovery", () => {
+  it("requests the selected market scope before the server row limit and classifies SEC exchanges by source", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(Response.json(catalog([{ ...issuer, ticker: "MU", name: "Synthetic Micron", market: "NASDAQ GLOBAL SELECT" }])));
+    render(<CompanyDiscovery query="Micron" marketGroup="overseas" provider="sec" />);
+    expect(await screen.findByRole("button", { name: "Synthetic Micron Open company information" })).toBeVisible();
+    expect(fetch).toHaveBeenCalledWith("/api/company-discovery?q=Micron&provider=sec&market_group=overseas", expect.any(Object));
+  });
+
+  it("selects a discovered identity only after an explicit click, without navigating or submitting its surrounding form", async () => {
+    const select = vi.fn(), submit = vi.fn();
+    render(<form onSubmit={event => { event.preventDefault(); submit(); }}><CompanyDiscovery query="LS" onSelect={select} selectionLabel="Add to watchlist" /></form>);
+    const button = await screen.findByRole("button", { name: "Synthetic Issuer Add to watchlist" });
+    expect(select).not.toHaveBeenCalled(); expect(fetch).toHaveBeenCalledTimes(1);
+    vi.mocked(fetch).mockResolvedValueOnce(Response.json({ company_id: id, hydration_status: "unavailable" }));
+    fireEvent.click(button);
+    await waitFor(() => expect(select).toHaveBeenCalledWith(expect.objectContaining({ id, ticker: "TEST.A", hydration_status: "unavailable" })));
+    expect(mocks.push).not.toHaveBeenCalled(); expect(submit).not.toHaveBeenCalled();
+    expect(await screen.findByText(/official data collection is incomplete/)).toBeVisible();
+    expect(screen.getByRole("link", { name: "Retry from company information" })).toHaveAttribute("href", `/companies/${id}?selected_ticker=TEST.A&collection=unavailable`);
+  });
+
+  it("retries a denied picker action without activating the issuer twice or reporting success", async () => {
+    const select = vi.fn().mockRejectedValueOnce(new Error("Synthetic follow denied")).mockResolvedValue(undefined);
+    render(<CompanyDiscovery query="LS" onSelect={select} selectionLabel="Add to watchlist" />);
+    const button = await screen.findByRole("button", { name: "Synthetic Issuer Add to watchlist" });
+    vi.mocked(fetch).mockResolvedValueOnce(Response.json({ company_id: id, hydration_status: "ready" }));
+    fireEvent.click(button);
+    expect(await screen.findByText(/selected action failed/)).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Synthetic Issuer Selected" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Retry company information" }));
+    expect(await screen.findByRole("button", { name: "Synthetic Issuer Selected" })).toBeDisabled();
+    expect(select).toHaveBeenCalledTimes(2); expect(fetch).toHaveBeenCalledTimes(2); expect(mocks.push).not.toHaveBeenCalled();
+  });
+
+  it("selects an existing official identity without repeating activation and disables already selected issuers", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(Response.json(catalog([{ ...issuer, company_id: id }])));
+    const select = vi.fn();
+    const view = render(<CompanyDiscovery query="LS" onSelect={select} />);
+    fireEvent.click(await screen.findByRole("button", { name: "Synthetic Issuer Select company" }));
+    await waitFor(() => expect(select).toHaveBeenCalledWith(expect.objectContaining({ id })));
+    expect(fetch).toHaveBeenCalledTimes(1);
+    view.rerender(<CompanyDiscovery query="LS" onSelect={select} selectedCompanyIds={[id]} />);
+    expect(screen.getByRole("button", { name: "Synthetic Issuer Selected" })).toBeDisabled();
+  });
+
   it("normalizes fullwidth input and whitespace and excludes already displayed registered companies", async () => {
     vi.mocked(fetch).mockResolvedValueOnce(Response.json(catalog([
       { ...issuer, company_id: id, name: "Already visible" },

@@ -22,6 +22,8 @@ import {
   useMutation,
 } from "@/workspace/ui";
 import { CompanyLogo as Logo } from "./ui";
+import CompanyDiscovery from "./company-discovery";
+import { normalizeCompanyQuery } from "./company-search";
 import "./personal.css";
 
 function Activity({
@@ -96,15 +98,22 @@ export default function Watchlist() {
     [draft, setDraft] = useState(""),
     [query, setQuery] = useState(""),
     [filter, setFilter] = useState(""),
+    [filterQuery, setFilterQuery] = useState(""),
     [sort, setSort] = useState("name");
+  const activeQuery = adding ? query : filterQuery;
+  const searchPending = activeQuery !== normalizeCompanyQuery(adding ? draft : filter);
   const catalog = useResource(
-    adding ? `/v1/companies?q=${encodeURIComponent(query)}&limit=50` : null,
+    adding || filterQuery ? `/v1/companies?q=${encodeURIComponent(activeQuery)}&limit=50` : null,
     companiesSchema,
   );
   useEffect(() => {
-    const timeout = setTimeout(() => setQuery(draft.trim()), 250);
+    const timeout = setTimeout(() => setQuery(normalizeCompanyQuery(draft)), 250);
     return () => clearTimeout(timeout);
   }, [draft]);
+  useEffect(() => {
+    const timeout = setTimeout(() => setFilterQuery(normalizeCompanyQuery(filter)), 250);
+    return () => clearTimeout(timeout);
+  }, [filter]);
   const companies = list.data?.items ?? [],
     ids = new Set(companies.map((company) => company.id));
   const monitoring = new Map(
@@ -114,7 +123,8 @@ export default function Watchlist() {
     .filter((company) =>
       `${company.name} ${company.ticker}`
         .toLocaleLowerCase()
-        .includes(filter.trim().toLocaleLowerCase()),
+        .includes(normalizeCompanyQuery(filter).toLocaleLowerCase()) ||
+      (!adding && !searchPending && !!catalog.data?.some(row => row.id === company.id)),
     )
     .sort((a, b) =>
       sort === "latest"
@@ -139,6 +149,27 @@ export default function Watchlist() {
     );
     reload();
   };
+  const candidates = searchPending ? [] : (catalog.data ?? []).filter(company => adding || !ids.has(company.id));
+  const picker = <>
+    <DataState loading={searchPending || catalog.loading} error={catalog.error ?? ""} retry={catalog.reload} />
+    <div className="rd-p-company-picker">
+      {candidates.map((company) => (
+        <div key={company.id}>
+          <Link className="rd-p-company-identity" href={`/companies/${company.id}`}>
+            <Logo ticker={company.ticker} />
+            <span><strong>{company.name}</strong><small>{company.ticker} · {company.market}</small></span>
+          </Link>
+          <button className="rd-p-button" disabled={action.busy || ids.has(company.id)} onClick={() => void action.run(() => follow(company.id, true), "관심 기업에 추가했습니다.")}>
+            {ids.has(company.id) ? "추가됨" : "추가"}
+          </button>
+        </div>
+      ))}
+    </div>
+    {!searchPending && <CompanyDiscovery query={activeQuery} existingCompanies={catalog.data ?? []}
+      selectedCompanyIds={[...ids]} disabled={action.busy} selectionLabel="관심 기업에 추가" selectedLabel="추가됨"
+      onSelect={async (company) => { await follow(company.id, true); catalog.reload(); }} />}
+    {!activeQuery && !catalog.loading && catalog.data && !catalog.data.length && !catalog.error && <p className="rd-p-muted">기업명이나 종목코드를 입력해 공식 기업목록을 검색하세요.</p>}
+  </>;
 
   return (
     <div className="rd-p-page" data-screen="redesign-watchlist">
@@ -315,6 +346,11 @@ export default function Watchlist() {
       {list.data && companies.length > 0 && !visible.length && !list.error && (
         <Empty title="검색 조건에 맞는 관심 기업이 없습니다." />
       )}
+      {!adding && normalizeCompanyQuery(filter) && <section aria-label="관심 기업 추가 검색">
+        <h2>전체 기업에서 검색</h2>
+        <p className="rd-p-muted">검색 결과에서 직접 추가한 기업만 관심 기업에 등록됩니다.</p>
+        {picker}
+      </section>}
       {adding && (
         <Modal title="관심 기업 추가" onClose={() => setAdding(false)}>
           <Notice action={action} />
@@ -329,44 +365,7 @@ export default function Watchlist() {
               placeholder="기업명 또는 티커를 입력하세요."
             />
           </label>
-          <DataState
-            loading={catalog.loading}
-            error={catalog.error ?? ""}
-            retry={catalog.reload}
-          />
-          <div className="rd-p-company-picker">
-            {catalog.data?.map((company) => (
-              <div key={company.id}>
-                <Link
-                  className="rd-p-company-identity"
-                  href={`/companies/${company.id}`}
-                >
-                  <Logo ticker={company.ticker} />
-                  <span>
-                    <strong>{company.name}</strong>
-                    <small>
-                      {company.ticker} · {company.market}
-                    </small>
-                  </span>
-                </Link>
-                <button
-                  className="rd-p-button"
-                  disabled={action.busy || ids.has(company.id)}
-                  onClick={() =>
-                    void action.run(
-                      () => follow(company.id, true),
-                      "관심 기업에 추가했습니다.",
-                    )
-                  }
-                >
-                  {ids.has(company.id) ? "추가됨" : "추가"}
-                </button>
-              </div>
-            ))}
-          </div>
-          {catalog.data && !catalog.data.length && !catalog.error && (
-            <Empty title="지원하는 기업을 찾지 못했습니다." />
-          )}
+          {picker}
         </Modal>
       )}
     </div>

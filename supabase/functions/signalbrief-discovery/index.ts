@@ -16,10 +16,12 @@ export async function handleDiscovery(req:Request):Promise<Response>{
   const limited=await reader.rpc('sb_rate_limit');if(limited.error)throw new DiscoveryError('rate_limit_exceeded',429);
   const db=createClient(env('SUPABASE_URL'),env('SUPABASE_SERVICE_ROLE_KEY'),{auth:{persistSession:false,autoRefreshToken:false}});
   if(req.method==='GET'){
-   const q=(new URL(req.url).searchParams.get('q')??'').trim();if(!q||q.length>100||!/[\p{L}\p{N}]/u.test(q))throw new DiscoveryError('invalid_query',422);
+   const params=new URL(req.url).searchParams,q=(params.get('q')??'').trim();if(!q||q.length>100||!/[\p{L}\p{N}]/u.test(q))throw new DiscoveryError('invalid_query',422);
+   const provider=params.get('provider')??'',market=(params.get('market')??'').trim().toUpperCase(),group=params.get('market_group')??'all';
+   if(!['','sec','dart'].includes(provider)||!['all','kospi','kosdaq','overseas','unclassified'].includes(group)||market.length>32||(market&&!/^[A-Z0-9가-힣 :._-]+$/.test(market))||['q','provider','market','market_group'].some(key=>params.getAll(key).length>1))throw new DiscoveryError('invalid_filter',422);
    const secrets=await discoverySecrets(db);
    await Promise.allSettled((['sec','dart'] as const).map(provider=>refreshDirectory(db,secrets,provider)));
-   const result=await reader.rpc('sb_company_discovery',{q});if(result.error)throw new DiscoveryError('directory_unavailable',503);
+   const result=await reader.rpc('sb_company_discovery_filtered',{q,p:{provider,market,market_group:group}});if(result.error)throw new DiscoveryError('directory_unavailable',503);
    return reply(result.data);
   }
   if(!(req.headers.get('content-type')??'').startsWith('application/json'))throw new DiscoveryError('json_required',415);

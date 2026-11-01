@@ -83,10 +83,21 @@ function DocumentContent({
     : undefined;
   const wantsAnalysis = analysis !== undefined;
   const item = wantsAnalysis ? selected?.resource : document;
-  const [saved, setSaved] = useState<boolean | null>(null);
+  const [saved, setSaved] = useState<{
+    token: typeof token;
+    id: string;
+    kind: string;
+    value: boolean;
+  } | null>(null);
   const [extraSections, setExtraSections] = useState<SourceSection[]>([]);
   const [nextOffset, setNextOffset] = useState<number | null | undefined>();
-  const isSaved = saved ?? item?.is_saved ?? false;
+  const isSaved =
+    saved &&
+    saved.token === token &&
+    saved.id === item?.id &&
+    saved.kind === item?.kind
+      ? saved.value
+      : (item?.is_saved ?? false);
   const sections = [...(data?.sections ?? []), ...extraSections];
   const next =
     nextOffset === undefined ? data?.next_section_offset : nextOffset;
@@ -117,7 +128,7 @@ function DocumentContent({
           },
           saveResult,
         );
-        setSaved(response.saved);
+        setSaved({ token, id: item.id, kind: saveKind, value: response.saved });
       },
       isSaved
         ? t("저장을 취소했습니다.", "Item unsaved.")

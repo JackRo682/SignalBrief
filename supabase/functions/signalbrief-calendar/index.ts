@@ -1,5 +1,6 @@
 import {createClient} from 'npm:@supabase/supabase-js@2.117.2';
 import {CalendarError,fetchSource,parseSource,sha256,type Source} from './core.ts';
+import {collectMicronQ4} from './micron-q4.ts';
 export async function handleCalendar(req:Request):Promise<Response>{
  const reply=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});
  if(req.method!=='POST')return reply({error:'method_not_allowed'},405);
@@ -13,6 +14,14 @@ export async function handleCalendar(req:Request):Promise<Response>{
   const sources=await rpc('sb_calendar_sources') as Source[],results=[];
   for(const source of sources){
    try{
+    if(source.adapter==='micron-q4'){
+     const snapshot=await collectMicronQ4(source,new Date().toISOString().slice(0,10),async(path,bytes,contentType)=>{
+      const archived=await db.storage.from('signalbrief-raw').upload(path,bytes,{contentType,upsert:false});
+      if(archived.error&&!/already exists|duplicate/i.test(archived.error.message))throw new CalendarError('archive_failed');
+     });
+     const count=await rpc('sb_calendar_ingest_q4',{source:source.key,raw_sha:snapshot.raw_sha,object_key:snapshot.object_key,manifest_text:snapshot.manifest_text});
+     results.push({source:source.key,status:'verified',items:count});continue;
+    }
     const bytes=await fetchSource(source),sha=await sha256(bytes),parsed=parseSource(source,new TextDecoder('utf-8',{fatal:true}).decode(bytes),new Date().toISOString().slice(0,10));
     const path=`calendar/${source.key}/${sha}.html`;
     const archive=await db.storage.from('signalbrief-raw').upload(path,bytes,{contentType:'text/html',upsert:false});

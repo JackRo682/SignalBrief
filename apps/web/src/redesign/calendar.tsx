@@ -18,6 +18,8 @@ import { DataState, Notice, useMutation } from "@/workspace/ui";
 import { usePrefs } from "@/workspace/preferences";
 import { safeSource } from "@/workspace/contracts";
 import { useCalendarCoverage, useCalendarData } from "./calendar-data";
+import CompanyDiscovery, { type SelectedCompany } from "./company-discovery";
+import { normalizeCompanyQuery } from "./company-search";
 import {
   addDays,
   calendarHref,
@@ -39,6 +41,7 @@ const subscriptionSchema = z.object({
   warning: z.string(),
 });
 const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
+type PickerCompany = Pick<SelectedCompany, "id" | "name" | "ticker" | "market" | "hydration_status">;
 
 export default function RedesignCalendar() {
   const { token } = useAuth(),
@@ -60,7 +63,10 @@ export default function RedesignCalendar() {
   const [adding, setAdding] = useState(false),
     [title, setTitle] = useState(""),
     [personalDate, setPersonalDate] = useState(today),
-    [personalCompany, setPersonalCompany] = useState("");
+    [personalCompany, setPersonalCompany] = useState(""),
+    [personalQuery, setPersonalQuery] = useState(""),
+    [personalSearch, setPersonalSearch] = useState("");
+  const [connectedCompanies, setConnectedCompanies] = useState<PickerCompany[]>([]);
   const [subscribe, setSubscribe] = useState<"google" | "apple" | null>(null),
     [subscriptionState, setSubscriptionState] = useState<{
       token: string | null;
@@ -74,15 +80,23 @@ export default function RedesignCalendar() {
   const catalog = useResource("/v1/companies?limit=100", companiesSchema);
   const [companyQuery, setCompanyQuery] = useState("");
   useEffect(() => {
-    const timer = setTimeout(() => setCompanyQuery(query.trim()), 250);
+    const timer = setTimeout(() => setCompanyQuery(normalizeCompanyQuery(query)), 250);
     return () => clearTimeout(timer);
   }, [query]);
+  useEffect(() => {
+    const timer = setTimeout(() => setPersonalSearch(normalizeCompanyQuery(personalQuery)), 250);
+    return () => clearTimeout(timer);
+  }, [personalQuery]);
   const companySearch = useResource(
     companyQuery ? `/v1/companies?q=${encodeURIComponent(companyQuery)}&limit=100` : null,
     companiesSchema,
   );
   const watchlist = useResource("/v1/watchlist", watchlistSchema);
-  const companies = catalog.data ?? [];
+  const personalResults = useResource(
+    adding && personalSearch ? `/v1/companies?q=${encodeURIComponent(personalSearch)}&limit=100` : null,
+    companiesSchema,
+  );
+  const companies = [...new Map([...(catalog.data ?? []), ...connectedCompanies].map(company => [company.id, company])).values()];
   const names = new Map([
     ...companies,
     ...(companySearch.data ?? []),
@@ -122,9 +136,10 @@ export default function RedesignCalendar() {
     Math.abs(Date.parse(b.occurs_on) - Date.parse(anchor)) ||
     a.occurs_on.localeCompare(b.occurs_on) || a.id.localeCompare(b.id),
   )[0];
-  const searchPending = query.trim() !== companyQuery;
+  const searchPending = normalizeCompanyQuery(query) !== companyQuery;
+  const personalPending = normalizeCompanyQuery(personalQuery) !== personalSearch;
   const companyResults = companyQuery ? companySearch : catalog;
-  const shownCompanies = searchPending ? [] : companyResults.data ?? [];
+  const shownCompanies = searchPending ? [] : companyQuery ? companyResults.data ?? [] : companies;
   const heading =
     view === "month"
       ? `${Number(anchor.slice(0, 4))}년 ${Number(anchor.slice(5, 7))}월`
@@ -139,6 +154,11 @@ export default function RedesignCalendar() {
       else next.add(id);
       return next;
     });
+  }
+  function rememberCompany(company: PickerCompany) {
+    setConnectedCompanies(previous => [...previous.filter(row => row.id !== company.id), company]);
+    catalog.reload();
+    companySearch.reload();
   }
   async function addPersonal(event: FormEvent) {
     event.preventDefault();
@@ -218,7 +238,7 @@ export default function RedesignCalendar() {
                   <Icon name="calendar" size={12} />
                   {item.origin === "user" ? "개인 일정" : "공식 일정"}
                   <Icon name="clock" size={12} />
-                  {item.occurs_on} · 종일
+                  {item.occurs_on} · {item.origin === "user" ? "종일" : "날짜 기준"}
                 </p>
               </div>
             </Link>
@@ -245,6 +265,9 @@ export default function RedesignCalendar() {
             <p>이 기업의 공식 일정 갱신에 실패했습니다. 이전에 확인된 일정은 계속 표시합니다.</p>
           )}
         </div>
+      )}
+      {connectedCompanies.filter(company => selectedCompanies.has(company.id) && company.hydration_status === "unavailable").map(company =>
+        <p className="rd-calendar-note" role="status" key={company.id}>{company.name}의 공식 자료 수집이 완료되지 않았습니다. <Link href={`/companies/${company.id}?collection=unavailable`}>기업정보에서 다시 시도</Link></p>,
       )}
       <div className="rd-calendar-columns">
         <aside className="rd-calendar-filter rd-calendar-card">
@@ -298,9 +321,17 @@ export default function RedesignCalendar() {
               </label>
             ))}
           </div>
-          {!searchPending && !companyResults.loading && !companyResults.error && !shownCompanies.length && (
-            <p className="rd-calendar-empty">검색 결과가 없습니다.</p>
+          {!searchPending && !companyResults.loading && !companyResults.error && !shownCompanies.length && !companyQuery && (
+            <p className="rd-calendar-empty">기업명이나 종목코드를 입력해 기업을 선택하세요.</p>
           )}
+          {!searchPending && <CompanyDiscovery query={companyQuery} existingCompanies={shownCompanies}
+            selectedCompanyIds={[...selectedCompanies]} selectionLabel="일정 조회 기업으로 선택"
+            onSelect={(company) => {
+              rememberCompany(company);
+              setScope("selected");
+              setSelectedCompanies(previous => new Set([...previous, company.id]));
+              setQuery("");
+            }} />}
           {shownCompanies.length === 100 && (
             <p className="rd-calendar-note">
               검색 결과는 최대 100개입니다. 기업명이나 티커로 범위를 좁혀 주세요.
@@ -605,6 +636,25 @@ export default function RedesignCalendar() {
                 ))}
               </select>
             </label>
+            <label>
+              관련 기업 검색
+              <input value={personalQuery} maxLength={100} placeholder="기업명 또는 종목코드"
+                onChange={event => setPersonalQuery(event.target.value)} />
+            </label>
+            {personalQuery && <>
+              <DataState loading={personalPending || personalResults.loading} error={personalResults.error ?? ""} retry={personalResults.reload} />
+              {!personalPending && <>
+                <div className="rd-calendar-company-list">
+                  {personalResults.data?.map(company => <button type="button" key={company.id}
+                    disabled={personalCompany === company.id} onClick={() => { rememberCompany(company); setPersonalCompany(company.id); }}>
+                    {company.name} ({company.ticker}) · {personalCompany === company.id ? "선택됨" : "관련 기업으로 선택"}
+                  </button>)}
+                </div>
+                <CompanyDiscovery query={personalSearch} existingCompanies={personalResults.data ?? []}
+                  selectedCompanyIds={personalCompany ? [personalCompany] : []} selectionLabel="관련 기업으로 선택"
+                  onSelect={company => { rememberCompany(company); setPersonalCompany(company.id); }} />
+              </>}
+            </>}
             <p>시간을 지정하지 않는 종일 일정으로 저장합니다.</p>
             <button
               className="rd-calendar-button rd-calendar-primary"

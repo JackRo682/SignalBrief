@@ -3,9 +3,28 @@
  * Tickers are resolved from the authenticated canonical company resource. */
 export type BusinessProfile={
  description:[string,string];products:[string[],string[]];areas:[string[],string[]];
- website:string;sources:{url:string;label:string}[];verifiedOn:string;coverage?:[string,string];
+ website:string;sources:{url:string;label:string;snapshot?:{sha256:string;capturedAt:string;format:'html'|'retrieved_text';location:string}}[];verifiedOn:string;coverage?:[string,string];
 };
 export const companyBusinessProfiles:Readonly<Record<string,BusinessProfile>>={
+ '035420':{
+  description:['NAVER는 온라인 검색과 광고를 기반으로 커머스·콘텐츠·클라우드·핀테크 서비스를 제공합니다. 공식 회사 소개는 검색 포털, 스마트스토어, 네이버페이와 자체 AI 기술 HyperCLOVA X를 주요 서비스·기술로 설명합니다.','NAVER provides online search and advertising alongside commerce, content, cloud and fintech services. Its corporate overview describes the search portal, Smart Store, NAVER Pay and its HyperCLOVA X AI technology.'],
+  products:[['네이버 검색·광고','스마트스토어·쇼핑라이브','네이버페이','콘텐츠·커뮤니티 서비스','HyperCLOVA X·클라우드'],['NAVER search and advertising','Smart Store and Shopping Live','NAVER Pay','Content and community services','HyperCLOVA X and cloud']],
+  areas:[['검색 및 광고','커머스','콘텐츠','클라우드 및 AI','핀테크'],['Search and advertising','Commerce','Content','Cloud and AI','Fintech']],
+  website:'https://www.navercorp.com/',sources:[{url:'https://www.navercorp.com/company/about',label:'NAVER — 공식 회사 소개',snapshot:{sha256:'45d679064a24e882daf17b71d03a18f1dca011e30b3e66099e8678edbc77e747',capturedAt:'2026-11-01T06:45:27.661700Z',format:'html',location:'소개 / SEARCH / COMMERCE / FINTECH / 주요 사업'}}],verifiedOn:'2026-11-01',
+ },
+ '006260':{
+  description:['LS는 전기·전자·소재·에너지 분야 계열사의 사업을 관리하는 지주회사입니다. 공식 그룹 소개는 주요 계열사의 전력 케이블, 전력기기와 자동화, 동 소재 및 에너지 사업을 설명합니다.','LS Corp. is a holding company whose affiliates operate in electricity, electronics, materials and energy. The group overview describes affiliates in power cables, electrical equipment and automation, copper materials, and energy.'],
+  products:[['지주회사 경영·사업관리','전력 케이블(계열사)','전력기기·자동화(계열사)','동 소재·에너지(계열사)'],['Holding-company business management','Power cables (affiliates)','Electrical equipment and automation (affiliates)','Copper materials and energy (affiliates)']],
+  areas:[['지주사업','전기·전자','소재','에너지'],['Holding-company operations','Electricity and electronics','Materials','Energy']],
+  website:'https://www.lsholdings.co.kr/',sources:[{url:'https://lsholdings.co.kr/en/about/status',label:'LS — Official group and holding-company overview',snapshot:{sha256:'4b606fef04ec4311ac4d75f1c49fed307f13831ae94fe4179db5568e8fc079e8',capturedAt:'2026-11-01T06:47:57.385012Z',format:'retrieved_text',location:'Management: group overview and CEO message, retrieved lines 65–68 and 89–95'}}],verifiedOn:'2026-11-01',
+  coverage:['계열사 제품과 그룹 사업 영역을 함께 소개합니다. 지주회사 LS가 모든 제품을 직접 생산한다는 뜻은 아닙니다.','The profile includes affiliates’ products and group business areas. It does not imply that the holding company directly manufactures every product.'],
+ },
+ MU:{
+  description:['Micron Technology는 DRAM·NAND·NOR 기반의 메모리와 스토리지 제품을 개발하는 반도체 기업입니다. 공식 회사·제품 소개는 AI와 데이터센터, 모바일, 자동차 및 산업용 기기에 사용되는 메모리·저장 솔루션을 설명합니다.','Micron Technology develops semiconductor memory and storage using DRAM, NAND and NOR technologies. Its official corporate and product overview covers solutions for AI and data centers, mobile devices, automotive systems and industrial equipment.'],
+  products:[['DRAM·HBM 메모리','NAND·NOR 플래시','SSD·스토리지 솔루션'],['DRAM and HBM memory','NAND and NOR flash','SSDs and storage solutions']],
+  areas:[['메모리 반도체','스토리지','데이터센터 및 AI','모바일·자동차·산업용 솔루션'],['Memory semiconductors','Storage','Data centers and AI','Mobile, automotive and industrial solutions']],
+  website:'https://www.micron.com/',sources:[{url:'https://www.micron.com/about/company/corporate-profile',label:'Micron — Official corporate profile',snapshot:{sha256:'817c028f8000200ffb880dd1ee352b09a1f58285ba857233e68ce8178c773891',capturedAt:'2026-11-01T06:45:29.376865Z',format:'html',location:'Who we are; Products; Market & Industries'}}],verifiedOn:'2026-11-01',
+ },
  AAPL:{
   description:['Apple은 하드웨어, 소프트웨어와 서비스를 함께 제공하는 기술 기업입니다. 공식 기업용 제품 안내는 Mac, iPhone, iPad, Apple Vision Pro와 기기 관리·지원 서비스를 소개합니다.','Apple combines hardware, software and services. Its official business product overview covers Mac, iPhone, iPad, Apple Vision Pro, and device management and support services.'],
   products:[['Mac','iPhone','iPad','Apple Vision Pro','Apple Business / AppleCare'],['Mac','iPhone','iPad','Apple Vision Pro','Apple Business / AppleCare']],

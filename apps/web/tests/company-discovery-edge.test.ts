@@ -71,7 +71,7 @@ function fixture() {
     return { data: null, error: null };
   });
   const readerRpc = vi.fn(async (name: string) => ({
-    data: name === "sb_company_discovery" ? discoveryResult : true,
+    data: name === "sb_company_discovery_filtered" ? discoveryResult : true,
     error: name === "sb_require_mfa" && state.mfaDenied || name === "sb_rate_limit" && state.rateDenied ? { message: "Synthetic denial" } : null,
   }));
   const reader = { auth: { getUser: vi.fn(async () => ({ data: { user: state.authenticated ? { id: actorId } : null }, error: state.authenticated ? null : { message: "Expired JWT" } })) }, rpc: readerRpc };
@@ -113,6 +113,25 @@ function fixture() {
   const completions = () => adminRpc.mock.calls.filter(([name, args]) => name === "sb_discovery_admin" && args?.op === "hydration_finish" && obj(args.p).code === null);
   return { state, company, order, uploads, signedUrls, directoryBytes, directoryItems, discoveryResult, filings, timestamp, adminRpc, readerRpc, reader, createClient, secSubmissions, dartRelay, handler, get, post, activations, completions };
 }
+
+describe("discovery market scope", () => {
+  it("passes validated filters to the protected pre-limit RPC without activating an issuer", async () => {
+    const f = fixture();
+    const response = await f.handler(new Request("https://synthetic.test/?q=Micron&provider=sec&market=Nasdaq&market_group=overseas", { headers: { Authorization: "Bearer " + "a".repeat(30) } }));
+    expect(response.status).toBe(200);
+    expect(f.readerRpc).toHaveBeenCalledWith("sb_company_discovery_filtered", { q: "Micron", p: { provider: "sec", market: "NASDAQ", market_group: "overseas" } });
+    expect(f.activations()).toEqual([]);
+  });
+  it("rejects invalid filters before any provider refresh or search RPC", async () => {
+    for (const suffix of ["provider=other", "market_group=arbitrary", "market=%27injected", "provider=sec&provider=dart"]) {
+      const f = fixture();
+      const response = await f.handler(new Request(`https://synthetic.test/?q=LS&${suffix}`, { headers: { Authorization: "Bearer " + "a".repeat(30) } }));
+      expect(response.status).toBe(422);
+      expect(f.adminRpc).not.toHaveBeenCalled();
+      expect(f.readerRpc).not.toHaveBeenCalledWith("sb_company_discovery_filtered", expect.anything());
+    }
+  });
+});
 
 describe("directory refresh avoids full XML work in Edge", () => {
   it("bounds the signed parser response before JSON allocation and hides transport details", async () => {

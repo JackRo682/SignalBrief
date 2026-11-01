@@ -7,9 +7,11 @@ import { z } from "zod";
 import { useAuth } from "@/components/auth";
 import { Icon, type IconName } from "@/components/icons";
 import CompanyProfile from "@/components/company-profile";
+import { CompanyIntroduction } from "@/components/company-introduction";
 import { CompanyNews } from "@/components/company-news";
 import { body, emptySchema, request } from "@/lib/api";
 import { companyBusinessProfiles } from "@/lib/company-business-profiles";
+import { companyIntroduction } from "@/lib/company-overview";
 import { decimalInput } from "@/lib/decimal-input";
 import { workspace } from "@/workspace/client";
 import {
@@ -230,6 +232,7 @@ function CompanyContent({ id }: { id: string }) {
     ? companyBusinessProfiles[company.ticker.toUpperCase()]
     : undefined;
   const locale = value.locale === "en" ? 1 : 0;
+  const introduction = company ? companyIntroduction(company, locale) : null;
   const events = useData(
     tab === "events"
       ? {
@@ -449,7 +452,7 @@ function CompanyContent({ id }: { id: string }) {
                   <CompanyProfile key={profileRevision} id={id} ticker={company.ticker} />
                 </div>}
                 <DetailPanel
-                  title={t("사업 소개", "Business overview")}
+                  title={!profile && introduction ? t("공식 기업 소개", "Official company introduction") : t("사업 소개", "Business overview")}
                   className="rd-detail-introduction"
                 >
                   {profile ? (
@@ -464,6 +467,8 @@ function CompanyContent({ id }: { id: string }) {
                       )}
                       {sourceNotes}
                     </>
+                  ) : introduction ? (
+                    <CompanyIntroduction company={company} />
                   ) : (
                     <p className="rd-detail-empty">
                       {t(

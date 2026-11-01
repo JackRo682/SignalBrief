@@ -218,8 +218,9 @@ test('service errors remain distinct from empty results and offer recovery witho
  await expect(page.getByRole('heading',{name:'기업',exact:true})).toBeVisible();
  await main(page).getByRole('textbox',{name:'기업명, 티커 또는 키워드 검색'}).fill('no-such-synthetic-company');
  await main(page).getByRole('search').getByRole('button',{name:'검색',exact:true}).click();
- await expect(page.getByText('조건에 맞는 등록 기업이 없습니다.',{exact:true})).toBeVisible();
  await expect(page.getByText('No matching company was found in the official directory. Check the company name or ticker.',{exact:true})).toBeVisible();
+ await expect(page.getByText('조건에 맞는 등록 기업이 없습니다.',{exact:true})).toHaveCount(0);
+ await expect(main(page).locator('.rd-company-card')).toHaveCount(0);
  expectClean(fixture);
 });
 

@@ -15,6 +15,8 @@ const state = vi.hoisted(() => ({
   fail: false,
   rpc: vi.fn(),
   followed: false,
+  origin: "official",
+  quote: "Synthetic confirmed source text",
 }));
 const dateId = "00000000-0000-4000-8000-000000000001",
   companyId = "00000000-0000-4000-8000-000000000002";
@@ -62,9 +64,9 @@ vi.mock("@/redesign/calendar-data", () => ({
               occurs_on: "2026-11-11",
               company_id: companyId,
               event_id: null,
-              origin: "official",
-              quote: "Synthetic confirmed source text",
-              source_url: "https://example.org/source",
+              origin: state.origin,
+              quote: state.quote,
+              source_url: state.origin === "user" ? null : "https://example.org/source",
               source_timezone: "Asia/Seoul",
               verified_at: "2026-11-01T00:00:00Z",
             },
@@ -114,6 +116,8 @@ beforeEach(() => {
   state.saved = true;
   state.fail = false;
   state.followed = false;
+  state.origin = "official";
+  state.quote = "Synthetic confirmed source text";
   state.rpc.mockImplementation(
     async (
       _name: string,
@@ -202,9 +206,31 @@ describe("calendar occurrence saved interest actions", () => {
       screen.getByText("공식 출처에서 확인된 세션 정보가 아직 없습니다."),
     ).toBeTruthy();
     expect(
-      screen.getByText("원문에 확인된 세부 시간·장소 정보가 없습니다."),
+      screen.getByText("정확한 시간·장소는 공식 원문에서 확인하세요."),
     ).toBeTruthy();
     expect(screen.queryByText("15:00")).toBeNull();
     expect(screen.queryByText("73,400원")).toBeNull();
+  });
+  it("labels an official occurrence by its stored date while preserving source-stated times", async () => {
+    state.quote = "Synthetic official webcast: November 11, 2026 at 9:00 a.m. Pacific Time.";
+    render(<RedesignEvent id={dateId} kind="calendar" />);
+    await screen.findByRole("button", { name: "저장됨 · 취소" });
+    expect(screen.getAllByText("2026-11-11 · 날짜 기준")).toHaveLength(2);
+    expect(screen.getByText(state.quote)).toBeTruthy();
+    expect(screen.queryByText(/원문에 확인된 세부 시간·장소 정보가 없습니다/)).toBeNull();
+    expect(screen.queryByText(/2026-11-11 · 종일/)).toBeNull();
+    fireEvent.click(screen.getAllByRole("button", { name: "리마인더 설정" })[0]);
+    expect(screen.getByText("이 일정은 날짜 기준으로 표시하고 내보냅니다. 정확한 시간은 공식 원문에서 확인하세요.")).toBeTruthy();
+    expect(screen.queryByText("이 일정은 시간 정보가 없는 종일 일정입니다.")).toBeNull();
+  });
+  it("keeps explicitly date-only personal occurrences labeled as all-day", async () => {
+    state.origin = "user";
+    render(<RedesignEvent id={dateId} kind="calendar" />);
+    await screen.findByRole("button", { name: "저장됨 · 취소" });
+    expect(screen.getAllByText("2026-11-11 · 종일")).toHaveLength(2);
+    expect(screen.queryByText(/2026-11-11 · 날짜 기준/)).toBeNull();
+    fireEvent.click(screen.getAllByRole("button", { name: "리마인더 설정" })[0]);
+    expect(screen.getByText("이 일정은 시간 정보가 없는 종일 일정입니다.")).toBeTruthy();
+    expect(screen.queryByText("이 일정은 날짜 기준으로 표시하고 내보냅니다. 정확한 시간은 공식 원문에서 확인하세요.")).toBeNull();
   });
 });

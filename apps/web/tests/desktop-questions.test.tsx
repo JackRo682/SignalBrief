@@ -64,6 +64,9 @@ describe('PC evidence follow-up uses persisted source material',()=>{
   await waitFor(()=>expect(screen.getAllByRole('article',{name:'AI 근거 답변'})).toHaveLength(1));
   await waitFor(()=>expect(input).toBeEnabled());expect(input).toHaveValue('');
   expect(mock.request).toHaveBeenCalledWith(`/v1/events/${eventId}/questions`,'token-synthetic-owner-a',expect.anything(),{method:'POST',body:JSON.stringify({question:'매출 수치의 근거를 보여줘'})});
+  // A pending answer can render before history reload disables and then reenables the composer.
+  await waitFor(()=>expect(document.getElementById('pc-question-saved-1')).toBeVisible());
+  await waitFor(()=>expect(screen.getByRole('button',{name:'매출 수치 근거'})).toBeEnabled());
   fireEvent.click(screen.getByRole('button',{name:'매출 수치 근거'}));
   await waitFor(()=>expect(screen.getByRole('button',{name:'질문 보내기'})).toBeEnabled());
   fireEvent.click(screen.getByRole('button',{name:'질문 보내기'}));

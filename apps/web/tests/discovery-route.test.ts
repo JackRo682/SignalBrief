@@ -5,6 +5,16 @@ const auth='Bearer '+'a'.repeat(25),base='https://fixture.test/api/company-disco
 afterEach(()=>{vi.unstubAllEnvs();vi.unstubAllGlobals();});
 function setup(){vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL','https://fixture.supabase.co');vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY','public-key');vi.stubGlobal('fetch',vi.fn().mockResolvedValue(Response.json({items:[],total:0,source_status:'ready'})));}
 describe('company discovery proxy boundaries',()=>{
+ it('forwards only validated discovery scopes and rejects malformed or duplicate filters before upstream access',async()=>{
+  setup();const response=await GET(new Request(base+'?q=Micron&provider=sec&market=Nasdaq&market_group=overseas',{headers:{Authorization:auth}}));
+  expect(response.status).toBe(200);
+  expect(String(vi.mocked(fetch).mock.calls[0][0])).toBe('https://fixture.supabase.co/functions/v1/signalbrief-discovery?q=Micron&provider=sec&market=NASDAQ&market_group=overseas');
+  vi.mocked(fetch).mockClear();
+  for(const query of ['provider=other','provider=sec&provider=dart','market_group=anything','market=%27%3Bdrop','q=second']){
+   expect((await GET(new Request(base+'?q=LS&'+query,{headers:{Authorization:auth}}))).status).toBe(422);
+  }
+  expect(fetch).not.toHaveBeenCalled();
+ });
  it('denies unauthenticated and cross-origin calls before upstream access',async()=>{
   setup();expect((await GET(new Request(base+'?q=test'))).status).toBe(401);
   expect((await POST(new Request(base,{method:'POST',headers:{Authorization:auth,Origin:'https://evil.test'}}))).status).toBe(403);expect(fetch).not.toHaveBeenCalled();

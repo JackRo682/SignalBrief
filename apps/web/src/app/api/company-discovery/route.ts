@@ -13,8 +13,11 @@ async function proxy(req:Request){
  target.pathname='/functions/v1/signalbrief-discovery';target.search='';
  let body:string|undefined;
  if(req.method==='GET'){
-  const q=(new URL(req.url).searchParams.get('q')??'').trim();if(!q||q.length>100||!/[\p{L}\p{N}]/u.test(q))return fail('invalid_query',422);
-  target.search=new URLSearchParams({q}).toString();
+  const params=new URL(req.url).searchParams,q=(params.get('q')??'').trim();if(!q||q.length>100||!/[\p{L}\p{N}]/u.test(q))return fail('invalid_query',422);
+  const provider=params.get('provider')??'',market=(params.get('market')??'').trim().toUpperCase(),group=params.get('market_group')??'all';
+  if(!['','sec','dart'].includes(provider)||!['all','kospi','kosdaq','overseas','unclassified'].includes(group)||market.length>32||(market&&!/^[A-Z0-9가-힣 :._-]+$/.test(market))||['q','provider','market','market_group'].some(key=>params.getAll(key).length>1))return fail('invalid_filter',422);
+  const validated=new URLSearchParams({q});if(provider)validated.set('provider',provider);if(market)validated.set('market',market);if(group!=='all')validated.set('market_group',group);
+  target.search=validated.toString();
  }else{
   if(!(req.headers.get('content-type')??'').startsWith('application/json'))return fail('json_required',415);
   if(Number(req.headers.get('content-length')??0)>2048)return fail('body_too_large',413);
