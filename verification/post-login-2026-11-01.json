@@ -5,14 +5,14 @@
   "full_verifier": {
     "command": "python scripts/verify.py --full",
     "stages_passed": 8,
-    "backend_passed": 506,
+    "backend_passed": 517,
     "backend_failed": 0,
     "backend_skipped": 0,
     "postgres": "PostgreSQL 16.15; four disposable loopback databases; real migrations and RLS with synthetic rows"
   },
   "final_frontend_recheck": {
-    "reason": "Latest full verifier includes DART full-registry CPU offload to the authenticated Node relay; UI source is unchanged from the last 80-case browser run",
-    "unit_passed": 930,
+    "reason": "Combined official alphanumeric code, sanitized relay diagnostics and asynchronous mobile scroll assertion repair; actual official archive also replayed locally",
+    "unit_passed": 958,
     "unit_failed": 0,
     "test_files": 90,
     "typecheck": "PASS",
@@ -22,7 +22,7 @@
     "production_build": "PASS"
   },
   "new_migration_regressions": {
-    "passed": 21,
+    "passed": 32,
     "included_in_backend_total": true,
     "post_ledger_filename_alignment_recheck_passed": 12
   },
@@ -51,7 +51,7 @@
     "desktop_passed": 40,
     "mobile_passed": 40,
     "ci_spec_count": 11,
-    "latest_run_note": "Last 80-case result remains applicable to unchanged UI; browser suite was not rerun for the server-only CPU-offload follow-up"
+    "latest_run_note": "c1d43da repair-branch CI independently passed all 80 cases; latest compatibility commit still requires its own CI browser run"
   },
   "not_certified_by_these_checks": [
     "Live SEC/OpenDART latency and availability",
@@ -78,6 +78,10 @@
     "calendar": {
       "version": "20261101041751",
       "sha256": "1e94028384e250a4c9ef5e22ade18580974da4299ce2bf005e4affba878af57a"
+    },
+    "dart_alphanumeric": {
+      "version": "20261101055057",
+      "sha256": "0e9f5b376a73f44913d1900d72e9a385023834590dc94c5f845a1a8af4c70beb"
     }
   },
   "official_english_name_followup": {
@@ -90,10 +94,14 @@
     "frontend_source_unchanged_from_80_case_browser_run": true
   },
   "github_verification": {
-    "commit": "9708e0d8e783cbb650927ac8fd36fd0a7b4284f9",
-    "verification_run": 41274746996,
-    "evidence_run": 41274746989,
-    "status": "SUCCESS"
+    "commit": "c1d43daf801679c4b6c316ab1a23bc880d618810",
+    "verification_run": 41277174962,
+    "evidence_run": 41277174870,
+    "edge_run": 41277174871,
+    "status": "SUCCESS",
+    "browser_cases_passed": 80,
+    "main_repeat_run": 41277618842,
+    "main_repeat_status": "FAILURE_DIAGNOSED_AS_ASYNC_TEST_RACE; LOCAL_COMBINED_FIX_VERIFIED"
   },
   "dart_cpu_offload_followup": {
     "production_failure": {
@@ -161,6 +169,44 @@
       "local_time": "2026-11-01 14:22 Asia/Seoul",
       "utc_minute": "2026-11-01T05:22Z"
     },
-    "establishes_dart_registry_completion": false
+    "establishes_dart_registry_completion": false,
+    "hyundai_approved_numeric_evidence_without_legacy_figures": "PASS",
+    "sec_discovery_preserves_results_during_dart_failure": "PASS"
+  },
+  "dart_alphanumeric_followup": {
+    "production_migration_version": "20261101055057",
+    "migration_sha256": "0e9f5b376a73f44913d1900d72e9a385023834590dc94c5f845a1a8af4c70beb",
+    "actual_archive": {
+      "sha256": "2c0abccb2d38d4179e03ba0c3e4a0370599365ff934e61fca779a0aefb57631d",
+      "zip_bytes": 3632941,
+      "expanded_xml_bytes": 30358952,
+      "issuer_count": 119879,
+      "listed_count": 4009,
+      "alphanumeric_count": 72,
+      "previous_parser_error": "invalid_dart_directory",
+      "corrected_parser_result": "PASS",
+      "response_bytes": 569889,
+      "local_wall_ms": 695.39,
+      "local_cpu_ms": 769.514,
+      "production_latency_claim": false
+    },
+    "format": "six uppercase ASCII letters or digits; eight numeric corporation ID digits unchanged",
+    "discovery_postgres_tests_passed": 26,
+    "new_postgres_cases": 11,
+    "post_auth_diagnostics": "fixed operation and allowlisted code only; no raw exception, URL, token, key or issuer data",
+    "mobile_scroll_race": {
+      "application_behavior_changed": false,
+      "same_assertion_awaited": true,
+      "isolated_rechecks_passed": 5
+    },
+    "final_full_gate": "PASS",
+    "actual_production_directory_warm": "PENDING",
+    "backend_tests_passed": 517,
+    "backend_tests_skipped": 0,
+    "frontend_tests_passed": 958,
+    "frontend_test_files": 90,
+    "deno_entrypoints_passed": 3,
+    "scope_guard": "PASS",
+    "independent_node_review": "PASS"
   }
 }

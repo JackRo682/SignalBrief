@@ -52,6 +52,18 @@ describe('archived DART directory source boundary',()=>{
 });
 
 describe('bounded Node directory archive processing',()=>{
+ it('preserves the complete registry when listed issuers have official alphanumeric stock codes',()=>{
+  const xml=listedXML().replace('<stock_code>100000</stock_code>','<stock_code>0068Y0</stock_code>').replace('<stock_code>100001</stock_code>','<stock_code>0017J0</stock_code>');
+  const bytes=directoryZip(xml,{descriptor:true}),result=parseDartDirectoryArchive(bytes,zipSha(bytes));
+  expect(result.items).toHaveLength(100);expect(result.source_sha256).toBe(zipSha(bytes));
+  expect(result.items[0]).toMatchObject({provider_company_id:'00100000',ticker:'0068Y0'});
+  expect(result.items[1]).toMatchObject({provider_company_id:'00100001',ticker:'0017J0'});
+  expect(result.items.at(-1)?.ticker).toBe('100099');
+ });
+ it.each(['0068y0','068Y0','00068Y0','006.Y0','006 Y0','００６８Ｙ０'])('rejects malformed stock code %s without returning a partial registry',ticker=>{
+  const xml=listedXML().replace('<stock_code>100050</stock_code>',`<stock_code>${ticker}</stock_code>`),bytes=directoryZip(xml);
+  expect(()=>parseDartDirectoryArchive(bytes,zipSha(bytes))).toThrow('invalid_dart_directory');
+ });
  it.each([{},{stored:true},{descriptor:true}])('accepts standard stored/deflated archives with validated local and central metadata (%j)',options=>{
   const bytes=directoryZip(listedXML(),options);expect(parseDartDirectoryArchive(bytes,zipSha(bytes)).items).toHaveLength(100);
  });

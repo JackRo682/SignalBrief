@@ -14,13 +14,15 @@ function request(value:unknown=payload,options:{unsigned?:boolean;stale?:boolean
 }
 beforeEach(()=>{
  vi.clearAllMocks();vi.stubEnv('DART_RELAY_SECRET',secret);vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL',projectUrl);vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY','synthetic-public-key');
+ vi.spyOn(console,'error').mockImplementation(()=>{});
  mocks.rpc.mockResolvedValue({data:true,error:null});vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response(bytes)));
 });
-afterEach(()=>{vi.unstubAllEnvs();vi.unstubAllGlobals();});
+afterEach(()=>{vi.unstubAllEnvs();vi.unstubAllGlobals();vi.restoreAllMocks();});
 
 describe('private directory parse relay route',()=>{
  it.each([{unsigned:true},{stale:true},{signatureBody:JSON.stringify({...payload,sha:'0'.repeat(64)})}])('requires a current unmodified HMAC before any storage request (%j)',async options=>{
   expect((await POST(request(payload,options))).status).toBe(401);expect(mocks.rpc).not.toHaveBeenCalled();expect(fetch).not.toHaveBeenCalled();
+  expect(console.error).not.toHaveBeenCalled();
  });
  it.each([{data:false,error:null},{data:null,error:{message:'claim unavailable'}}])('fails closed on replay or nonce-store failure (%j)',async claim=>{
   mocks.rpc.mockResolvedValue(claim);expect((await POST(request())).status).toBe(401);expect(fetch).not.toHaveBeenCalled();expect(mocks.download).not.toHaveBeenCalled();
@@ -39,6 +41,15 @@ describe('private directory parse relay route',()=>{
  it('reports corrupt or substituted source bytes as failure without exposing the signed URL',async()=>{
   vi.mocked(fetch).mockResolvedValue(new Response(directoryZip(listedXML(101))));
   const response=await POST(request());expect(response.status).toBe(502);expect(await response.json()).toEqual({error:'dart_relay_failed'});
+  expect(console.error).toHaveBeenCalledExactlyOnceWith('DART_RELAY_FAILURE',{operation:'directory_parse',code:'directory_hash_mismatch'});
+ });
+ it('logs only an allowlisted diagnostic after authorization and never raw transport credentials',async()=>{
+  const unsafe=`request failed: ${payload.source_url} key=${'b'.repeat(40)}`;
+  vi.mocked(fetch).mockRejectedValue(new Error(unsafe));
+  const response=await POST(request());expect(response.status).toBe(502);expect(await response.json()).toEqual({error:'dart_relay_failed'});
+  expect(console.error).toHaveBeenCalledExactlyOnceWith('DART_RELAY_FAILURE',{operation:'directory_parse',code:'provider_unavailable'});
+  expect(JSON.stringify(vi.mocked(console.error).mock.calls)).not.toContain(payload.source_url);
+  expect(JSON.stringify(vi.mocked(console.error).mock.calls)).not.toContain('b'.repeat(40));
  });
  it('keeps existing signed binary directory relay behavior intact',async()=>{
   const legacy={kind:'directory',key:'b'.repeat(40),nonce:'d'.repeat(64)};mocks.download.mockResolvedValue({bytes,type:'application/zip'});

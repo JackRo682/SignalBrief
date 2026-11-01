@@ -16,7 +16,8 @@ ROOT = Path(__file__).resolve().parents[2]
 def discovery(own):
     own.exec_driver_sql('RESET ROLE')
     for name in ('20261101014441_screenshot_dashboard.sql', '20261101041747_company_discovery_reliability.sql',
-                 '20261101050721_official_directory_english_names.sql'):
+                 '20261101050721_official_directory_english_names.sql',
+                 '20261101055057_dart_alphanumeric_stock_codes.sql'):
         with own.connection.driver_connection.cursor() as cursor:
             cursor.execute((ROOT / 'supabase/migrations' / name).read_text(), prepare=False)
     own.exec_driver_sql('SET LOCAL ROLE authenticated')
@@ -52,6 +53,60 @@ def dart_snapshot(conn, english='Alpine Synthetic Research', lease='90000000-000
     assert admin(conn, 'claim', {'provider': 'dart', 'lease': lease}) is True
     return {'provider': 'dart', 'lease': lease, 'sha': 'b' * 64,
             'object_key': 'directory/dart/' + 'b' * 64 + '.zip', 'items': items}
+
+
+@pytest.mark.parametrize('ticker', ['0068Y0', '0017J0'])
+def test_official_alphanumeric_stock_codes_survive_snapshot_search_and_activation(discovery, ticker):
+    discovery.exec_driver_sql('RESET ROLE')
+    snapshot = dart_snapshot(discovery)
+    snapshot['items'][1]['ticker'] = ticker
+    assert admin(discovery, 'save', snapshot) == {'count': 100}
+    assert discovery.exec_driver_sql('select count(*) from app_private.company_directory where active').scalar() == 100
+    stored = discovery.execute(text("select provider_company_id,source_sha256 from app_private.company_directory where provider='dart' and ticker=:ticker"), {'ticker': ticker}).one()
+    assert tuple(stored) == ('00000101', 'b' * 64)
+    discovery.exec_driver_sql('SET LOCAL ROLE authenticated')
+    found = discovery.execute(text('select public.sb_company_discovery(:q)'), {'q': ticker.lower()}).scalar()
+    assert found['total'] == 1
+    assert found['items'][0]['ticker'] == ticker and found['items'][0]['company_id'] is None
+    discovery.exec_driver_sql('RESET ROLE')
+    selected = {'provider': 'dart', 'provider_company_id': '00000101', 'ticker': ticker}
+    company = admin(discovery, 'activate', selected)
+    assert company['ticker'] == ticker and company['provider_company_id'] == '00000101'
+    assert company['name'] == '합성기업101'
+    assert admin(discovery, 'activate', selected)['id'] == company['id']
+    # A valid-looking code still cannot activate a different/unlisted identity.
+    point = discovery.begin_nested()
+    with pytest.raises(Exception) as caught:
+        admin(discovery, 'activate', {**selected, 'provider_company_id': '99999999'})
+    point.rollback()
+    assert caught.value.orig.sqlstate == 'PT404'
+    discovery.exec_driver_sql('SET LOCAL ROLE authenticated')
+    for function, action in (('sb_workspace', 'company_lookup'), ('sb_redesign_workspace', 'design_directory'),
+                             ('sb_customer_workspace', 'catalog')):
+        result = discovery.execute(text(f"select public.{function}(:a,cast(:p as jsonb))"),
+                                   {'a': action, 'p': json.dumps({'q': ticker.lower()})}).scalar()
+        rows = result if isinstance(result, list) else result['items']
+        assert [(row['id'], row['ticker']) for row in rows] == [(company['id'], ticker)]
+
+
+@pytest.mark.parametrize('ticker,corp_id', [
+    ('0068y0', '00000101'), ('0068Y', '00000101'), ('0068Y00', '00000101'),
+    ('006-Y0', '00000101'), ('006 Y0', '00000101'), ('００６８Y0', '00000101'),
+    ('0068가0', '00000101'), ('', '00000101'), ('0068Y0', '00000A01'),
+])
+def test_invalid_dart_stock_code_or_corporation_id_cannot_replace_snapshot(discovery, ticker, corp_id):
+    discovery.exec_driver_sql('RESET ROLE')
+    admin(discovery, 'save', dart_snapshot(discovery))
+    discovery.exec_driver_sql("update app_private.company_directory_sources set last_success_at=null,last_attempt_at=null where provider='dart'")
+    invalid = dart_snapshot(discovery, lease='90000000-0000-4000-8000-000000000004')
+    invalid['items'][1].update(ticker=ticker, provider_company_id=corp_id)
+    point = discovery.begin_nested()
+    with pytest.raises(Exception) as caught:
+        admin(discovery, 'save', invalid)
+    point.rollback()
+    assert caught.value.orig.sqlstate == 'PT422'
+    assert discovery.exec_driver_sql('select count(*) from app_private.company_directory where active').scalar() == 100
+    assert discovery.exec_driver_sql("select ticker from app_private.company_directory where provider='dart' and provider_company_id='00000101'").scalar() == '000101'
 
 
 def test_official_english_names_find_the_same_identity_in_discovery_and_registered_search(discovery):

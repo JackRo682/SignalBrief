@@ -15,7 +15,7 @@ export function parseDartDirectory(xml:string):DirectoryEntry[]{
    if(node.name==='list'&&current){
     const ticker=(current.stock_code??'').trim(),id=(current.corp_code??'').trim(),name=(current.corp_name??'').trim();
     if(ticker){
-     if(!/^\d{6}$/.test(ticker)||!/^\d{8}$/.test(id)||!name||name.length>500)throw new Error('invalid_identity');
+     if(!/^[A-Z0-9]{6}$/.test(ticker)||!/^\d{8}$/.test(id)||!name||name.length>500)throw new Error('invalid_identity');
      const englishName=(current.corp_eng_name??'').trim();
      if(englishName.length>500)throw new Error('invalid_english_name');
      entries.set(id+':'+ticker,{provider_company_id:id,ticker,name,market:'KR',...(englishName?{official_english_name:englishName}:{})});

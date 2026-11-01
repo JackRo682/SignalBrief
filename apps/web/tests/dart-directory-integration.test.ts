@@ -118,6 +118,7 @@ describe('DART full-registry Edge to Node integration',()=>{
   expect(zipSha(f.objects.get(saved.object_key)!)).toBe(digest);
   expect(saved.items).toHaveLength(4000);
   expect(saved.items[0]).toEqual({provider_company_id:'00100000',ticker:'100000',name:'Synthetic Company 0',official_english_name:'Synthetic Research 0',market:'KR'});
+  expect(saved.items[1]).toMatchObject({provider_company_id:'00100001',ticker:'0068Y0'});
   expect(saved.items.at(-1)).toEqual({provider_company_id:'00103999',ticker:'103999',name:'Synthetic Company 3999',official_english_name:'Synthetic Research 3999',market:'KR'});
   expect(saved.items.some(item=>item.name.includes('unlisted'))).toBe(false);
   expect(f.relayBodies).toHaveLength(2);expect(external.nonceRpc).toHaveBeenCalledTimes(2);

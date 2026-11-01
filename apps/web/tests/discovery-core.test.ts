@@ -9,12 +9,27 @@ describe('official issuer directory parsing',()=>{
  it('accepts only a hash-bound bounded parser result with validated official identities',()=>{
   const digest='a'.repeat(64),items=Array.from({length:100},(_,i)=>({provider_company_id:String(i+100).padStart(8,'0'),ticker:String(i+100).padStart(6,'0'),name:`합성기업${i}`,market:'KR',official_english_name:`Synthetic ${i}`}));
   expect(parseDartDirectoryResult(JSON.stringify({source_sha256:digest,items}),digest)).toEqual(items);
-  for(const changes of [{provider_company_id:'123'}, {ticker:'ABCDEF'}, {name:''}, {market:'KOSPI'}, {official_english_name:false}, {official_english_name:'x'.repeat(501)}, {source_url:'https://attacker.invalid'}]){
+  for(const changes of [{provider_company_id:'123'}, {ticker:'ABCD.E'}, {name:''}, {market:'KOSPI'}, {official_english_name:false}, {official_english_name:'x'.repeat(501)}, {source_url:'https://attacker.invalid'}]){
    const invalid=[{...items[0],...changes},...items.slice(1)];
    expect(()=>parseDartDirectoryResult(JSON.stringify({source_sha256:digest,items:invalid}),digest)).toThrow('invalid_dart_directory_result');
   }
   expect(()=>parseDartDirectoryResult(JSON.stringify({source_sha256:'b'.repeat(64),items}),digest)).toThrow('invalid_dart_directory_result');
   expect(()=>parseDartDirectoryResult(JSON.stringify({source_sha256:digest,items:items.slice(1)}),digest)).toThrow('incomplete_official_directory');
+ });
+ it.each(['0068Y0','0017J0'])('preserves official alphanumeric stock code %s through Edge validation and selection',ticker=>{
+  const digest='a'.repeat(64),items=Array.from({length:100},(_,i)=>({provider_company_id:String(i+100).padStart(8,'0'),ticker:i===0?ticker:String(i+100).padStart(6,'0'),name:`합성기업${i}`,market:'KR'}));
+  expect(parseDartDirectoryResult(JSON.stringify({source_sha256:digest,items}),digest)).toEqual(items);
+  expect(parseSelection({provider:'dart',provider_company_id:'00000100',ticker})).toEqual({provider:'dart',provider_company_id:'00000100',ticker});
+ });
+ it.each(['0068y0','0068Y','0068Y00','006-Y0','006 Y0','００６８Y0','0068가0'])('rejects malformed DART stock code %s at both Edge boundaries',ticker=>{
+  const digest='a'.repeat(64),items=Array.from({length:100},(_,i)=>({provider_company_id:String(i+100).padStart(8,'0'),ticker:i===0?ticker:String(i+100).padStart(6,'0'),name:`합성기업${i}`,market:'KR'}));
+  expect(()=>parseDartDirectoryResult(JSON.stringify({source_sha256:digest,items}),digest)).toThrow('invalid_dart_directory_result');
+  expect(()=>parseSelection({provider:'dart',provider_company_id:'00000100',ticker})).toThrow('invalid_selection');
+ });
+ it('retains the eight-digit numeric corporation identity for alphanumeric securities',()=>{
+  const digest='a'.repeat(64),items=Array.from({length:100},(_,i)=>({provider_company_id:i===0?'0000010A':String(i+100).padStart(8,'0'),ticker:i===0?'0068Y0':String(i+100).padStart(6,'0'),name:`합성기업${i}`,market:'KR'}));
+  expect(()=>parseDartDirectoryResult(JSON.stringify({source_sha256:digest,items}),digest)).toThrow('invalid_dart_directory_result');
+  expect(()=>parseSelection({provider:'dart',provider_company_id:'0000010A',ticker:'0068Y0'})).toThrow('invalid_selection');
  });
  it('uses named SEC columns, preserves share classes and unknown exchange truthfully',()=>{
   const raw=JSON.stringify({fields:['name','cik','exchange','ticker'],data:[['Synthetic Corp',12,'Nasdaq','TEST'],['Synthetic Corp',12,null,'TEST.B']]});

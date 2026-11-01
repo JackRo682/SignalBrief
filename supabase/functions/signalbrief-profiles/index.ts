@@ -49,7 +49,7 @@ export async function handleProfiles(req:Request):Promise<Response>{
    if(archive.error&&!/already exists|duplicate/i.test(archive.error.message))throw new ProfileError('archive_failed',500);
    await rpc('sb_us_cache',{k:cacheKey,v:profile,ttl:86400});return reply(profile);
   }
-  if(!/^\d{8}$/.test(company.provider_company_id)||!/^\d{6}$/.test(company.ticker))throw new ProfileError('invalid_company_mapping',409);
+  if(!/^\d{8}$/.test(company.provider_company_id)||!/^[A-Z0-9]{6}$/.test(company.ticker))throw new ProfileError('invalid_company_mapping',409);
   const cacheKey=`profile:dart:v1:${id}:${company.provider_company_id}:${company.ticker}`;
   const cached=await rpc('sb_us_cache',{k:cacheKey});if(cached)return reply(cached);
   const secrets=await rpc('sb_us_secrets');const key=env('DART_API_KEY')||secrets.DART_API_KEY;

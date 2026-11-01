@@ -27,6 +27,29 @@ describe('profile function authorization, archival and cache',()=>{
  it('rejects expired user sessions',async()=>{const f=fixture();f.setActor(false);expect((await f.get()).status).toBe(401);expect(f.dartRelay).not.toHaveBeenCalled();});
  it('rejects unsigned or replayed operations requests',async()=>{const f=fixture();expect((await f.warm()).status).toBe(401);expect(f.dartRelay).not.toHaveBeenCalled();});
  it('archives original bytes and reuses the verified cache',async()=>{const f=fixture();expect((await f.get()).status).toBe(200);expect((await f.get()).status).toBe(200);expect(f.dartRelay).toHaveBeenCalledTimes(1);expect(f.upload).toHaveBeenCalledTimes(1);expect(f.rpc).toHaveBeenCalledWith('sb_us_cache',expect.objectContaining({ttl:86400}));});
+ it.each(['0068Y0','0017J0'])('loads and caches an identity-matched official profile for %s',async ticker=>{
+  const f=fixture();f.company.ticker=ticker;
+  f.dartRelay.mockResolvedValue(new TextEncoder().encode(JSON.stringify({status:'000',corp_code:f.company.provider_company_id,stock_code:ticker,corp_name:'Synthetic alphanumeric issuer'})));
+  const response=await f.get();expect(response.status).toBe(200);
+  expect(await response.json()).toMatchObject({status:'verified',company_id:id,profile:{corp_code:f.company.provider_company_id,ticker,name:'Synthetic alphanumeric issuer'}});
+  expect(f.upload).toHaveBeenCalledTimes(1);
+  expect(f.rpc).toHaveBeenCalledWith('sb_us_cache',expect.objectContaining({k:`profile:dart:v1:${id}:${f.company.provider_company_id}:${ticker}`,ttl:86400}));
+  expect((await f.get()).status).toBe(200);expect(f.dartRelay).toHaveBeenCalledTimes(1);
+ });
+ it.each(['0068y0','0068Y','0068Y00','006-Y0','006 Y0','００６８Y0','0068가0'])('rejects malformed profile stock mapping %s before provider work',async ticker=>{
+  const f=fixture();f.company.ticker=ticker;const response=await f.get();expect(response.status).toBe(409);
+  expect(await response.json()).toEqual({error:{code:'invalid_company_mapping'}});
+  expect(f.dartRelay).not.toHaveBeenCalled();expect(f.upload).not.toHaveBeenCalled();expect(f.cache.size).toBe(0);
+ });
+ it('keeps the numeric corporation-ID requirement and exact alphanumeric stock match',async()=>{
+  const malformed=fixture();malformed.company.ticker='0068Y0';malformed.company.provider_company_id='1234567A';
+  expect((await malformed.get()).status).toBe(409);expect(malformed.dartRelay).not.toHaveBeenCalled();
+  const mismatch=fixture();mismatch.company.ticker='0068Y0';
+  mismatch.dartRelay.mockResolvedValue(new TextEncoder().encode(JSON.stringify({status:'000',corp_code:mismatch.company.provider_company_id,stock_code:'0017J0',corp_name:'Wrong synthetic security'})));
+  const response=await mismatch.get();expect(response.status).toBe(502);
+  expect(await response.json()).toEqual({error:{code:'company_identity_mismatch'}});
+  expect(mismatch.upload).not.toHaveBeenCalled();expect(mismatch.cache.size).toBe(0);
+ });
  it('does not cache a provider failure or reflect its credentials',async()=>{const f=fixture();f.dartRelay.mockRejectedValue(new Error('synthetic-secret'));const r=await f.get();expect(r.status).toBe(502);expect(await r.text()).not.toContain('synthetic-secret');expect(f.cache.size).toBe(0);expect(f.upload).not.toHaveBeenCalled();});
  it('reports only an allowlisted relay code, never its exception text',async()=>{const f=fixture();f.dartRelay.mockRejectedValue(Object.assign(new Error('synthetic-secret'),{code:'relay_unauthorized'}));const r=await f.get();expect(await r.json()).toEqual({error:{code:'relay_unauthorized'}});});
  it('does not publish a response from a different company',async()=>{const f=fixture();f.dartRelay.mockResolvedValue(new TextEncoder().encode(JSON.stringify({status:'000',corp_code:'99999999',stock_code:'123456',corp_name:'Wrong company'})));const r=await f.get();expect(r.status).toBe(502);expect(f.cache.size).toBe(0);});

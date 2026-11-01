@@ -31,7 +31,7 @@ export function parseDartDirectoryResult(raw:string,expectedSha:string):Director
   if(!value||typeof value!=='object'||Array.isArray(value))throw new DiscoveryError('invalid_dart_directory_result');
   const row=value as Record<string,unknown>;
   if(Object.keys(row).some(key=>!['provider_company_id','ticker','name','market','official_english_name'].includes(key))||
-   typeof row.provider_company_id!=='string'||!/^\d{8}$/.test(row.provider_company_id)||typeof row.ticker!=='string'||!/^\d{6}$/.test(row.ticker)||
+   typeof row.provider_company_id!=='string'||!/^\d{8}$/.test(row.provider_company_id)||typeof row.ticker!=='string'||!/^[A-Z0-9]{6}$/.test(row.ticker)||
    typeof row.name!=='string'||!row.name.trim()||row.name.length>500||row.market!=='KR'||
    row.official_english_name!==undefined&&(typeof row.official_english_name!=='string'||!row.official_english_name.trim()||row.official_english_name.length>500))throw new DiscoveryError('invalid_dart_directory_result');
   const identity=row.provider_company_id+':'+row.ticker;
@@ -48,6 +48,6 @@ export function parseSelection(value:unknown):{company_id:string}|{provider:'sec
  if(keys.length===1&&typeof p.company_id==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(p.company_id))return {company_id:p.company_id};
  if(keys.length!==3||keys.some(k=>!['provider','provider_company_id','ticker'].includes(k))||!['sec','dart'].includes(String(p.provider))||typeof p.provider_company_id!=='string'||typeof p.ticker!=='string')throw new DiscoveryError('invalid_selection',422);
  if(p.provider==='sec'&&/^\d{10}$/.test(p.provider_company_id)&&/^[A-Z0-9][A-Z0-9.-]{0,14}$/.test(p.ticker))return {provider:'sec',provider_company_id:p.provider_company_id,ticker:p.ticker};
- if(p.provider==='dart'&&/^\d{8}$/.test(p.provider_company_id)&&/^\d{6}$/.test(p.ticker))return {provider:'dart',provider_company_id:p.provider_company_id,ticker:p.ticker};
+ if(p.provider==='dart'&&/^\d{8}$/.test(p.provider_company_id)&&/^[A-Z0-9]{6}$/.test(p.ticker))return {provider:'dart',provider_company_id:p.provider_company_id,ticker:p.ticker};
  throw new DiscoveryError('invalid_selection',422);
 }

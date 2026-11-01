@@ -21,7 +21,7 @@ export function listedXML(count=100,longName='Synthetic Company'){
 export function largeDirectoryFixture(){
  const listedCount=4000,unlistedCount=220000;
  const unlisted=Array.from({length:unlistedCount},(_,index)=>`<list><corp_code>${String(index+200000).padStart(8,'0')}</corp_code><corp_name>Synthetic unlisted company ${index}</corp_name><corp_eng_name>Synthetic unlisted corporation number ${index}</corp_eng_name><stock_code> </stock_code><modify_date>20261101</modify_date></list>`).join('');
- const xml=listedXML(listedCount).replace('</result>',unlisted+'</result>');
+ const xml=listedXML(listedCount).replace('<stock_code>100001</stock_code>','<stock_code>0068Y0</stock_code>').replace('</result>',unlisted+'</result>');
  return {bytes:directoryZip(xml),expandedBytes:Buffer.byteLength(xml),listedCount,unlistedCount};
 }
 export const projectUrl='https://fixture.supabase.co';

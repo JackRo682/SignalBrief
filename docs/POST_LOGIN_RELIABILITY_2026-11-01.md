@@ -35,6 +35,7 @@ range, filtering defects, and request failures. They are not interchangeable.
 | Official English names | Preserve OpenDART `corp_eng_name` separately from the primary name and match it across discovery, lookup, catalog and directory by provider plus official company ID. | `server/dart-directory.ts`, official-directory-English-names migration |
 | Company coverage | Search a separate official SEC/OpenDART directory. Activate only an identity selected by the user. Do not register the entire directory as collection work. | `signalbrief-discovery/*`, `company-discovery.tsx`, `/api/company-discovery` |
 | DART directory CPU limit | Archive the original ZIP first; send its hash and a short-lived private read URL through the HMAC relay. Node validates, inflates and parses the complete archive; Edge validates only the bounded listed-company result before saving. | `signalbrief-discovery/service.ts`, `server/dart-directory-archive.ts`, `/api/internal/dart` |
+| Official alphanumeric DART codes | Accept the source's six-character uppercase ASCII letters/digits consistently in XML parsing, Edge result/selection validation, database snapshot validation and profile loading. Keep corporation IDs numeric and eight digits. | `server/dart-directory.ts`, discovery core, profiles index, alphanumeric-code migration |
 | Company detail collection | Collect validated provider profile and filing metadata for the selected issuer; archive the original source first. Return `ready` only after persistence completes. Expose failures and allow retries. | `signalbrief-discovery/service.ts`, `company.tsx` |
 | Issuer/share-class identity | Preserve the existing canonical issuer record; verify a selected alternative ticker against the official directory before describing it as the same issuer. | `company-discovery.tsx`, `company.tsx` |
 | Profile errors | Distinguish an unavailable provider field from a failed profile request, with a retry for the latter. SEC fields absent from the source remain unknown. | `components/company-profile.tsx` |
@@ -128,6 +129,7 @@ these checks do not write production user records.
    `20261101041751_calendar_reliability.sql`. Both preserve existing content;
    expected-function guards stop application if the live definition has drifted.
    Then apply `20261101050721_official_directory_english_names.sql` before deploying the English-name-aware discovery parser.
+   Apply `20261101055057_dart_alphanumeric_stock_codes.sql` before enabling the corrected stock-code validators. All four migrations are already in the production ledger; do not reapply them.
 3. Build and deploy the reviewed Git commit in the existing Vercel project first.
    The production Node `/api/internal/dart` route must accept both fixed
    `directory` and `directory_parse` operations before deploying the CPU-offload
@@ -213,3 +215,56 @@ future-event detail worked. Apple's manual official-data refresh succeeded at
 **14:22 KST (05:22 UTC)** on November 1. These observations do not establish DART
 registry completion. **An actual DART cold warm after the Node-first deployment
 is still pending.**
+
+## Actual registry compatibility and repeat-CI follow-up
+
+After the Node offload reached production at `c1d43da`, discovery v3 completed
+without the earlier Edge resource termination. Its signed archive download
+returned HTTP 200, but the strict parser rejected the registry. The original
+private archive was preserved and its SHA-256 verified before local replay:
+
+| Original source measurement | Result |
+| --- | --- |
+| SHA-256 | `2c0abccb2d38d4179e03ba0c3e4a0370599365ff934e61fca779a0aefb57631d` |
+| ZIP bytes / expanded XML bytes | 3,632,941 / 30,358,952 |
+| Issuer records / listed identities | 119,879 / 4,009 |
+| Listed identities containing letters | 72 |
+
+The exact previous Node code reproduced `invalid_dart_directory`. Changing only
+the ticker predicate from six digits to six uppercase ASCII letters/digits
+allowed the entire original registry to pass. The actual corrected source then
+returned all **4,009 identities**, including all **72 alphanumeric codes**, in
+**569,889 JSON bytes**. Local replay took **695.39 ms wall / 769.514 ms CPU**;
+these are local measurements of actual provider bytes, not production latency.
+No size, CRC, SHA, XML, name, or complete-snapshot checks were relaxed.
+
+The same format is now enforced in Edge result/selection validation, the
+profile-loading guard, and the additive database migration
+`20261101055057_dart_alphanumeric_stock_codes.sql`. Its expected-definition guard
+requires exactly one audited predicate and preserves source leases, full-snapshot
+validation, provider identity, activation quotas, privileges and stored data.
+Twenty-six real-PostgreSQL discovery regressions passed, including eleven new
+positive/negative format and activation cases. The large synthetic cross-boundary
+fixture now also carries an alphanumeric identity through archive, HMAC, Node
+parse, Edge validation and save.
+
+Authorized Node processing failures now emit only a fixed operation and an
+allowlisted diagnostic code. Raw exception text, signed URLs, credentials and
+issuer data never enter these diagnostics; public error responses are unchanged.
+
+The independent `c1d43da` repair-branch gate passed all **80 browser cases** in
+3.1 minutes. A repeated main run found a separate mobile test timing race: its
+content and selection assertions passed, but it checked a React scroll effect
+before the effect completed. The test now awaits the same scroll assertion with
+the existing default timeout; application behavior is unchanged. Five isolated
+rechecks passed. The combined full local gate then passed all eight stages:
+**517 backend tests with zero skips, 958 frontend tests in 90 files**, TypeScript,
+Ruff, ESLint, production build, all three Deno entrypoints and the scope guard.
+Independent CI on the latest commit and the post-deployment DART warm remain
+separate acceptance steps for this follow-up.
+
+Additional live checks confirmed the approved numeric-evidence panel on Hyundai
+despite no legacy structured figures, and SEC discovery returned official results
+outside the original seven registered companies while DART was unavailable.
+Official names and tickers are source-backed; directory support does not imply
+arbitrary Korean transliterations or universal calendar/analysis coverage.
