@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type KeyboardEvent } from "react";
 import { z } from "zod";
 import { useAuth } from "@/components/auth";
+import { CompanySnapshotIntroduction } from "@/components/company-snapshot-introduction";
 import { Icon } from "@/components/icons";
 import { useResource } from "@/components/ui";
 import { body, emptySchema, request } from "@/lib/api";
@@ -569,9 +570,9 @@ function EventContent({
                     </p>
                   </div>
                 </div>
-                <p className="rd-event-company-summary">
-                  {companyInfo?.summary || "등록된 기업 설명이 없습니다."}
-                </p>
+                <div className="rd-event-company-summary">
+                  <CompanySnapshotIntroduction company={companyInfo} />
+                </div>
                 <dl className="rd-event-snapshot">
                   <div>
                     <dt>연결된 문서</dt>

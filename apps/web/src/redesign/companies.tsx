@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { Icon } from "@/components/icons";
 import { companyBusinessProfiles } from "@/lib/company-business-profiles";
 import { CompanyIntroduction } from "@/components/company-introduction";
@@ -10,10 +11,44 @@ import { CompanyLogo, Heading, SearchForm, formatSourceDate } from "./ui";
 import CompanyDiscovery from "./company-discovery";
 import { marketCategory, normalizeCompanyQuery, type MarketGroup } from "./company-search";
 export { marketCategory } from "./company-search";
+const markets: MarketGroup[] = ["all", "kospi", "kosdaq", "overseas", "unclassified"];
+function directoryFilters(params: Pick<URLSearchParams, "get">) {
+  const requestedMarket = params.get("market_group") as MarketGroup | null;
+  const requestedOffset = params.get("offset") ?? "0";
+  const market: MarketGroup = requestedMarket && markets.includes(requestedMarket) ? requestedMarket : "all";
+  return {
+    query: normalizeCompanyQuery(params.get("q") ?? ""),
+    market,
+    offset: /^\d+$/.test(requestedOffset) && Number(requestedOffset) <= 10000 ? Number(requestedOffset) : 0,
+  };
+}
 export default function Companies() {
-  const [query, setQuery] = useState(""),
-    [market, setMarket] = useState<MarketGroup>("all"),
-    [offset, setOffset] = useState(0);
+  return (
+    <Suspense fallback={<div data-screen="redesign-companies"><Heading title="기업" /><p role="status">기업 목록을 불러오는 중입니다.</p></div>}>
+      <Directory />
+    </Suspense>
+  );
+}
+function Directory() {
+  const { query, market, offset } = directoryFilters(useSearchParams());
+  function change(patch: Partial<ReturnType<typeof directoryFilters>>) {
+    const url = new URL(window.location.href);
+    // Read the current URL so consecutive choices merge before React commits.
+    const next = {
+      ...directoryFilters(url.searchParams),
+      ...(patch.query !== undefined || patch.market !== undefined ? { offset: 0 } : {}),
+      ...patch,
+    };
+    for (const [key, value] of [["q", next.query], ["market_group", next.market === "all" ? "" : next.market], ["offset", next.offset || ""]] as const) {
+      if (value === "") url.searchParams.delete(key);
+      else url.searchParams.set(key, String(value));
+    }
+    if (url.href !== window.location.href) {
+      // Next's native history integration updates useSearchParams without an
+      // unnecessary server navigation and restores filters on Back/Forward.
+      window.history.pushState(null, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+  }
   const directory = useData(
     {
       action: "design_directory",
@@ -37,10 +72,8 @@ export default function Companies() {
       <Heading title="기업" />
       <div className="rd-directory-tools">
         <SearchForm
-          onSubmit={(q) => {
-            setQuery(normalizeCompanyQuery(q));
-            setOffset(0);
-          }}
+          initial={query}
+          onSubmit={(q) => change({ query: normalizeCompanyQuery(q) })}
         />
         <div className="rd-market-tabs" role="group" aria-label="시장">
           {[
@@ -54,10 +87,7 @@ export default function Companies() {
               type="button"
               key={key}
               aria-pressed={market === key}
-              onClick={() => {
-                setMarket(key as typeof market);
-                setOffset(0);
-              }}
+              onClick={() => change({ market: key as MarketGroup })}
             >
               {label}
             </button>
@@ -155,7 +185,7 @@ export default function Companies() {
           <button
             className="rd-btn"
             disabled={directory.loading || offset === 0}
-            onClick={() => setOffset(Math.max(0, offset - 50))}
+            onClick={() => change({ offset: Math.max(0, offset - 50) })}
           >
             이전
           </button>
@@ -163,7 +193,7 @@ export default function Companies() {
           <button
             className="rd-btn"
             disabled={directory.loading || directory.data?.next_offset == null}
-            onClick={() => setOffset(directory.data?.next_offset ?? offset)}
+            onClick={() => change({ offset: directory.data?.next_offset ?? offset })}
           >
             다음
           </button>

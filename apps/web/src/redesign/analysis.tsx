@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useAuth } from "@/components/auth";
+import { CompanySnapshotIntroduction } from "@/components/company-snapshot-introduction";
 import { Icon } from "@/components/icons";
 import { approvedDartQuotation } from "@/lib/approved-analysis-display";
 import { workspace } from "@/workspace/client";
@@ -510,6 +511,7 @@ function DocumentContent({
                   </>
                 )}
               </dl>
+              <CompanySnapshotIntroduction company={company.data?.company} />
               <Provenance data={data} kind={kind} />
             </DetailPanel>
             <DetailPanel

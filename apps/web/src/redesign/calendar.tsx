@@ -639,7 +639,8 @@ export default function RedesignCalendar() {
             <label>
               관련 기업 검색
               <input value={personalQuery} maxLength={100} placeholder="기업명 또는 종목코드"
-                onChange={event => setPersonalQuery(event.target.value)} />
+                onChange={event => setPersonalQuery(event.target.value)}
+                onKeyDown={event => { if (event.key === "Enter") event.preventDefault(); }} />
             </label>
             {personalQuery && <>
               <DataState loading={personalPending || personalResults.loading} error={personalResults.error ?? ""} retry={personalResults.reload} />

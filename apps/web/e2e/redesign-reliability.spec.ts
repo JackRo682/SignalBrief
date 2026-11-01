@@ -359,7 +359,8 @@ test('official company discovery retries failures and opens a recoverable compan
   fixture.state.resolutionFails = true;
   await open.click();
   await expect(discovery.getByRole('button', { name: '기업정보 다시 시도', exact: true })).toBeVisible();
-  await expect(page).toHaveURL(/\/explore$/);
+  await expect(page).toHaveURL(url => url.pathname === '/explore'
+    && url.searchParams.get('q') === 'ORNX' && url.searchParams.get('market_group') === 'overseas');
   fixture.state.resolutionFails = false;
   await discovery.getByRole('button', { name: '기업정보 다시 시도', exact: true }).click();
   await expect(page).toHaveURL(url => url.pathname === `/companies/${externalId}`
@@ -368,6 +369,16 @@ test('official company discovery retries failures and opens a recoverable compan
   const detail = page.getByTestId('redesign-company-detail');
   await expect(detail.getByRole('heading', { name: externalIssuer.name, exact: true })).toBeVisible();
   await expect(detail).toContainText('공식 자료 업데이트를 완료하지 못했습니다.');
+  await page.goBack();
+  await expect(page).toHaveURL(url => url.pathname === '/explore'
+    && url.searchParams.get('q') === 'ORNX' && url.searchParams.get('market_group') === 'overseas');
+  await expect(search).toHaveValue('ORNX');
+  await expect(main.getByRole('button', { name: '해외주식', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await page.reload();
+  await expect(search).toHaveValue('ORNX');
+  await expect(main.getByRole('button', { name: '해외주식', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect.poll(() => fixture.state.workspaceCalls.filter(call => call.action === 'design_directory').at(-1)?.p)
+    .toMatchObject({ q: 'ORNX', market_group: 'overseas', offset: 0 });
   await page.goto(`/companies/${externalId}?tab=disclosures`);
   await expect(detail.getByRole('heading', { name: externalIssuer.name, exact: true })).toBeVisible();
   await expect(detail.getByRole('tab', { name: '공시', exact: true })).toHaveAttribute('aria-selected', 'true');
@@ -481,7 +492,7 @@ test('watchlist discovers an unregistered issuer, follows explicitly, and persis
   await finish(page, info, fixture);
 });
 
-test('calendar discovers an unregistered issuer and queries its identity without creating personal data', async ({ page }, info) => {
+test('calendar discovers an unregistered issuer and saves personal events only explicitly', async ({ page }, info) => {
   const fixture = await reliabilityFixture(page);
   await page.goto('/calendar');
   const main = page.locator('main');
@@ -496,5 +507,24 @@ test('calendar discovers an unregistered issuer and queries its identity without
   expect(fixture.state.resolutionBodies).toHaveLength(1);
   expect(fixture.base.state.watched.size).toBe(0);
   expect(fixture.base.state.apiCalls.filter(call => call.method !== 'GET')).toEqual([]);
+  await main.getByRole('button', { name: '개인 일정 추가', exact: true }).click();
+  const form = page.getByRole('dialog');
+  await form.getByLabel('제목', { exact: true }).fill('Synthetic explicit-save reminder');
+  await form.getByLabel('날짜', { exact: true }).fill('2026-11-10');
+  const companySearch = form.getByLabel('관련 기업 검색', { exact: true });
+  await companySearch.fill('ORNX');
+  await companySearch.press('Enter');
+  const choose = form.getByRole('button', { name: 'Synthetic Orion Systems (ORNX) · 관련 기업으로 선택', exact: true });
+  await expect(choose).toBeVisible();
+  expect(fixture.base.state.apiCalls.filter(call => call.method === 'POST' && call.path === '/v1/calendar')).toEqual([]);
+  await choose.click();
+  await expect(form.getByLabel('관련 기업 (선택)', { exact: true })).toHaveValue(externalId);
+  expect(fixture.base.state.apiCalls.filter(call => call.method === 'POST' && call.path === '/v1/calendar')).toEqual([]);
+  await form.getByRole('button', { name: '일정 저장', exact: true }).click();
+  await expect(form).toHaveCount(0);
+  const saved = fixture.base.state.apiCalls.filter(call => call.method === 'POST' && call.path === '/v1/calendar');
+  expect(saved).toHaveLength(1);
+  expect(saved[0].body).toMatchObject({ title: 'Synthetic explicit-save reminder', occurs_on: '2026-11-10', company_id: externalId });
+  expect(fixture.base.state.watched.size).toBe(0);
   await finish(page, info, fixture);
 });

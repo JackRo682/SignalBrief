@@ -24,7 +24,10 @@ const mocks = vi.hoisted(() => ({
   workspace: vi.fn(),
   fetch: vi.fn(),
 }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: mocks.push }) }));
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mocks.push }),
+  useSearchParams: () => new URLSearchParams(window.location.search),
+}));
 vi.mock("@/components/auth", () => ({
   useAuth: () => ({ token: "test-redesign-token", me: { id: "reader" } }),
 }));
@@ -78,6 +81,7 @@ let failure = false;
 let catalogCompanies: Resource[];
 beforeEach(() => {
   vi.clearAllMocks();
+  window.history.replaceState(null, "", "/explore");
   failure = false;
   catalogCompanies = [newsCompany];
   vi.stubGlobal("fetch", mocks.fetch);
@@ -212,13 +216,68 @@ describe("screenshot discovery behavior", () => {
   it("does not invent KOSPI membership and sends market filters to the server", () => {
     expect(marketCategory("KRX")).toBe("unclassified");
     expect(marketCategory("KOSPI")).toBe("kospi");
-    render(<Companies />);
+    const view = render(<Companies />);
     fireEvent.click(screen.getByRole("button", { name: "코스닥" }));
+    view.rerender(<Companies />);
     expect(mocks.data).toHaveBeenCalledWith({
       action: "design_directory",
       p: { q: "", market_group: "kosdaq", limit: 50, offset: 0 },
     });
     expect(screen.getByRole("button", { name: "시장 미분류" })).toBeVisible();
+  });
+  it("restores directory query, market and page from the URL after leaving and reopening", () => {
+    const saved = "/explore?q=micron&market_group=overseas&offset=50";
+    window.history.replaceState(null, "", saved);
+    const view = render(<Companies />);
+    expect(screen.getByRole("textbox", { name: "기업명, 티커 또는 키워드 검색" })).toHaveValue("micron");
+    expect(screen.getByRole("button", { name: "해외주식" })).toHaveAttribute("aria-pressed", "true");
+    expect(mocks.data).toHaveBeenCalledWith({ action: "design_directory", p: { q: "micron", market_group: "overseas", limit: 50, offset: 50 } });
+    expect(screen.getByRole("button", { name: "이전" })).toBeEnabled();
+    expect(document.querySelector(".rd-pagination")).toHaveTextContent("2");
+    view.unmount();
+    window.history.replaceState(null, "", `/companies/${id}`);
+    // The router supplies this same URL on Back or a full reload. The real browser
+    // regression separately exercises native navigation and Next's history bridge.
+    window.history.replaceState(null, "", saved);
+    render(<Companies />);
+    expect(screen.getByRole("textbox", { name: "기업명, 티커 또는 키워드 검색" })).toHaveValue("micron");
+    expect(screen.getByRole("button", { name: "해외주식" })).toHaveAttribute("aria-pressed", "true");
+    expect(document.querySelector(".rd-pagination")).toHaveTextContent("2");
+  });
+  it("keeps consecutive query and market choices in the URL and resets only pagination", () => {
+    window.history.replaceState(null, "", "/explore?q=old&market_group=overseas&offset=50");
+    const view = render(<Companies />);
+    fireEvent.change(screen.getByRole("textbox", { name: "기업명, 티커 또는 키워드 검색" }), { target: { value: "  ＭＵ  " } });
+    fireEvent.submit(screen.getByRole("search"));
+    // Intentionally act again before the first route update renders.
+    fireEvent.click(screen.getByRole("button", { name: "코스닥" }));
+    expect(new URLSearchParams(window.location.search).get("q")).toBe("MU");
+    expect(new URLSearchParams(window.location.search).get("market_group")).toBe("kosdaq");
+    expect(new URLSearchParams(window.location.search).has("offset")).toBe(false);
+    view.rerender(<Companies />);
+    expect(mocks.data).toHaveBeenCalledWith({ action: "design_directory", p: { q: "MU", market_group: "kosdaq", limit: 50, offset: 0 } });
+    expect(screen.getByRole("textbox", { name: "기업명, 티커 또는 키워드 검색" })).toHaveValue("MU");
+    fireEvent.click(screen.getByRole("button", { name: "전체" }));
+    expect(new URLSearchParams(window.location.search).has("market_group")).toBe(false);
+    expect(new URLSearchParams(window.location.search).get("q")).toBe("MU");
+  });
+  it("writes page navigation to the URL while retaining the company query and market", () => {
+    window.history.replaceState(null, "", "/explore?q=micron&market_group=overseas&offset=100");
+    const view = render(<Companies />);
+    fireEvent.click(screen.getByRole("button", { name: "이전" }));
+    expect(new URLSearchParams(window.location.search).get("offset")).toBe("50");
+    expect(new URLSearchParams(window.location.search).get("q")).toBe("micron");
+    expect(new URLSearchParams(window.location.search).get("market_group")).toBe("overseas");
+    view.rerender(<Companies />);
+    expect(mocks.data).toHaveBeenCalledWith({ action: "design_directory", p: { q: "micron", market_group: "overseas", limit: 50, offset: 50 } });
+    fireEvent.click(screen.getByRole("button", { name: "이전" }));
+    expect(new URLSearchParams(window.location.search).has("offset")).toBe(false);
+  });
+  it.each(["-50", "1.5", "10001", "NaN"])("bounds invalid directory URL filters before requesting data (%s)", offset => {
+    window.history.replaceState(null, "", `/explore?market_group=unsupported&offset=${offset}`);
+    render(<Companies />);
+    expect(screen.getByRole("button", { name: "전체" })).toHaveAttribute("aria-pressed", "true");
+    expect(mocks.data).toHaveBeenCalledWith({ action: "design_directory", p: { q: "", market_group: "all", limit: 50, offset: 0 } });
   });
   it("shows all-category counts correctly when a specific search tab is selected", () => {
     render(

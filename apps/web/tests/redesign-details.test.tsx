@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
@@ -189,6 +190,35 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 describe("redesigned detail screens", () => {
+  it.each([undefined, "us"])("reuses the sourced curated company introduction in the %s document/analysis sidebar", async (analysis) => {
+    const original = mocks.workspace.getMockImplementation()!;
+    mocks.workspace.mockImplementation(async (...args) => {
+      const result = await original(...args);
+      return args[1].action === "company" ? {
+        ...result, company: { ...company, ticker: "MU", official_overview: { ...officialOverview, ticker: "MU" } },
+      } : result;
+    });
+    detail.document = { ...filing, ticker: "MU" };
+    render(<AnalysisDetail id={filingId} kind="filing" analysis={analysis} />);
+    expect(await screen.findByText(companyBusinessProfiles.MU.description[1])).toBeVisible();
+    const sidebar = within(screen.getByRole("complementary"));
+    expect(sidebar.getByRole("link", { name: companyBusinessProfiles.MU.sources[0].label })).toHaveAttribute("href", companyBusinessProfiles.MU.sources[0].url);
+    expect(sidebar.getByText(companyBusinessProfiles.MU.verifiedOn)).toBeVisible();
+    expect(sidebar.queryByText(/Synthetic sourced legal name/)).not.toBeInTheDocument();
+    expect(mocks.workspace.mock.calls.every(([, req]) => ["company", "document_detail"].includes(req.action))).toBe(true);
+  });
+  it.each([undefined, "us"])("shows already-loaded official company facts in the %s document/analysis sidebar", async (analysis) => {
+    const original = mocks.workspace.getMockImplementation()!;
+    mocks.workspace.mockImplementation(async (...args) => {
+      const result = await original(...args);
+      return args[1].action === "company" ? { ...result, company: { ...company, official_overview: officialOverview } } : result;
+    });
+    render(<AnalysisDetail id={filingId} kind="filing" analysis={analysis} />);
+    expect(await screen.findByText(/Synthetic sourced legal name.*Synthetic sourced industry/)).toBeVisible();
+    const sidebar = within(screen.getByRole("complementary"));
+    expect(sidebar.getByRole("link", { name: "Official company facts · SEC EDGAR" })).toHaveAttribute("href", officialOverview.source_url);
+    expect(sidebar.getByText(/2026-10-18T09:30:00Z/)).toBeVisible();
+  });
   it("shows issuer-level share-class semantics only after verifying the selected ticker", async () => {
     window.history.replaceState({}, "", `/companies/${companyId}?selected_ticker=TEST.B`);
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json({ items: [{ company_id: companyId, ticker: "TEST.B" }] })));

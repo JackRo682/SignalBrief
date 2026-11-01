@@ -11,7 +11,7 @@ import type { Company } from "../src/lib/contracts";
 
 // Named user journeys with synthetic identities/transports, not provider accuracy claims.
 const mocks = vi.hoisted(() => ({ request: vi.fn(), workspace: vi.fn(), push: vi.fn(), coverage: vi.fn(), dates: vi.fn() }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: mocks.push }), usePathname: () => "/calendar" }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: mocks.push }), usePathname: () => "/calendar", useSearchParams: () => new URLSearchParams(window.location.search) }));
 vi.mock("@/components/auth", () => ({ useAuth: () => ({ token: "synthetic-picker-token", me: { id: "synthetic-user" } }) }));
 vi.mock("@/lib/api", async original => ({ ...await original<typeof import("../src/lib/api")>(), request: mocks.request }));
 vi.mock("@/workspace/client", async original => ({ ...await original<typeof import("../src/workspace/client")>(), workspace: mocks.workspace }));
@@ -27,6 +27,7 @@ let directoryRows: Resource[];
 const matches = (name: string, ticker: string, query: string) => `${name} ${ticker}`.toLowerCase().includes(query.toLowerCase());
 beforeEach(() => {
   vi.clearAllMocks(); pageDataCache.reset(); registered = []; watched = []; directoryRows = []; failActivation = unavailable = false;
+  window.history.replaceState(null, "", "/explore");
   HTMLDialogElement.prototype.showModal = function () { this.setAttribute("open", ""); };
   mocks.request.mockImplementation(async (path: string, _token: string, _schema: unknown, init?: RequestInit) => {
     if (path.startsWith("/v1/companies")) { const query = new URL(path, "https://synthetic.test").searchParams.get("q") ?? ""; return registered.filter(company => matches(company.name, company.ticker, query)); }
@@ -137,12 +138,15 @@ describe("official company selection in each product surface", () => {
     expect(screen.getByText(/이 기업은 공식 일정 수집이 아직 연결되지 않았습니다/)).toBeVisible();
   });
 
-  it("can bind a newly discovered company to a personal event but writes only on Save", async () => {
+  it("does not submit on company-search Enter and saves the selected company only on Save", async () => {
     render(<Calendar />);
     fireEvent.click(screen.getByRole("button", { name: "개인 일정 추가" }));
     const modal = screen.getByRole("dialog"), form = within(modal);
     fireEvent.change(form.getByLabelText("제목"), { target: { value: "Synthetic personal reminder" } });
     fireEvent.change(form.getByLabelText("관련 기업 검색"), { target: { value: "micron" } });
+    expect(fireEvent.keyDown(form.getByLabelText("관련 기업 검색"), { key: "Enter", code: "Enter" })).toBe(false);
+    expect(writes()).toHaveLength(0);
+    expect(modal).toBeVisible();
     fireEvent.click(await form.findByRole("button", { name: "MICRON TECHNOLOGY INC 관련 기업으로 선택" }));
     await waitFor(() => expect(form.getByLabelText("관련 기업 (선택)")).toHaveValue(muId));
     expect(writes()).toHaveLength(0);
@@ -153,10 +157,11 @@ describe("official company selection in each product surface", () => {
   });
 
   it("shows Micron in overseas discovery without a contradictory registered-company empty message", async () => {
-    render(<Companies />);
+    const view = render(<Companies />);
     fireEvent.click(screen.getByRole("button", { name: "해외주식" }));
     fireEvent.change(screen.getByLabelText("기업명, 티커 또는 키워드 검색"), { target: { value: "micron" } });
     fireEvent.submit(screen.getByRole("search"));
+    view.rerender(<Companies />);
     expect(await screen.findByRole("button", { name: "MICRON TECHNOLOGY INC 기업정보 열기" })).toBeVisible();
     expect(screen.queryByText("조건에 맞는 등록 기업이 없습니다.")).not.toBeInTheDocument();
     expect(fetch).toHaveBeenCalledWith("/api/company-discovery?q=micron&market_group=overseas", expect.any(Object));

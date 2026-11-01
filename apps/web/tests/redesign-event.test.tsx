@@ -5,10 +5,12 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import RedesignEvent from "@/redesign/event";
-import { defaults } from "@/workspace/contracts";
+import { defaults, type Resource } from "@/workspace/contracts";
+import { companyBusinessProfiles } from "@/lib/company-business-profiles";
 
 const state = vi.hoisted(() => ({
   saved: true,
@@ -17,6 +19,9 @@ const state = vi.hoisted(() => ({
   followed: false,
   origin: "official",
   quote: "Synthetic confirmed source text",
+  ticker: "TEST",
+  summary: "Synthetic company description",
+  overview: null as Resource["official_overview"],
 }));
 const dateId = "00000000-0000-4000-8000-000000000001",
   companyId = "00000000-0000-4000-8000-000000000002";
@@ -88,9 +93,10 @@ vi.mock("@/workspace/ui", async (original) => ({
             company: {
               id: companyId,
               company_name: "Synthetic Company",
-              ticker: "TEST",
+              ticker: state.ticker,
               market: "TEST",
-              summary: "Synthetic company description",
+              summary: state.summary,
+              official_overview: state.overview,
             },
             analyses: [],
             events: [],
@@ -118,6 +124,9 @@ beforeEach(() => {
   state.followed = false;
   state.origin = "official";
   state.quote = "Synthetic confirmed source text";
+  state.ticker = "TEST";
+  state.summary = "Synthetic company description";
+  state.overview = null;
   state.rpc.mockImplementation(
     async (
       _name: string,
@@ -140,6 +149,32 @@ beforeEach(() => {
 afterEach(() => cleanup());
 
 describe("calendar occurrence saved interest actions", () => {
+  it("shows the curated Micron introduction and its official source in the calendar company snapshot", async () => {
+    state.ticker = "MU";
+    state.summary = "";
+    render(<RedesignEvent id={dateId} kind="calendar" />);
+    await screen.findByRole("button", { name: "저장됨 · 취소" });
+    const snapshot = within(screen.getByRole("heading", { name: "회사 스냅샷" }).closest("section")!);
+    expect(snapshot.getByText(companyBusinessProfiles.MU.description[0])).toBeTruthy();
+    expect(snapshot.getByRole("link", { name: companyBusinessProfiles.MU.sources[0].label }).getAttribute("href")).toBe(companyBusinessProfiles.MU.sources[0].url);
+    expect(snapshot.getByText(companyBusinessProfiles.MU.verifiedOn)).toBeTruthy();
+    expect(snapshot.queryByText("등록된 기업 설명이 없습니다.")).toBeNull();
+  });
+  it("uses the existing verified official facts for an uncurated company without another profile request", async () => {
+    state.summary = "";
+    state.overview = {
+      kind: "profile", provider: "SEC EDGAR", company_id: companyId, provider_company_id: "0000000001", ticker: "TEST",
+      name: "Synthetic sourced issuer", english_name: null, industry_description: "Synthetic industry", industry_code: "1234",
+      established_on: null, ceo: null, website: null, source_url: "https://www.sec.gov/edgar/browse/?CIK=0000000001",
+      source_sha256: "a".repeat(64), fetched_at: "2026-11-01T00:00:00Z",
+    };
+    render(<RedesignEvent id={dateId} kind="calendar" />);
+    await screen.findByRole("button", { name: "저장됨 · 취소" });
+    const snapshot = within(screen.getByRole("heading", { name: "회사 스냅샷" }).closest("section")!);
+    expect(snapshot.getByText(/Synthetic sourced issuer.*Synthetic industry/)).toBeTruthy();
+    expect(snapshot.getByRole("link", { name: "공식 기업 기본정보 · SEC EDGAR" }).getAttribute("href")).toBe(state.overview.source_url);
+    expect(snapshot.queryByText("등록된 기업 설명이 없습니다.")).toBeNull();
+  });
   it("allows removing an owned saved interest after unfollowing the company and persists it across remount", async () => {
     const view = render(<RedesignEvent id={dateId} kind="calendar" />);
     const remove = await screen.findByRole("button", { name: "저장됨 · 취소" });
