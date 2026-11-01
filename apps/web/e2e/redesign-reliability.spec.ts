@@ -518,7 +518,7 @@ test('calendar discovers an unregistered issuer and saves personal events only e
   await expect(choose).toBeVisible();
   expect(fixture.base.state.apiCalls.filter(call => call.method === 'POST' && call.path === '/v1/calendar')).toEqual([]);
   await choose.click();
-  await expect(form.getByLabel('관련 기업 (선택)', { exact: true })).toHaveValue(externalId);
+  await expect(form.getByRole('combobox', { name: '관련 기업 (선택)', exact: true })).toHaveValue(externalId);
   expect(fixture.base.state.apiCalls.filter(call => call.method === 'POST' && call.path === '/v1/calendar')).toEqual([]);
   await form.getByRole('button', { name: '일정 저장', exact: true }).click();
   await expect(form).toHaveCount(0);
