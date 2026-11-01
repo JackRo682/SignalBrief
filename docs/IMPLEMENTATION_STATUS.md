@@ -1,3 +1,5 @@
+> November 1, 2026: The ten Korean post-login screens from the screenshot package are implemented and deployed. The new dashboard/directory RPC and calendar-interest removal migration were applied. Release code: `7a7dbc1ef6d29edda60493039a35fba976c64b7b`. Historical status tables below are retained as originally recorded. See VERIFICATION for current validation and limits.
+
 > New local execution results: [LOCAL_VERIFICATION_2026-10-02.md](LOCAL_VERIFICATION_2026-10-02.md). Supplier results below are historical.
 
 # Implementation status and scope decisions
