@@ -199,7 +199,10 @@ function extractSegments(parsed:ProfileHTML,source:ProfileArchivedSource,result:
    if(proof)for(const name of names)if(!result.segments.some(item=>item.name===name))result.segments.push({name,description:proof.quote,evidence:proof});
   }
  }
- if(!result.segments.length&&unnamedSegment)result.segments.push({name:'Single reportable operating segment',description:unnamedSegment.quote,evidence:unnamedSegment});
+ if(!result.segments.length&&unnamedSegment){
+  const name=unnamedSegment.quote.match(/\bsingle reportable operating segment\b/i)?.[0];
+  if(name)result.segments.push({name,description:unnamedSegment.quote,evidence:unnamedSegment});
+ }
 }
 
 function extractLeadership(parsed:ProfileHTML,source:ProfileArchivedSource,result:ExtractedProfile):void{

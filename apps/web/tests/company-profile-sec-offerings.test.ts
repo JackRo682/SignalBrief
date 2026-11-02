@@ -15,6 +15,7 @@ function parse(body:string){
   const {quote,location}=item.evidence;
   expect(Array.from(archived.normalized_text).slice(location.start,location.end).join('')).toBe(quote);
   expect(quote.length).toBeLessThanOrEqual(1600);
+  if('name' in item)expect(quote).toContain(item.name);
  }
  return result;
 }
@@ -60,10 +61,10 @@ describe('source-bound SEC offerings and completed signature groups',()=>{
   const fields=parse(business('<h3>Our Data Solutions</h3><p>Competitors offer portable analysis devices with a range of capacities for customers. We may offer new equipment for research in the future. We offer products and services for customer laboratories.</p><h3>Competition</h3><p>We offer competing solutions for our customers in a challenging market environment.</p>')+'<p>We offer risk mitigation services for customers described in a different business context.</p>').fields;
   expect(fields.products).toEqual([]);
  });
- it('reports an explicitly unnamed single segment without turning end markets into segments',()=>{
-  const quote='The Company manages and reports its business operations under a single reportable operating segment.';
+ it.each(['single reportable operating segment','Single Reportable Operating Segment','SINGLE REPORTABLE OPERATING SEGMENT'])('preserves the exact source phrase %s for an unnamed segment without relabeling end markets',name=>{
+  const quote=`The Company manages and reports its business operations under a ${name}.`;
   const fields=parse(business('<h3>Our Data Solutions</h3><p>Our products address the Research, Industrial and Consumer end markets through commercial distribution.</p>')+'<h3>Segment Reporting</h3><p>'+quote+' Separate financial information is reviewed by the chief operating decision maker.</p>').fields;
-  expect(fields.segments).toEqual([{name:'Single reportable operating segment',description:quote,evidence:expect.objectContaining({quote})}]);
+  expect(fields.segments).toEqual([{name,description:quote,evidence:expect.objectContaining({quote})}]);
  });
  it.each([
   'Another Corporation manages and reports its business operations under a single reportable operating segment.',

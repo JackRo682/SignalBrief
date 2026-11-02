@@ -12,7 +12,7 @@ from test_company_profile_enrichment import enriched as enriched
 from test_company_profile_enrichment import own as own
 
 pytestmark = pytest.mark.postgres
-MIGRATION = Path(__file__).resolve().parents[2] / 'supabase/migrations/20261102060524_sec_profile_identity_fields_refresh.sql'
+MIGRATION = Path(__file__).resolve().parents[2] / 'supabase/migrations/20261102065627_sec_profile_identity_fields_refresh.sql'
 DART_COMPANY = '20000000-0000-4000-8000-000000000098'
 OTHER_SEC = '20000000-0000-4000-8000-000000000099'
 
