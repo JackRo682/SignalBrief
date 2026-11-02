@@ -9,6 +9,8 @@ export type FinancialFact={
 };
 export type FinancialSnapshot={provider:'sec'|'dart';provider_company_id:string;source_url:string;raw_sha256:string;fetched_at:string;items:FinancialFact[]};
 export const FINANCIAL_PARSER_VERSION='reported-financials-v1';
+export const DART_FINANCIAL_PARSER_VERSION='reported-financials-dart-v2';
+export const financialParserVersion=(provider:'sec'|'dart')=>provider==='dart'?DART_FINANCIAL_PARSER_VERSION:FINANCIAL_PARSER_VERSION;
 function fail(code:string):never{throw new ProviderError('financials',code);}
 const date=(value:unknown):string|null=>{const s=str(value);return /^\d{4}-\d{2}-\d{2}$/.test(s)&&Number.isFinite(Date.parse(s))&&new Date(s).toISOString().slice(0,10)===s?s:null;};
 const pointer=(parts:string[])=>'/'+parts.map(v=>v.replaceAll('~','~0').replaceAll('/','~1')).join('/');
@@ -121,13 +123,17 @@ export function parseDartFinancials(raw:string,corpCode:string,ticker:string,rep
   if(!scope||!/^\d{14}$/.test(accession))fail('invalid_dart_financial_context');
   if(!metric||!['BS','IS','CIS'].includes(str(r.sj_div))||!/^[A-Z]{3}$/.test(unit))return;
   for(const term of ['thstrm','frmtrm'] as const){
-   const amount=str(r[term+'_amount']).trim(),periodLabel=str(r[term+'_dt']).trim();
+   // Interim IS/CIS *_amount is a three-month amount; *_dt describes the
+   // reported accumulated period. Never pair that date range with the quarter
+   // amount, or derive a quarter start when the accumulated amount is absent.
+   const amountField=term+(!instant&&report.code!=='11011'?'_add_amount':'_amount');
+   const amount=str(r[amountField]).trim(),periodLabel=str(r[term+'_dt']).trim();
    if(!/^-?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?$/.test(amount)||!periodLabel||periodLabel.length>200)continue;
    const dates=dartDates(periodLabel,instant),value=exactDecimal(amount.replaceAll(',',''));
    const key=[metric,scope,r.sj_div,periodLabel,term].join('|'),old=seen.get(key);if(old!==undefined&&old!==value)fail('conflicting_reported_facts');if(old!==undefined)continue;seen.set(key,value);
    items.push({metric,taxonomy:'dart',concept:label,label,value_raw:value,unit,period_start:dates.start,period_end:dates.end,period_label:periodLabel,
     period_kind:instant?'instant':'duration',fiscal_year:term==='thstrm'?Number(report.year):null,fiscal_period:report.code,form:report.code,accession,filed_on:null,
-    accounting_standard:null,basis:'reported',scope,source_url:`https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${accession}`,source_quote:quote,location:pointer(p)+'/'+term+'_amount',raw_sha256:sha});
+    accounting_standard:null,basis:'reported',scope,source_url:`https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${accession}`,source_quote:quote,location:pointer(p)+'/'+amountField,raw_sha256:sha});
   }
  });
  return {provider:'dart',provider_company_id:corpCode,source_url:dartFinancialSource(corpCode,report),raw_sha256:sha,fetched_at:fetchedAt,items};

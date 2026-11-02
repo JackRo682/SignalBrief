@@ -1,5 +1,5 @@
 export type Source = {key:string; ticker:string; market:string; url:string; adapter:string;company_id?:string;provider?:'sec'|'dart';provider_company_id?:string;feed_url?:string};
-export type Entry = {key:string; title:string; occurs_on:string; quote:string; timezone:string|null; location:string;source_url?:string;body_sha256?:string};
+export type Entry = {key:string; title:string; occurs_on:string; quote:string; timezone:string|null; location:string;source_url?:string;body_sha256?:string;source_title?:string;source_date?:string;ends_on?:string};
 export class CalendarError extends Error {}
 export const sha256=async(bytes:Uint8Array)=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new Uint8Array(bytes)))].map(x=>x.toString(16).padStart(2,'0')).join('');
 export function decode(text:string):string {
@@ -11,6 +11,58 @@ export function dateOnly(value:string):string {
  return value;
 }
 const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function samsungDate(value:string):{start:string;end?:string} {
+ const month='([A-Z][a-z]+)',day='(\\d{1,2})',year='(\\d{4})';
+ const iso=(m:string,d:string,y:string)=>{
+  const index=months.findIndex(name=>name===m||name.slice(0,3)===m);
+  if(index<0)throw new CalendarError('ambiguous_date');
+  return dateOnly(`${y}-${String(index+1).padStart(2,'0')}-${d.padStart(2,'0')}`);
+ };
+ const single=value.match(new RegExp(`^${month} ${day}, ${year}(?:, (?:[1-9]|1[0-2]):[0-5][0-9] [ap]\\.m\\. KST)?$`));
+ if(single)return {start:iso(single[1],single[2],single[3])};
+ const full=value.match(new RegExp(`^${month} ${day}, ${year}\\s*[~–-]\\s*${month} ${day}, ${year}$`));
+ const shared=value.match(new RegExp(`^${month} ${day}\\s*[~–-]\\s*(?:${month} )?${day}, ${year}$`));
+ let start:string,end:string;
+ if(full){start=iso(full[1],full[2],full[3]);end=iso(full[4],full[5],full[6]);}
+ else if(shared){start=iso(shared[1],shared[2],shared[5]);end=iso(shared[3]??shared[1],shared[4],shared[5]);}
+ else throw new CalendarError('ambiguous_date');
+ if(end<=start)throw new CalendarError('ambiguous_date');
+ return {start,end};
+}
+function samsungEntries(html:string,text:string,today:string):Entry[] {
+ const upcoming=[...html.matchAll(/<h2\b[^>]*>\s*Upcoming Events\s*<\/h2>/gi)];
+ const past=[...html.matchAll(/<section\b[^>]*class="[^"]*\bir-event-wrap__past\b[^"]*"[^>]*>/gi)];
+ if(upcoming.length!==1||past.length!==1||past[0].index!<upcoming[0].index!)throw new CalendarError('source_format_changed');
+ const pastEnd=html.indexOf('</section>',past[0].index);
+ if(pastEnd<0)throw new CalendarError('source_format_changed');
+ const history=html.slice(past[0].index,pastEnd);
+ const years=[...history.matchAll(/<strong\b[^>]*class="[^"]*\bir-expand__title\b[^"]*"[^>]*>\s*(\d{4})\s*<\/strong>/g)];
+ if(!years.length||new Set(years.map(x=>x[1])).size!==years.length)throw new CalendarError('source_format_changed');
+ const start=new Date(dateOnly(today)+'T00:00:00Z');start.setUTCDate(start.getUTCDate()-90);
+ const end=new Date(today+'T00:00:00Z');end.setUTCMonth(end.getUTCMonth()+18);
+ const sections=[{label:'Upcoming Events',body:html.slice(upcoming[0].index!+upcoming[0][0].length,past[0].index),year:undefined as string|undefined}];
+ if(/<dl\b[^>]*class="[^"]*\bir-event-list__detail\b/.test(history.slice(0,years[0].index)))throw new CalendarError('source_format_changed');
+ for(const [index,group] of years.entries()){
+  if(Number(group[1])<start.getUTCFullYear()||Number(group[1])>end.getUTCFullYear())continue;
+  sections.push({label:`Past Events/${group[1]}`,body:history.slice(group.index!+group[0].length,years[index+1]?.index??history.length),year:group[1]});
+ }
+ const entries:Entry[]=[];
+ for(const section of sections){
+  const pairs=[...section.body.matchAll(/<dl\b[^>]*class="[^"]*\bir-event-list__detail\b[^"]*"[^>]*>\s*<dt>([\s\S]*?)<\/dt>\s*<dd>([\s\S]*?)<\/dd>\s*<\/dl>/g)];
+  if(pairs.length!==[...section.body.matchAll(/<dl\b[^>]*class="[^"]*\bir-event-list__detail\b/g)].length)throw new CalendarError('source_format_changed');
+  for(const [index,[,rawTitle,rawDate]] of pairs.entries()){
+   const title=normalize(rawTitle),displayDate=normalize(rawDate),date=samsungDate(displayDate);
+   if(section.year&&date.start.slice(0,4)!==section.year)throw new CalendarError('ambiguous_date');
+   const quote=`${title} ${displayDate}`;
+   if(!title||!text.includes(quote))throw new CalendarError('quote_not_found');
+   const legacy=title.toLowerCase().replace(/\s+/g,' ');
+   entries.push({key:`date:${date.start}:${legacy}`,title:`Samsung Electronics · ${title}${date.end?` · 기간 시작 (${displayDate})`:''}`,
+    occurs_on:date.start,quote,timezone:'Asia/Seoul',location:`${section.label}/dl.ir-event-list__detail[${index}]`,
+    source_title:title,source_date:displayDate,...(date.end?{ends_on:date.end}:{})});
+  }
+ }
+ return entries;
+}
 export function parseSource(source:Source,html:string,today:string):{entries:Entry[]; text:string} {
  html=html.replace(/<!--[\s\S]*?-->/g,'').replace(/<script\b[\s\S]*?<\/script>/gi,'');
  let entries:Entry[]=[];const textParts=[normalize(html)];
@@ -28,19 +80,9 @@ export function parseSource(source:Source,html:string,today:string):{entries:Ent
    entries.push({key:String(item.EventID),title:item.EventName,occurs_on:date,quote,timezone:zones[item.DateTime.TimeZone],location:`eventsData.Events[${index}]`});
   }
  }else if(source.adapter==='samsung'){
-  // Only explicit dt/dd pairs in the Upcoming Events area; never infer a year or a range.
-  const upcoming=html.split('Upcoming Events</h2>')[1]?.split('ir-event-wrap__past')[0];
-  if(!upcoming)throw new CalendarError('source_format_changed');
-  const pairs=[...upcoming.matchAll(/<dl class="ir-event-list__detail">\s*<dt>([\s\S]*?)<\/dt>\s*<dd>([\s\S]*?)<\/dd>/g)];
-  if(!pairs.length)throw new CalendarError('no_confirmed_dates');
-  for(const [index,[,rawTitle,rawDate]] of pairs.entries()){
-   const title=normalize(rawTitle),displayDate=normalize(rawDate),match=displayDate.match(/^([A-Z][a-z]+) (\d{1,2}), (\d{4})(?:, .* KST)?$/);
-   if(!match||!months.includes(match[1]))throw new CalendarError('ambiguous_date');
-   const date=dateOnly(`${match[3]}-${String(months.indexOf(match[1])+1).padStart(2,'0')}-${match[2].padStart(2,'0')}`);
-   const quote=`${title} ${displayDate}`;
-   if(!textParts[0].includes(quote))throw new CalendarError('quote_not_found');
-   entries.push({key:title.toLowerCase().replace(/\s+/g,' '),title:`Samsung Electronics · ${title}`,occurs_on:date,quote,timezone:'Asia/Seoul',location:`Upcoming Events/dl.ir-event-list__detail[${index}]`});
-  }
+  // The upcoming section is month-scoped. History remains evidence after month rollover;
+  // a published range is one clearly labelled start, never synthetic daily occurrences.
+  entries=samsungEntries(html,textParts[0],today);
  }else throw new CalendarError('unsupported_source');
  const seen=new Map<string,Entry>();
  for(const item of entries){

@@ -1,7 +1,7 @@
 import type {SupabaseClient} from 'npm:@supabase/supabase-js@2.117.2';
 import {obj,str,ProviderError,transportCode,type Row,type Fetcher} from './us-core.ts';
 import {dartRelay} from '../signalbrief-collector/dart-relay.ts';
-import {parseSecFinancials,parseDartFinancials,dartFinancialReports,FINANCIAL_PARSER_VERSION,type FinancialSnapshot} from './company-financials-core.ts';
+import {parseSecFinancials,parseDartFinancials,dartFinancialReports,financialParserVersion,type FinancialSnapshot} from './company-financials-core.ts';
 
 export async function financialAdmin(db:SupabaseClient,op:string,p:Row):Promise<Row>{
  const result=await db.rpc('sb_company_financial_admin',{op,p});
@@ -53,7 +53,7 @@ export async function collectCompanyFinancials(db:SupabaseClient,secrets:Row,com
    for(const response of responses){if(response.status==='rejected')throw response.reason;selected=response.value;if(selected.snapshot.items.length)break;}
    if(!selected)throw new ProviderError('dart','financial_source_unavailable');snapshot=selected.snapshot;path=selected.path;
   }
-  return await financialAdmin(db,'save',{company_id,lease,snapshot,object_key:path,parser_version:FINANCIAL_PARSER_VERSION});
+  return await financialAdmin(db,'save',{company_id,lease,snapshot,object_key:path,parser_version:financialParserVersion(snapshot.provider)});
  }catch(error){const code=errorCode(error);await financialAdmin(db,'fail',{company_id,lease,code});return {status:'unavailable',error_code:code};}
 }
 export async function requestCompanyFinancials(db:SupabaseClient,secrets:Row,company:Row){

@@ -35,7 +35,7 @@ describe('official financial collection boundaries',()=>{
   expect(f.order).toEqual(['request','claim','reserve','download','archive','save']);
   const bytes=new TextEncoder().encode(source),sha=Buffer.from(await crypto.subtle.digest('SHA-256',bytes)).toString('hex');
   expect(f.upload).toHaveBeenCalledWith(`financials/sec/0000000042/${sha}.json`,bytes,{contentType:'application/json',upsert:false});
-  expect(f.rpc).toHaveBeenCalledWith('sb_company_financial_admin',{op:'save',p:expect.objectContaining({company_id:company.id,object_key:`financials/sec/0000000042/${sha}.json`,snapshot:expect.objectContaining({raw_sha256:sha,provider_company_id:'0000000042',items:[expect.objectContaining({value_raw:'42',source_quote:expect.any(String)})]})})});
+  expect(f.rpc).toHaveBeenCalledWith('sb_company_financial_admin',{op:'save',p:expect.objectContaining({company_id:company.id,parser_version:'reported-financials-v1',object_key:`financials/sec/0000000042/${sha}.json`,snapshot:expect.objectContaining({raw_sha256:sha,provider_company_id:'0000000042',items:[expect.objectContaining({value_raw:'42',source_quote:expect.any(String)})]})})});
   expect(f.fetcher).toHaveBeenCalledExactlyOnceWith('https://data.sec.gov/api/xbrl/companyfacts/CIK0000000042.json',expect.objectContaining({redirect:'error',signal:expect.any(AbortSignal)}));
  });
  it('does not publish data when immutable archival fails',async()=>{
@@ -52,6 +52,10 @@ describe('official financial collection boundaries',()=>{
   const f=fixture();f.relay.mockRejectedValueOnce(new ProviderError('dart','quota_exceeded'));
   const result=await f.api.requestCompanyFinancials(f.db,secrets,{...company,provider:'dart',provider_company_id:'12345678',ticker:'0068Y0'});
   expect(result).toMatchObject({status:'unavailable',error_code:'quota_exceeded'});expect(f.relay.mock.calls.length).toBeLessThanOrEqual(4);expect(f.order).not.toContain('save');
+ });
+ it('saves DART results with the corrected provider-specific parser version',async()=>{
+  const f=fixture();await f.api.requestCompanyFinancials(f.db,secrets,{...company,provider:'dart',provider_company_id:'12345678',ticker:'0068Y0'});
+  expect(f.rpc).toHaveBeenCalledWith('sb_company_financial_admin',{op:'save',p:expect.objectContaining({parser_version:'reported-financials-dart-v2',snapshot:expect.objectContaining({provider:'dart'})})});
  });
  it('preserves the exact bytes even when text contains a UTF-8 BOM',async()=>{
   const f=fixture();f.state.raw='\ufeff'+source;await f.api.requestCompanyFinancials(f.db,secrets,company);

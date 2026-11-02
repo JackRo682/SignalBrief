@@ -2,7 +2,7 @@
 import {describe,expect,it,vi} from 'vitest';
 import {CalendarError,sha256} from '../../../supabase/functions/signalbrief-calendar/core';
 import {calendarWindow,parseMicronPage} from '../../../supabase/functions/signalbrief-calendar/micron-q4';
-import {collectSecIR,explicitIRDate,filedIRBinding,officialIRIdentity,structuredIREntries,type SecIRSource} from '../../../supabase/functions/signalbrief-calendar/sec-ir';
+import {collectSecIR,explicitIRDate,explicitSecFilingEvent,filedIRBinding,officialIRIdentity,structuredIREntries,type SecIRSource} from '../../../supabase/functions/signalbrief-calendar/sec-ir';
 import {publicAddress,publicIRURL} from '../../../supabase/functions/signalbrief-calendar/public-source';
 
 const source:SecIRSource={key:'sec-ir-0000000996',provider:'sec',provider_company_id:'0000000996',company_id:'10000000-0000-4000-8000-000000000096',ticker:'SYN',market:'NASDAQ',adapter:'sec-ir',url:'https://www.sec.gov/edgar/browse/?CIK=0000000996'};
@@ -14,7 +14,7 @@ const quarterly='<table><tr><th>Year</th><th>Year</th><th>Quarter</th><th>Earnin
 const q4Row=(id=1,patch:Record<string,unknown>={})=>({EventId:id,Title:'Synthetic official annual meeting',TagsList:[],StartDate:'12/08/2028 10:00:00',EndDate:'12/08/2028 11:00:00',TimeZone:'PST',LinkToDetailPage:'/events/annual-meeting',...patch});
 const jsonResponse=(data:unknown)=>new Response(JSON.stringify(data),{headers:{'Content-Type':'application/json'}});
 const htmlResponse=(text:string)=>new Response(text,{headers:{'Content-Type':'text/html; charset=utf-8'}});
-function fixture(options:{metadata?:Record<string,unknown>;body?:string;page?:string;q4?:boolean;secondPage?:unknown[];transportError?:string;irName?:string;eventName?:string}={}){
+function fixture(options:{metadata?:Record<string,unknown>;body?:string;page?:string;q4?:boolean;navigation?:string;eventURL?:string;secondPage?:unknown[];transportError?:string;irName?:string;eventName?:string}={}){
  const objects=new Map<string,Uint8Array>();
  const archive=vi.fn(async(path:string,bytes:Uint8Array)=>{objects.set(path,bytes);});
  const fetcher=vi.fn<typeof fetch>().mockImplementation(async input=>{
@@ -22,8 +22,8 @@ function fixture(options:{metadata?:Record<string,unknown>;body?:string;page?:st
   if(url===`https://data.sec.gov/submissions/CIK${source.provider_company_id}.json`)return jsonResponse(metadata(options.metadata));
   if(url===primary)return htmlResponse('<table><tr><td>99.1</td><td><a href="earnings.htm">Synthetic earnings release</a></td></tr></table>');
   if(url===exhibit)return htmlResponse(options.body??`<p>The live webcast is available on the Investor Relations website at ${ir}.</p>`);
-  if(url===ir)return htmlResponse(`<title>${options.irName??'Synthetic Official Issuer'} - Investor Relations</title>`+(options.q4?'<a href="/events/">Events &amp; Presentations</a>':options.page??quarterly));
-  if(url===events)return htmlResponse(`<title>${options.eventName??'Synthetic Official Issuer'} - Events Calendar</title><script src="/js/module/widgets/dist/latest/evergreen.q4Api.min.js"></script>`);
+  if(url===ir)return htmlResponse(`<title>${options.irName??'Synthetic Official Issuer'} - Investor Relations</title>`+(options.q4?options.navigation??'<a href="/events/">Events &amp; Presentations</a>':options.page??quarterly));
+  if(url===(options.eventURL??events))return htmlResponse(`<title>${options.eventName??'Synthetic Official Issuer'} - Events Calendar</title><script src="/js/module/widgets/dist/latest/evergreen.q4Api.min.js"></script>`);
   if(url.startsWith(ir+'feed/Event.svc/GetEventList?'))return jsonResponse({GetEventListResult:new URL(url).searchParams.get('pageNumber')==='0'?[q4Row()]:options.secondPage??[]});
   throw new Error('Unexpected synthetic URL '+url);
  });
@@ -57,6 +57,24 @@ describe('canonical SEC-filed calendar discovery',()=>{
   expect(result.manifest.entries).toEqual([expect.objectContaining({key:'q4:1',occurs_on:'2028-12-08',timezone:'America/Los_Angeles',source_url:events,raw_sha256:result.manifest.q4!.pages[0].raw_sha256})]);
   expect(await sha256(f.objects.get(result.manifest.q4_manifest!.object_key)!)).toBe(result.manifest.q4_manifest!.raw_sha256);
   for(const page of result.manifest.q4!.pages)expect(await sha256(f.objects.get(page.object_key)!)).toBe(page.raw_sha256);
+ });
+ it.each(['default.aspx','index.html',''])('selects the dedicated Events child when navigation also links its overview (%s)',async document=>{
+  const overview=ir+'events-and-presentations/'+document,dedicated=ir+'events-and-presentations/events/'+document;
+  const f=fixture({q4:true,eventURL:dedicated,navigation:`<a href="${overview}">Events &amp; Presentations</a><a href="${dedicated}">Events</a><a href="${overview}">Events</a>`});
+  const result=await f.collect();expect(result.manifest.event_source_url).toBe(dedicated);
+  expect(result.manifest.entries).toEqual([expect.objectContaining({occurs_on:'2028-12-08',source_url:dedicated})]);
+  expect(f.officialFetch.mock.calls.some(([url])=>String(url)===overview)).toBe(false);
+  expect(result.manifest.issuer_evidence.map(item=>item.source_url)).toEqual([ir,dedicated]);
+ });
+ it.each([
+  ['/investor-events/','/events/'],
+  ['/events-and-presentations/default.aspx?year=2028','/events-and-presentations/events/default.aspx'],
+  ['/events-and-presentations/default.aspx','/events-and-presentations/details/'],
+  ['/events/default.aspx?year=2027','/events/default.aspx?year=2028'],
+ ].map(links=>({links})))('rejects unrelated, query-scoped or non-calendar navigation candidates %j',async({links})=>{
+  const f=fixture({q4:true,navigation:links.map(href=>`<a href="${href}">Events</a>`).join('')});
+  await expect(f.collect()).rejects.toThrow('ambiguous_calendar_page');
+  expect(f.officialFetch).toHaveBeenCalledTimes(1);expect([...f.objects.keys()].every(path=>path.includes('/discovery/'))).toBe(true);
  });
  it('does not weaken the existing webcast policy and always excludes publication-only risk-factor rows',()=>{
   const bytes=encode(JSON.stringify({GetEventListResult:[q4Row(),q4Row(2,{TagsList:['risk-factor']}),q4Row(3,{TagsList:['webcast']})]}));
@@ -93,6 +111,23 @@ describe('canonical SEC-filed calendar discovery',()=>{
    '<title>Synthetic Investor Relations</title>',
    '<title>Synthetic Official Issuer - Investor Relations</title><meta property="og:site_name" content="Counterparty">'])
    expect(()=>officialIRIdentity(encode(page),ir,'a'.repeat(64),'Synthetic Official Issuer, Inc.')).toThrow('official_ir_identity_mismatch');
+ });
+ it.each([
+  'Synthetic Official Issuer, Inc. - Events & Presentations - Events',
+  'Investor Relations | Events Calendar | Synthetic Official Issuer, Inc.',
+  'Events - Synthetic Official Issuer, Inc. - Events & Presentations - Events',
+  'Synthetic Official Issuer, Inc.'+' - Events'.repeat(4),
+ ])('binds nested navigation titles to the same complete issuer name: %s',label=>{
+  const result=officialIRIdentity(encode(`<title>${label.replaceAll('&','&amp;')}</title>`),events,'a'.repeat(64),'Synthetic Official Issuer, Inc.');
+  expect(result).toMatchObject({label,source_url:events,location:'title[0]'});
+ });
+ it.each([
+  '<title>Counterparty Corporation - Events &amp; Presentations - Events</title>',
+  '<title>Synthetic Official Issuer, Inc. - Events - Events</title><meta property="og:site_name" content="Counterparty Corporation">',
+  '<title>Synthetic Official Issuer, Inc. - Unsupported Category - Events</title>',
+  '<title>Synthetic Official Issuer, Inc.'+' - Events'.repeat(5)+'</title>',
+ ])('still rejects foreign, conflicting, unknown or over-deep title identity %#',page=>{
+  expect(()=>officialIRIdentity(encode(page),events,'a'.repeat(64),'Synthetic Official Issuer, Inc.')).toThrow('official_ir_identity_mismatch');
  });
  it('retains the exact filed href alongside an explicit Investor Relations anchor label',()=>{
   expect(filedIRBinding(encode(`<a href="${ir}">Investor Relations</a>`),exhibit)).toEqual({url:ir,document_url:exhibit,quote:`Investor Relations | ${ir}`,location:'anchor/explicit-investor-relations-url'});
@@ -141,6 +176,67 @@ describe('explicit structured IR dates',()=>{
  it.each([{startDate:'2028-11-09T09:00:00'},{eventStatus:'https://schema.org/EventCancelled'},{url:'https://foreign-corp.com/event'}])('requires explicit timezone/status and same-origin identity %j',patch=>{
   const json={'@type':'Event',name:'Synthetic issuer event',startDate:'2028-11-09',url:'/events/synthetic',...patch};
   expect(()=>structuredIREntries(encode(`<script type="application/ld+json">${JSON.stringify(json)}</script>`),ir,'b'.repeat(64),source,window)).toThrow(CalendarError);
+ });
+});
+
+describe('independent SEC-filed earnings announcements',()=>{
+ const statement='Synthetic Official Issuer will provide a live webcast of its third quarter 2028 financial results conference call beginning at 4:30 p.m. CT on October 21, 2028';
+ const body=`<p>WEBCAST INFORMATION ${statement} at ${ir}. Replay is available.</p>`;
+ const document={role:'exhibit' as const,url:exhibit,raw_sha256:'a'.repeat(64),object_key:'synthetic-original',accession,filing_date:'2028-10-21'};
+ it.each(['calendar_relay_upstream_failed','calendar_relay_network_failed'])('uses already archived SEC evidence after %s without directly retrying the IR host',async transportError=>{
+  const f=fixture({body,transportError}),result=await f.collect(),filing=result.manifest.filing!;
+  expect(result.manifest).toMatchObject({schema:'signalbrief.calendar.sec-filing.v1',format:'sec-filing',complete:false,coverage:'explicit-sec-announcement',fallback_reason:transportError,issuer_evidence:[],event_source_url:exhibit});
+  expect(result.manifest.entries).toEqual([expect.objectContaining({key:'quarter:2028:Q3',occurs_on:'2028-10-21',source_url:exhibit,quote:statement,timezone:null})]);
+  expect(result.manifest.documents.map(d=>d.role)).toEqual(['submissions','primary','exhibit']);
+  expect(f.fetcher).toHaveBeenCalledTimes(3);expect(f.officialFetch).toHaveBeenCalledTimes(1);
+  expect(await sha256(f.objects.get(filing.normalized_object_key)!)).toBe(filing.normalized_sha256);
+  expect(Array.from(filing.normalized_text).slice(filing.quote_start,filing.quote_end).join('')).toBe(statement);
+  expect(await sha256(f.objects.get(result.object_key)!)).toBe(result.raw_sha);
+ });
+ it('can read the same bounded SEC filing set after a direct investorWebsite fails',async()=>{
+  const f=fixture({metadata:{investorWebsite:ir},body,transportError:'calendar_relay_upstream_failed'}),result=await f.collect();
+  expect(result.manifest.format).toBe('sec-filing');expect(f.fetcher).toHaveBeenCalledTimes(3);expect(f.officialFetch).toHaveBeenCalledTimes(1);
+ });
+ it('uses a separate SEC evidence format when an issuer-bound IR page has no supported calendar structure',async()=>{
+  const f=fixture({body,page:'<p>Events are announced separately.</p>'}),result=await f.collect();
+  expect(result.manifest.fallback_reason).toBe('official_calendar_format_unsupported');
+  expect(result.manifest.documents.every(d=>!['ir','events'].includes(d.role))).toBe(true);
+  expect(result.manifest.complete).toBe(false);
+ });
+ it.each(['calendar_relay_unauthorized','private_or_reserved_address','official_ir_transport_unavailable','archive_failed'])('does not convert %s into verified filing success',async transportError=>{
+  const f=fixture({body,transportError});await expect(f.collect()).rejects.toThrow(transportError);
+  expect([...f.objects.keys()].every(path=>path.includes('/discovery/'))).toBe(true);
+ });
+ it('does not convert a counterparty identity mismatch into a successful fallback',async()=>{
+  const f=fixture({body,irName:'Counterparty Corporation'});await expect(f.collect()).rejects.toThrow('official_ir_identity_mismatch');
+  expect([...f.objects.keys()].every(path=>path.includes('/discovery/'))).toBe(true);
+ });
+ it('requires normalized evidence archival before the final manifest',async()=>{
+  const f=fixture({body,transportError:'calendar_relay_upstream_failed'});
+  f.archive.mockImplementation(async(path,bytes)=>{if(path.includes('/normalized/'))throw new CalendarError('archive_failed');f.objects.set(path,bytes);});
+  await expect(f.collect()).rejects.toThrow('archive_failed');expect([...f.objects.keys()].every(path=>path.includes('/discovery/'))).toBe(true);
+ });
+ it('binds code-point quote offsets and an explicit occurrence date, not the filing date',()=>{
+  const value=explicitSecFilingEvent(encode(`<p>📄 Source heading.</p><p>${statement}.</p>`),{...document,filing_date:'2028-10-01'},source,'Synthetic Official Issuer, Inc.',window)!;
+  expect(value.entry.occurs_on).toBe('2028-10-21');expect(value.detail.filing_date).toBe('2028-10-01');
+  expect(Array.from(value.detail.normalized_text).slice(value.detail.quote_start,value.detail.quote_end).join('')).toBe(statement);
+ });
+ it.each([
+  statement.replace('October 21, 2028','October 21'),
+  statement.replace('Synthetic Official Issuer','Counterparty Corporation'),
+  statement.replace('financial results conference call','product launch'),
+  'The report was filed on October 21, 2028. Synthetic Official Issuer publishes quarterly earnings.',
+  'Subsidiary of '+statement,
+ ])('rejects incomplete or wrongly attributed announcement: %s',text=>{
+  expect(explicitSecFilingEvent(encode(`<p>${text}</p>`),document,source,'Synthetic Official Issuer',window)).toBeNull();
+ });
+ it.each([
+  'Correction: WEBCAST INFORMATION '+statement,
+  statement.replace('third quarter 2028','third quarter'),
+  statement.replace('third quarter 2028','second quarter 2028 and third quarter 2028'),
+  statement+'. '+statement.replace('October 21, 2028','October 22, 2028'),
+ ])('fails closed on conflicting/corrected occurrence evidence: %s',text=>{
+  expect(()=>explicitSecFilingEvent(encode(`<p>${text}</p>`),document,source,'Synthetic Official Issuer',window)).toThrow('ambiguous_sec_filing_event');
  });
 });
 

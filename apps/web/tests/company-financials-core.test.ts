@@ -1,6 +1,6 @@
 // @vitest-environment node
 import {describe,expect,it} from 'vitest';
-import {parseSecFinancials,parseDartFinancials,exactDecimal,dartFinancialReports} from '../../../supabase/functions/signalbrief-api/company-financials-core';
+import {parseSecFinancials,parseDartFinancials,exactDecimal,dartFinancialReports,financialParserVersion} from '../../../supabase/functions/signalbrief-api/company-financials-core';
 
 const sha='a'.repeat(64),stamp='2026-11-02T00:00:00Z',cik='0000000042';
 const record={start:'2026-01-01',end:'2026-03-31',val:1234.5,accn:'0000000042-26-000001',fy:2026,fp:'Q1',form:'10-Q',filed:'2026-05-01'};
@@ -8,7 +8,7 @@ function sec(rows:unknown[]=[record],unit='USD',taxonomy='us-gaap',concept='Reve
  return JSON.stringify({cik:42,entityName:'Synthetic issuer',facts:{[taxonomy]:{[concept]:{label:'Synthetic reported revenue',units:{[unit]:rows}}}}});
 }
 const dartReport={year:'2026',code:'11012' as const};
-const dartRow={corp_code:'12345678',stock_code:'0068Y0',bsns_year:'2026',reprt_code:'11012',rcept_no:'20260814000001',fs_div:'CFS',sj_div:'IS',account_nm:'매출액',currency:'KRW',thstrm_dt:'2026.01.01 ~ 2026.06.30',thstrm_amount:'12,345,678,901,234,567',thstrm_nm:'제 4 기 반기',frmtrm_dt:'2025.01.01 ~ 2025.06.30',frmtrm_amount:'10,000,000,000,000,001'};
+const dartRow={corp_code:'12345678',stock_code:'0068Y0',bsns_year:'2026',reprt_code:'11012',rcept_no:'20260814000001',fs_div:'CFS',sj_div:'IS',account_nm:'매출액',currency:'KRW',thstrm_dt:'2026.01.01 ~ 2026.06.30',thstrm_amount:'4,000',thstrm_add_amount:'12,345,678,901,234,567',thstrm_nm:'제 4 기 반기',frmtrm_dt:'2025.01.01 ~ 2025.06.30',frmtrm_amount:'3,000',frmtrm_add_amount:'10,000,000,000,000,001'};
 const dart=(rows:unknown[]=[dartRow])=>JSON.stringify({status:'000',list:rows});
 
 describe('exact official SEC financial contexts',()=>{
@@ -44,17 +44,37 @@ describe('exact official SEC financial contexts',()=>{
 describe('DART major-account facts retain explicit periods and statement basis',()=>{
  it('preserves exact large strings, reported period, consolidated scope and source receipt',()=>{
   const raw=dart(),value=parseDartFinancials(raw,'12345678','0068Y0',dartReport,sha,stamp);
-  expect(value.items).toHaveLength(2);expect(value.items[0]).toMatchObject({value_raw:'12345678901234567',unit:'KRW',period_start:'2026-01-01',period_end:'2026-06-30',scope:'consolidated',basis:'reported',accounting_standard:null,source_url:'https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000001',location:'/list/0/thstrm_amount'});
+  expect(value.items).toHaveLength(2);expect(value.items[0]).toMatchObject({value_raw:'12345678901234567',unit:'KRW',period_start:'2026-01-01',period_end:'2026-06-30',scope:'consolidated',basis:'reported',accounting_standard:null,source_url:'https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000001',location:'/list/0/thstrm_add_amount'});
   expect(value.items[1].value_raw).toBe('10000000000000001');expect(raw).toContain(value.items[0].source_quote);
  });
  it('keeps separate and consolidated statements as separate facts',()=>expect(parseDartFinancials(dart([dartRow,{...dartRow,fs_div:'OFS'}]),'12345678','0068Y0',dartReport,sha,stamp).items.map(x=>x.scope)).toEqual(['consolidated','consolidated','separate','separate']));
- it('retains an explicit unfamiliar period label without inventing dates',()=>expect(parseDartFinancials(dart([{...dartRow,thstrm_dt:'제 4 기 반기',frmtrm_amount:'-'}]),'12345678','0068Y0',dartReport,sha,stamp).items[0]).toMatchObject({period_label:'제 4 기 반기',period_start:null,period_end:null}));
+ it('retains an explicit unfamiliar period label without inventing dates',()=>expect(parseDartFinancials(dart([{...dartRow,thstrm_dt:'제 4 기 반기',frmtrm_add_amount:'-'}]),'12345678','0068Y0',dartReport,sha,stamp).items[0]).toMatchObject({period_label:'제 4 기 반기',period_start:null,period_end:null}));
  it('uses the stated balance-sheet date and never manufactures a start date',()=>expect(parseDartFinancials(dart([{...dartRow,sj_div:'BS',account_nm:'자산총계',thstrm_dt:'2026.06.30 현재',frmtrm_amount:'-'}]),'12345678','0068Y0',dartReport,sha,stamp).items[0]).toMatchObject({metric:'assets',period_kind:'instant',period_start:null,period_end:'2026-06-30'}));
  it.each([{stock_code:'123456'},{corp_code:'99999999'},{bsns_year:'2025'},{reprt_code:'11011'}])('rejects wrong identity or query context %j',patch=>expect(()=>parseDartFinancials(dart([{...dartRow,...patch}]),'12345678','0068Y0',dartReport,sha,stamp)).toThrow('financial_identity_mismatch'));
  it('returns explicit empty official responses but rejects quota errors',()=>{
   expect(parseDartFinancials('{"status":"013"}','12345678','0068Y0',dartReport,sha,stamp).items).toEqual([]);
   expect(()=>parseDartFinancials('{"status":"020"}','12345678','0068Y0',dartReport,sha,stamp)).toThrow('quota_exceeded');
  });
- it('does not turn unavailable amounts into zero',()=>expect(parseDartFinancials(dart([{...dartRow,thstrm_amount:'-',frmtrm_amount:''}]),'12345678','0068Y0',dartReport,sha,stamp).items).toEqual([]));
+ it('does not turn unavailable accumulated amounts into zero or substitute the quarter amount',()=>expect(parseDartFinancials(dart([{...dartRow,thstrm_add_amount:'-',frmtrm_add_amount:''}]),'12345678','0068Y0',dartReport,sha,stamp).items).toEqual([]));
+ it.each(['IS','CIS'])('binds the actual half-year cumulative value and comparison to reported dates for %s',sj_div=>{
+  const row={...dartRow,sj_div,thstrm_amount:'3,388,755,080,295',thstrm_add_amount:'6,629,816,183,195',frmtrm_amount:'2,900,000,000,000',frmtrm_add_amount:'5,701,868,408,120'};
+  const items=parseDartFinancials(dart([row]),'12345678','0068Y0',dartReport,sha,stamp).items;
+  expect(items).toMatchObject([{value_raw:'6629816183195',period_start:'2026-01-01',period_end:'2026-06-30',location:'/list/0/thstrm_add_amount'},{value_raw:'5701868408120',period_start:'2025-01-01',period_end:'2025-06-30',location:'/list/0/frmtrm_add_amount'}]);
+ });
+ it.each(['11013','11012','11014'] as const)('requires the explicit accumulated field for interim report %s',code=>{
+  const row={...dartRow,reprt_code:code,thstrm_add_amount:undefined,frmtrm_add_amount:undefined};
+  expect(parseDartFinancials(dart([row]),'12345678','0068Y0',{year:'2026',code},sha,stamp).items).toEqual([]);
+ });
+ it('keeps annual income amounts and their full reported period unchanged',()=>{
+  const row={...dartRow,bsns_year:'2025',reprt_code:'11011',thstrm_dt:'2025.01.01 ~ 2025.12.31',thstrm_amount:'12,000',thstrm_add_amount:'99,000',frmtrm_amount:'-'};
+  expect(parseDartFinancials(dart([row]),'12345678','0068Y0',{year:'2025',code:'11011'},sha,stamp).items).toMatchObject([{value_raw:'12000',period_start:'2025-01-01',period_end:'2025-12-31',location:'/list/0/thstrm_amount'}]);
+ });
+ it('does not use an accumulated field for a balance-sheet instant',()=>{
+  const row={...dartRow,sj_div:'BS',account_nm:'자산총계',thstrm_dt:'2026.06.30 현재',thstrm_amount:'42,000',thstrm_add_amount:'99,000',frmtrm_amount:'-'};
+  expect(parseDartFinancials(dart([row]),'12345678','0068Y0',dartReport,sha,stamp).items).toMatchObject([{value_raw:'42000',period_kind:'instant',period_start:null,period_end:'2026-06-30',location:'/list/0/thstrm_amount'}]);
+ });
+ it('versions only DART extraction while retaining the existing SEC parser identity',()=>{
+  expect(financialParserVersion('dart')).toBe('reported-financials-dart-v2');expect(financialParserVersion('sec')).toBe('reported-financials-v1');
+ });
  it('bounds candidate requests without asserting nonexistent periods',()=>expect(dartFinancialReports(new Date(stamp))).toEqual([{year:'2026',code:'11014'},{year:'2026',code:'11012'},{year:'2026',code:'11013'},{year:'2025',code:'11011'}]));
 });

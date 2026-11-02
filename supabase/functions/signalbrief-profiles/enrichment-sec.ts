@@ -49,22 +49,33 @@ function evidenceForBlock(source:ProfileArchivedSource,block:ProfileBlock,sectio
  return profileEvidence(source,block.start,block.end,section);
 }
 
-function excerpt(source:ProfileArchivedSource,block:ProfileBlock,section:string):ProfileBusinessExcerpt|null{
- if(block.text.length<65||block.text.length>1600)return null;
- return {text:block.text,evidence:evidenceForBlock(source,block,section)};
+function excerpts(source:ProfileArchivedSource,block:ProfileBlock,section:string):ProfileBusinessExcerpt[]{
+ if(block.text.length<65)return [];
+ if(block.text.length<=1600)return [{text:block.text,evidence:evidenceForBlock(source,block,section)}];
+ // Keep the opening overview even when an issuer puts several sentences in one
+ // HTML paragraph. Every excerpt remains an exact, complete-sentence substring.
+ const sentences=[...new Intl.Segmenter('en',{granularity:'sentence'}).segment(block.text)];
+ const result:ProfileBusinessExcerpt[]=[];let start=0,end=0;
+ const append=()=>{const text=block.text.slice(start,end).trimEnd();if(text.length>=65){const evidence=profileEvidence(source,block.start+start,block.start+start+text.length,section);result.push({text,evidence});}};
+ for(const sentence of sentences){
+  const next=sentence.index+sentence.segment.length;
+  if(next-start>1600){append();if(result.length===2)break;start=sentence.index;}
+  end=next;
+  if(end-start>1600){start=end;continue;}
+ }
+ if(result.length<2&&end>start)append();return result.slice(0,2);
 }
 
 function paragraphSentence(source:ProfileArchivedSource,block:ProfileBlock,pattern:RegExp,section:string):ProfileEvidence|null{
- const matches=[...block.text.matchAll(/[^.!?]+(?:[.!?](?=\s|$)|$)/g)];
- const sentence=matches.find(match=>pattern.test(match[0]));if(!sentence)return null;
- const left=sentence[0].length-sentence[0].trimStart().length;
- return profileEvidence(source,block.start+(sentence.index??0)+left,block.start+(sentence.index??0)+sentence[0].trimEnd().length,section);
+ const sentence=[...new Intl.Segmenter('en',{granularity:'sentence'}).segment(block.text)].find(match=>pattern.test(match.segment));if(!sentence)return null;
+ const left=sentence.segment.length-sentence.segment.trimStart().length;
+ return profileEvidence(source,block.start+sentence.index+left,block.start+sentence.index+sentence.segment.trimEnd().length,section);
 }
 
 function businessBounds(parsed:ProfileHTML):[number,number]|null{
  const starts=parsed.blocks.map((block,index)=>({block,index})).filter(({block})=>/^item\s*1\s*[.:-]?\s*business$/i.test(block.text));
  // A contents entry is not the section itself. Require a substantial section and a following Item boundary.
- for(const {index} of starts.reverse()){
+ for(const {index} of starts){
   const end=parsed.blocks.findIndex((block,i)=>i>index&&/^item\s*(?:1a|1b|1c|2)\s*[.:-]?\s*\D/i.test(block.text));
   if(end>index+3&&parsed.blocks[end].start-parsed.blocks[index].end>200)return [index+1,end];
  }
@@ -76,22 +87,27 @@ function extractBusiness(parsed:ProfileHTML,source:ProfileArchivedSource,result:
  const blocks=parsed.blocks.slice(...bounds);
  for(const block of blocks.slice(0,14)){
   if(block.heading||/^(?:table of contents|\d+|overview|general)$/i.test(block.text))continue;
-  const item=excerpt(source,block,'Item 1. Business');if(item)result.business.push(item);
+  if(/^(?:for a (?:full|complete) discussion|the following (?:are|table|chart)|(?:our|key) (?:financial|operational) (?:highlights|performance))/i.test(block.text))continue;
+  result.business.push(...excerpts(source,block,'Item 1. Business').slice(0,2-result.business.length));
   if(result.business.length===2)break;
  }
  let productSection=false;
  for(let index=0;index<blocks.length&&result.products.length<10;index++){
   const block=blocks[index];
-  if(block.heading&&/\b(?:products?|services?|solutions?|offerings?)\b/i.test(block.text)&&!/\b(?:revenue|income|expenses?|costs?|risks?|strategy|competition)\b/i.test(block.text)){
-   productSection=true;
+  if(block.heading){
+   const productHeading=/\b(?:products?|services?|solutions?|offerings?)\b/i.test(block.text)&&!/\b(?:revenue|income|expenses?|costs?|strategy|competition)\b/i.test(block.text);
+   if(productHeading)productSection=true;
+   else if(/^(?:technology|sales and marketing|manufacturing|supply chain|government(?:al)?|regulations?|competition|intellectual property|human capital|our strategy|our strategic priorities|key enablers|brand|looking ahead|benefiting|innovating)\b/i.test(block.text))productSection=false;
+   if(!productSection)continue;
    const next=blocks.slice(index+1,index+5).find(candidate=>!candidate.heading&&candidate.text.length>=65&&!/^\(?\d+\)?(?:\s|$)/.test(candidate.text));
-   if(next&&next.text.length<=1300&&!/^(?:(?:our|core|principal|main|key)\s+)?products?(?:\s+and\s+services?)?$/i.test(block.text)&&block.text.length<=100){
+   const generic=/^(?:(?:our|core|principal|main|key)\s+)?(?:products?(?:\s+and\s+(?:services?|applications?))?|services?\s+and\s+other\s+solutions?)$|^our\s+.*\bproducts?\s+and\s+(?:services?|applications?)$|^(?:enabling|benefiting|innovating|key\s+[0-9]{4}\s+developments)\b/i.test(block.text);
+   const explicit=productHeading||next&&/^(?:we\s+(?:currently\s+)?(?:offer|provide|sell|manufacture|design|develop|operate)|our\s+\w[\w\s-]{0,55}\s+(?:include|provide|enable))/i.test(next.text);
+   if(next&&explicit&&next.text.length<=1300&&!generic&&block.text.length<=100&&!result.products.some(item=>item.name.toLowerCase()===block.text.toLowerCase())){
     const quote=source.normalized_text.slice(block.start,next.end);
     if(quote.length<=1600)result.products.push({name:block.text,description:next.text,evidence:profileEvidence(source,block.start,next.end,'Item 1. Business — products/services')});
    }
    continue;
   }
-  if(block.heading&&!/^(?:table of contents|\d+)$/i.test(block.text)&&!/^consumer payments$/i.test(block.text))productSection=false;
   if(!productSection||block.text.length>1600)continue;
   const named=block.text.match(/^([\p{L}\p{N}][\p{L}\p{N}\s&+®™(),/-]{1,85}):\s+(.{45,})$/u);
   if(named&&!/^(?:our|we|the company|this|these|such)\b|\b(?:strategy|revenue|income|expenses?|risks?|areas of focus)\b/i.test(named[1])&&!result.products.some(item=>item.name===named[1]))result.products.push({name:named[1],description:named[2],evidence:evidenceForBlock(source,block,'Item 1. Business — products/services')});
@@ -101,18 +117,19 @@ function extractBusiness(parsed:ProfileHTML,source:ProfileArchivedSource,result:
 function extractSegments(parsed:ProfileHTML,source:ProfileArchivedSource,result:ExtractedProfile):void{
  for(let index=0;index<parsed.blocks.length&&result.segments.length<12;index++){
   const block=parsed.blocks[index];
-  if(!/\b(?:reportable|operating) segments?\b/i.test(block.text)||block.text.length>1600)continue;
+  if(!/\b(?:reportable(?:\s+operating)?|operating(?:\s+and\s+reportable)?) segments?\b/i.test(block.text)||block.text.length>1600)continue;
   if(/(?:accounting standards update|disclosure requirements|standard also)/i.test(block.text))continue;
-  const single=block.text.match(/\b(?:has|have|operate(?:s)?(?:\s+in|\s+as)?)\s+(?:one|a single|single)\s+(?:reportable|operating)\s+segment\s*[,.:—-]\s*([A-Z][A-Za-z0-9 &/-]{1,80})(?:[.;]|$)/);
+  const single=block.text.match(/\b(?:has|have|operate(?:s)?(?:\s+in|\s+as)?)\s+(?:one|a single|single)\s+(?:reportable(?:\s+operating)?|operating(?:\s+and\s+reportable)?)\s+segment\s*[,.:—-]\s*[“"']?([A-Z][A-Za-z0-9 &/-]{1,80})[”"']?(?:[.;]|$)/);
   if(single){
-   const proof=paragraphSentence(source,block,/\b(?:one|single)\s+(?:reportable|operating)\s+segment\b/i,'Reportable segment disclosure');
-   if(proof)result.segments.push({name:single[1].trim(),description:proof.quote,evidence:proof});
+   const proof=paragraphSentence(source,block,/\b(?:one|single)\s+(?:reportable(?:\s+operating)?|operating(?:\s+and\s+reportable)?)\s+segment\b/i,'Reportable segment disclosure');
+   if(proof&&!result.segments.some(item=>item.name===single[1].trim()))result.segments.push({name:single[1].trim(),description:proof.quote,evidence:proof});
    continue;
   }
   const enumerated=block.text.match(/\b(?:reportable|operating)\s+segments?(?:\s+(?:are|include|consist of)\s*[:—-]?\s*|\s*[:—-]\s*)([^.;]{4,250})[.;]/i);
   if(enumerated){
-   const names=enumerated[1].split(/,\s*|;\s*|\s+and\s+/).map(value=>value.trim()).filter(Boolean);
-   if(names.length<2||names.length>12||names.some(name=>!/^[A-Z][A-Za-z0-9 &()/.-]{1,80}$/.test(name)))continue;
+   const numbered=/^\((?:i|1)\)\s+/i.test(enumerated[1]);
+   const names=(numbered?enumerated[1].split(/\s*\((?:[ivx]+|[0-9]+)\)\s*/i).map(value=>value.replace(/(?:,?\s+and|,)\s*$/i,'')):enumerated[1].split(/,\s*|;\s*|\s+and\s+/)).map(value=>value.trim()).filter(Boolean);
+   if(names.length<2||names.length>12||names.some(name=>!(numbered?/^[A-Za-z][A-Za-z0-9 &()/.-]{1,80}$/:/^[A-Z][A-Za-z0-9 &()/.-]{1,80}$/).test(name)))continue;
    const proof=paragraphSentence(source,block,/\b(?:reportable|operating)\s+segments?\b/i,'Reportable segment disclosure');
    if(proof)for(const name of names)if(!result.segments.some(item=>item.name===name))result.segments.push({name,description:proof.quote,evidence:proof});
   }
@@ -124,15 +141,38 @@ function extractLeadership(parsed:ProfileHTML,source:ProfileArchivedSource,resul
  const signatureStart=parsed.blocks.findLastIndex(block=>/^signatures$/i.test(block.text));
  if(signatureStart<0)return;
  const blocks=parsed.blocks.slice(signatureStart+1);
+ const signatureName=(text:string):string|null=>{
+  const signed=text.match(/^Name:\s*(.+)$/i)??text.match(/(?:^|\bBy:\s*)\/s\/\s*(.+)$/i);if(!signed)return null;
+  const name=signed[1].split(/\s+(?=(?:(?:chief|principal)\s+executive\s+officer|president|chairman|chairwoman|chairperson|director)\b)/i)[0].trim();
+  return /^[\p{L}][\p{L}\p{M} .,'’\-]{1,100}$/u.test(name)&&!/\b(?:officer|director|registrant)\b/i.test(name)?name:null;
+ };
+ const nameKey=(name:string)=>name.normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{M}]/gu,'');
  for(let index=0;index<blocks.length;index++){
   const block=blocks[index];if(!/\bchief executive officer\b/i.test(block.text))continue;
-  const roles=block.text.replace(/^Title:\s*/i,'').split(/\s*(?:,|\band\b|&|\(|\))\s*/i).filter(Boolean);
+  const inline=signatureName(block.text),roleText=inline?block.text.slice(block.text.indexOf(inline)+inline.length).trim():block.text.replace(/^Title:\s*/i,'');
+  const roles=roleText.split(/\s*(?:,|;|\band\b|&|\(|\))\s*/i).filter(Boolean);
   if(!roles.length||roles.some(role=>!/^(?:chief executive officer|principal executive officer|president|chairman|chairwoman|chairperson|director)$/i.test(role)))continue;
-  const region=blocks.slice(Math.max(0,index-3),index+2);
-  const person=region.map(candidate=>candidate.text.match(/^(?:By:\s*)?\/s\/\s*([A-Z][A-Za-z .,'’\-]{2,100})$/)?.[1]??candidate.text.match(/^Name:\s*([A-Z][A-Za-z .,'’\-]{2,100})$/)?.[1]).filter((name):name is string=>Boolean(name));
-  const unique=[...new Set(person.map(name=>name.trim()))];if(unique.length!==1)continue;
-  const start=region[0].start,end=region.at(-1)!.end;if(end-start>1600)continue;
-  result.leadership.push({name:unique[0],role:'Chief Executive Officer',as_of:source.published_on,basis:'filing',evidence:profileEvidence(source,start,end,'Signatures')});break;
+  const nearby=(candidate:ProfileBlock,i:number)=>i<=index&&i>=index-4&&signatureName(candidate.text)!==null;
+  let signedIndex=blocks.findLastIndex((candidate,i)=>nearby(candidate,i)&&/(?:^|\bBy:\s*)\/s\//i.test(candidate.text));
+  if(signedIndex<0)signedIndex=blocks.findLastIndex(nearby);
+  if(signedIndex<0)continue;
+  // Normalized table cells do not retain columns. Multiple identities before a
+  // completed role line cannot safely be paired with whichever role comes next.
+  const previousRole=blocks.findLastIndex((candidate,i)=>{
+   if(i>=signedIndex)return false;
+   const roles=candidate.text.replace(/^Title:\s*/i,'').split(/\s*(?:,|;|\band\b|&|\(|\))\s*/i).filter(Boolean);
+   return roles.length>0&&roles.every(role=>/^(?:(?:chief|principal) (?:executive|financial|accounting) officer|president|chairman|chairwoman|chairperson|director)$/i.test(role));
+  });
+  const unresolved=blocks.slice(previousRole+1,signedIndex+1).map(candidate=>signatureName(candidate.text)).filter((name):name is string=>name!==null);
+  if(new Set(unresolved.map(nameKey)).size!==1)continue;
+  const signed=signatureName(blocks[signedIndex].text)!;
+  const endIndex=index+1<blocks.length&&/^\(Principal Executive Officer\)$/i.test(blocks[index+1].text)?index+2:index+1;
+  const region=blocks.slice(signedIndex,endIndex);
+  if(region.some(candidate=>/\b(?:chief|principal) (?:financial|accounting) officer\b/i.test(candidate.text)))continue;
+  if(region.some(candidate=>/^Name:/i.test(candidate.text)&&nameKey(candidate.text.replace(/^Name:\s*/i,''))!==nameKey(signed)))continue;
+  const printed=region.map(candidate=>candidate.text.replace(/^Name:\s*/i,'').trim()).find(name=>nameKey(name)===nameKey(signed));
+  const name=printed??signed,start=region[0].start,end=region.at(-1)!.end;if(end-start>1600)continue;
+  result.leadership.push({name,role:'Chief Executive Officer',as_of:source.published_on,basis:'filing',evidence:profileEvidence(source,start,end,'Signatures')});break;
  }
 }
 
