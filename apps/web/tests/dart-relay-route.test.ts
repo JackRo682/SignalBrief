@@ -6,6 +6,7 @@ vi.mock('../src/server/dart-relay',async original=>({...await original<typeof im
 import {POST} from '../src/app/api/internal/dart/route';
 import {relaySignature} from '../src/server/dart-relay';
 import {directoryZip,listedXML,parsePayload,projectUrl,zipSha} from './dart-directory-fixture';
+import {profileArchive,businessQuote} from './dart-profile-fixture';
 
 const secret='a'.repeat(64),bytes=directoryZip(listedXML()),payload=parsePayload(zipSha(bytes));
 function request(value:unknown=payload,options:{unsigned?:boolean;stale?:boolean;signatureBody?:string}={}){
@@ -55,5 +56,31 @@ describe('private directory parse relay route',()=>{
   const legacy={kind:'directory',key:'b'.repeat(40),nonce:'d'.repeat(64)};mocks.download.mockResolvedValue({bytes,type:'application/zip'});
   const response=await POST(request(legacy));expect(response.status).toBe(200);expect(Buffer.from(await response.arrayBuffer())).toEqual(bytes);
   expect(mocks.download).toHaveBeenCalledWith(new URL(`https://opendart.fss.or.kr/api/corpCode.xml?crtfc_key=${legacy.key}`),20_000_000);expect(fetch).not.toHaveBeenCalled();
+ });
+ it('requires HMAC and replay protection for financial bytes and caps the fixed upstream at 2MB',async()=>{
+  const financial={kind:'financials',key:'b'.repeat(40),nonce:'c'.repeat(64),corp_code:'12345678',bsns_year:'2025',reprt_code:'11011'};
+  expect((await POST(request(financial,{unsigned:true}))).status).toBe(401);expect(mocks.download).not.toHaveBeenCalled();
+  const source=Buffer.from('{"status":"013"}');mocks.download.mockResolvedValue({bytes:source,type:'application/json'});
+  const response=await POST(request(financial));expect(response.status).toBe(200);expect(Buffer.from(await response.arrayBuffer())).toEqual(source);
+  expect(mocks.rpc).toHaveBeenCalledWith('sb_dart_relay_claim',expect.objectContaining({body_text:JSON.stringify(financial)}));
+  expect(mocks.download).toHaveBeenCalledWith(new URL(`https://opendart.fss.or.kr/api/fnlttSinglAcnt.json?corp_code=12345678&bsns_year=2025&reprt_code=11011&crtfc_key=${financial.key}`),2_000_000);
+ });
+ it('requires the same current HMAC and nonce claim for an exact issuer-bound profile archive',async()=>{
+  const f=profileArchive();expect((await POST(request(f.payload,{unsigned:true}))).status).toBe(401);expect(fetch).not.toHaveBeenCalled();
+  vi.mocked(fetch).mockResolvedValue(new Response(f.bytes));const response=await POST(request(f.payload));expect(response.status).toBe(200);
+  expect((await response.json()).business[0].text).toBe(businessQuote);expect(mocks.rpc).toHaveBeenCalledWith('sb_dart_relay_claim',expect.objectContaining({body_text:JSON.stringify(f.payload)}));expect(mocks.download).not.toHaveBeenCalled();
+ });
+ it('rejects profile parse field injection, cross-bucket objects and wrong identity formats before any read',async()=>{
+  const {payload:p}=profileArchive();
+  for(const value of [{...p,key:'b'.repeat(40)},{...p,source_url:p.source_url.replace('/profiles/dart/','/private/')},{...p,corp_code:'evil.test'},{...p,receipt:'2026'},{...p,company_name:['Synthetic']},{...p,report_name:'arbitrary'}])expect((await POST(request(value))).status).toBe(422);
+  expect(fetch).not.toHaveBeenCalled();expect(mocks.download).not.toHaveBeenCalled();expect(mocks.rpc).not.toHaveBeenCalled();
+ });
+ it('keeps periodic-list scope fixed to final official periodic filings for one issuer',async()=>{
+  const periodic={kind:'periodic_list',key:'b'.repeat(40),nonce:'c'.repeat(64),corp_code:'12345678',bgn_de:'20250501',end_de:'20261102'};
+  mocks.download.mockResolvedValue({bytes:Buffer.from('{"status":"013"}'),type:'application/json'});
+  expect((await POST(request(periodic))).status).toBe(200);
+  const url=mocks.download.mock.calls[0][0] as URL;expect(url.origin+url.pathname).toBe('https://opendart.fss.or.kr/api/list.json');
+  expect(Object.fromEntries(url.searchParams)).toEqual({corp_code:'12345678',bgn_de:'20250501',end_de:'20261102',page_no:'1',page_count:'100',sort:'date',sort_mth:'desc',pblntf_ty:'A',last_reprt_at:'Y',crtfc_key:periodic.key});
+  expect((await POST(request({...periodic,pblntf_ty:'B'}))).status).toBe(422);
  });
 });

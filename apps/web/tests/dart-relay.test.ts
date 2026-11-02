@@ -11,4 +11,11 @@ describe('private official DART relay',()=>{
  it('uses exact document receipt IDs',()=>expect(dartEndpoint({kind:'document',key:payload.key,nonce:payload.nonce,receipt:'20261014000001'}).searchParams.get('rcept_no')).toBe('20261014000001'));
  it('routes company lookups only to the fixed official company endpoint',()=>{const url=dartEndpoint({...payload,kind:'company'});expect(url.origin+url.pathname).toBe('https://opendart.fss.or.kr/api/company.json');expect(url.searchParams.get('corp_code')).toBe(payload.corp_code);expect(url.searchParams.has('page_no')).toBe(false);});
  it('rejects a malformed company code',()=>expect(()=>dartEndpoint({...payload,kind:'company',corp_code:'../../x'})).toThrow('relay_invalid_request'));
+ it('accepts only a signed fixed financial endpoint with bounded report identifiers',()=>{
+  const p={kind:'financials' as const,key:payload.key,nonce:payload.nonce,corp_code:'00126380',bsns_year:'2025',reprt_code:'11011'},text=JSON.stringify(p);
+  expect(verifyRelay(text,timestamp,relaySignature(text,timestamp,secret),secret)).toEqual(p);
+  const url=dartEndpoint(p);expect(url.origin+url.pathname).toBe('https://opendart.fss.or.kr/api/fnlttSinglAcnt.json');
+  expect([...url.searchParams.keys()]).toEqual(['corp_code','bsns_year','reprt_code','crtfc_key']);
+  for(const patch of [{bsns_year:'2014'},{bsns_year:'2099'},{bsns_year:2025},{reprt_code:'other'},{corp_code:'../../secret'},{source_url:'https://evil.test'},{fs_div:'CFS'}])expect(()=>dartEndpoint({...p,...patch} as typeof p)).toThrow('relay_invalid_request');
+ });
 });
