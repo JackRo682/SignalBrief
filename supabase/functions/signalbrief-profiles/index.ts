@@ -52,8 +52,9 @@ export async function handleProfiles(req:Request):Promise<Response>{
    await rpc('sb_us_cache',{k:cacheKey,v:profile,ttl:86400});return reply({...profile,enrichment:await loadProfileEnrichment(db,company,'sec',profile,raw,{contact,signal:deadline})});
   }
   if(!/^\d{8}$/.test(company.provider_company_id)||!/^[A-Z0-9]{6}$/.test(company.ticker))throw new ProfileError('invalid_company_mapping',409);
+  const dartEnvironment={dartApiKey:env('DART_API_KEY'),dartRelaySecret:env('DART_RELAY_SECRET'),signal:deadline};
   const cacheKey=`profile:dart:v1:${id}:${company.provider_company_id}:${company.ticker}`;
-  const cached=await rpc('sb_us_cache',{k:cacheKey});if(cached)return reply({...cached,enrichment:await loadProfileEnrichment(db,company,'dart',cached,undefined,{signal:deadline})});
+  const cached=await rpc('sb_us_cache',{k:cacheKey});if(cached)return reply({...cached,enrichment:await loadProfileEnrichment(db,company,'dart',cached,undefined,dartEnvironment)});
   const secrets=await rpc('sb_us_secrets');const key=env('DART_API_KEY')||secrets.DART_API_KEY;
   if(!/^[a-f0-9]{40}$/i.test(key??''))throw new ProfileError('provider_not_configured',503);
   const reserved=await db.rpc('sb_us_reserve',{p:'dart',amount:0,smoke:false});if(reserved.error)throw new ProfileError('provider_quota_exceeded',429);
@@ -63,7 +64,7 @@ export async function handleProfiles(req:Request):Promise<Response>{
   const archive=await db.storage.from('signalbrief-raw').upload(`dart/profiles/${digest}.json`,bytes,{contentType:'application/json',upsert:false});
   if(archive.error&&!/already exists|duplicate/i.test(archive.error.message))throw new ProfileError('archive_failed',500);
   await rpc('sb_us_cache',{k:cacheKey,v:profile,ttl:profile.status==='verified'?86400:600});
-  return reply({...profile,enrichment:await loadProfileEnrichment(db,company,'dart',profile,new TextDecoder().decode(bytes),{signal:deadline})});
+  return reply({...profile,enrichment:await loadProfileEnrichment(db,company,'dart',profile,new TextDecoder().decode(bytes),dartEnvironment)});
  }catch(error){
   // Only fixed transport codes are surfaced; never an exception message or URL.
   const relayCodes=new Set(['relay_not_configured','relay_unauthorized','relay_upstream_failed','relay_network_failed','empty_response','response_too_large']);

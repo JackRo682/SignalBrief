@@ -13,6 +13,7 @@ function result():ProfileEnrichment{
 }
 function fixture(){
  let cached:ProfileEnrichment|null=null,claim=true,persistence=true;const next=result();
+ let secrets:Record<string,string>={SEC_CONTACT_EMAIL:'audit@example.test'};
  const collectSecProfileEnrichment=vi.fn().mockResolvedValue({result:next,archives:[]});
  const collectDartProfileEnrichment=vi.fn().mockResolvedValue({result:emptyEnrichment(company.id,new Date().toISOString(),'periodic_report_not_found','not_available'),archives:[]});
  const providerFetch=vi.fn().mockResolvedValue(JSON.stringify({cik:'123',tickers:['SYN'],name:'Synthetic company'}));
@@ -25,14 +26,14 @@ function fixture(){
    if(args.op==='save')return {error:null,data:p.result};
    if(args.op==='fail')return {error:null,data:cached?{...cached,status:'partial',last_error:p.code}:emptyEnrichment(company.id,new Date().toISOString(),String(p.code))};
   }
-  return {error:null,data:name==='sb_us_secrets'?{SEC_CONTACT_EMAIL:'audit@example.test'}:true};
+  return {error:null,data:name==='sb_us_secrets'?secrets:true};
  });
  const upload=vi.fn().mockResolvedValue({error:null});const db={rpc,storage:{from:()=>({upload})}};
  const source=readFileSync(new URL('../../../supabase/functions/signalbrief-profiles/enrichment.ts',import.meta.url),'utf8').replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'');
  const context={db,ProfileError,parseSecProfile,providerFetch,collectSecProfileEnrichment,collectDartProfileEnrichment,emptyEnrichment,profileFailureCode,crypto,Date,URL,Uint8Array,TextEncoder,TextDecoder,fetch,loadProfileEnrichment:undefined as undefined|((...args:unknown[])=>Promise<ProfileEnrichment>)};
  runInNewContext(ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None}}).outputText,context);
- const get=(provider='sec',raw:string|null='synthetic-verified-submissions')=>context.loadProfileEnrichment!(db,company,provider,{status:'verified',profile:{name:'Synthetic company'}},raw??undefined,{contact:'audit@example.test',signal:new AbortController().signal});
- return {get,rpc,upload,providerFetch,collect:collectSecProfileEnrichment,collectDart:collectDartProfileEnrichment,next,setCached:(value:ProfileEnrichment)=>{cached=value;},setClaim:(value:boolean)=>{claim=value;},setPersistence:(value:boolean)=>{persistence=value;}};
+ const get=(provider='sec',raw:string|null='synthetic-verified-submissions',environment:Record<string,string>={})=>context.loadProfileEnrichment!(db,company,provider,{status:'verified',profile:{name:'Synthetic company'}},raw??undefined,{contact:'audit@example.test',signal:new AbortController().signal,...environment});
+ return {get,rpc,upload,providerFetch,collect:collectSecProfileEnrichment,collectDart:collectDartProfileEnrichment,next,setSecrets:(value:Record<string,string>)=>{secrets=value;},setCached:(value:ProfileEnrichment)=>{cached=value;},setClaim:(value:boolean)=>{claim=value;},setPersistence:(value:boolean)=>{persistence=value;}};
 }
 describe('profile enrichment cache, source priority and recovery',()=>{
  it('reuses a current enrichment without extra provider work or a new lease',async()=>{const f=fixture(),cached=result();f.setCached(cached);expect(await f.get()).toEqual(cached);expect(f.collect).not.toHaveBeenCalled();expect(f.rpc).toHaveBeenCalledTimes(1);});
@@ -49,4 +50,14 @@ describe('profile enrichment cache, source priority and recovery',()=>{
  it('fails safely when optional profile persistence is unavailable',async()=>{const f=fixture();f.setPersistence(false);expect(await f.get()).toMatchObject({status:'unavailable',last_error:'profile_persistence_unavailable'});expect(f.collect).not.toHaveBeenCalled();});
  it('revalidates and archives current submissions when only old basic metadata was cached',async()=>{const f=fixture();await f.get('sec',null);expect(f.providerFetch).toHaveBeenCalledOnce();expect(f.upload).toHaveBeenCalledOnce();expect(f.collect).toHaveBeenCalledOnce();});
  it('routes verified Korean basics to the isolated DART collector and preserves explicit absent coverage',async()=>{const f=fixture();expect(await f.get('dart')).toMatchObject({status:'not_available',last_error:null,limitations:['periodic_report_not_found']});expect(f.collectDart).toHaveBeenCalledOnce();expect(f.collect).not.toHaveBeenCalled();expect(f.providerFetch).not.toHaveBeenCalled();});
+ it.each(['environment','vault','both'] as const)('forwards valid DART configuration from %s without exposing it in the response',async source=>{
+  const f=fixture(),envKey='c'.repeat(40),envRelay='d'.repeat(64),vaultKey='e'.repeat(40),vaultRelay='f'.repeat(64);
+  f.setSecrets(source==='environment'?{}:{DART_API_KEY:vaultKey,DART_RELAY_SECRET:vaultRelay});
+  const data=await f.get('dart',null,source==='vault'?{}:{dartApiKey:envKey,dartRelaySecret:envRelay});
+  expect(f.collectDart).toHaveBeenCalledExactlyOnceWith(expect.anything(),company,'Synthetic company',{
+   DART_API_KEY:source==='vault'?vaultKey:envKey,DART_RELAY_SECRET:source==='environment'?envRelay:vaultRelay,
+  },expect.anything());
+  expect(data.status).toBe('not_available');
+  for(const credential of [envKey,envRelay,vaultKey,vaultRelay])expect(JSON.stringify(data)).not.toContain(credential);
+ });
 });

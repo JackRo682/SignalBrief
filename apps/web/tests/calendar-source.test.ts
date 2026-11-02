@@ -5,7 +5,7 @@ import type {ClientRequest,IncomingMessage} from 'node:http';
 import type {RequestOptions} from 'node:https';
 import type {LookupFunction} from 'node:net';
 import {afterEach,describe,expect,it,vi} from 'vitest';
-import {downloadCalendarSource,verifyCalendarSource,CALENDAR_SOURCE_MAX_BYTES,CALENDAR_SOURCE_TIMEOUT_MS} from '../src/server/calendar-source';
+import {downloadCalendarSource,verifyCalendarSource,CALENDAR_SOURCE_MAX_BYTES,CALENDAR_SOURCE_TIMEOUT_MS,CALENDAR_SOURCE_MAX_REDIRECTS} from '../src/server/calendar-source';
 import {relaySignature} from '../src/server/dart-relay';
 
 const url='https://investors.synthetic-corp.com/events/?year=-1',secret='b'.repeat(64),now=Date.now();
@@ -27,6 +27,14 @@ function wire(options:WireOptions={}){
  const send=vi.fn<(url:URL,options:RequestOptions,callback:(response:IncomingMessage)=>void)=>ClientRequest>(()=>request);
  const resolve=vi.fn().mockResolvedValue(publicRecords.map(record=>({...record})));
  return {request:send as unknown as typeof import('node:https').request,send,resolve,response,socketRequest:request};
+}
+function wireSequence(responses:WireOptions[]){
+ const wires=responses.map(options=>wire(options));let index=0;
+ const send=vi.fn<(url:URL,options:RequestOptions,callback:(response:IncomingMessage)=>void)=>ClientRequest>((target,options,callback)=>{
+  const next=wires[index++];if(!next)throw new Error('unexpected_request');return next.send(target,options,callback);
+ });
+ const resolve=vi.fn().mockResolvedValue(publicRecords.map(record=>({...record})));
+ return {request:send as unknown as typeof import('node:https').request,send,resolve,wires};
 }
 function signed(value:unknown=payload){const body=JSON.stringify(value),stamp=String(now);return {body,stamp,signature:relaySignature(body,stamp,secret)};}
 afterEach(()=>vi.useRealTimers());
@@ -93,9 +101,55 @@ describe('HTTPS connection pins the verified address',()=>{
   const stalled=wire({hang:true}),controller=new AbortController();const waiting=downloadCalendarSource(url,{...stalled,signal:controller.signal});
   const rejected=expect(waiting).rejects.toThrow('source_timeout');await vi.advanceTimersByTimeAsync(1);controller.abort();await rejected;expect(stalled.socketRequest.destroy).toHaveBeenCalled();
  });
- it.each([301,302,307,308,403,500])('does not follow redirects or accept HTTP status %s',async status=>{
+ it.each([403,500])('rejects HTTP status %s with a safe numeric diagnostic',async status=>{
   const w=wire({status,headers:{'content-type':'text/html',location:'https://127.0.0.1/'}});
-  await expect(downloadCalendarSource(url,w)).rejects.toThrow('source_http_error');expect(w.send).toHaveBeenCalledTimes(1);
+  await expect(downloadCalendarSource(url,w)).rejects.toMatchObject({message:'source_http_error',upstreamStatus:status});expect(w.send).toHaveBeenCalledTimes(1);
+ });
+ it.each([301,302,303,307,308])('follows a same-origin HTTPS %s redirect with fresh verified DNS and TLS pinning',async status=>{
+  const w=wireSequence([{status,headers:{location:'/overview/default.aspx'}},{}]);
+  w.resolve.mockResolvedValueOnce([publicRecords[0]]).mockResolvedValueOnce([publicRecords[1]]);
+  const result=await downloadCalendarSource(url,w);expect(result.bytes.toString()).toBe('<html>Verified original</html>');
+  expect(w.send.mock.calls.map(([target])=>target.href)).toEqual([url,'https://investors.synthetic-corp.com/overview/default.aspx']);
+  expect(w.resolve.mock.calls).toEqual([['investors.synthetic-corp.com'],['investors.synthetic-corp.com']]);
+  for(const [index,[target,options]]of w.send.mock.calls.entries()){
+   expect(options).toMatchObject({method:'GET',agent:false,servername:target.hostname,rejectUnauthorized:true,minVersion:'TLSv1.2',family:publicRecords[index].family});
+   expect(options.headers).toEqual({Accept:'text/html,application/xhtml+xml,application/json','Accept-Encoding':'identity','User-Agent':'SignalBrief/0.4 (+https://signalbrief.online)'});
+   const pinned=vi.fn();(options.lookup as LookupFunction)(target.hostname,{},pinned);
+   expect(pinned).toHaveBeenCalledWith(null,publicRecords[index].address,publicRecords[index].family);
+  }
+  expect(w.wires[0].response.destroyed).toBe(true);
+ });
+ it.each(['https://other.synthetic-corp.com/','//other.synthetic-corp.com/','http://investors.synthetic-corp.com/',
+  'https://user:password@investors.synthetic-corp.com/','https://investors.synthetic-corp.com:444/',
+  'https://127.0.0.1/','https://[::1]/','https://metadata.google.internal/','/events/#fragment','/events/\n',
+  'https://[invalid/','',undefined,'/'.repeat(2049)])('rejects an unsafe or malformed redirect before another DNS lookup (%s)',async location=>{
+  const w=wireSequence([{status:302,headers:{location}},{}]);
+  await expect(downloadCalendarSource(url,w)).rejects.toThrow('source_redirect_invalid');
+  expect(w.resolve).toHaveBeenCalledTimes(1);expect(w.send).toHaveBeenCalledTimes(1);
+ });
+ it('rejects public-to-private or mixed DNS rebinding on the next same-origin hop',async()=>{
+  for(const addresses of [[{address:'127.0.0.1',family:4}],[publicRecords[0],{address:'10.0.0.1',family:4}]]){
+   const w=wireSequence([{status:301,headers:{location:'/overview/'}},{}]);
+   w.resolve.mockResolvedValueOnce(publicRecords).mockResolvedValueOnce(addresses);
+   await expect(downloadCalendarSource(url,w)).rejects.toThrow('source_non_public_address');
+   expect(w.resolve).toHaveBeenCalledTimes(2);expect(w.send).toHaveBeenCalledTimes(1);
+  }
+ });
+ it('accepts at most two redirects and stops loops without opening an extra socket',async()=>{
+  const success=wireSequence([{status:301,headers:{location:'/overview/'}},{status:302,headers:{location:'../events/'}},{}]);
+  await expect(downloadCalendarSource(url,success)).resolves.toMatchObject({type:'text/html; charset=utf-8'});
+  expect(success.send.mock.calls.map(([target])=>target.href)).toEqual([url,'https://investors.synthetic-corp.com/overview/','https://investors.synthetic-corp.com/events/']);
+  const loop=wireSequence(Array.from({length:CALENDAR_SOURCE_MAX_REDIRECTS+2},()=>({status:302,headers:{location:url}})));
+  await expect(downloadCalendarSource(url,loop)).rejects.toThrow('source_redirect_limit');
+  expect(loop.resolve).toHaveBeenCalledTimes(CALENDAR_SOURCE_MAX_REDIRECTS+1);expect(loop.send).toHaveBeenCalledTimes(CALENDAR_SOURCE_MAX_REDIRECTS+1);
+ });
+ it('keeps one deadline across redirected DNS and aborts the subsequent request without resetting the budget',async()=>{
+  vi.useFakeTimers();const w=wireSequence([{status:301,headers:{location:'/overview/'}},{hang:true}]);
+  w.resolve.mockImplementationOnce(()=>new Promise(accept=>setTimeout(()=>accept(publicRecords),6000))).mockResolvedValue(publicRecords);
+  const pending=downloadCalendarSource(url,w),check=expect(pending).rejects.toThrow('source_timeout');
+  await vi.advanceTimersByTimeAsync(6000);expect(w.send).toHaveBeenCalledTimes(2);
+  await vi.advanceTimersByTimeAsync(CALENDAR_SOURCE_TIMEOUT_MS-6000);await check;
+  expect(w.wires[1].socketRequest.destroy).toHaveBeenCalled();expect(vi.getTimerCount()).toBe(0);
  });
  it.each([{'content-type':'text/plain'},{'content-type':'image/svg+xml'},
   {'content-type':'text/html','content-encoding':'gzip'},{'content-type':'application/json; charset=arbitrary; injected=value'}])('accepts only bounded original HTML/XHTML/JSON without transfer decoding %j',async headers=>{

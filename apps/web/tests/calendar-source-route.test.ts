@@ -48,4 +48,14 @@ describe('private calendar source relay',()=>{
   mocks.download.mockRejectedValue(new Error('source_non_public_address'));const response=await POST(request());expect(await response.json()).toEqual({error:'calendar_source_failed'});
   expect(console.error).toHaveBeenCalledExactlyOnceWith('CALENDAR_SOURCE_FAILURE',{operation:'calendar_source',code:'source_non_public_address'});
  });
+ it('records only a bounded upstream HTTP status without exposing provider URLs or response bodies',async()=>{
+  mocks.download.mockRejectedValue(Object.assign(new Error('source_http_error'),{upstreamStatus:403,url:'https://private.example/?token=private-value',body:'private response'}));
+  const response=await POST(request());expect(await response.json()).toEqual({error:'calendar_source_failed'});
+  expect(console.error).toHaveBeenCalledExactlyOnceWith('CALENDAR_SOURCE_FAILURE',{operation:'calendar_source',code:'source_http_error',upstream_status:403});
+  expect(JSON.stringify(vi.mocked(console.error).mock.calls)).not.toMatch(/private-value|private\.example|private response/);
+ });
+ it.each(['403',NaN,0,600])('omits malformed diagnostic HTTP status %s',async upstreamStatus=>{
+  mocks.download.mockRejectedValue(Object.assign(new Error('source_http_error'),{upstreamStatus}));await POST(request());
+  expect(console.error).toHaveBeenCalledExactlyOnceWith('CALENDAR_SOURCE_FAILURE',{operation:'calendar_source',code:'source_http_error'});
+ });
 });

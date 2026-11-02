@@ -5,7 +5,7 @@ export const runtime='nodejs';
 export const dynamic='force-dynamic';
 export const maxDuration=20;
 const headers={'Cache-Control':'no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'};
-const diagnostics=new Set(['source_url_invalid','source_timeout','source_dns_failed','source_non_public_address','source_hostname_mismatch','source_http_error','source_content_type_invalid','source_too_large','source_interrupted','source_transport_failed']);
+const diagnostics=new Set(['source_url_invalid','source_timeout','source_dns_failed','source_non_public_address','source_hostname_mismatch','source_http_error','source_redirect_invalid','source_redirect_limit','source_content_type_invalid','source_too_large','source_interrupted','source_transport_failed']);
 
 export async function POST(req:Request):Promise<Response>{
  let authorized=false;
@@ -26,7 +26,9 @@ export async function POST(req:Request):Promise<Response>{
   return new Response(new Uint8Array(result.bytes),{headers:{...headers,'Content-Type':result.type}});
  }catch(error){
   const code=error instanceof Error?error.message:'';
-  if(authorized)console.error('CALENDAR_SOURCE_FAILURE',{operation:'calendar_source',code:diagnostics.has(code)?code:'source_unavailable'});
+  const upstreamStatus=code==='source_http_error'&&error instanceof Error&&'upstreamStatus' in error?error.upstreamStatus:null;
+  if(authorized)console.error('CALENDAR_SOURCE_FAILURE',{operation:'calendar_source',code:diagnostics.has(code)?code:'source_unavailable',
+   ...(typeof upstreamStatus==='number'&&Number.isInteger(upstreamStatus)&&upstreamStatus>=100&&upstreamStatus<=599?{upstream_status:upstreamStatus}:{})});
   return Response.json({error:code==='relay_unauthorized'?'relay_unauthorized':code==='relay_invalid_request'?'relay_invalid_request':'calendar_source_failed'},
    {status:code==='relay_unauthorized'?401:code==='relay_invalid_request'?422:502,headers});
  }

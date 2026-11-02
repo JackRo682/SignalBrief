@@ -6,7 +6,7 @@ import type {ProfileEnrichment} from './enrichment-types.ts';
 import {collectDartProfileEnrichment} from './enrichment-dart.ts';
 
 type BasicProfile={status:string;profile:{name:string}|null};
-type Environment={contact?:string;signal:AbortSignal};
+type Environment={contact?:string;dartApiKey?:string;dartRelaySecret?:string;signal:AbortSignal};
 const object=(value:unknown):Record<string,unknown>=>value&&typeof value==='object'&&!Array.isArray(value)?value as Record<string,unknown>:{};
 const sha=async(bytes:Uint8Array)=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new Uint8Array(bytes)))].map(value=>value.toString(16).padStart(2,'0')).join('');
 
@@ -51,7 +51,12 @@ export async function loadProfileEnrichment(db:SupabaseClient,company:CompanyIde
    return await rpc('save',{lease,...snapshot}) as ProfileEnrichment;
   }
   const secretResult=await db.rpc('sb_us_secrets');if(secretResult.error)throw new ProfileError('profile_source_unavailable');
-  const snapshot=await collectDartProfileEnrichment(db,company,basic.profile.name,object(secretResult.data),transport);
+  const storedSecrets=object(secretResult.data);
+  const dartSecrets={
+   DART_API_KEY:environment.dartApiKey||(typeof storedSecrets.DART_API_KEY==='string'?storedSecrets.DART_API_KEY:undefined),
+   DART_RELAY_SECRET:(typeof storedSecrets.DART_RELAY_SECRET==='string'?storedSecrets.DART_RELAY_SECRET:undefined)||environment.dartRelaySecret,
+  };
+  const snapshot=await collectDartProfileEnrichment(db,company,basic.profile.name,dartSecrets,transport);
   const previous=cached.schema==='signalbrief.company-profile.v1'?cached as ProfileEnrichment:null;
   if(previous&&(previous.business.length>0&&snapshot.result.business.length===0||previous.products.length>0&&snapshot.result.products.length===0||previous.segments.length>0&&snapshot.result.segments.length===0))throw new ProfileError('authoritative_profile_refresh_unavailable');
   return await rpc('save',{lease,...snapshot}) as ProfileEnrichment;

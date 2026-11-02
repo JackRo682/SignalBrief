@@ -12,6 +12,8 @@ export const CALENDAR_SOURCE_MAX_BYTES=2_000_000;
 export const CALENDAR_SOURCE_TIMEOUT_MS=10_000;
 type Resolver=(hostname:string)=>Promise<LookupAddress[]>;
 type DownloadOptions={resolve?:Resolver;request?:typeof httpsRequest;signal?:AbortSignal};
+type DownloadOutcome={bytes:Buffer;type:string}|{redirect:string};
+export const CALENDAR_SOURCE_MAX_REDIRECTS=2;
 const failure=(code:string)=>new Error(code);
 
 export function verifyCalendarSource(body:string,timestamp:string,signature:string,secret:string,now=Date.now()):CalendarSourcePayload{
@@ -49,7 +51,10 @@ export async function downloadCalendarSource(value:string|URL,options:DownloadOp
  const timer=setTimeout(()=>deadline.abort(),CALENDAR_SOURCE_TIMEOUT_MS);
  const signal=options.signal?AbortSignal.any([options.signal,deadline.signal]):deadline.signal;
  try{
-  const addresses=await resolveBounded(url.hostname,options.resolve??(hostname=>dnsLookup(hostname,{all:true,verbatim:true})),signal);
+  let destination=url;
+  for(let hop=0;hop<=CALENDAR_SOURCE_MAX_REDIRECTS;hop++){
+  const target=destination;
+  const addresses=await resolveBounded(target.hostname,options.resolve??(hostname=>dnsLookup(hostname,{all:true,verbatim:true})),signal);
   if(signal.aborted)throw failure('source_timeout');
   if(!Array.isArray(addresses)||addresses.length<1||addresses.length>32||addresses.some(record=>
    !record||typeof record.address!=='string'||![4,6].includes(record.family)||isIP(record.address)!==record.family||!publicAddress(record.address)))throw failure('source_non_public_address');
@@ -57,23 +62,28 @@ export async function downloadCalendarSource(value:string|URL,options:DownloadOp
   const candidate=addresses.find(record=>record.family===4)??addresses[0];
   const selected={address:candidate.address,family:candidate.family};
   const lookup:LookupFunction=(hostname,settings,callback)=>{
-   if(hostname!==url.hostname){callback(failure('source_hostname_mismatch'),'',0);return;}
+   if(hostname!==target.hostname){callback(failure('source_hostname_mismatch'),'',0);return;}
    if(settings.all)callback(null,[selected]);else callback(null,selected.address,selected.family);
   };
-  return await new Promise((accept,reject)=>{
+  const outcome=await new Promise<DownloadOutcome>((accept,reject)=>{
    let settled=false;
-   const finish=(error:Error|null,result?:{bytes:Buffer;type:string})=>{
+   const finish=(error:Error|null,result?:DownloadOutcome)=>{
     if(settled)return;settled=true;signal.removeEventListener('abort',abort);
     if(error)reject(error);else accept(result!);
    };
    const abort=()=>{request.destroy();finish(failure('source_timeout'));};
    const connection:RequestOptions&{autoSelectFamily:false}={
     method:'GET',agent:false,lookup,family:selected.family,autoSelectFamily:false,
-    servername:url.hostname,rejectUnauthorized:true,minVersion:'TLSv1.2',
+    servername:target.hostname,rejectUnauthorized:true,minVersion:'TLSv1.2',
     headers:{Accept:'text/html,application/xhtml+xml,application/json','Accept-Encoding':'identity','User-Agent':'SignalBrief/0.4 (+https://signalbrief.online)'},
    };
-   const request=(options.request??httpsRequest)(url,connection,response=>{
-    if(response.statusCode!==200){response.destroy();finish(failure('source_http_error'));return;}
+   const request=(options.request??httpsRequest)(target,connection,response=>{
+    if([301,302,303,307,308].includes(response.statusCode??0)){
+     const location=response.headers.location;response.destroy();
+     if(typeof location!=='string'||!location||location.length>2048||/[\s\u0000-\u001f\u007f]/.test(location)){finish(failure('source_redirect_invalid'));return;}
+     finish(null,{redirect:location});return;
+    }
+    if(response.statusCode!==200){response.destroy();finish(Object.assign(failure('source_http_error'),{upstreamStatus:response.statusCode}));return;}
     const type=response.headers['content-type'],encoding=response.headers['content-encoding'];
     if(typeof type!=='string'||!(/^(?:text\/html|application\/xhtml\+xml|application\/json)(?:\s*;\s*charset=(?:"[a-z0-9._-]{1,40}"|[a-z0-9._-]{1,40}))?\s*$/i).test(type)
      ||encoding!==undefined&&encoding!=='identity'){response.destroy();finish(failure('source_content_type_invalid'));return;}
@@ -96,5 +106,12 @@ export async function downloadCalendarSource(value:string|URL,options:DownloadOp
    if(signal.aborted){abort();return;}
    request.end();
   });
+  if(!('redirect' in outcome))return outcome;
+  if(hop===CALENDAR_SOURCE_MAX_REDIRECTS)throw failure('source_redirect_limit');
+  try{destination=calendarURL(new URL(outcome.redirect,target).href);}catch{throw failure('source_redirect_invalid');}
+  if(destination.origin!==url.origin)throw failure('source_redirect_invalid');
+  // Resolve and pin again for each same-origin redirect within the original total deadline.
+  }
+  throw failure('source_redirect_limit');
  }finally{clearTimeout(timer);}
 }
