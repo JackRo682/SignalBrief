@@ -11,10 +11,10 @@ const completeHTML=(html:string)=>/<\/html>\s*$/i.test(html)||/^\s*<DOCUMENT>\s*
 export const emptyExtracted=():ExtractedProfile=>({business:[],products:[],segments:[],leadership:[],formation:[]});
 
 /** Parse the complete submissions recent array, not the unrelated first-30 display limit. */
-export function selectProfileFilings(raw:string,company:CompanyIdentity,today:string):{annual:SecProfileFiling|null;latest:SecProfileFiling|null}{
+function profileFilings(raw:string,company:CompanyIdentity,today:string):SecProfileFiling[]{
  let input:unknown;try{input=JSON.parse(raw);}catch{throw new ProfileError('invalid_provider_response');}
  if(!record(input)||String(input.cik??'').padStart(10,'0')!==company.provider_company_id.padStart(10,'0')||!Array.isArray(input.tickers)||!input.tickers.includes(company.ticker))throw new ProfileError('company_identity_mismatch');
- if(!record(input.filings)||!record(input.filings.recent))return {annual:null,latest:null};
+ if(!record(input.filings)||!record(input.filings.recent))return [];
  const recent=input.filings.recent,keys=['accessionNumber','form','filingDate','primaryDocument','reportDate'];
  const count=Array.isArray(recent.accessionNumber)?recent.accessionNumber.length:0;
  if(count>2000||keys.some(key=>!Array.isArray(recent[key])||(recent[key] as unknown[]).length!==count))throw new ProfileError('profile_filing_list_incomplete');
@@ -27,7 +27,11 @@ export function selectProfileFilings(raw:string,company:CompanyIdentity,today:st
  }
  filings.sort((a,b)=>b.filed_on.localeCompare(a.filed_on)||b.accession.localeCompare(a.accession));
  const earliest=new Date(today+'T00:00:00Z');earliest.setUTCDate(earliest.getUTCDate()-550);
- const fresh=filings.filter(filing=>filing.filed_on>=earliest.toISOString().slice(0,10));
+ return filings.filter(filing=>filing.filed_on>=earliest.toISOString().slice(0,10));
+}
+
+export function selectProfileFilings(raw:string,company:CompanyIdentity,today:string):{annual:SecProfileFiling|null;latest:SecProfileFiling|null}{
+ const fresh=profileFilings(raw,company,today);
  return {annual:fresh.find(filing=>/^(?:10-K|20-F|40-F)(?:\/A)?$/.test(filing.form))??null,latest:fresh[0]??null};
 }
 
@@ -35,6 +39,47 @@ export function secProfileURL(value:string,cik:string):URL{
  let url:URL;try{url=new URL(value);}catch{throw new ProfileError('profile_source_url_invalid');}
  if(url.protocol!=='https:'||url.hostname!=='www.sec.gov'||url.username||url.password||url.port||url.search||url.hash||!new RegExp('^/Archives/edgar/data/'+Number(cik)+'/[0-9]{18}/[A-Za-z0-9_.-]+\\.html?$','i').test(url.pathname))throw new ProfileError('profile_source_url_invalid');
  return url;
+}
+
+/** A Part III supplement may explicitly retain the original report's business.
+ * Do not infer that from a missing Item 1, a filing suffix, or an arbitrary link. */
+export function profileUnchangedOriginalURL(parsed:ProfileHTML,source:ProfileArchivedSource,cik:string):string|null{
+ if(source.form_type!=='10-K/A'||!parsed.document_types.length||parsed.document_types.some(form=>form!=='10-K/A'))return null;
+ const start=parsed.blocks.findIndex(block=>/^explanatory note$/i.test(block.text));
+ if(start<0||start>150||!parsed.blocks.slice(0,start).some(block=>/^form\s+10-k\/a$/i.test(block.text)))return null;
+ const end=parsed.blocks.findIndex((block,index)=>index>start&&/^(?:index|table of contents|part\s+[ivx]+)$/i.test(block.text));
+ if(end<0)return null;
+ const note=parsed.blocks.slice(start+1,end).map(block=>block.text).join('\n');if(note.length>12000)return null;
+ const solely=note.search(/\b(?:is\s+)?(?:being\s+)?filed\s+solely\s+to\s*:/i);
+ const unchanged=note.search(/\bthis amendment does not otherwise (?:change|update|amend)(?: or (?:change|update|amend))? (?:any of )?the disclosures set forth in the original form 10-k\b|\ball (?:other|remaining) disclosures in the original form 10-k (?:remain|are) unchanged(?: by this amendment)?\b/i);
+ if(solely<0||unchanged<=solely)return null;
+ const scope=note.slice(solely,unchanged);
+ if(!/\bamend\s+part\s+iii\b/i.test(scope)||/\b(?:business|financial statements|results of operations|restatement|restated)\b/i.test(scope))return null;
+ const parts=[...scope.matchAll(/\bpart\s+([ivx]+)\b/gi)].map(match=>match[1].toUpperCase());
+ if(parts.some(part=>!['III','IV'].includes(part)))return null;
+ const references=[...scope.matchAll(/\bitems?\s+(\d{1,2}[a-z]?(?:(?:\s*,\s*(?:and\s+)?|\s+(?:and|through)\s+|\s*[-–]\s*)\d{1,2}[a-z]?)*)(?!\d)/gi)];
+ const items=references.flatMap(match=>match[1].match(/\d{1,2}[a-z]?/gi)??[]);
+ if(!items.some(item=>['10','11','12','13','14'].includes(item))||items.some(item=>!['10','11','12','13','14','15'].includes(item)))return null;
+ if((parts.includes('IV')||items.includes('15'))&&!/\bfile\s+(?:new\s+)?(?:executive\s+)?certifications?\b/i.test(scope))return null;
+ const links=parsed.links.filter(link=>/^(?:annual report on form 10-k\b|(?:the\s+)?original\s+(?:form\s+)?10-k\b)/i.test(link.text));
+ const urls:string[]=[];
+ for(const link of links){
+  try{
+   let url=new URL(link.href,source.source_url);
+   if(url.pathname==='/ix'){
+    if(url.protocol!=='https:'||url.hostname!=='www.sec.gov'||url.username||url.password||url.port||url.hash||url.searchParams.getAll('doc').length!==1||[...url.searchParams.keys()].some(key=>key!=='doc'))return null;
+    url=new URL(url.searchParams.get('doc')!,url.origin);
+   }
+   urls.push(secProfileURL(url.href,cik).href);
+  }catch{return null;}
+ }
+ const unique=[...new Set(urls)];return unique.length===1&&unique[0]!==source.source_url?unique[0]:null;
+}
+
+export function selectProfileLinkedOriginal(raw:string,company:CompanyIdentity,today:string,amendment:SecProfileFiling,url:string):SecProfileFiling{
+ const matches=profileFilings(raw,company,today).filter(filing=>filing.url===url&&filing.form==='10-K'&&filing.report_period===amendment.report_period&&filing.filed_on<=amendment.filed_on);
+ if(matches.length!==1)throw new ProfileError('profile_filing_identity_invalid');
+ return matches[0];
 }
 
 export function profileEvidence(source:ProfileArchivedSource,start:number,end:number,section:string):ProfileEvidence{
@@ -211,7 +256,10 @@ export function parseSecProfileFiling(html:string,source:ProfileArchivedSource,c
  if(!form||!parsed.document_types.length||parsed.document_types.some(value=>value.replace(/\/A$/,'')!==form))throw new ProfileError('profile_filing_identity_invalid');
  const period=(value:string)=>{if(day(value))return value;const match=value.match(/^([A-Za-z]+)\s+(\d{1,2}),?\s+(\d{4})$/);if(!match||!months[match[1].toLowerCase()])return null;const date=`${match[3]}-${months[match[1].toLowerCase()]}-${match[2].padStart(2,'0')}`;return day(date)?date:null;};
  if(!source.report_period||!parsed.report_periods.length||parsed.report_periods.some(value=>period(value)!==source.report_period))throw new ProfileError('profile_filing_identity_invalid');
- if(source.form_type?.endsWith('/A')&&!parsed.amendments.some(value=>/^true$/i.test(value)))throw new ProfileError('profile_filing_identity_invalid');
+ if(source.form_type?.endsWith('/A')&&!parsed.amendments.some(value=>/^true$/i.test(value))){
+  const explicitFalse=parsed.amendments.length>0&&parsed.amendments.every(value=>/^false$/i.test(value));
+  if(!explicitFalse||!profileUnchangedOriginalURL(parsed,source,company.provider_company_id))throw new ProfileError('profile_filing_identity_invalid');
+ }
  source.normalized_text=parsed.text;
  const fields=emptyExtracted();extractBusiness(parsed,source,fields);extractSegments(parsed,source,fields);extractLeadership(parsed,source,fields);fields.formation=extractProfileFormation(parsed,source);
  return {parsed,fields};

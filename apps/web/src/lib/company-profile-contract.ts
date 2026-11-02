@@ -4,10 +4,13 @@ export const profileURL = z.string().url().refine(value => {
   const url = new URL(value);
   return url.protocol === 'https:' && !url.username && !url.password;
 });
+// PostgreSQL JSON timestamps retain an explicit UTC offset; Edge also emits Z.
+// Both identify an instant. Timezone-free/local timestamps remain invalid.
+const profileTimestamp = z.string().datetime({ offset: true });
 const source = z.object({
   id: z.string().min(1), provider: z.enum(['SEC EDGAR', 'OpenDART', 'Official company']),
   source_url: profileURL, source_sha256: z.string().regex(/^[a-f0-9]{64}$/),
-  fetched_at: z.string().datetime(), published_on: z.string().nullable(),
+  fetched_at: profileTimestamp, published_on: z.string().nullable(),
   publication_precision: z.enum(['date', 'unknown']), report_period: z.string().nullable(),
   form_type: z.string().nullable(), title: z.string(),
   normalization: z.enum(['profile-visible-text-v1', 'dart-periodic-xml-text-v1', 'dart-periodic-recovered-text-v1']),
@@ -23,7 +26,7 @@ const item = z.object({ name: z.string().min(1), description: z.string().nullabl
 export const profileEnrichmentSchema = z.object({
   schema: z.literal('signalbrief.company-profile.v1'), company_id: z.string().uuid(),
   status: z.enum(['ready', 'partial', 'not_available', 'unavailable']),
-  checked_at: z.string().datetime(), next_refresh_at: z.string().datetime(),
+  checked_at: profileTimestamp, next_refresh_at: profileTimestamp,
   sources: z.array(source).max(30),
   leadership: z.array(z.object({ name: z.string().min(1), role: z.string(), as_of: z.string(),
     basis: z.enum(['filing', 'official_page', 'official_registry']), evidence })).max(20),

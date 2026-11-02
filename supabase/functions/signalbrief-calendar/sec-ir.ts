@@ -8,9 +8,11 @@ type Element=ReturnType<typeof DomUtils.getElementsByTagName>[number];
 type Doc={role:'submissions'|'primary'|'exhibit'|'ir'|'events';url:string;raw_sha256:string;object_key:string;parent_url?:string;accession?:string;filing_date?:string};
 type Binding={url:string;document_url:string;quote:string;location:string};
 type IssuerEvidence={source_url:string;raw_sha256:string;label:string;location:string};
-export type SecIREntry=Entry&{source_url:string;raw_sha256:string};
+export type SecIREntry=Entry&{source_url:string;raw_sha256:string;event_url?:string;date_text?:string;quote_start?:number;quote_end?:number};
+type DrupalText={normalization:'drupal-event-articles-text-v1';normalized_text:string;row_count:number;pagination_detected:boolean};
+export type DrupalEvidence=DrupalText&{source_url:string;raw_sha256:string;normalized_sha256:string;normalized_object_key:string};
 export type SecFilingEvidence={source_url:string;raw_sha256:string;accession:string;filing_date:string;form_type:'8-K'|'6-K';normalized_text:string;normalized_sha256:string;normalized_object_key:string;issuer_label:string;quote_start:number;quote_end:number;period_text:string;fiscal_year:number;quarter:number;date_text:string};
-export type SecIRManifest={schema:'signalbrief.calendar.sec-ir.v1'|'signalbrief.calendar.sec-filing.v1';adapter:'sec-ir';source_key:string;source_url:string;company_id:string;provider:'sec';provider_company_id:string;ticker:string;issuer_name:string;issuer_evidence:IssuerEvidence[];complete:boolean;window:{start:string;end:string};documents:Doc[];binding:Binding;event_source_url:string;format:'q4'|'structured-html'|'sec-filing';q4?:Q4Manifest;q4_manifest?:{raw_sha256:string;object_key:string};entries:SecIREntry[];coverage?:'explicit-sec-announcement';fallback_reason?:string;filing?:SecFilingEvidence};
+export type SecIRManifest={schema:'signalbrief.calendar.sec-ir.v1'|'signalbrief.calendar.sec-filing.v1';adapter:'sec-ir';source_key:string;source_url:string;company_id:string;provider:'sec';provider_company_id:string;ticker:string;issuer_name:string;issuer_evidence:IssuerEvidence[];complete:boolean;window:{start:string;end:string};documents:Doc[];binding:Binding;event_source_url:string;format:'q4'|'structured-html'|'sec-filing'|'drupal-list';q4?:Q4Manifest;q4_manifest?:{raw_sha256:string;object_key:string};entries:SecIREntry[];coverage?:'explicit-sec-announcement'|'published-event-list';fallback_reason?:string;filing?:SecFilingEvidence;drupal?:DrupalEvidence};
 type Archive=(path:string,bytes:Uint8Array,contentType:string)=>Promise<void>;
 const normalize=(s:string)=>s.replace(/\s+/g,' ').trim();
 const object=(value:unknown):value is Record<string,unknown>=>!!value&&typeof value==='object'&&!Array.isArray(value);
@@ -169,8 +171,37 @@ export function explicitSecFilingEvent(bytes:Uint8Array,document:Doc,source:SecI
  return found[0]??null;
 }
 
-export function structuredIREntries(bytes:Uint8Array,url:string,raw_sha256:string,source:SecIRSource,window:{start:string;end:string}):{recognized:boolean;entries:SecIREntry[]}{
+export function structuredIREntries(bytes:Uint8Array,url:string,raw_sha256:string,source:SecIRSource,window:{start:string;end:string}):{recognized:boolean;entries:SecIREntry[];drupal?:DrupalText}{
  const root=parseDocument(html(bytes)),entries:SecIREntry[]=[];let recognized=false;
+ const hasClass=(node:Element,value:string)=>(node.attribs.class??'').split(/\s+/).includes(value);
+ const articles=elements(root,'article').filter(node=>hasClass(node,'node--type-nir-event'));
+ if(articles.length){
+  if(articles.length>200)throw new CalendarError('source_too_large');
+  const texts:string[]=[],identities=new Set<string>();let prefix=0;
+  for(const [index,article] of articles.entries()){
+   if(elements(article,'article').some(node=>hasClass(node,'node--type-nir-event')))throw new CalendarError('ambiguous_calendar_list');
+   for(const node of tags(article))if(['script','style','noscript'].includes(node.name))DomUtils.removeElement(node);
+   const titles=tags(article).filter(node=>hasClass(node,'field-nir-event-title')),dates=tags(article).filter(node=>hasClass(node,'nir-widget--event--date'));
+   const links=titles.length===1?elements(titles[0],'a'):[];
+   if(links.length!==1||!links[0].attribs.href||dates.length!==1)throw new CalendarError('incomplete_calendar_list');
+   const title=plain(links[0]),source_date=plain(dates[0]),rowText=plain(article);
+   if(!title||title.length>200||/\b(?:cancelled|canceled|postponed|rescheduled)\b/i.test(rowText))throw new CalendarError('event_status_requires_review');
+   const eventURL=publicIRURL(new URL(links[0].attribs.href,url).href);
+   if(eventURL.origin!==new URL(url).origin||eventURL.search||!/^\/events\/event-details\/[A-Za-z0-9][A-Za-z0-9._~-]*\/?$/.test(eventURL.pathname))throw new CalendarError('invalid_calendar_identity');
+   const match=source_date.match(/^([A-Za-z]+\s+[0-9]{1,2},\s+[0-9]{4})(?:\s+(?:[1-9]|1[0-2]):[0-5][0-9]\s+(?:AM|PM)\s+(?:PST|PDT|MST|MDT|CST|CDT|EST|EDT|UTC|GMT))?$/i);
+   if(!match)throw new CalendarError('ambiguous_date');
+   const date_text=match[1],occurs_on=explicitIRDate(date_text),quote=`${title} ${source_date}`,local=rowText.indexOf(quote);
+   if(quote.length>500||local<0||rowText.indexOf(quote,local+1)>=0)throw new CalendarError('invalid_calendar_quote');
+   const key=`event:${eventURL.pathname}`;if(identities.has(key))throw new CalendarError('duplicate_calendar_identity');identities.add(key);
+   const quote_start=prefix+Array.from(rowText.slice(0,local)).length,quote_end=quote_start+Array.from(quote).length;
+   if(occurs_on>=window.start&&occurs_on<=window.end)entries.push({key,title,occurs_on,quote,timezone:null,source_url:url,raw_sha256,
+    event_url:eventURL.href,source_date,date_text,quote_start,quote_end,location:`drupal-list.articles[${index}].normalized-text[${quote_start}:${quote_end}]`});
+   texts.push(rowText);prefix+=Array.from(rowText).length+1;
+  }
+  const normalized_text=texts.join('\n');if(new TextEncoder().encode(normalized_text).length>750000)throw new CalendarError('source_too_large');
+  const pagination_detected=tags(root).some(node=>(node.attribs.rel??'').split(/\s+/).includes('next')||/(?:^|\s)(?:pager(?:__[a-z-]+)?|pagination)(?:\s|$)/.test(node.attribs.class??''));
+  return {recognized:true,entries,drupal:{normalization:'drupal-event-articles-text-v1',normalized_text,row_count:articles.length,pagination_detected}};
+ }
  for(const [tableIndex,table] of elements(root,'table').entries()){
   const rows=elements(table,'tr'),headers=rows[0]?elements(rows[0],'th').map(x=>plain(x).toLowerCase().replace(/[^a-z]/g,'')):[];
   const yearIndex=headers.lastIndexOf('year'),quarterIndex=headers.indexOf('quarter'),dateIndex=headers.findIndex(x=>['earningsdate','earningscalldate','earningswebcastdate'].includes(x));
@@ -268,13 +299,18 @@ export async function collectSecIR(source:SecIRSource,today:string,contact:strin
  if(selectedURL!==binding.url)issuer_evidence.push(officialIRIdentity(selected.bytes,selectedURL,selected.doc.raw_sha256,issuer_name));
  const structured=structuredIREntries(selected.bytes,selectedURL,selected.doc.raw_sha256,source,window);
  const isQ4=/\/js\/module\/widgets\/dist\/[^"'<>]*q4Api[^"'<>]*\.js/.test(html(selected.bytes));
- let format:SecIRManifest['format']='structured-html',entries=structured.entries,q4:Q4Manifest|undefined,q4_manifest:{raw_sha256:string;object_key:string}|undefined;
- if(isQ4){
+ let format:SecIRManifest['format']='structured-html',entries=structured.entries,q4:Q4Manifest|undefined,q4_manifest:{raw_sha256:string;object_key:string}|undefined,drupal:DrupalEvidence|undefined;
+ if(structured.drupal){
+  if(isQ4)throw new CalendarError('ambiguous_calendar_source_format');
+  const normalized=new TextEncoder().encode(structured.drupal.normalized_text),normalized_sha256=await sha256(normalized),normalized_object_key=`calendar/${source.key}/normalized/${normalized_sha256}.txt`;
+  await archive(normalized_object_key,normalized,'text/plain; charset=utf-8');
+  drupal={...structured.drupal,source_url:selectedURL,raw_sha256:selected.doc.raw_sha256,normalized_sha256,normalized_object_key};format='drupal-list';
+ }else if(isQ4){
   const q4Source={...source,adapter:'q4-events',url:selectedURL,feed_url:new URL('/feed/Event.svc/GetEventList',selectedURL).href};
   const result=await collectQ4(q4Source,today,archive,scopedFetch,'official-events');q4=result.manifest;q4_manifest={raw_sha256:result.raw_sha,object_key:result.object_key};format='q4';
   entries=q4.entries.map(entry=>{const page=Number(entry.location.match(/^pages\[(\d+)\]/)?.[1]);return {...entry,key:`q4:${entry.key}`,source_url:selectedURL,raw_sha256:q4!.pages[page].raw_sha256};});
  }else if(!structured.recognized)throw new CalendarError('official_calendar_format_unsupported');
- const manifest:SecIRManifest={schema:'signalbrief.calendar.sec-ir.v1',adapter:'sec-ir',source_key:source.key,source_url:source.url,company_id:source.company_id,provider:'sec',provider_company_id:source.provider_company_id,ticker:source.ticker,issuer_name,issuer_evidence,complete:true,window,documents,binding,event_source_url:selectedURL,format,...(q4?{q4,q4_manifest}:{}),entries};
+ const manifest:SecIRManifest={schema:'signalbrief.calendar.sec-ir.v1',adapter:'sec-ir',source_key:source.key,source_url:source.url,company_id:source.company_id,provider:'sec',provider_company_id:source.provider_company_id,ticker:source.ticker,issuer_name,issuer_evidence,complete:!drupal,window,documents,binding,event_source_url:selectedURL,format,...(q4?{q4,q4_manifest}:{}),...(drupal?{drupal,coverage:'published-event-list' as const}:{}),entries};
  return await persist(manifest);
  }catch(error){
   if(!(error instanceof CalendarError)||!allowedFilingFallback.has(error.message)||signal.aborted)throw error;

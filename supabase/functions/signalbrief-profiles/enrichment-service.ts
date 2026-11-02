@@ -1,5 +1,5 @@
 import {ProfileError,type CompanyIdentity} from './core.ts';
-import {emptyExtracted,parseOfficialLeadership,parseSecProfileCharter,parseSecProfileFiling,profileCharterLink,secProfileURL,selectProfileFilings,type ExtractedProfile,type SecProfileFiling} from './enrichment-sec.ts';
+import {emptyExtracted,parseOfficialLeadership,parseSecProfileCharter,parseSecProfileFiling,profileCharterLink,profileUnchangedOriginalURL,secProfileURL,selectProfileFilings,selectProfileLinkedOriginal,type ExtractedProfile,type SecProfileFiling} from './enrichment-sec.ts';
 import type {ProfileArchivedSource,ProfileEnrichment,ProfileEnrichmentSnapshot,ProfileSource} from './enrichment-types.ts';
 
 export type OfficialProfileSource={kind:'leadership_q4';source_url:string;issuer_label:string};
@@ -68,13 +68,24 @@ export async function collectSecProfileEnrichment(company:CompanyIdentity,submis
  const now=transport.now().toISOString(),selected=selectProfileFilings(submissions,company,now.slice(0,10));
  const result=emptyEnrichment(company.id,now,'annual_report_unavailable','not_available');result.last_error=null;result.limitations=[];
  const archives:ProfileArchivedSource[]=[];
+ const supporting=new Map<string,string[]>();
  const headers={'User-Agent':`SignalBrief profile/1.0 ${contact}`,Accept:'text/html'};
  const filing=async(meta:SecProfileFiling)=>{
   const url=profileSourceURL(meta.url,'sec',company);await transport.reserve('sec');
   const bytes=await fetchProfileSource(url,transport,headers),source=await archiveProfileHTML(bytes,url.href,company,'SEC EDGAR',meta.filed_on,meta.report_period,meta.form,`${meta.form} · ${meta.report_period??meta.filed_on}`,transport);
   const parsed=parseSecProfileFiling(decode(bytes),source,company);return {source,...parsed};
  };
- const annualTask=selected.annual?filing(selected.annual):Promise.resolve(null);
+ const annualMeta=selected.annual;
+ const annualTask=annualMeta?(async()=>{
+  const annual=await filing(annualMeta);
+  const originalURL=annual.fields.business.length?null:profileUnchangedOriginalURL(annual.parsed,annual.source,company.provider_company_id);
+  if(!originalURL)return {...annual,supporting:[] as ProfileArchivedSource[]};
+  const meta=selectProfileLinkedOriginal(submissions,company,now.slice(0,10),annualMeta,originalURL);
+  // One explicit original only: reuse the existing request deadline, source
+  // limits, reservation, archival and independent issuer/form/period checks.
+  const original=await filing(meta);
+  return {...original,fields:{...original.fields,leadership:annual.fields.leadership.length?annual.fields.leadership:original.fields.leadership},supporting:[annual.source]};
+ })():Promise.resolve(null);
  const latestTask=selected.latest&&selected.latest.url!==selected.annual?.url?filing(selected.latest):Promise.resolve(null);
  const leadershipConfig=officialSources.find(source=>source.kind==='leadership_q4');
  const officialTask=leadershipConfig?(async()=>{
@@ -86,7 +97,8 @@ export async function collectSecProfileEnrichment(company:CompanyIdentity,submis
  for(const outcome of [annual,latest,official])if(outcome.status==='rejected'&&identityFailures.has(profileFailureCode(outcome.reason)))throw outcome.reason;
  let fields:ExtractedProfile=emptyExtracted();
  if(annual.status==='fulfilled'&&annual.value){
-  archives.push(annual.value.source);fields=annual.value.fields;
+  archives.push(annual.value.source,...annual.value.supporting);fields=annual.value.fields;
+  supporting.set(annual.value.source.id,annual.value.supporting.map(source=>source.id));
   const charter=profileCharterLink(annual.value.parsed,annual.value.source.source_url,company.provider_company_id);
   if(charter){
    try{
@@ -113,6 +125,7 @@ export async function collectSecProfileEnrichment(company:CompanyIdentity,submis
  else if(result.leadership.some(leader=>leader.basis==='filing'))result.limitations.push('leadership_as_of_filing');
  if(!result.formation.length)result.limitations.push('formation_date_not_verified');
  const used=new Set([...result.business,...result.products,...result.segments,...result.leadership,...result.formation].map(item=>item.evidence.source_id));
+ for(const [source,required] of supporting)if(used.has(source))for(const id of required)used.add(id);
  const relevant=archives.filter(source=>used.has(source.id));
  result.sources=relevant.map(publicProfileSource);
  if(!relevant.length&&[annual,latest,official].some(outcome=>outcome.status==='rejected'))throw new ProfileError('profile_source_unavailable');

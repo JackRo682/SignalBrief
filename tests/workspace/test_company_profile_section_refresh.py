@@ -12,7 +12,7 @@ from test_company_profile_enrichment import own as own
 from test_workspace_schema import C
 
 pytestmark = pytest.mark.postgres
-MIGRATION = Path(__file__).resolve().parents[2] / 'supabase/migrations/20261102025654_sec_profile_section_refresh.sql'
+MIGRATION = Path(__file__).resolve().parents[2] / 'supabase/migrations/20261102052148_sec_profile_section_refresh.sql'
 DART_COMPANY = '20000000-0000-4000-8000-000000000098'
 
 

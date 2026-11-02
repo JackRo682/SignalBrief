@@ -32,6 +32,9 @@ export function dartProfileFilings(raw:string,company:CompanyIdentity,today:stri
 /** Source names are compared after legal-form/whitespace normalization, never fuzzy similarity. */
 export const dartLegalName=(v:string)=>v.toLowerCase().replace(/주식회사|\(주\)|㈜/g,'').replace(/[\s().,·ㆍ]/g,'');
 
+// Match explicit accounting labels only, never words inside a real product name.
+const accountingRowLabel=(value:string)=>/^(?:합계|소계|총계|계|연결(?:조정|제거)(?:등)?|(?:(?:사업)?부문(?:간)?|연결)?내부(?:거래|매출)(?:제거|상계|조정)(?:등)?)$/.test(value.replace(/\s+/g,''));
+
 export function dartProfileFields(text:string,blocks:DartProfileBlock[],sha:string){
  const evidence=(block:DartProfileBlock,section:string)=>({source_id:sha,quote:block.text,location:{kind:'normalized_text' as const,start:Array.from(text.slice(0,block.start)).length,end:Array.from(text.slice(0,block.end)).length,section}});
  const business:ProfileBusinessExcerpt[]=[],products:ProfileBusinessItem[]=[],segments:ProfileBusinessItem[]=[];
@@ -48,12 +51,13 @@ export function dartProfileFields(text:string,blocks:DartProfileBlock[],sha:stri
   if(block.kind!=='row'||!productSection||block.cells.length<2)continue;
   if(block.cells.some(cell=>/^(?:주요\s*)?(?:제품|상품|서비스|품목)(?:\s*(?:명|및\s*서비스|등))?$/.test(cell))){headers=block.cells;continue;}
   if(!headers.length||block.cells.length!==headers.length||block.text.length>1600)continue;
+  const pi=headers.findIndex(cell=>/^(?:주요\s*)?(?:제품|상품|서비스|품목)(?:\s*(?:명|및\s*서비스|등))?$/.test(cell));
+  const si=headers.findIndex(cell=>/^(?:사업부문|부문)$/.test(cell.replace(/\s+/g,'')));
+  if([pi,si].some(index=>index>=0&&accountingRowLabel(block.cells[index])))continue;
   const add=(target:ProfileBusinessItem[],index:number,section:string)=>{
    const name=block.cells[index]?.trim();if(!name||name.length>120||/^[\d,.%()\- ]+$/.test(name)||/^(?:합계|소계|계|주\d|기타)$/.test(name)||target.some(item=>item.name===name))return;
    if(target.length<(section==='사업부문'?12:10))target.push({name,description:null,evidence:evidence(block,'사업의 내용 · '+section)});
   };
-  const pi=headers.findIndex(cell=>/^(?:주요\s*)?(?:제품|상품|서비스|품목)(?:\s*(?:명|및\s*서비스|등))?$/.test(cell));
-  const si=headers.findIndex(cell=>/^(?:사업\s*부문|부문)$/.test(cell));
   if(pi>=0)add(products,pi,'주요 제품 및 서비스');if(si>=0)add(segments,si,'사업부문');
  }
  return {business,products,segments};
