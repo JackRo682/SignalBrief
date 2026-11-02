@@ -112,8 +112,8 @@ acceptance:
 | Frontend profile/financial lifecycle | 1,474 tests passed in 111 files |
 | Desktop/mobile browser suite | 92 passed against isolated, fail-closed synthetic fixtures |
 | Full eight-stage verifier and disposable PostgreSQL | All eight stages passed at 01:59:37 UTC; 829 backend tests, zero skips |
-| Exact commit CI | Node bridge `07d6f0d8`: all required workflows passed, including 90 browser cases; full release pending publication |
-| Production schema/Edge/web deployment | Node bridge READY and public release identity verified; five SQL migrations applied with exact SHA-256 matches; collectors/full UI pending |
+| Exact commit CI | Full runtime `cd31aeda`: all 12 required push/PR workflow runs passed, including two 92-case browser runs; the additive catalogue performance follow-up needs its own final-source CI |
+| Production schema/Edge/web deployment | Node bridge READY and public release identity verified; six SQL migrations applied with exact SHA-256 matches; collectors/full UI pending |
 | Signed-in live acceptance and screenshots | Full release pending; initial Visa empty-screen reproduction preserved |
 
 The first full run exposed unresolved imports outside the app root. The build
@@ -129,6 +129,24 @@ The migration files are aligned with ledger versions `20261102020437`,
 `20261102020442`, `20261102020446`, `20261102020450`, and `20261102020454`.
 The five stored SQL hashes exactly match the local files. The affected 169
 PostgreSQL cases passed again after the filename alignment, with zero skips.
+
+### Catalogue-scale search follow-up
+
+The first live search after the precision migration failed with PostgreSQL
+`57014`: both registered-company and official-directory queries repeatedly
+expanded aliases while scoring all 14,439 active directory rows. The small
+synthetic precision fixtures had not reproduced this production-scale cost.
+
+Additive migration `20261102022052_company_search_catalogue_performance.sql`
+prepares query aliases once, filters candidates within the selected market,
+and calculates ranks only for matching candidates. It preserves the exact
+ticker, whole-word, Korean alias, pagination, and permission contracts.
+All 20 focused PostgreSQL tests pass, including six catalogue-scale cases with
+14,500 synthetic issuers and a three-second database statement timeout.
+Execution statistics confirm exactly one alias-expansion call per endpoint.
+The correction is applied with SQL SHA-256
+`a190c4b4abdd8a977b727d9924ffcd867f6c77785e92a220229187728f60fbe5`;
+signed-in production acceptance remains a separate release step.
 
 ## Rollout and operational limits
 

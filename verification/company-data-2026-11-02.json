@@ -70,6 +70,14 @@
     "ledger_aligned_postgres": {
       "passed": 169,
       "skipped": 0
+    },
+    "catalogue_scale_regression": {
+      "passed": 20,
+      "skipped": 0,
+      "active_synthetic_issuers": 14500,
+      "statement_timeout_seconds": 3,
+      "alias_expansion_calls_per_endpoint": 1,
+      "log": "verification/company-data-2026-11-02-local/search_catalogue_performance.log"
     }
   },
   "actual_source_replays": {
@@ -110,17 +118,56 @@
         "version": "20261102020454",
         "path": "supabase/migrations/20261102020454_dart_profile_periodic_sources.sql",
         "sha256": "516c05dcd496eb945cfc026e943535c544d3dec40bc54fd93d58b7e76c9f87f7"
+      },
+      {
+        "name": "company_search_catalogue_performance",
+        "version": "20261102022052",
+        "path": "supabase/migrations/20261102022052_company_search_catalogue_performance.sql",
+        "sha256": "a190c4b4abdd8a977b727d9924ffcd867f6c77785e92a220229187728f60fbe5"
       }
     ],
     "edge_versions": {},
     "ui_commit": null,
     "live_acceptance": [],
-    "migration_ledger_sha256_match": true
+    "migration_ledger_sha256_match": true,
+    "search_scale_followup": {
+      "observed_at": "2026-11-02T02:13:21.996Z",
+      "symptom": "registered company and official-directory visa searches failed after precision migration",
+      "database_sqlstate": "57014",
+      "discovery_status": 503,
+      "discovery_duration_ms": 16210,
+      "cause": "repeated sb_search_terms in per-row ranking over full official catalogue",
+      "status": "additive migration applied; live UI recheck pending",
+      "screenshot": "verification/company-data-2026-11-02-live/visa-search-before-performance-fix.jpg",
+      "applied_version": "20261102022052"
+    }
   },
   "limits": [
     "Official sources may not publish every field or an upcoming event.",
     "Unapproved model analyses remain in review.",
     "No synthetic figures, profiles, events, or bookmarks are inserted into production.",
     "This release does not certify exhaustive issuer coverage or zero defects globally."
-  ]
+  ],
+  "published_source": {
+    "commit": "cd31aeda4d9d99a31c00f6873b66972b9a2c49f7",
+    "tree": "4210880978d5d51ec76be385fc592a9118e24bdb",
+    "pull_request": "https://github.com/JackRo682/SignalBrief/pull/40",
+    "changed_files": 96,
+    "all_staged_blob_matches": 1074,
+    "ci": "SUCCESS",
+    "ci_completed_at": "2026-11-02T02:22:22Z",
+    "required_workflow_runs_passed": 12,
+    "ci_browser_runs": [
+      {
+        "run": 41376425944,
+        "passed": 92,
+        "duration": "4.1m"
+      },
+      {
+        "run": 41376451512,
+        "passed": 92,
+        "duration": "4.9m"
+      }
+    ]
+  }
 }
