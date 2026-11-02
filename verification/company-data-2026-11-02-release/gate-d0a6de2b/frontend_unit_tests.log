@@ -1,0 +1,32 @@
+
+> signalbrief-web@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.12 /tmp/signalbrief-nov2-final-source-8dc572e4731c3d33/apps/web
+
+ ❯ tests/desktop-discovery.test.tsx (12 tests | 1 failed) 12837ms
+     × searches actual selected markets and identifies unsupported metric filters 7269ms
+
+ Test Files  1 failed | 116 passed (117)
+      Tests  1 failed | 1679 passed (1680)
+   Start at  16:12:07
+   Duration  46.52s (transform 16.07s, setup 3.64s, import 49.79s, tests 187.83s, environment 42.64s)
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/desktop-discovery.test.tsx > desktop exploration and search > searches actual selected markets and identifies unsupported metric filters
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/desktop-discovery.test.tsx:52:2
+     50|
+     51| describe('desktop exploration and search',()=>{
+     52|  it('searches actual selected markets and identifies unsupported metri…
+       |  ^
+     53|   mount(<DesktopExplore/>);await screen.findByRole('button',{name:'NVD…
+     54|   fireEvent.change(screen.getByLabelText('시장 필터'),{target:{value:'NASD…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

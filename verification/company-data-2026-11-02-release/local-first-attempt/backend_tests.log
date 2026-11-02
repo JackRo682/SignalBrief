@@ -1,0 +1,420 @@
+........................................................................ [  6%]
+........................................................................ [ 13%]
+........................................................................ [ 19%]
+........................................................................ [ 26%]
+........................................................................ [ 32%]
+........................................................................ [ 39%]
+........................................................................ [ 45%]
+........................................................................ [ 52%]
+........................................................................ [ 58%]
+........................................................................ [ 65%]
+........................................................................ [ 72%]
+........................................................................ [ 78%]
+........................................................................ [ 85%]
+............................F........................................... [ 91%]
+........................................................................ [ 98%]
+...................                                                      [100%]
+=================================== FAILURES ===================================
+_ test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[visa-expected0] _
+
+self = <sqlalchemy.engine.base.Connection object at 0x7efeacdde360>
+dialect = <sqlalchemy.dialects.postgresql.psycopg.PGDialect_psycopg object at 0x7efeacddc380>
+context = <sqlalchemy.dialects.postgresql.psycopg.PGExecutionContext_psycopg object at 0x7efeabce2570>
+statement = <sqlalchemy.dialects.postgresql.psycopg.PGCompiler_psycopg object at 0x7efeabb2c9e0>
+parameters = [{'p': '{"q": "visa"}'}]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -> CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+    
+        if self._echo:
+            self._log_info(str_statement)
+    
+            stats = context._get_cache_stats()
+    
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+    
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+>                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1976: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/sqlalchemy/engine/default.py:964: in do_execute
+    cursor.execute(statement, parameters)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <psycopg.Cursor [closed] [INERROR] (host=127.0.0.1 port=55452 user=postgres database=workspace_test) at 0x7efeabfda5d0>
+query = "select public.sb_redesign_workspace('design_directory',cast(%(p)s as jsonb))"
+params = {'p': '{"q": "visa"}'}, prepare = None, binary = None
+
+    def execute(
+        self,
+        query: Query,
+        params: Params | None = None,
+        *,
+        prepare: bool | None = None,
+        binary: bool | None = None,
+    ) -> Self:
+        """
+        Execute a query or command to the database.
+        """
+        try:
+            with self._conn.lock:
+                self._conn.wait(
+                    self._execute_gen(query, params, prepare=prepare, binary=binary)
+                )
+        except e._NO_TRACEBACK as ex:
+>           raise ex.with_traceback(None)
+E           psycopg.errors.QueryCanceled: canceling statement due to statement timeout
+E           CONTEXT:  SQL function "sb_search_normalize" statement 1
+E           SQL statement "WITH companies AS MATERIALIZED (
+E              SELECT x.*,CASE
+E               WHEN upper(x.market) IN ('KOSPI','코스피','KRX:KOSPI') THEN 'kospi'
+E               WHEN upper(x.market) IN ('KOSDAQ','코스닥','KRX:KOSDAQ') THEN 'kosdaq'
+E               WHEN EXISTS(SELECT 1 FROM public.companies issuer WHERE issuer.id=x.company_id AND issuer.provider='sec' AND NOT issuer.is_demo) OR upper(x.market) IN ('US','NASDAQ','NYSE','AMEX','NYSEAMERICAN','CBOE','NYSEARCA','NYSE ARCA','OTC','LSE','TSE','HKEX') THEN 'overseas'
+E               ELSE 'unclassified' END market_group
+E              FROM app_private.sb_customer_resources() x WHERE kind='company'
+E             ),query_terms AS MATERIALIZED (
+E              SELECT coalesce(array_agg(DISTINCT compact) FILTER(WHERE compact<>''),'{}'::text[]) AS compact_terms,
+E               coalesce(array_agg(DISTINCT words) FILTER(WHERE latin AND words<>''),'{}'::text[]) AS word_terms,
+E               lower(normalize(q,NFKC)) ~ '[a-z]' AND lower(normalize(q,NFKC)) !~ '[^a-z0-9[:space:][:punct:]]' AS latin_query
+E              FROM (
+E               SELECT app_private.sb_search_normalize(term) AS compact,
+E                btrim(regexp_replace(lower(normalize(term,NFKC)),'[^a-z0-9]+',' ','g')) AS words,
+E                lower(normalize(term,NFKC)) ~ '[a-z]' AND lower(normalize(term,NFKC)) !~ '[^a-z0-9[:space:][:punct:]]' AS latin
+E               FROM unnest(app_private.sb_search_terms(q)) term
+E              ) expanded
+E             ),scoped AS MATERIALIZED (
+E              SELECT c.* FROM companies c WHERE selected_market_group='all' OR c.market_group=selected_market_group
+E             ),registered_names AS MATERIALIZED (
+E              SELECT c.id,c.company_name AS name,c.ticker,
+E               CASE WHEN q='' THEN '' ELSE app_private.sb_company_official_search_names(c.company_id) END AS official_english_name
+E              FROM scoped c
+E             ),registered_searchable AS MATERIALIZED (
+E              SELECT d.*,CASE WHEN q='' THEN '' ELSE app_private.sb_search_normalize(concat_ws(' ',d.name,d.ticker,d.official_english_name)) END AS search_text
+E              FROM registered_names d
+E             ),registered_candidates AS MATERIALIZED (
+E              SELECT d.*,app_private.sb_search_normalize(d.name) AS normalized_name,
+E               app_private.sb_search_normalize(d.ticker) AS normalized_ticker,
+E               app_private.sb_search_normalize(d.official_english_name) AS normalized_official,
+E               ' '||btrim(regexp_replace(lower(normalize(coalesce(d.name,''),NFKC)),'[^a-z0-9]+',' ','g'))||' ' AS name_words,
+E               ' '||btrim(regexp_replace(lower(normalize(coalesce(d.official_english_name,''),NFKC)),'[^a-z0-9]+',' ','g'))||' ' AS official_words
+E              FROM registered_searchable d CROSS JOIN query_terms t
+E              WHERE q='' OR EXISTS(SELECT 1 FROM unnest(t.compact_terms) term WHERE position(term IN d.search_text)>0)
+E             ),registered_ranks AS MATERIALIZED (
+E              SELECT d.id,CASE WHEN q='' THEN 9 ELSE CASE WHEN d.normalized_ticker=ANY(t.compact_terms) THEN 0
+E               WHEN d.normalized_name=ANY(t.compact_terms) OR d.normalized_official=ANY(t.compact_terms) THEN 1
+E               WHEN EXISTS(SELECT 1 FROM unnest(t.word_terms) words
+E                WHERE position(' '||words||' ' IN d.name_words)>0 OR position(' '||words||' ' IN d.official_words)>0) THEN 2 ELSE 3 END END AS search_rank
+E              FROM registered_candidates d CROSS JOIN query_terms t
+E             ),ranked AS MATERIALIZED (
+E              SELECT c.*,r.search_rank FROM scoped c JOIN registered_ranks r ON r.id=c.id
+E             ),official_scoped AS MATERIALIZED (
+E              SELECT d.name,d.ticker,d.official_english_name,CASE WHEN d.provider='sec' THEN 'overseas'
+E               WHEN upper(coalesce(nullif(registered.market,''),d.market)) IN ('KOSPI','코스피','KRX:KOSPI') THEN 'kospi'
+E               WHEN upper(coalesce(nullif(registered.market,''),d.market)) IN ('KOSDAQ','코스닥','KRX:KOSDAQ') THEN 'kosdaq'
+E               ELSE 'unclassified' END AS market_group
+E              FROM app_private.company_directory d LEFT JOIN public.companies registered
+E               ON registered.provider=d.provider AND registered.provider_company_id=d.provider_company_id AND NOT registered.is_demo
+E              CROSS JOIN query_terms t WHERE d.active AND q<>'' AND t.latin_query
+E             ),official_searchable AS MATERIALIZED (
+E              SELECT d.*,app_private.sb_search_normalize(concat_ws(' ',d.name,d.ticker,d.official_english_name)) AS search_text
+E              FROM official_scoped d WHERE selected_market_group='all' OR d.market_group=selected_market_group
+E             ),official_candidates AS MATERIALIZED (
+E              SELECT d.*,app_private.sb_search_normalize(d.name) AS normalized_name,
+E               app_private.sb_search_normalize(d.ticker) AS normalized_ticker,
+E               app_private.sb_search_normalize(d.official_english_name) AS normalized_official,
+E               ' '||btrim(regexp_replace(lower(normalize(coalesce(d.name,''),NFKC)),'[^a-z0-9]+',' ','g'))||' ' AS name_words,
+E               ' '||btrim(regexp_replace(lower(normalize(coalesce(d.official_english_name,''),NFKC)),'[^a-z0-9]+',' ','g'))||' ' AS official_words
+E              FROM official_searchable d CROSS JOIN query_terms t
+E              WHERE EXISTS(SELECT 1 FROM unnest(t.compact_terms) term WHERE position(term IN d.search_text)>0)
+E             ),official_ranked AS MATERIALIZED (
+E              SELECT CASE WHEN d.normalized_ticker=ANY(t.compact_terms) THEN 0
+E               WHEN d.normalized_name=ANY(t.compact_terms) OR d.normalized_official=ANY(t.compact_terms) THEN 1
+E               WHEN EXISTS(SELECT 1 FROM unnest(t.word_terms) words
+E                WHERE position(' '||words||' ' IN d.name_words)>0 OR position(' '||words||' ' IN d.official_words)>0) THEN 2 ELSE 3 END AS search_rank
+E              FROM official_candidates d CROSS JOIN query_terms t
+E             ),rank_limit AS MATERIALIZED (
+E              SELECT CASE WHEN min(search_rank)=0 THEN 0 WHEN min(search_rank)<3 THEN 2 ELSE 3 END AS threshold
+E              FROM (SELECT search_rank FROM ranked UNION ALL SELECT search_rank FROM official_ranked) scores
+E             ),matched AS MATERIALIZED (
+E              SELECT c.* FROM ranked c CROSS JOIN query_terms t CROSS JOIN rank_limit r
+E              WHERE q='' OR NOT t.latin_query OR c.search_rank<=r.threshold
+E             ) SELECT jsonb_build_object(
+E              'items',coalesce((SELECT jsonb_agg(app_private.sb_company_resource_overview(to_jsonb(x)-'market_group'-'search_rank')) FROM (SELECT * FROM matched ORDER BY search_rank,company_name,id LIMIT sz OFFSET off)x),'[]'::jsonb),
+E              'total',(SELECT count(*) FROM matched),'counts',jsonb_build_object('company',(SELECT count(*) FROM matched)),
+E              'markets',coalesce((SELECT jsonb_agg(DISTINCT market) FROM companies),'[]'::jsonb),'categories','[]'::jsonb,
+E              'next_offset',CASE WHEN off+sz<(SELECT count(*) FROM matched) AND off+sz<=10000 THEN off+sz ELSE NULL END
+E             )"
+E           PL/pgSQL function app_content_private.redesign(text,jsonb) line 53 at SQL statement
+E           SQL function "sb_redesign_workspace" statement 1
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/psycopg/cursor.py:117: QueryCanceled
+
+The above exception was the direct cause of the following exception:
+
+catalogue = <sqlalchemy.engine.base.Connection object at 0x7efeacdde360>
+query = 'visa', expected = {'V'}
+
+    @pytest.mark.parametrize('query,expected',[
+        ('visa',{'V'}),('V',{'V'}),('micro',{'MU','MSFT'}),('네이버',{'035420','100221'}),
+    ])
+    def test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget(catalogue,query,expected):
+        found=search(catalogue,query)
+        assert {item['ticker'] for item in found['items']}==expected
+        assert found['total']==len(expected)
+>       registered=directory(catalogue,query)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/workspace/test_company_search_performance.py:91: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/workspace/test_company_search_precision.py:55: in directory
+    return conn.execute(text("select public.sb_redesign_workspace('design_directory',cast(:p as jsonb))"),
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1428: in execute
+    return meth(
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/sqlalchemy/sql/elements.py:526: in _execute_on_connection
+    return connection._execute_clauseelement(
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1650: in _execute_clauseelement
+    ret = self._execute_context(
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1855: in _execute_context
+    return self._exec_single_context(
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1995: in _exec_single_context
+    self._handle_dbapi_exception(
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/sqlalchemy/engine/base.py:2372: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/sqlalchemy/engine/base.py:1976: in _exec_single_context
+    self.dialect.do_execute(
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/sqlalchemy/engine/default.py:964: in do_execute
+    cursor.execute(statement, parameters)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <psycopg.Cursor [closed] [INERROR] (host=127.0.0.1 port=55452 user=postgres database=workspace_test) at 0x7efeabfda5d0>
+query = "select public.sb_redesign_workspace('design_directory',cast(%(p)s as jsonb))"
+params = {'p': '{"q": "visa"}'}, prepare = None, binary = None
+
+    def execute(
+        self,
+        query: Query,
+        params: Params | None = None,
+        *,
+        prepare: bool | None = None,
+        binary: bool | None = None,
+    ) -> Self:
+        """
+        Execute a query or command to the database.
+        """
+        try:
+            with self._conn.lock:
+                self._conn.wait(
+                    self._execute_gen(query, params, prepare=prepare, binary=binary)
+                )
+        except e._NO_TRACEBACK as ex:
+>           raise ex.with_traceback(None)
+E           sqlalchemy.exc.OperationalError: (psycopg.errors.QueryCanceled) canceling statement due to statement timeout
+E           CONTEXT:  SQL function "sb_search_normalize" statement 1
+E           SQL statement "WITH companies AS MATERIALIZED (
+E              SELECT x.*,CASE
+E               WHEN upper(x.market) IN ('KOSPI','코스피','KRX:KOSPI') THEN 'kospi'
+E               WHEN upper(x.market) IN ('KOSDAQ','코스닥','KRX:KOSDAQ') THEN 'kosdaq'
+E               WHEN EXISTS(SELECT 1 FROM public.companies issuer WHERE issuer.id=x.company_id AND issuer.provider='sec' AND NOT issuer.is_demo) OR upper(x.market) IN ('US','NASDAQ','NYSE','AMEX','NYSEAMERICAN','CBOE','NYSEARCA','NYSE ARCA','OTC','LSE','TSE','HKEX') THEN 'overseas'
+E               ELSE 'unclassified' END market_group
+E              FROM app_private.sb_customer_resources() x WHERE kind='company'
+E             ),query_terms AS MATERIALIZED (
+E              SELECT coalesce(array_agg(DISTINCT compact) FILTER(WHERE compact<>''),'{}'::text[]) AS compact_terms,
+E               coalesce(array_agg(DISTINCT words) FILTER(WHERE latin AND words<>''),'{}'::text[]) AS word_terms,
+E               lower(normalize(q,NFKC)) ~ '[a-z]' AND lower(normalize(q,NFKC)) !~ '[^a-z0-9[:space:][:punct:]]' AS latin_query
+E              FROM (
+E               SELECT app_private.sb_search_normalize(term) AS compact,
+E                btrim(regexp_replace(lower(normalize(term,NFKC)),'[^a-z0-9]+',' ','g')) AS words,
+E                lower(normalize(term,NFKC)) ~ '[a-z]' AND lower(normalize(term,NFKC)) !~ '[^a-z0-9[:space:][:punct:]]' AS latin
+E               FROM unnest(app_private.sb_search_terms(q)) term
+E              ) expanded
+E             ),scoped AS MATERIALIZED (
+E              SELECT c.* FROM companies c WHERE selected_market_group='all' OR c.market_group=selected_market_group
+E             ),registered_names AS MATERIALIZED (
+E              SELECT c.id,c.company_name AS name,c.ticker,
+E               CASE WHEN q='' THEN '' ELSE app_private.sb_company_official_search_names(c.company_id) END AS official_english_name
+E              FROM scoped c
+E             ),registered_searchable AS MATERIALIZED (
+E              SELECT d.*,CASE WHEN q='' THEN '' ELSE app_private.sb_search_normalize(concat_ws(' ',d.name,d.ticker,d.official_english_name)) END AS search_text
+E              FROM registered_names d
+E             ),registered_candidates AS MATERIALIZED (
+E              SELECT d.*,app_private.sb_search_normalize(d.name) AS normalized_name,
+E               app_private.sb_search_normalize(d.ticker) AS normalized_ticker,
+E               app_private.sb_search_normalize(d.official_english_name) AS normalized_official,
+E               ' '||btrim(regexp_replace(lower(normalize(coalesce(d.name,''),NFKC)),'[^a-z0-9]+',' ','g'))||' ' AS name_words,
+E               ' '||btrim(regexp_replace(lower(normalize(coalesce(d.official_english_name,''),NFKC)),'[^a-z0-9]+',' ','g'))||' ' AS official_words
+E              FROM registered_searchable d CROSS JOIN query_terms t
+E              WHERE q='' OR EXISTS(SELECT 1 FROM unnest(t.compact_terms) term WHERE position(term IN d.search_text)>0)
+E             ),registered_ranks AS MATERIALIZED (
+E              SELECT d.id,CASE WHEN q='' THEN 9 ELSE CASE WHEN d.normalized_ticker=ANY(t.compact_terms) THEN 0
+E               WHEN d.normalized_name=ANY(t.compact_terms) OR d.normalized_official=ANY(t.compact_terms) THEN 1
+E               WHEN EXISTS(SELECT 1 FROM unnest(t.word_terms) words
+E                WHERE position(' '||words||' ' IN d.name_words)>0 OR position(' '||words||' ' IN d.official_words)>0) THEN 2 ELSE 3 END END AS search_rank
+E              FROM registered_candidates d CROSS JOIN query_terms t
+E             ),ranked AS MATERIALIZED (
+E              SELECT c.*,r.search_rank FROM scoped c JOIN registered_ranks r ON r.id=c.id
+E             ),official_scoped AS MATERIALIZED (
+E              SELECT d.name,d.ticker,d.official_english_name,CASE WHEN d.provider='sec' THEN 'overseas'
+E               WHEN upper(coalesce(nullif(registered.market,''),d.market)) IN ('KOSPI','코스피','KRX:KOSPI') THEN 'kospi'
+E               WHEN upper(coalesce(nullif(registered.market,''),d.market)) IN ('KOSDAQ','코스닥','KRX:KOSDAQ') THEN 'kosdaq'
+E               ELSE 'unclassified' END AS market_group
+E              FROM app_private.company_directory d LEFT JOIN public.companies registered
+E               ON registered.provider=d.provider AND registered.provider_company_id=d.provider_company_id AND NOT registered.is_demo
+E              CROSS JOIN query_terms t WHERE d.active AND q<>'' AND t.latin_query
+E             ),official_searchable AS MATERIALIZED (
+E              SELECT d.*,app_private.sb_search_normalize(concat_ws(' ',d.name,d.ticker,d.official_english_name)) AS search_text
+E              FROM official_scoped d WHERE selected_market_group='all' OR d.market_group=selected_market_group
+E             ),official_candidates AS MATERIALIZED (
+E              SELECT d.*,app_private.sb_search_normalize(d.name) AS normalized_name,
+E               app_private.sb_search_normalize(d.ticker) AS normalized_ticker,
+E               app_private.sb_search_normalize(d.official_english_name) AS normalized_official,
+E               ' '||btrim(regexp_replace(lower(normalize(coalesce(d.name,''),NFKC)),'[^a-z0-9]+',' ','g'))||' ' AS name_words,
+E               ' '||btrim(regexp_replace(lower(normalize(coalesce(d.official_english_name,''),NFKC)),'[^a-z0-9]+',' ','g'))||' ' AS official_words
+E              FROM official_searchable d CROSS JOIN query_terms t
+E              WHERE EXISTS(SELECT 1 FROM unnest(t.compact_terms) term WHERE position(term IN d.search_text)>0)
+E             ),official_ranked AS MATERIALIZED (
+E              SELECT CASE WHEN d.normalized_ticker=ANY(t.compact_terms) THEN 0
+E               WHEN d.normalized_name=ANY(t.compact_terms) OR d.normalized_official=ANY(t.compact_terms) THEN 1
+E               WHEN EXISTS(SELECT 1 FROM unnest(t.word_terms) words
+E                WHERE position(' '||words||' ' IN d.name_words)>0 OR position(' '||words||' ' IN d.official_words)>0) THEN 2 ELSE 3 END AS search_rank
+E              FROM official_candidates d CROSS JOIN query_terms t
+E             ),rank_limit AS MATERIALIZED (
+E              SELECT CASE WHEN min(search_rank)=0 THEN 0 WHEN min(search_rank)<3 THEN 2 ELSE 3 END AS threshold
+E              FROM (SELECT search_rank FROM ranked UNION ALL SELECT search_rank FROM official_ranked) scores
+E             ),matched AS MATERIALIZED (
+E              SELECT c.* FROM ranked c CROSS JOIN query_terms t CROSS JOIN rank_limit r
+E              WHERE q='' OR NOT t.latin_query OR c.search_rank<=r.threshold
+E             ) SELECT jsonb_build_object(
+E              'items',coalesce((SELECT jsonb_agg(app_private.sb_company_resource_overview(to_jsonb(x)-'market_group'-'search_rank')) FROM (SELECT * FROM matched ORDER BY search_rank,company_name,id LIMIT sz OFFSET off)x),'[]'::jsonb),
+E              'total',(SELECT count(*) FROM matched),'counts',jsonb_build_object('company',(SELECT count(*) FROM matched)),
+E              'markets',coalesce((SELECT jsonb_agg(DISTINCT market) FROM companies),'[]'::jsonb),'categories','[]'::jsonb,
+E              'next_offset',CASE WHEN off+sz<(SELECT count(*) FROM matched) AND off+sz<=10000 THEN off+sz ELSE NULL END
+E             )"
+E           PL/pgSQL function app_content_private.redesign(text,jsonb) line 53 at SQL statement
+E           SQL function "sb_redesign_workspace" statement 1
+E           [SQL: select public.sb_redesign_workspace('design_directory',cast(%(p)s as jsonb))]
+E           [parameters: {'p': '{"q": "visa"}'}]
+E           (Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/psycopg/cursor.py:117: OperationalError
+=============================== warnings summary ===============================
+../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/starlette/testclient.py:53
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/workspace/test_company_search_performance.py::test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[visa-expected0]
+1 failed, 1098 passed, 2 warnings in 272.50s (0:04:32)

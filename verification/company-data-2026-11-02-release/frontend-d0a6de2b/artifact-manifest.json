@@ -1,0 +1,100 @@
+{
+  "schema": "signalbrief.release-verification-artifacts.v1",
+  "created_at": "2026-11-02T07:34:11.972556+00:00",
+  "source_commit": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+  "source_tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+  "status": "PASS_REPLACEMENT_FRONTEND_STAGE",
+  "original_proof_status": "PASS_REPLACEMENT_FRONTEND_STAGE",
+  "scope": "Exact-byte proof/log/identity archive. The original full run remains FAIL; the bounded whole frontend PASS is separate replacement-stage evidence.",
+  "artifact_count": 7,
+  "total_artifact_bytes": 199183,
+  "excluded_files": [
+    "bounded-vitest-results-cache.json"
+  ],
+  "exclusion_reason": "Generated source files and inherited Vitest result caches are excluded; no node_modules or application source is copied.",
+  "test_statement": {
+    "original_full_run": {
+      "status": "FAIL",
+      "stages_passed": 7,
+      "stages_failed": 1,
+      "backend_passed": 1104,
+      "backend_skipped": 0,
+      "frontend_passed": 1679,
+      "frontend_failed": 1,
+      "failure": "Existing desktop exploration case exceeded unchanged5000ms test timeout; original failed log retained."
+    },
+    "bounded_frontend": {
+      "status": "PASS_REPLACEMENT_FRONTEND_STAGE",
+      "passed": 1680,
+      "failed": 0,
+      "skipped": 0,
+      "files": 117,
+      "max_workers": 2,
+      "test_timeout_ms": 5000,
+      "assertions_and_source_unchanged": true
+    },
+    "original_full_run_relabelled": false,
+    "causal_oversubscription": "Not established; original run lacks contemporaneous resource trace."
+  },
+  "credential_review": {
+    "live_credentials_identified": 0,
+    "literal_synthetic_negative_test_url_candidates_reviewed": 0,
+    "redactions": 0,
+    "original_bytes_preserved": true
+  },
+  "runtime_test_source_and_index_unchanged": true,
+  "protected_root_outputs_unchanged": true,
+  "tests_executed_for_archival": false,
+  "production_access": false,
+  "artifacts": [
+    {
+      "path": "execution.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-bounded-frontend/execution.json",
+      "bytes": 623,
+      "sha256": "b738d181813160873361e85313193937c97036ffe98cb25a69fb30f444df86e8",
+      "copied_without_modification": true
+    },
+    {
+      "path": "frontend_unit_tests.log",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-bounded-frontend/frontend_unit_tests.log",
+      "bytes": 423,
+      "sha256": "d957dd1abe5f2c11fe3d2bfb8122993bdec9d57c54cb45ea6e0c778e388f544c",
+      "copied_without_modification": true
+    },
+    {
+      "path": "live-worker-observation.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-bounded-frontend/live-worker-observation.json",
+      "bytes": 98,
+      "sha256": "549ee945eeea0eb151e5f7ec9df69218754c121eccde6ad829e5e15845511d4c",
+      "copied_without_modification": true
+    },
+    {
+      "path": "post-stage-source-identity.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-bounded-frontend/post-stage-source-identity.json",
+      "bytes": 264,
+      "sha256": "1b52d2e5c565e7ff8f0d35dcaa9ca1f328ebecd3fc9aa0156d7a6cf33ebe4477",
+      "copied_without_modification": true
+    },
+    {
+      "path": "process-resource-samples.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-bounded-frontend/process-resource-samples.json",
+      "bytes": 195135,
+      "sha256": "b5aca7cad16426c8f2688574072b8d00f9dee18a685aa762be9521f76aaec3c5",
+      "copied_without_modification": true
+    },
+    {
+      "path": "resource-summary.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-bounded-frontend/resource-summary.json",
+      "bytes": 628,
+      "sha256": "ae5922cf269fd04aaafcec502b68b80b76f2fd42c6aa74a2e52ccfdf9e5d1ba8",
+      "copied_without_modification": true
+    },
+    {
+      "path": "verification-proof.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-bounded-frontend/verification-proof.json",
+      "bytes": 2012,
+      "sha256": "3150dcf4a93ca627631fe8c759ce394a2ee400704c7992c4ef89ce484ff1182e",
+      "copied_without_modification": true
+    }
+  ]
+}

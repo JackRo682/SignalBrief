@@ -1,0 +1,452 @@
+
+ RUN  v4.1.12 /workspace/scratch/dad3be52d7a5/signalbrief/apps/web
+
+ ❯ tests/mobile-search-company.test.tsx (7 tests | 1 failed | 6 skipped) 1631ms
+     × blocks saving when existing holdings cannot be loaded, and retries the read 1627ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/mobile-search-company.test.tsx > mobile company persisted actions > blocks saving when existing holdings cannot be loaded, and retries the read
+TestingLibraryElementError: Found multiple elements with the role "alert"
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<p[39m
+  [33mrole[39m=[32m"alert"[39m
+[36m>[39m
+  [0m기업정보를 불러오지 못했습니다.[0m
+  [0m [0m
+  [36m<button[39m
+    [33maria-label[39m=[32m"기업정보 다시 시도"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m>[39m
+    [0m다시 시도[0m
+  [36m</button>[39m
+[36m</p>[39m
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mclass[39m=[32m"m-notice m-error"[39m
+  [33mrole[39m=[32m"alert"[39m
+[36m>[39m
+  [36m<p>[39m
+    [0m보유 정보를 불러오지 못했습니다.[0m
+  [36m</p>[39m
+  [36m<button[39m
+    [33mclass[39m=[32m"m-button m-button-secondary"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m>[39m
+    [0m다시 시도[0m
+  [36m</button>[39m
+[36m</div>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"m-company-page"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"m-card m-company-hero"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"m-company-profile"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"m-company-logo m-logo-TEST"[39m
+            [33mstyle[39m=[32m"width: 61px; height: 61px;"[39m
+          [36m>[39m
+            [36m<b>[39m
+              [0mTEST[0m
+            [36m</b>[39m
+          [36m</span>[39m
+          [36m<div>[39m
+            [36m<h1>[39m
+              [0mSynthetic Corporation[0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"m-company-market"[39m
+            [36m>[39m
+              [0mTEST[0m
+              [36m<span>[39m
+                [0m | [0m
+              [36m</span>[39m
+              [0mNASDAQ[0m
+            [36m</p>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"m-company-description"[39m
+            [36m>[39m
+              [0m공식 공시로 연결되는 기업 정보와 주요 변화[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"m-company-quote-area"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"주가 차트 자세히 보기"[39m
+            [33mclass[39m=[32m"m-company-quote "[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<strong>[39m
+                [0m—[0m
+              [36m</strong>[39m
+              [36m<span>[39m
+                [0m시세 확인 전[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"가격 추이 자료 없음"[39m
+              [33mclass[39m=[32m"m-chart-missing"[39m
+            [36m>[39m
+              [0m—[0m
+            [36m</span>[39m
+          [36m</button>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"m-company-quote-meta"[39m
+          [36m>[39m
+            [0m시세를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.[0m
+            [36m<br />[39m
+            [0mNASDAQ[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"m-company-actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-pressed[39m=[32m"true"[39m
+            [33mclass[39m=[32m"m-button m-button-secondary"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"m-icon m-company-watched"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"18"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"1.7"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"18"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0m관심종목[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"m-button m-button-secondary"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"m-icon "[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"16"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"1.7"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"16"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M12 4v16M4 12h16"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0m보유 정보 수정[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33maria-label[39m=[32m"기업 기본정보"[39m
+        [33mclass[39m=[32m"sb-company-profile"[39m
+      [36m>[39m
+        [36m<h2>[39m
+          [0m기업 기본정보[0m
+        [36m</h2>[39m
+        [36m<p[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [0m기업정보를 불러오지 못했습니다.[0m
+          [0m [0m
+          [36m<button[39m
+            [33maria-label[39m=[32m"기업정보 다시 시도"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m다시 시도[0m
+          [36m</button>[39m
+        [36m</p>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33maria-label[39m=[32m"외부 시세 차트"[39m
+        [33mclass[39m=[32m"sb-market-widget"[39m
+      [36m>[39m
+        [36m<h3>[39m
+          [0m외부 시세 차트[0m
+        [36m</h3>[39m
+        [36m<p>[39m
+          [0mTradingView 제공 · 지연 시간과 지원 여부는 위젯에 표시됩니다. 일부 종목은 외부 사이트에서만 제공됩니다.[0m
+        [36m</p>[39m
+        [36m<button[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m외부 차트 불러오기[0m
+        [36m</button>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"tradingview-widget-container sb-market-widget-frame"[39m
+          [33mhidden[39m=[32m""[39m
+        [36m/>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"tradingview-widget-copyright"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mhref[39m=[32m"https://www.tradingview.com/symbols/NASDAQ-TEST/"[39m
+            [33mrel[39m=[32m"noopener noreferrer nofollow"[39m
+            [33mtarget[39m=[32m"_blank"[39m
+          [36m>[39m
+            [0mTradingView에서 확인[0m
+          [36m</a>[39m
+          [0m — TradingView[0m
+        [36m</div>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33maria-label[39m=[32m"외부 기업 자료"[39m
+        [33mclass[39m=[32m"sb-market-widget"[39m
+      [36m>[39m
+        [36m<h3>[39m
+          [0m외부 기업 자료[0m
+        [36m</h3>[39m
+        [36m<p>[39m
+          [0mTradingView 제공 · 영어 자료이며 기업별 제공 범위가 다릅니다. 검토된 공시 분석과 별개이며 계산에 사용하지 않습니다.[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-label[39m=[32m"자료 유형"[39m
+          [33mrole[39m=[32m"group"[39m
+        [36m>[39m
+   ...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"m-company-page"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"m-card m-company-hero"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"m-company-profile"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"m-company-logo m-logo-TEST"[39m
+            [33mstyle[39m=[32m"width: 61px; height: 61px;"[39m
+          [36m>[39m
+            [36m<b>[39m
+              [0mTEST[0m
+            [36m</b>[39m
+          [36m</span>[39m
+          [36m<div>[39m
+            [36m<h1>[39m
+              [0mSynthetic Corporation[0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"m-company-market"[39m
+            [36m>[39m
+              [0mTEST[0m
+              [36m<span>[39m
+                [0m | [0m
+              [36m</span>[39m
+              [0mNASDAQ[0m
+            [36m</p>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"m-company-description"[39m
+            [36m>[39m
+              [0m공식 공시로 연결되는 기업 정보와 주요 변화[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"m-company-quote-area"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"주가 차트 자세히 보기"[39m
+            [33mclass[39m=[32m"m-company-quote "[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<strong>[39m
+                [0m—[0m
+              [36m</strong>[39m
+              [36m<span>[39m
+                [0m시세 확인 전[0m
+              [36m</span>[39m
+            [36m</div>[39m
+            [36m<span[39m
+              [33maria-label[39m=[32m"가격 추이 자료 없음"[39m
+              [33mclass[39m=[32m"m-chart-missing"[39m
+            [36m>[39m
+              [0m—[0m
+            [36m</span>[39m
+          [36m</button>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"m-company-quote-meta"[39m
+          [36m>[39m
+            [0m시세를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.[0m
+            [36m<br />[39m
+            [0mNASDAQ[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"m-company-actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-pressed[39m=[32m"true"[39m
+            [33mclass[39m=[32m"m-button m-button-secondary"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"m-icon m-company-watched"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"18"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"1.7"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"18"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0m관심종목[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"m-button m-button-secondary"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"m-icon "[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"16"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"1.7"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"16"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M12 4v16M4 12h16"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0m보유 정보 수정[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33maria-label[39m=[32m"기업 기본정보"[39m
+        [33mclass[39m=[32m"sb-company-profile"[39m
+      [36m>[39m
+        [36m<h2>[39m
+          [0m기업 기본정보[0m
+        [36m</h2>[39m
+        [36m<p[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [0m기업정보를 불러오지 못했습니다.[0m
+          [0m [0m
+          [36m<button[39m
+            [33maria-label[39m=[32m"기업정보 다시 시도"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m다시 시도[0m
+          [36m</button>[39m
+        [36m</p>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33maria-label[39m=[32m"외부 시세 차트"[39m
+        [33mclass[39m=[32m"sb-market-widget"[39m
+      [36m>[39m
+        [36m<h3>[39m
+          [0m외부 시세 차트[0m
+        [36m</h3>[39m
+        [36m<p>[39m
+          [0mTradingView 제공 · 지연 시간과 지원 여부는 위젯에 표시됩니다. 일부 종목은 외부 사이트에서만 제공됩니다.[0m
+        [36m</p>[39m
+        [36m<button[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m외부 차트 불러오기[0m
+        [36m</button>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"tradingview-widget-container sb-market-widget-frame"[39m
+          [33mhidden[39m=[32m""[39m
+        [36m/>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"tradingview-widget-copyright"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mhref[39m=[32m"https://www.tradingview.com/symbols/NASDAQ-TEST/"[39m
+            [33mrel[39m=[32m"noopener noreferrer nofollow"[39m
+            [33mtarget[39m=[32m"_blank"[39m
+          [36m>[39m
+            [0mTradingView에서 확인[0m
+          [36m</a>[39m
+          [0m — TradingView[0m
+        [36m</div>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33maria-label[39m=[32m"외부 기업 자료"[39m
+        [33mclass[39m=[32m"sb-market-widget"[39m
+      [36m>[39m
+        [36m<h3>[39m
+          [0m외부 기업 자료[0m
+        [36m</h3>[39m
+        [36m<p>[39m
+          [0mTradingView 제공 · 영어 자료이며 기업별 제공 범위가 다릅니다. 검토된 공시 분석과 별개이며 계산에 사용하지 않습니다.[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-label[39m=[32m"자료 유형"[39m
+          [33mrole[39m=[32m"group"[39m
+        [36m>[39m
+   ...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ tests/mobile-search-company.test.tsx:123:18
+    121|     fireEvent.click(await screen.findByRole('button', {name: '보유 정보 수정…
+    122|     await screen.findByText('보유 정보를 불러오지 못했습니다.');
+    123|     await screen.findByRole('alert');
+       |                  ^
+    124|     expect(screen.queryByLabelText('보유 수량')).toBeNull();
+    125|     fireEvent.click(screen.getByRole('button', {name: '다시 시도'}));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 skipped (7)
+   Start at  15:42:56
+   Duration  7.36s (transform 1.68s, setup 415ms, import 2.78s, tests 1.63s, environment 1.93s)
+

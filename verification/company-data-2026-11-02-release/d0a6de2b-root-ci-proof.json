@@ -1,0 +1,80 @@
+{
+  "observed_at": "2026-11-02T07:16:14.000Z",
+  "source_commit": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+  "source_tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+  "runs": [
+    {
+      "id": 41403897505,
+      "name": "Collector Edge verification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T07:04:29Z"
+    },
+    {
+      "id": 41403897412,
+      "name": "Hosted schema replay",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T07:05:00Z"
+    },
+    {
+      "id": 41403897385,
+      "name": "Financial evidence benchmark",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T07:05:18Z"
+    },
+    {
+      "id": 41403897492,
+      "name": "Workspace schema security replay",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T07:05:35Z"
+    },
+    {
+      "id": 41403897367,
+      "name": "Reference application checks",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T07:06:05Z"
+    },
+    {
+      "id": 41403897455,
+      "name": "signalbrief-verification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T07:12:32Z"
+    },
+    {
+      "id": 41403883209,
+      "name": "Collector Edge verification",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T07:04:25Z"
+    },
+    {
+      "id": 41403883203,
+      "name": "Financial evidence benchmark",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T07:05:48Z"
+    },
+    {
+      "id": 41403883268,
+      "name": "signalbrief-verification",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T07:14:22Z"
+    }
+  ],
+  "local_status": "Local full run has one existing UI test timeout; bounded-worker full frontend stage replacement pending, earlier failure retained."
+}

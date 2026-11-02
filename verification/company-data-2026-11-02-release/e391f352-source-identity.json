@@ -1,0 +1,34 @@
+{
+  "checked_at": "2026-11-02T06:45:32.751Z",
+  "status": "PASS",
+  "base_commit": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+  "base_tree": "21831a41bb205f7e4792fa8d086325a5db867ced",
+  "head_commit": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+  "head_tree": "df510f8fc1f8c9ced59781289da5e55b6b914bbe",
+  "base_blob_count": 1104,
+  "head_blob_count": 1104,
+  "unchanged_blobs_and_modes": 1103,
+  "changed_blobs": [
+    {
+      "path": "apps/web/tests/mobile-search-company.test.tsx",
+      "before": {
+        "sha": "547f961eca8852f5adee330bd7e020a5b8b7ab5c",
+        "mode": "100644"
+      },
+      "after": {
+        "sha": "3eb37e395d728dc75709b9da2dc13b377366a8ad",
+        "mode": "100644"
+      }
+    }
+  ],
+  "all_runtime_blobs_and_modes_identical": true,
+  "trees_complete": true,
+  "source": "GitHub Git Trees API, recursive exact immutable trees",
+  "source_urls": [
+    "https://api.github.com/repos/JackRo682/SignalBrief/git/trees/21831a41bb205f7e4792fa8d086325a5db867ced?recursive=1",
+    "https://api.github.com/repos/JackRo682/SignalBrief/git/trees/df510f8fc1f8c9ced59781289da5e55b6b914bbe?recursive=1"
+  ],
+  "local_tests_rerun": false,
+  "git_or_source_mutations": false,
+  "production_access": false
+}

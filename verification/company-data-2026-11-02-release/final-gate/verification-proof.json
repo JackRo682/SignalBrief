@@ -1,0 +1,180 @@
+{
+  "recorded_at": "2026-11-02T06:54:29.265427+00:00",
+  "source_commit": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+  "source_tree": "df510f8fc1f8c9ced59781289da5e55b6b914bbe",
+  "status": "PASS",
+  "returncode": 0,
+  "started_at": "2026-11-02T06:46:31.517656+00:00",
+  "finished_at": "2026-11-02T06:53:41.188174+00:00",
+  "elapsed_seconds": 429.670518,
+  "stage_counts": {
+    "passed": 8,
+    "failed": 0,
+    "total": 8
+  },
+  "stages": {
+    "python_compile": "PASS",
+    "backend_tests": "PASS",
+    "openapi_export": "PASS",
+    "backend_lint": "PASS",
+    "frontend_lint": "PASS",
+    "frontend_typecheck": "PASS",
+    "frontend_unit_tests": "PASS",
+    "frontend_build": "PASS"
+  },
+  "backend": {
+    "passed": 1099,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "elapsed_seconds": 258.61,
+    "junit": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/pytest.xml",
+    "search_performance_cases": [
+      {
+        "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[visa]",
+        "seconds": 1.04,
+        "passed": true
+      },
+      {
+        "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[VISA]",
+        "seconds": 0.102,
+        "passed": true
+      },
+      {
+        "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[\\uff36\\uff29\\uff33\\uff21]",
+        "seconds": 0.149,
+        "passed": true
+      },
+      {
+        "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[Visa Inc.]",
+        "seconds": 0.13,
+        "passed": true
+      },
+      {
+        "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[visa inc]",
+        "seconds": 0.163,
+        "passed": true
+      },
+      {
+        "name": "test_exact_v_ticker_wins_over_many_prefixes_and_punctuated_v_names",
+        "seconds": 0.113,
+        "passed": true
+      },
+      {
+        "name": "test_korean_alias_and_partial_name_coverage_is_not_suppressed",
+        "seconds": 0.144,
+        "passed": true
+      },
+      {
+        "name": "test_new_rank_helper_is_private_and_existing_auth_guards_remain",
+        "seconds": 0.106,
+        "passed": true
+      },
+      {
+        "name": "test_partial_queries_remain_usable_when_current_scope_has_no_strong_match",
+        "seconds": 0.123,
+        "passed": true
+      },
+      {
+        "name": "test_precision_is_read_only_and_leaves_generic_evidence_search_and_dashboard_untouched",
+        "seconds": 0.63,
+        "passed": true
+      },
+      {
+        "name": "test_provider_and_market_filter_apply_before_strong_match_suppression",
+        "seconds": 0.265,
+        "passed": true
+      },
+      {
+        "name": "test_registered_exact_issuer_survives_discovery_dedupe_without_reintroducing_weak_rows",
+        "seconds": 0.143,
+        "passed": true
+      },
+      {
+        "name": "test_registered_partial_query_pagination_and_counts_remain_consistent",
+        "seconds": 0.122,
+        "passed": true
+      },
+      {
+        "name": "test_unregistered_strong_official_match_hides_registered_weak_company_rows",
+        "seconds": 0.113,
+        "passed": true
+      },
+      {
+        "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[visa-expected0]",
+        "seconds": 0.829,
+        "passed": true
+      },
+      {
+        "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[V-expected1]",
+        "seconds": 1.599,
+        "passed": true
+      },
+      {
+        "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[micro-expected2]",
+        "seconds": 0.781,
+        "passed": true
+      },
+      {
+        "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[\\ub124\\uc774\\ubc84-expected3]",
+        "seconds": 0.687,
+        "passed": true
+      },
+      {
+        "name": "test_catalogue_scale_common_letter_and_empty_registered_query_remain_bounded",
+        "seconds": 1.606,
+        "passed": true
+      },
+      {
+        "name": "test_catalogue_scale_alias_expansion_is_once_per_search",
+        "seconds": 0.91,
+        "passed": true
+      }
+    ],
+    "statement_timeout_seconds_unchanged": 3
+  },
+  "frontend": {
+    "passed": 1678,
+    "failed": 0,
+    "skipped": 0,
+    "total": 1678,
+    "files_passed": 117,
+    "files_total": 117,
+    "elapsed_seconds": 49.84,
+    "log": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/frontend_unit_tests.log"
+  },
+  "lint": {
+    "errors": 0,
+    "existing_warnings": 5
+  },
+  "historical_outputs_restored": true,
+  "protected_path_count": 12,
+  "protected_paths": [
+    "verification/checks.json",
+    "verification/pytest.xml",
+    "verification/python_compile.log",
+    "verification/backend_tests.log",
+    "verification/openapi_export.log",
+    "verification/backend_lint.log",
+    "verification/frontend_lint.log",
+    "verification/frontend_typecheck.log",
+    "verification/frontend_unit_tests.log",
+    "verification/frontend_build.log",
+    "packages/shared/openapi.json",
+    "apps/web/next-env.d.ts"
+  ],
+  "source_identity": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/post-gate-source-identity.json",
+  "source_equivalence": "/tmp/signalbrief-nov2-selector-fix-source-equivalence.json",
+  "settings": "/tmp/signalbrief-nov2-isolated-selector-fix-environment.json",
+  "prior_evidence_references": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/prior-evidence-references.json",
+  "six_deno_and_scope": "Previously passed on byte-identical runtime; explicit source-equivalence proof, not rerun for single test-only delta.",
+  "browser": "No local repeat for test-only delta; exact new commit CI is monitored separately by parent/team.",
+  "preserved_failures": [
+    "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/verification-proof.json",
+    "/tmp/signalbrief-nov2-final-retry-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/verification-proof.json"
+  ],
+  "test_correction": "/tmp/signalbrief-mobile-holdings-selector-fix/proof.json",
+  "initial_sql_timeout_root_cause": "Not established; unchanged targeted diagnostic and subsequent full backend gates passed.",
+  "shared_source_or_git_mutation": false,
+  "production_access": false
+}

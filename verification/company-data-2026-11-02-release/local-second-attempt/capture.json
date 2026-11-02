@@ -1,0 +1,74 @@
+{
+  "started_at": "2026-11-02T06:31:01.869824+00:00",
+  "finished_at": "2026-11-02T06:37:02.075816+00:00",
+  "returncode": 1,
+  "status": "FAIL",
+  "interrupted": null,
+  "databases": {
+    "SB_TEST_POSTGRES_URL": {
+      "port": 55454,
+      "database": "signalbrief_test",
+      "data_directory": "/tmp/sb-pg-tests/isolated-final-retry-20261102/base/data",
+      "public_users": null,
+      "other_clients": 0
+    },
+    "SB_TEST_HOSTED_POSTGRES_URL": {
+      "port": 55455,
+      "database": "hosted_test",
+      "data_directory": "/tmp/sb-pg-tests/isolated-final-retry-20261102/hosted/data",
+      "public_users": null,
+      "other_clients": 0
+    },
+    "SB_TEST_WORKSPACE_POSTGRES_URL": {
+      "port": 55456,
+      "database": "workspace_test",
+      "data_directory": "/tmp/sb-pg-tests/isolated-final-retry-20261102/workspace/data",
+      "public_users": null,
+      "other_clients": 0
+    },
+    "SB_TEST_CALENDAR_POSTGRES_URL": {
+      "port": 55457,
+      "database": "calendar_test",
+      "data_directory": "/tmp/sb-pg-tests/isolated-final-retry-20261102/calendar/data",
+      "public_users": null,
+      "other_clients": 0
+    }
+  },
+  "backend_junit": {
+    "tests": 1099,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "historical_outputs_restored": true,
+  "protected_paths": [
+    "verification/checks.json",
+    "verification/pytest.xml",
+    "verification/python_compile.log",
+    "verification/backend_tests.log",
+    "verification/openapi_export.log",
+    "verification/backend_lint.log",
+    "verification/frontend_lint.log",
+    "verification/frontend_typecheck.log",
+    "verification/frontend_unit_tests.log",
+    "verification/frontend_build.log",
+    "packages/shared/openapi.json",
+    "apps/web/next-env.d.ts"
+  ],
+  "backup_directory": "/tmp/signalbrief-nov2-final-retry-backup-20261102T063101Z-69009",
+  "source_snapshot": {
+    "captured_at": "2026-11-02T06:15:05.648360+00:00",
+    "requested_revision": "21831a41bb205f7e4792fa8d086325a5db867ced",
+    "object_type": "tree",
+    "tree": "21831a41bb205f7e4792fa8d086325a5db867ced",
+    "source_directory": "/tmp/signalbrief-nov2-final-source-21831a41bb205f7e",
+    "verified_tree": true,
+    "tracked_blob_count": 1104,
+    "package_lock_sha256": "4d5b81bdd2f857705a751066b7da666c5ba6364f896a12bef4dc785a344039c5",
+    "dependencies": "Independent reflink/copy; no shared node_modules or .next symlink",
+    "shared_git_mutations": false,
+    "shared_source_mutations": false
+  },
+  "shared_source_mutations": false,
+  "production_access": false
+}

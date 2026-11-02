@@ -1,0 +1,14 @@
+{
+  "event": "pull_request",
+  "run_id": 41403897455,
+  "job_id": 125141492185,
+  "status": "PASS",
+  "passed": 92,
+  "log_timestamp": "2026-11-02T07:12:27.6417316Z",
+  "duration": "4.1m",
+  "exact_summary": "2026-11-02T07:12:27.6417316Z   92 passed (4.1m)",
+  "log": "/tmp/signalbrief-nov2-d0a6de2b-ci-web-pr-125141492185.log",
+  "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897455/job/125141492185",
+  "log_bytes": 100358,
+  "log_sha256": "1aa46a4d6aab4668763e3341ac58b7961c87841c607eefb49f21ecb0fc3773a5"
+}

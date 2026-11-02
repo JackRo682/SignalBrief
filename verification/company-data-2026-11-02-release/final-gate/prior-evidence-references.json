@@ -1,0 +1,16 @@
+{
+  "recorded_at": "2026-11-02T06:47:13.496817+00:00",
+  "commit": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+  "tree": "df510f8fc1f8c9ced59781289da5e55b6b914bbe",
+  "source_equivalence": "/tmp/signalbrief-nov2-selector-fix-source-equivalence.json",
+  "scope_and_six_deno_status": "PASS on prior runtime-identical source; not rerun for test-only delta",
+  "scope_and_six_deno_evidence": "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/additional-checks.json",
+  "first_full_failure": "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/verification-proof.json",
+  "second_full_failure": "/tmp/signalbrief-nov2-final-retry-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/verification-proof.json",
+  "deterministic_test_correction": "/tmp/signalbrief-mobile-holdings-selector-fix/proof.json",
+  "single_unchanged_sql_case_diagnostic": "/tmp/signalbrief-nov2-search-timeout-diagnostic/diagnostic-run.json",
+  "new_fresh_environment": "/tmp/signalbrief-nov2-isolated-selector-fix-environment.json",
+  "initial_sql_timeout_root_cause": "Not established",
+  "statement_timeout_seconds_unchanged": 3,
+  "no_local_browser_rerun": "Runtime and browser specifications unchanged; exact new commit CI runs browser gate."
+}

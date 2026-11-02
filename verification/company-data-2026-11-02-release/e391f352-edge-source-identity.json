@@ -1,0 +1,294 @@
+{
+  "source_commit": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+  "source_tree": "df510f8fc1f8c9ced59781289da5e55b6b914bbe",
+  "runtime_parent_commit": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+  "bundles": [
+    {
+      "name": "signalbrief-us",
+      "entrypoint_path": "supabase/functions/signalbrief-us/index.ts",
+      "import_map_path": "supabase/functions/signalbrief-api/deno.json",
+      "verify_jwt": false,
+      "files": [
+        {
+          "name": "supabase/functions/signalbrief-api/analysis-excerpt.ts",
+          "sha256": "a96c6c06ca290ae9e8b659b6bfb81f3a0cdb54d01640f6891585a8d8a9500821",
+          "bytes": 1372
+        },
+        {
+          "name": "supabase/functions/signalbrief-api/company-financials-core.ts",
+          "sha256": "221b2ee0d05d0a791ccc1b75efe1e1a44c1c88bcea78cbb16249db630e617ac6",
+          "bytes": 13385
+        },
+        {
+          "name": "supabase/functions/signalbrief-api/company-financials.ts",
+          "sha256": "453666d857d914e46bc8ab0c2cf4aae2a3679a2a30189bc0be0c8842048f38eb",
+          "bytes": 5718
+        },
+        {
+          "name": "supabase/functions/signalbrief-api/market-core.ts",
+          "sha256": "844312426f7119b809097e906d867ad846dd1e32e0e8ee35a205ce7e088e9309",
+          "bytes": 5518
+        },
+        {
+          "name": "supabase/functions/signalbrief-api/us-core.ts",
+          "sha256": "59f3577f1ee16b9f2204a01ac7e041b196a3c30d0a271693cebbf740fbf00f79",
+          "bytes": 17214
+        },
+        {
+          "name": "supabase/functions/signalbrief-api/us-handler.ts",
+          "sha256": "36c5e946931dac9e7d740174b62c63acec416c4e56b187803506a5efd8abb3df",
+          "bytes": 22995
+        },
+        {
+          "name": "supabase/functions/signalbrief-api/verification.ts",
+          "sha256": "024a7eea903ccacf5b8d403dd27f2fe4a195f6e376f9335969c0e7c4f38dac8a",
+          "bytes": 1000
+        },
+        {
+          "name": "supabase/functions/signalbrief-collector/dart-relay.ts",
+          "sha256": "760a0dfb9a998ba73ece742f13e32d9e0548e0d6ffce6d07c71ef673e9114749",
+          "bytes": 2180
+        },
+        {
+          "name": "supabase/functions/signalbrief-delivery/core.ts",
+          "sha256": "e7ca34fbc30e01aa285d32d86692258bc59caf00ea3ddd62a0971f8180fcd104",
+          "bytes": 2914
+        },
+        {
+          "name": "supabase/functions/signalbrief-us/index.ts",
+          "sha256": "9b4592d01b0a08f6f7d3201cd1eed322a4f796c5141e8f27f936fb4172476fde",
+          "bytes": 81
+        },
+        {
+          "name": "supabase/functions/signalbrief-api/deno.json",
+          "sha256": "06ad4a63295e104b0e9daf746524fb928b2b12186987e2c1b7e8e40178b79d2f",
+          "bytes": 49
+        }
+      ]
+    },
+    {
+      "name": "signalbrief-profiles",
+      "entrypoint_path": "supabase/functions/signalbrief-profiles/index.ts",
+      "import_map_path": "supabase/functions/signalbrief-profiles/deno.json",
+      "verify_jwt": false,
+      "files": [
+        {
+          "name": "supabase/functions/signalbrief-api/us-core.ts",
+          "sha256": "59f3577f1ee16b9f2204a01ac7e041b196a3c30d0a271693cebbf740fbf00f79",
+          "bytes": 17214
+        },
+        {
+          "name": "supabase/functions/signalbrief-collector/core.ts",
+          "sha256": "9cddec609de4ae62711a605f41f18ae1ee8433c019a827ec4288519c7471361c",
+          "bytes": 2482
+        },
+        {
+          "name": "supabase/functions/signalbrief-collector/dart-relay.ts",
+          "sha256": "760a0dfb9a998ba73ece742f13e32d9e0548e0d6ffce6d07c71ef673e9114749",
+          "bytes": 2180
+        },
+        {
+          "name": "supabase/functions/signalbrief-profiles/core.ts",
+          "sha256": "77f7b190ddd8dd92ef2f650b61e057e90bee7b7e87c0e2e05fd34b43ac8cc622",
+          "bytes": 3717
+        },
+        {
+          "name": "supabase/functions/signalbrief-profiles/deno.json",
+          "sha256": "06ad4a63295e104b0e9daf746524fb928b2b12186987e2c1b7e8e40178b79d2f",
+          "bytes": 49
+        },
+        {
+          "name": "supabase/functions/signalbrief-profiles/enrichment-dart-core.ts",
+          "sha256": "34c324e87669e8e4187e4d8366ebe0732bd7cdad02638c4a292083e27dee72d7",
+          "bytes": 8378
+        },
+        {
+          "name": "supabase/functions/signalbrief-profiles/enrichment-dart.ts",
+          "sha256": "86f24ae9b2e665d96151bcb1df6e82b2c16ffe521ecfb7878043ad02dce1024c",
+          "bytes": 5561
+        },
+        {
+          "name": "supabase/functions/signalbrief-profiles/enrichment-html.ts",
+          "sha256": "ffb1726d4e980b39b26c51929370ce12b377c22781b380caa240c408d1158263",
+          "bytes": 5366
+        },
+        {
+          "name": "supabase/functions/signalbrief-profiles/enrichment-sec.ts",
+          "sha256": "431b8a6e494a242ef117c04d4b21ac169c7b14b723673293afd675349ccf3c3d",
+          "bytes": 28120
+        },
+        {
+          "name": "supabase/functions/signalbrief-profiles/enrichment-service.ts",
+          "sha256": "002bcac411fb8e913b6e7d80cac4d8bddcd0fa9bd028eaf3af2485487b232fe7",
+          "bytes": 11520
+        },
+        {
+          "name": "supabase/functions/signalbrief-profiles/enrichment-types.ts",
+          "sha256": "e4772aa26af5ff03146c5e5551a508c607bda1f408d5d2e3e93c9e8fa17eb6b6",
+          "bytes": 2586
+        },
+        {
+          "name": "supabase/functions/signalbrief-profiles/enrichment.ts",
+          "sha256": "9e19549cac559d743449d3f6feb273a97a2f78189e6149270cfa10cbd0b29f5f",
+          "bytes": 5848
+        },
+        {
+          "name": "supabase/functions/signalbrief-profiles/index.ts",
+          "sha256": "1fae73dbc5016b5ec1e01305fca2f4c9506297b075b5099ba6d87f3c4afd5ecf",
+          "bytes": 7844
+        }
+      ]
+    },
+    {
+      "name": "signalbrief-discovery",
+      "entrypoint_path": "supabase/functions/signalbrief-discovery/index.ts",
+      "import_map_path": "supabase/functions/signalbrief-discovery/deno.json",
+      "verify_jwt": false,
+      "files": [
+        {
+          "name": "supabase/functions/signalbrief-api/company-financials-core.ts",
+          "sha256": "221b2ee0d05d0a791ccc1b75efe1e1a44c1c88bcea78cbb16249db630e617ac6",
+          "bytes": 13385
+        },
+        {
+          "name": "supabase/functions/signalbrief-api/company-financials.ts",
+          "sha256": "453666d857d914e46bc8ab0c2cf4aae2a3679a2a30189bc0be0c8842048f38eb",
+          "bytes": 5718
+        },
+        {
+          "name": "supabase/functions/signalbrief-api/us-core.ts",
+          "sha256": "59f3577f1ee16b9f2204a01ac7e041b196a3c30d0a271693cebbf740fbf00f79",
+          "bytes": 17214
+        },
+        {
+          "name": "supabase/functions/signalbrief-collector/core.ts",
+          "sha256": "9cddec609de4ae62711a605f41f18ae1ee8433c019a827ec4288519c7471361c",
+          "bytes": 2482
+        },
+        {
+          "name": "supabase/functions/signalbrief-collector/dart-relay.ts",
+          "sha256": "760a0dfb9a998ba73ece742f13e32d9e0548e0d6ffce6d07c71ef673e9114749",
+          "bytes": 2180
+        },
+        {
+          "name": "supabase/functions/signalbrief-discovery/core.ts",
+          "sha256": "e0dbd5217d8f90cfbb41513f14674057dcf1e473f77c491a0958935ae515d5b9",
+          "bytes": 4598
+        },
+        {
+          "name": "supabase/functions/signalbrief-discovery/deno.json",
+          "sha256": "06ad4a63295e104b0e9daf746524fb928b2b12186987e2c1b7e8e40178b79d2f",
+          "bytes": 49
+        },
+        {
+          "name": "supabase/functions/signalbrief-discovery/index.ts",
+          "sha256": "374923897323256b999a3898a1008141fa53e000e6c6bf6fbe52e396209bb37e",
+          "bytes": 4484
+        },
+        {
+          "name": "supabase/functions/signalbrief-discovery/service.ts",
+          "sha256": "b112a156f34889a6f46d840a7fbf27b0390f3555ec8da4868dd7733c84787e48",
+          "bytes": 8886
+        },
+        {
+          "name": "supabase/functions/signalbrief-profiles/core.ts",
+          "sha256": "77f7b190ddd8dd92ef2f650b61e057e90bee7b7e87c0e2e05fd34b43ac8cc622",
+          "bytes": 3717
+        }
+      ]
+    },
+    {
+      "name": "signalbrief-collector",
+      "entrypoint_path": "supabase/functions/signalbrief-collector/index.ts",
+      "import_map_path": "supabase/functions/signalbrief-collector/deno.json",
+      "verify_jwt": false,
+      "files": [
+        {
+          "name": "supabase/functions/signalbrief-api/analysis-excerpt.ts",
+          "sha256": "a96c6c06ca290ae9e8b659b6bfb81f3a0cdb54d01640f6891585a8d8a9500821",
+          "bytes": 1372
+        },
+        {
+          "name": "supabase/functions/signalbrief-api/company-financials-core.ts",
+          "sha256": "221b2ee0d05d0a791ccc1b75efe1e1a44c1c88bcea78cbb16249db630e617ac6",
+          "bytes": 13385
+        },
+        {
+          "name": "supabase/functions/signalbrief-api/company-financials.ts",
+          "sha256": "453666d857d914e46bc8ab0c2cf4aae2a3679a2a30189bc0be0c8842048f38eb",
+          "bytes": 5718
+        },
+        {
+          "name": "supabase/functions/signalbrief-api/market-core.ts",
+          "sha256": "844312426f7119b809097e906d867ad846dd1e32e0e8ee35a205ce7e088e9309",
+          "bytes": 5518
+        },
+        {
+          "name": "supabase/functions/signalbrief-api/us-core.ts",
+          "sha256": "59f3577f1ee16b9f2204a01ac7e041b196a3c30d0a271693cebbf740fbf00f79",
+          "bytes": 17214
+        },
+        {
+          "name": "supabase/functions/signalbrief-api/us-handler.ts",
+          "sha256": "36c5e946931dac9e7d740174b62c63acec416c4e56b187803506a5efd8abb3df",
+          "bytes": 22995
+        },
+        {
+          "name": "supabase/functions/signalbrief-api/verification.ts",
+          "sha256": "024a7eea903ccacf5b8d403dd27f2fe4a195f6e376f9335969c0e7c4f38dac8a",
+          "bytes": 1000
+        },
+        {
+          "name": "supabase/functions/signalbrief-collector/core.ts",
+          "sha256": "9cddec609de4ae62711a605f41f18ae1ee8433c019a827ec4288519c7471361c",
+          "bytes": 2482
+        },
+        {
+          "name": "supabase/functions/signalbrief-collector/dart-document-core.ts",
+          "sha256": "ebd39ba9dd7c5febf6ede58c89c224381403ac79a54ca85a309a6663b5d4329e",
+          "bytes": 2726
+        },
+        {
+          "name": "supabase/functions/signalbrief-collector/dart-document.ts",
+          "sha256": "40ce29ffd69ce1406b6c748a690cbc7aca2b28086d70a5a7d10ea267bfeebc25",
+          "bytes": 7367
+        },
+        {
+          "name": "supabase/functions/signalbrief-collector/dart-parser.ts",
+          "sha256": "c56d417c1c0a73e284f19bc0524197c71f0eee0c2168af5bfac3be65a65eac96",
+          "bytes": 1625
+        },
+        {
+          "name": "supabase/functions/signalbrief-collector/dart-relay.ts",
+          "sha256": "760a0dfb9a998ba73ece742f13e32d9e0548e0d6ffce6d07c71ef673e9114749",
+          "bytes": 2180
+        },
+        {
+          "name": "supabase/functions/signalbrief-collector/deno.json",
+          "sha256": "671920f9e86e8620695b89c0328206cb79c2ae66dd7bf466a0644e20d1cfd9f1",
+          "bytes": 36
+        },
+        {
+          "name": "supabase/functions/signalbrief-collector/index.ts",
+          "sha256": "ff39b44af3a744c2c18d1919601807c8e8cc983bfcb70367ef911002838e1399",
+          "bytes": 6000
+        },
+        {
+          "name": "supabase/functions/signalbrief-delivery/core.ts",
+          "sha256": "e7ca34fbc30e01aa285d32d86692258bc59caf00ea3ddd62a0971f8180fcd104",
+          "bytes": 2914
+        },
+        {
+          "name": "supabase/functions/signalbrief-delivery/dispatch.ts",
+          "sha256": "bfdf656c84ccbebf091fbc5d73d204d1284a4f515fce03bbab966b7077432e60",
+          "bytes": 2192
+        },
+        {
+          "name": "supabase/functions/signalbrief-delivery/index.ts",
+          "sha256": "e9665c2573fe31acecfb8acaeac07d595d0627c39b6a7378bd6478fe8ca3e9d0",
+          "bytes": 1706
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+diff --git a/apps/web/tests/mobile-search-company.test.tsx b/apps/web/tests/mobile-search-company.test.tsx
+index 547f961..3eb37e3 100644
+--- a/apps/web/tests/mobile-search-company.test.tsx
++++ b/apps/web/tests/mobile-search-company.test.tsx
+@@ -46,7 +46,7 @@ beforeEach(() => {
+   });
+   HTMLDialogElement.prototype.showModal = function () {this.setAttribute('open', '');};
+ });
+-afterEach(cleanup);
++afterEach(() => {cleanup(); vi.unstubAllGlobals();});
+ 
+ describe('mobile exploration and search connections', () => {
+   it('deletes one recent search and clears searches without deleting visits', async () => {
+@@ -107,14 +107,34 @@ describe('mobile company persisted actions', () => {
+   });
+ 
+   it('blocks saving when existing holdings cannot be loaded, and retries the read', async () => {
++    const profileFetch = vi.fn(async (input: RequestInfo | URL) => {
++      if (input === `/api/company-profile?company_id=${companyId}`) {
++        return Response.json({error: 'synthetic_profile_unavailable'}, {status: 503});
++      }
++      throw new Error(`Unexpected synthetic fetch ${String(input)}`);
++    });
++    vi.stubGlobal('fetch', profileFetch);
+     mocks.request.mockRejectedValueOnce(new Error('보유 정보를 불러오지 못했습니다.'));
+     render(<MobileCompany id={companyId}/>);
++    const profileError = await screen.findByText('기업정보를 불러오지 못했습니다.');
++    expect(profileError).toHaveAttribute('role', 'alert');
+     fireEvent.click(await screen.findByRole('button', {name: '보유 정보 수정'}));
+-    await screen.findByRole('alert');
+-    expect(screen.queryByLabelText('보유 수량')).toBeNull();
+-    fireEvent.click(screen.getByRole('button', {name: '다시 시도'}));
+-    await screen.findByLabelText('보유 수량');
+-    expect(mocks.request.mock.calls.filter(([path]) => path === '/v1/portfolio')).toHaveLength(2);
++    const holdingDialog = await screen.findByRole('dialog', {name: '보유 정보 입력'});
++    const dialog = within(holdingDialog);
++    const holdingError = await dialog.findByRole('alert');
++    expect(within(holdingError).getByText('보유 정보를 불러오지 못했습니다.')).toBeVisible();
++    expect(screen.getAllByRole('alert')).toHaveLength(2);
++    expect(holdingDialog.querySelector('form')).toBeNull();
++    expect(dialog.queryByLabelText('보유 수량')).toBeNull();
++    expect(dialog.queryByRole('button', {name: '저장'})).toBeNull();
++    expect(mocks.request.mock.calls.some(([, , , options]) => options?.method === 'PUT')).toBe(false);
++    fireEvent.click(dialog.getByRole('button', {name: '다시 시도'}));
++    expect(await dialog.findByLabelText('보유 수량')).toHaveValue('1000');
++    expect(dialog.getByRole('button', {name: '저장'})).toBeEnabled();
++    expect(profileError).toBeVisible();
++    expect(profileFetch).toHaveBeenCalledTimes(1);
++    expect(mocks.request.mock.calls.filter(([path, , , options]) => path === '/v1/portfolio' && (options?.method ?? 'GET') === 'GET')).toHaveLength(2);
++    expect(mocks.request.mock.calls.some(([, , , options]) => options?.method === 'PUT')).toBe(false);
+   });
+ 
+   it('persists monitoring checkboxes as source-event bookmarks', async () => {

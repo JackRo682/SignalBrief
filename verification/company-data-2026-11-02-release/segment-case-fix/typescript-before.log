@@ -1,0 +1,68 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+ RUN  v4.1.12 /workspace/scratch/dad3be52d7a5/signalbrief/apps/web
+
+ ❯ tests/company-profile-sec-offerings.test.ts (26 tests | 3 failed) 71ms
+     × preserves the exact source phrase single reportable operating segment for an unnamed segment without relabeling end markets 8ms
+     × preserves the exact source phrase Single Reportable Operating Segment for an unnamed segment without relabeling end markets 4ms
+     × preserves the exact source phrase SINGLE REPORTABLE OPERATING SEGMENT for an unnamed segment without relabeling end markets 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/company-profile-sec-offerings.test.ts > source-bound SEC offerings and completed signature groups > preserves the exact source phrase single reportable operating segment for an unnamed segment without relabeling end markets
+AssertionError: expected 'The Company manages and reports its b…' to contain 'Single reportable operating segment'
+
+Expected: "Single reportable operating segment"
+Received: "The Company manages and reports its business operations under a single reportable operating segment."
+
+ ❯ parse tests/company-profile-sec-offerings.test.ts:18:35
+     16|   expect(Array.from(archived.normalized_text).slice(location.start,loc…
+     17|   expect(quote.length).toBeLessThanOrEqual(1600);
+     18|   if('name' in item)expect(quote).toContain(item.name);
+       |                                   ^
+     19|  }
+     20|  return result;
+ ❯ tests/company-profile-sec-offerings.test.ts:66:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/company-profile-sec-offerings.test.ts > source-bound SEC offerings and completed signature groups > preserves the exact source phrase Single Reportable Operating Segment for an unnamed segment without relabeling end markets
+AssertionError: expected 'The Company manages and reports its b…' to contain 'Single reportable operating segment'
+
+Expected: "Single reportable operating segment"
+Received: "The Company manages and reports its business operations under a Single Reportable Operating Segment."
+
+ ❯ parse tests/company-profile-sec-offerings.test.ts:18:35
+     16|   expect(Array.from(archived.normalized_text).slice(location.start,loc…
+     17|   expect(quote.length).toBeLessThanOrEqual(1600);
+     18|   if('name' in item)expect(quote).toContain(item.name);
+       |                                   ^
+     19|  }
+     20|  return result;
+ ❯ tests/company-profile-sec-offerings.test.ts:66:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/company-profile-sec-offerings.test.ts > source-bound SEC offerings and completed signature groups > preserves the exact source phrase SINGLE REPORTABLE OPERATING SEGMENT for an unnamed segment without relabeling end markets
+AssertionError: expected 'The Company manages and reports its b…' to contain 'Single reportable operating segment'
+
+Expected: "Single reportable operating segment"
+Received: "The Company manages and reports its business operations under a SINGLE REPORTABLE OPERATING SEGMENT."
+
+ ❯ parse tests/company-profile-sec-offerings.test.ts:18:35
+     16|   expect(Array.from(archived.normalized_text).slice(location.start,loc…
+     17|   expect(quote.length).toBeLessThanOrEqual(1600);
+     18|   if('name' in item)expect(quote).toContain(item.name);
+       |                                   ^
+     19|  }
+     20|  return result;
+ ❯ tests/company-profile-sec-offerings.test.ts:66:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 23 passed (26)
+   Start at  16:00:44
+   Duration  495ms (transform 168ms, setup 69ms, import 162ms, tests 71ms, environment 0ms)
+

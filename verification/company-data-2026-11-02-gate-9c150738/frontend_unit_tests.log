@@ -1,0 +1,14 @@
+
+> signalbrief-web@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.12 /tmp/signalbrief-nov2-final-source-83dfd00593087663/apps/web
+
+
+ Test Files  116 passed (116)
+      Tests  1629 passed (1629)
+   Start at  14:51:57
+   Duration  38.13s (transform 11.93s, setup 2.68s, import 39.80s, tests 146.69s, environment 40.35s)
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.

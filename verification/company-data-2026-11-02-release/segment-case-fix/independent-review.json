@@ -1,0 +1,103 @@
+{
+  "reviewed_at": "2026-11-02T07:03:57.953795+00:00",
+  "status": "NO_BLOCKER_FOUND",
+  "baseline_commit": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+  "scope": "One SEC unnamed-segment source-case correction; reviewed exact baseline blob diff, current source, tests and existing replay evidence without executing tests.",
+  "runtime_change": "Use match[0] from the already validated source quote, preserving exact source capitalization instead of a synthesized capitalized name.",
+  "findings": [
+    "Existing issuer-bound sentence recognition and named-segment priority remain unchanged.",
+    "Quote text, code-point offsets, source identity, source hashes and archival evidence remain unchanged.",
+    "The strict SQL name-in-quote containment check remains case-sensitive and was not weakened.",
+    "Lowercase, title-case and uppercase phrases are accepted only when copied exactly; mutated and invented labels remain rejected.",
+    "The actual original snapshot fails PT422/profile_quote_mismatch; the current collector output persists ready and reads back identically in an isolated rollback-only PostgreSQL fixture.",
+    "The replay preserves all seven exact evidence bindings and all three archived sources."
+  ],
+  "existing_evidence_reviewed": {
+    "red_before": {
+      "failed": 3,
+      "passed": 23
+    },
+    "related_typescript_after": {
+      "passed": 103,
+      "files": 5
+    },
+    "synthetic_postgres": {
+      "passed": 5,
+      "skipped": 0
+    },
+    "actual_snapshot_postgres": {
+      "passed": 1,
+      "duration_seconds": 1.02,
+      "production": false,
+      "ready_fields": {
+        "business": 2,
+        "products": 2,
+        "segments": 1,
+        "leadership": 1,
+        "formation": 1
+      }
+    }
+  },
+  "files": [
+    {
+      "path": "supabase/functions/signalbrief-profiles/enrichment-sec.ts",
+      "bytes": 28187,
+      "sha256": "0197454bb8690907195974ab8e58639984b510f2e922a992ede8a6923d6424c1"
+    },
+    {
+      "path": "apps/web/tests/company-profile-sec-offerings.test.ts",
+      "bytes": 11523,
+      "sha256": "1e18d6ea290d046897ff67fec86b3005040042d39db4ee3a123497ae709463ae"
+    },
+    {
+      "path": "tests/workspace/test_company_profile_segment_persistence.py",
+      "bytes": 2587,
+      "sha256": "6a7ba29779ddf1c8d5d09be59c7d436274584e69471c2cc46516bcc57c8879a5"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "/tmp/signalbrief-profile-segment-case-red.log",
+      "bytes": 3909,
+      "sha256": "687912407560a4091977ecabe7279b97717769ca698799b5ce0e9c3827530d3b"
+    },
+    {
+      "path": "/tmp/signalbrief-profile-segment-case-green.log",
+      "bytes": 342,
+      "sha256": "c8cb1dc3cc0485c2987b7e5373f7f81f1612b52a0c92e6b2659ed88147b1f289"
+    },
+    {
+      "path": "/tmp/signalbrief-profile-segment-case-pg.log",
+      "bytes": 1145,
+      "sha256": "3ec409b39551b8eb1a2d6583a7d1d72e706b527016a08071ebfcab9948f5eb02"
+    },
+    {
+      "path": "/tmp/signalbrief-profile-segment-case-actual-proof.json",
+      "bytes": 1111,
+      "sha256": "ab3646c3a9d096d8975a7f8915fdd0e270d4ece5db81e7bc58cb24d603b00352"
+    },
+    {
+      "path": "/tmp/signalbrief-sndk-profile-persistence-replay.log",
+      "bytes": 254,
+      "sha256": "bfa55a5807f06d919d6410b34b6acdb0ea884ea073069c381fe51126adaf7ff4"
+    },
+    {
+      "path": "/tmp/test_sndk_profile_persistence_replay.py",
+      "bytes": 3107,
+      "sha256": "c75400ffcdd946fb57c1fa182bceae4e2a248e9ed8fe18b871d6bec6f2b18ac6"
+    }
+  ],
+  "production_claim": "Live profile persistence still requires root-owned deployment and acceptance; no live success is claimed by this review.",
+  "runtime_deployment_dependency": "signalbrief-profiles/enrichment-service.ts directly imports enrichment-sec.ts; the changed runtime belongs to the profiles Edge bundle.",
+  "reviewer_tests_executed": false,
+  "source_edits": false,
+  "production_access": false,
+  "git_stage_or_commit_actions": false,
+  "strict_sql_identity": {
+    "path": "supabase/migrations/20261102020450_company_profile_source_enrichment.sql",
+    "baseline_commit": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+    "git_blob_sha1": "695ff1ae701e0083a15e0bfcb2cf7f592d10bec8",
+    "unchanged": true,
+    "name_containment_line": 148
+  }
+}

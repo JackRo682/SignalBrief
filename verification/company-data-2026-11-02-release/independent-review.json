@@ -1,0 +1,40 @@
+{
+  "reviewed_at": "2026-11-02T06:14:26.711577+00:00",
+  "status": "NO_BLOCKER_IN_REVIEWED_SCOPE",
+  "baseline_tree": "83dfd0059308766381aad2e5b1dfeb2c1c069155",
+  "method": "Read-only comparison against the verified local immutable source, review of new regressions and owner-produced actual-source replay evidence. No tests were executed by this reviewer.",
+  "reviewed_source_sha256": {
+    "supabase/functions/signalbrief-profiles/enrichment-sec.ts": "431b8a6e494a242ef117c04d4b21ac169c7b14b723673293afd675349ccf3c3d",
+    "supabase/functions/signalbrief-profiles/enrichment-html.ts": "ffb1726d4e980b39b26c51929370ce12b377c22781b380caa240c408d1158263",
+    "apps/web/tests/company-profile-sec-offerings.test.ts": "fae76a6bd5d47ab05bc3116195fbabd0f3546dba0fe96f0627bbe3bf9c11005c",
+    "supabase/migrations/20261102060524_sec_profile_identity_fields_refresh.sql": "be13b53c89049018af49c4c83dfd71ee60da1e3d5dfedd791146adf1a566f27a"
+  },
+  "additional_test_file_reviewed": "tests/workspace/test_company_profile_identity_fields_refresh.py",
+  "resolved_findings": [
+    {
+      "finding": "Numeric charter-row fallback rejected existing strong explicit charter anchors when a row included other links.",
+      "resolution": "Fallback now runs only when no strong explicit anchors exist; ambiguous strong links remain rejected.",
+      "evidence": "Dedicated positive/negative regressions and preserved actual Visa/Mastercard charter URLs."
+    },
+    {
+      "finding": "A duration-prefixed or recipient-prefixed warranty policy could be labeled as a commercial product.",
+      "resolution": "The offered direct object is checked for warranty policy wording; real service and extended-plan cases remain supported.",
+      "evidence": "Two new red-before regressions plus retained positive cases."
+    }
+  ],
+  "reviewed_boundaries": [
+    "Visible-text normalization remains unchanged; added exhibit-row metadata is bounded and private.",
+    "Exact issuer URL validation and independent charter-issuer verification remain.",
+    "Signature grouping retains unresolved signer and CFO/CEO ambiguity denials.",
+    "New products and unnamed segment entries carry exact source quotes and Unicode code-point locations.",
+    "SEC refresh only expires successful partial periodic snapshots with empty leadership; active SEC leases abort under the table lock.",
+    "Refresh changes only row/JSON due timestamps with explicit UTC-Z formatting; archives, errors, cooldowns and DART snapshots remain intact."
+  ],
+  "owner_actual_source_proof": "/tmp/signalbrief-sandisk-20261102/profile-final-proof.json",
+  "owner_cache_proof": "/tmp/signalbrief-sec-profile-identity-refresh-proof.json",
+  "tests_executed_by_reviewer": false,
+  "database_access_during_review": false,
+  "shared_source_or_git_mutations": false,
+  "production_access": false,
+  "combined_immutable_gate_pending": true
+}

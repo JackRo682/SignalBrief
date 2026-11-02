@@ -1,0 +1,71 @@
+{
+  "status": "frozen",
+  "recorded_at": "2026-11-02T06:02:53.531457+00:00",
+  "scope": "strict SEC numeric or decimal-string CIK representation normalization",
+  "files": {
+    "supabase/functions/signalbrief-api/company-financials-core.ts": "221b2ee0d05d0a791ccc1b75efe1e1a44c1c88bcea78cbb16249db630e617ac6",
+    "apps/web/tests/company-financials-core.test.ts": "402fd22134e372e712507df690ad77807c2285fe45ff57f3d8e5d62c63c12d23"
+  },
+  "before": {
+    "focused_failed": 2,
+    "focused_passed": 70,
+    "actual_error": "financials:financial_identity_mismatch",
+    "log": "/tmp/signalbrief-financial-cik-before.log",
+    "actual_log": "/tmp/signalbrief-financial-cik-actual-before.log"
+  },
+  "after": {
+    "focused_passed": 90,
+    "focused_files": 3,
+    "new_identity_cases": 25,
+    "typescript": "PASS",
+    "changed_test_eslint": "PASS",
+    "deno_entrypoints": [
+      "signalbrief-us",
+      "signalbrief-collector",
+      "signalbrief-discovery"
+    ],
+    "diff_check": "PASS",
+    "log": "/tmp/signalbrief-financial-cik-after.log"
+  },
+  "actual": {
+    "status": "PASS",
+    "source_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0002023554.json",
+    "raw_sha256": "33374cf440b069e7563af577070e9cc66a43923f3e9b9fcf0dab800308435768",
+    "bytes": 587614,
+    "source_cik": "0002023554",
+    "source_cik_type": "string",
+    "submissions_cik": "0002023554",
+    "ticker": "SNDK",
+    "items": 40,
+    "exact_evidence_checks": 40,
+    "metrics": [
+      "assets",
+      "cash_and_equivalents",
+      "basic_eps",
+      "diluted_eps",
+      "liabilities",
+      "operating_cash_flow",
+      "net_income_parent",
+      "operating_income",
+      "revenue",
+      "equity_parent"
+    ],
+    "period_ends": [
+      "2026-10-02",
+      "2026-07-03",
+      "2026-04-03",
+      "2026-01-02"
+    ]
+  },
+  "unchanged": [
+    "canonical company identity",
+    "SEC-only companyfacts URL",
+    "private original archive path and hash",
+    "exact amounts and original JSON evidence",
+    "reporting dates and context selection",
+    "SQL grants and parser version",
+    "DART parsing",
+    "provider budgets and user authentication"
+  ],
+  "production_actions": false
+}

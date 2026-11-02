@@ -1,0 +1,818 @@
+{
+  "checked_at": "2026-11-02T07:15:30.591Z",
+  "repository": "JackRo682/SignalBrief",
+  "branch": "fix/company-data-coverage-20261102",
+  "pull_request": 42,
+  "head_sha": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+  "source_tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+  "parent_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+  "status": "PASS",
+  "scope": "Exact-SHA GitHub CI only; mandatory full local gate and live deployment acceptance are separately owned by root.",
+  "required_run_count": 9,
+  "required_runs_all_success": true,
+  "successful_job_count": 17,
+  "required_runs": [
+    {
+      "id": 41403897505,
+      "name": "Collector Edge verification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897505",
+      "created_at": "2026-11-02T07:04:15Z",
+      "updated_at": "2026-11-02T07:04:29Z",
+      "jobs": [
+        {
+          "id": 125141492097,
+          "name": "edge",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897505/job/125141492097"
+        }
+      ]
+    },
+    {
+      "id": 41403897412,
+      "name": "Hosted schema replay",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897412",
+      "created_at": "2026-11-02T07:04:15Z",
+      "updated_at": "2026-11-02T07:05:00Z",
+      "jobs": [
+        {
+          "id": 125141492061,
+          "name": "hosted-postgres",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897412/job/125141492061"
+        }
+      ]
+    },
+    {
+      "id": 41403897385,
+      "name": "Financial evidence benchmark",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897385",
+      "created_at": "2026-11-02T07:04:15Z",
+      "updated_at": "2026-11-02T07:05:18Z",
+      "jobs": [
+        {
+          "id": 125141491628,
+          "name": "study-browser",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897385/job/125141491628"
+        },
+        {
+          "id": 125141491990,
+          "name": "offline-benchmark",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897385/job/125141491990"
+        }
+      ]
+    },
+    {
+      "id": 41403897492,
+      "name": "Workspace schema security replay",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897492",
+      "created_at": "2026-11-02T07:04:15Z",
+      "updated_at": "2026-11-02T07:05:35Z",
+      "jobs": [
+        {
+          "id": 125141491860,
+          "name": "workspace-postgres",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897492/job/125141491860"
+        }
+      ]
+    },
+    {
+      "id": 41403897367,
+      "name": "Reference application checks",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897367",
+      "created_at": "2026-11-02T07:04:15Z",
+      "updated_at": "2026-11-02T07:06:05Z",
+      "jobs": [
+        {
+          "id": 125141491807,
+          "name": "rendered-controls",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897367/job/125141491807"
+        }
+      ]
+    },
+    {
+      "id": 41403897455,
+      "name": "signalbrief-verification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897455",
+      "created_at": "2026-11-02T07:04:15Z",
+      "updated_at": "2026-11-02T07:12:32Z",
+      "jobs": [
+        {
+          "id": 125141492185,
+          "name": "web",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897455/job/125141492185"
+        },
+        {
+          "id": 125141492515,
+          "name": "postgres",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897455/job/125141492515"
+        },
+        {
+          "id": 125141492542,
+          "name": "backend",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897455/job/125141492542"
+        },
+        {
+          "id": 125141492564,
+          "name": "python-audit",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897455/job/125141492564"
+        }
+      ]
+    },
+    {
+      "id": 41403883209,
+      "name": "Collector Edge verification",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403883209",
+      "created_at": "2026-11-02T07:04:06Z",
+      "updated_at": "2026-11-02T07:04:25Z",
+      "jobs": [
+        {
+          "id": 125141448766,
+          "name": "edge",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403883209/job/125141448766"
+        }
+      ]
+    },
+    {
+      "id": 41403883203,
+      "name": "Financial evidence benchmark",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403883203",
+      "created_at": "2026-11-02T07:04:06Z",
+      "updated_at": "2026-11-02T07:05:48Z",
+      "jobs": [
+        {
+          "id": 125141448639,
+          "name": "offline-benchmark",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403883203/job/125141448639"
+        },
+        {
+          "id": 125141448811,
+          "name": "study-browser",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403883203/job/125141448811"
+        }
+      ]
+    },
+    {
+      "id": 41403883268,
+      "name": "signalbrief-verification",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403883268",
+      "created_at": "2026-11-02T07:04:06Z",
+      "updated_at": "2026-11-02T07:14:22Z",
+      "jobs": [
+        {
+          "id": 125141448913,
+          "name": "backend",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403883268/job/125141448913"
+        },
+        {
+          "id": 125141449136,
+          "name": "python-audit",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403883268/job/125141449136"
+        },
+        {
+          "id": 125141449156,
+          "name": "postgres",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403883268/job/125141449156"
+        },
+        {
+          "id": 125141449176,
+          "name": "web",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403883268/job/125141449176"
+        }
+      ]
+    }
+  ],
+  "browser": [
+    {
+      "event": "push",
+      "run_id": 41403883268,
+      "job_id": 125141449176,
+      "status": "PASS",
+      "passed": 92,
+      "log_timestamp": "2026-11-02T07:14:16.5559240Z",
+      "duration": "5.1m",
+      "exact_summary": "2026-11-02T07:14:16.5559240Z   92 passed (5.1m)",
+      "log": "/tmp/signalbrief-nov2-d0a6de2b-ci-web-push-125141449176.log",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403883268/job/125141449176",
+      "log_bytes": 99493,
+      "log_sha256": "c313b08f39ba436aa0ea55097274933d90cfb947f1ac9a12ebfda305ffd7152b",
+      "terminal_result_lines": [
+        "2026-11-02T07:14:16.5559240Z   92 passed (5.1m)"
+      ]
+    },
+    {
+      "event": "pull_request",
+      "run_id": 41403897455,
+      "job_id": 125141492185,
+      "status": "PASS",
+      "passed": 92,
+      "log_timestamp": "2026-11-02T07:12:27.6417316Z",
+      "duration": "4.1m",
+      "exact_summary": "2026-11-02T07:12:27.6417316Z   92 passed (4.1m)",
+      "log": "/tmp/signalbrief-nov2-d0a6de2b-ci-web-pr-125141492185.log",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897455/job/125141492185",
+      "log_bytes": 100358,
+      "log_sha256": "1aa46a4d6aab4668763e3341ac58b7961c87841c607eefb49f21ecb0fc3773a5",
+      "terminal_result_lines": [
+        "2026-11-02T07:12:27.6417316Z   92 passed (4.1m)"
+      ]
+    }
+  ],
+  "browser_counts_are_separate_runs_not_summed": true,
+  "conditional_skips": [
+    {
+      "kind": "branch_deployment_health",
+      "run_id": 41403929730,
+      "job_id": 125141646293,
+      "name": "Production health/health",
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403929730/job/125141646293",
+      "reason": "Expected conditional branch deployment-status health skip; excluded from applicable push/PR workflows."
+    }
+  ],
+  "non_triggered_workflows": [
+    {
+      "name": "Release QA",
+      "events": [
+        "push",
+        "pull_request"
+      ],
+      "reason": "No changed PR path matches this workflow; the feature branch is outside its configured push branches. No Release QA run or legacy-browser job was triggered, and none was manually requested.",
+      "definition_url": "https://github.com/JackRo682/SignalBrief/blob/d0a6de2b031896619b3cbafda55be403f0a7ddd0/.github/workflows/release-qa.yml",
+      "pull_request_paths": [
+        "apps/web/package.json",
+        "apps/web/package-lock.json",
+        "apps/web/tests/lint-root-glob.test.ts",
+        ".github/workflows/release-qa.yml"
+      ],
+      "matching_changed_paths": [],
+      "configured_push_branches": [
+        "main",
+        "codex/functional-ui-20261003",
+        "codex/reference-publish-20261003"
+      ]
+    },
+    {
+      "name": "official-calendar-verification",
+      "events": [
+        "push",
+        "pull_request"
+      ],
+      "reason": "This exact push and PR42 contain only SEC profile runtime/unit/SQL regression changes and a byte-preserving profile migration ledger rename; none matches calendar/API/calendar-migration/calendar-test path filters. No calendar run was manually requested.",
+      "definition_url": "https://github.com/JackRo682/SignalBrief/blob/d0a6de2b031896619b3cbafda55be403f0a7ddd0/.github/workflows/calendar.yml",
+      "path_filters": [
+        "supabase/functions/signalbrief-calendar/**",
+        "supabase/functions/signalbrief-api/**",
+        "supabase/migrations/*calendar*.sql",
+        "tests/test_*calendar*.py",
+        ".github/workflows/calendar.yml"
+      ],
+      "matching_changed_paths": []
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "apps/web/tests/company-profile-sec-offerings.test.ts",
+      "status": "modified",
+      "previous_path": null,
+      "git_blob_sha1": "9c3325d2b4daf667af41c48f5316cb52d47d8be1"
+    },
+    {
+      "path": "supabase/functions/signalbrief-profiles/enrichment-sec.ts",
+      "status": "modified",
+      "previous_path": null,
+      "git_blob_sha1": "a0930a7ac6bae58f42d163845f723f2084c93846"
+    },
+    {
+      "path": "supabase/migrations/20261102065627_sec_profile_identity_fields_refresh.sql",
+      "status": "renamed",
+      "previous_path": "supabase/migrations/20261102060524_sec_profile_identity_fields_refresh.sql",
+      "git_blob_sha1": "1fac5950565ec0779eb62981aca7a29de14e3433"
+    },
+    {
+      "path": "tests/workspace/test_company_profile_identity_fields_refresh.py",
+      "status": "modified",
+      "previous_path": null,
+      "git_blob_sha1": "bb711ab622a5e67f78dcfdbfc37ab49b881b6f91"
+    },
+    {
+      "path": "tests/workspace/test_company_profile_segment_persistence.py",
+      "status": "added",
+      "previous_path": null,
+      "git_blob_sha1": "d74ed5d494d2600c5cd08825deeeabdc080bcad8"
+    }
+  ],
+  "pull_request_changed_files": [
+    "apps/web/tests/company-profile-sec-offerings.test.ts",
+    "supabase/functions/signalbrief-profiles/enrichment-sec.ts",
+    "supabase/migrations/20261102065627_sec_profile_identity_fields_refresh.sql",
+    "tests/workspace/test_company_profile_identity_fields_refresh.py",
+    "tests/workspace/test_company_profile_segment_persistence.py"
+  ],
+  "deployment_qualification": "No live SNDK profile-success claim. The reviewed source-case fix still requires root-owned deployment and live acceptance after mandatory local gates.",
+  "source": "GitHub connector exact-head workflow runs and terminal jobs, completed web/workspace logs, existing Workspace JUnit artifact, and exact published changed-blob identity checks.",
+  "local_tests_rerun": false,
+  "git_or_source_mutations": false,
+  "production_access": false,
+  "workspace_regressions": {
+    "run_id": 41403897492,
+    "job_id": 125141491860,
+    "job_url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897492/job/125141491860",
+    "head_sha": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+    "postgres_major": 17,
+    "test_command": "python -m pytest tests/workspace -q --junitxml=workspace-replay.xml",
+    "exact_summary": "2026-11-02T07:05:24.7285543Z 360 passed, 2 warnings in 30.76s",
+    "suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "360",
+      "time": "30.761",
+      "timestamp": "2026-11-02T07:04:53.876958+00:00",
+      "hostname": "runnervm48cm3"
+    },
+    "segment_case_regressions": [
+      {
+        "classname": "tests.workspace.test_company_profile_segment_persistence",
+        "name": "test_exact_source_case_persists_with_unchanged_quote_offsets_and_archive[single reportable operating segment]",
+        "time": "0.249",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_segment_persistence",
+        "name": "test_exact_source_case_persists_with_unchanged_quote_offsets_and_archive[Single Reportable Operating Segment]",
+        "time": "0.021",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_segment_persistence",
+        "name": "test_exact_source_case_persists_with_unchanged_quote_offsets_and_archive[SINGLE REPORTABLE OPERATING SEGMENT]",
+        "time": "0.020",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_segment_persistence",
+        "name": "test_case_changed_or_invented_segment_label_remains_rejected[Single reportable operating segment]",
+        "time": "0.021",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_segment_persistence",
+        "name": "test_case_changed_or_invented_segment_label_remains_rejected[Invented reporting segment]",
+        "time": "0.046",
+        "status": "PASS"
+      }
+    ],
+    "sec_cache_refresh_cases": [
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_only_two_due_times_change_and_all_evidence_and_audit_fields_survive[UTC]",
+        "time": "0.248",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_only_two_due_times_change_and_all_evidence_and_audit_fields_survive[Asia/Seoul]",
+        "time": "0.022",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_existing_supported_periodic_forms_are_eligible_without_issuer_special_cases[10-K/A]",
+        "time": "0.016",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_existing_supported_periodic_forms_are_eligible_without_issuer_special_cases[10-Q]",
+        "time": "0.016",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_existing_supported_periodic_forms_are_eligible_without_issuer_special_cases[10-Q/A]",
+        "time": "0.016",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_existing_supported_periodic_forms_are_eligible_without_issuer_special_cases[20-F]",
+        "time": "0.016",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_existing_supported_periodic_forms_are_eligible_without_issuer_special_cases[20-F/A]",
+        "time": "0.016",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_existing_supported_periodic_forms_are_eligible_without_issuer_special_cases[40-F]",
+        "time": "0.016",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_existing_supported_periodic_forms_are_eligible_without_issuer_special_cases[40-F/A]",
+        "time": "0.015",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_active_sec_lease_aborts_without_changing_or_stealing_any_row[True]",
+        "time": "0.018",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_active_sec_lease_aborts_without_changing_or_stealing_any_row[False]",
+        "time": "0.014",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_an_unrelated_active_sec_worker_blocks_the_entire_refresh",
+        "time": "0.019",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_expired_lease_is_preserved_until_normal_new_worker_claim",
+        "time": "0.019",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_failed_refresh_preserves_retry_cooldown_errors_and_previous_evidence[True]",
+        "time": "0.021",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_failed_refresh_preserves_retry_cooldown_errors_and_previous_evidence[False]",
+        "time": "0.015",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_partial_profile_with_verified_leadership_is_not_invalidated",
+        "time": "0.019",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_only_successfully_parsed_partial_sec_states_with_empty_leadership_are_expired[ready]",
+        "time": "0.019",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_only_successfully_parsed_partial_sec_states_with_empty_leadership_are_expired[not_available]",
+        "time": "0.019",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_only_successfully_parsed_partial_sec_states_with_empty_leadership_are_expired[schema]",
+        "time": "0.018",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_only_successfully_parsed_partial_sec_states_with_empty_leadership_are_expired[leadership_null]",
+        "time": "0.019",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_only_successfully_parsed_partial_sec_states_with_empty_leadership_are_expired[leadership_missing]",
+        "time": "0.018",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_only_successfully_parsed_partial_sec_states_with_empty_leadership_are_expired[no_sources]",
+        "time": "0.020",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_only_successfully_parsed_partial_sec_states_with_empty_leadership_are_expired[sources_null]",
+        "time": "0.020",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_only_successfully_parsed_partial_sec_states_with_empty_leadership_are_expired[wrong_source_provider]",
+        "time": "0.020",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_only_successfully_parsed_partial_sec_states_with_empty_leadership_are_expired[unknown_normalization]",
+        "time": "0.020",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_only_successfully_parsed_partial_sec_states_with_empty_leadership_are_expired[nonperiodic_form]",
+        "time": "0.021",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_only_successfully_parsed_partial_sec_states_with_empty_leadership_are_expired[row_error_only]",
+        "time": "0.020",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_only_successfully_parsed_partial_sec_states_with_empty_leadership_are_expired[json_error_only]",
+        "time": "0.021",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_only_successfully_parsed_partial_sec_states_with_empty_leadership_are_expired[missing_json_error]",
+        "time": "0.021",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_only_successfully_parsed_partial_sec_states_with_empty_leadership_are_expired[missing_due_time]",
+        "time": "0.021",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_profile_identity_fields_refresh",
+        "name": "test_dart_snapshot_and_its_active_lease_are_untouched",
+        "time": "0.083",
+        "status": "PASS"
+      }
+    ],
+    "search_scale_cases": [
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[visa]",
+        "time": "0.293",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[VISA]",
+        "time": "0.063",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[\\uff36\\uff29\\uff33\\uff21]",
+        "time": "0.064",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[Visa Inc.]",
+        "time": "0.064",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[visa inc]",
+        "time": "0.061",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_exact_v_ticker_wins_over_many_prefixes_and_punctuated_v_names",
+        "time": "0.064",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_korean_alias_and_partial_name_coverage_is_not_suppressed",
+        "time": "0.079",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_new_rank_helper_is_private_and_existing_auth_guards_remain",
+        "time": "0.088",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_partial_queries_remain_usable_when_current_scope_has_no_strong_match",
+        "time": "0.067",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_precision_is_read_only_and_leaves_generic_evidence_search_and_dashboard_untouched",
+        "time": "0.080",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_provider_and_market_filter_apply_before_strong_match_suppression",
+        "time": "0.075",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_registered_exact_issuer_survives_discovery_dedupe_without_reintroducing_weak_rows",
+        "time": "0.092",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_registered_partial_query_pagination_and_counts_remain_consistent",
+        "time": "0.078",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_unregistered_strong_official_match_hides_registered_weak_company_rows",
+        "time": "0.076",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[visa-expected0]",
+        "time": "1.042",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[V-expected1]",
+        "time": "1.783",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[micro-expected2]",
+        "time": "1.023",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[\\ub124\\uc774\\ubc84-expected3]",
+        "time": "0.861",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_catalogue_scale_common_letter_and_empty_registered_query_remain_bounded",
+        "time": "1.818",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_catalogue_scale_alias_expansion_is_once_per_search",
+        "time": "1.076",
+        "status": "PASS"
+      }
+    ],
+    "artifact_id": 13122383724,
+    "artifact_sha256": "6cd846fbaece6ffc67e5a3e064055ead3370b0ce37b7282da27a4350eb1a689e",
+    "xml": "/tmp/signalbrief-nov2-d0a6de2b-workspace-replay.xml",
+    "xml_sha256": "b46f19f0dc8e9ed1f6c2aed2622095b6b1d3b57971d06b8df22a4e7c7cfa2a3b",
+    "log": "/tmp/signalbrief-nov2-d0a6de2b-ci-workspace-125141491860.log",
+    "log_sha256": "7adce423a789d019fef6db853a2fc35f2697f6b1c74ae896f90c7af107852b18",
+    "qualification": "Existing completed CI artifact only; no local tests or production actions performed by this monitor."
+  },
+  "published_source_identity": {
+    "checked_at": "2026-11-02T07:06:35.940410+00:00",
+    "status": "PASS",
+    "head_sha": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+    "source_tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+    "parent_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+    "changed_files": [
+      {
+        "path": "apps/web/tests/company-profile-sec-offerings.test.ts",
+        "status": "modified",
+        "git_blob_sha1": "9c3325d2b4daf667af41c48f5316cb52d47d8be1",
+        "previous_path": null,
+        "sha256": "1e18d6ea290d046897ff67fec86b3005040042d39db4ee3a123497ae709463ae",
+        "bytes": 11523,
+        "matches_published_blob": true
+      },
+      {
+        "path": "supabase/functions/signalbrief-profiles/enrichment-sec.ts",
+        "status": "modified",
+        "git_blob_sha1": "a0930a7ac6bae58f42d163845f723f2084c93846",
+        "previous_path": null,
+        "sha256": "0197454bb8690907195974ab8e58639984b510f2e922a992ede8a6923d6424c1",
+        "bytes": 28187,
+        "matches_published_blob": true
+      },
+      {
+        "path": "supabase/migrations/20261102065627_sec_profile_identity_fields_refresh.sql",
+        "status": "renamed",
+        "git_blob_sha1": "1fac5950565ec0779eb62981aca7a29de14e3433",
+        "previous_path": "supabase/migrations/20261102060524_sec_profile_identity_fields_refresh.sql",
+        "sha256": "be13b53c89049018af49c4c83dfd71ee60da1e3d5dfedd791146adf1a566f27a",
+        "bytes": 1402,
+        "matches_published_blob": true
+      },
+      {
+        "path": "tests/workspace/test_company_profile_identity_fields_refresh.py",
+        "status": "modified",
+        "git_blob_sha1": "bb711ab622a5e67f78dcfdbfc37ab49b881b6f91",
+        "previous_path": null,
+        "sha256": "937ac8eb39cdf143baceafec859a85e2e0fe0474c752b388278cd76ecfcb3b8d",
+        "bytes": 10397,
+        "matches_published_blob": true
+      },
+      {
+        "path": "tests/workspace/test_company_profile_segment_persistence.py",
+        "status": "added",
+        "git_blob_sha1": "d74ed5d494d2600c5cd08825deeeabdc080bcad8",
+        "previous_path": null,
+        "sha256": "6a7ba29779ddf1c8d5d09be59c7d436274584e69471c2cc46516bcc57c8879a5",
+        "bytes": 2587,
+        "matches_published_blob": true
+      }
+    ],
+    "reviewed_runtime_sha256": "0197454bb8690907195974ab8e58639984b510f2e922a992ede8a6923d6424c1",
+    "ledger_rename_bytes_unchanged": true,
+    "source": "Exact GitHub commit API blob IDs compared with reviewed frozen local bytes; migration SHA matches original approved60524 bytes.",
+    "tests_executed": false,
+    "source_edits": false,
+    "production_access": false
+  },
+  "published_source_identity_file": {
+    "path": "/tmp/signalbrief-nov2-d0a6de2b-source-identity.json",
+    "bytes": 2503,
+    "sha256": "bcb3c6b343f5c37b14393ecc6e6ebe084f9fffe8fc9a0b2fd6e7c0a5269d931f"
+  }
+}

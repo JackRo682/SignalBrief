@@ -1,0 +1,31 @@
+{
+  "started_at": "2026-11-02T06:28:15.020358+00:00",
+  "finished_at": "2026-11-02T06:28:19.458422+00:00",
+  "source_tree": "21831a41bb205f7e4792fa8d086325a5db867ced",
+  "source_commit": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/workspace/test_company_search_performance.py::test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[visa-expected0]",
+    "--durations=1",
+    "--junitxml=/tmp/signalbrief-nov2-search-timeout-diagnostic/pytest.xml"
+  ],
+  "database": "127.0.0.1:55452/workspace_test",
+  "source_edits": false,
+  "settings_changed": false,
+  "statement_timeout_seconds": 3,
+  "assertions_changed": false,
+  "targeted_attempt_count": 1,
+  "returncode": 0,
+  "counts": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "log": "/tmp/signalbrief-nov2-search-timeout-diagnostic/pytest.log",
+  "junit": "/tmp/signalbrief-nov2-search-timeout-diagnostic/pytest.xml",
+  "original_full_gate_remains": "FAIL"
+}

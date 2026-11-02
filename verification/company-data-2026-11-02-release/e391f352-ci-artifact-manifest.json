@@ -1,0 +1,111 @@
+{
+  "schema": "signalbrief.release-verification-artifacts.v1",
+  "created_at": "2026-11-02T07:00:50.235692+00:00",
+  "head_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+  "source_tree": "df510f8fc1f8c9ced59781289da5e55b6b914bbe",
+  "status": "PASS_CI_ONLY",
+  "applicable_workflows": 9,
+  "successful_jobs": 17,
+  "browser_passes_per_run": [
+    {
+      "event": "push",
+      "passed": 92,
+      "duration": "4.8m"
+    },
+    {
+      "event": "pull_request",
+      "passed": 92,
+      "duration": "5.0m"
+    }
+  ],
+  "browser_counts_not_summed": true,
+  "runtime_identity": "Exactly one changed test blob vs ee9cdc78; all other1103 blobs/modes identical.",
+  "previous_local_failures": "Preserved in separate immutable manifests; not relabeled by this archive.",
+  "production_profile_status": "No live profile-success claim is made by this CI artifact archive.",
+  "artifact_count": 9,
+  "total_artifact_bytes": 491211,
+  "credential_review": {
+    "status": "NO_LIVE_CREDENTIALS_OR_PRIVATE_USER_IDS_IDENTIFIED",
+    "checks": [
+      "private_key",
+      "provider_token",
+      "jwt",
+      "bearer",
+      "secret_assignment",
+      "signed_query",
+      "url_password"
+    ],
+    "retained_identifiers": "Public CI metadata and synthetic test fixtures",
+    "redactions": 0,
+    "opaque_build_artifacts_copied": false
+  },
+  "tests_executed_for_archival": false,
+  "source_or_test_edits": false,
+  "git_stage_or_commit_actions": false,
+  "production_access": false,
+  "artifacts": [
+    {
+      "path": "e391f352-ci-proof.json",
+      "original_path": "/tmp/signalbrief-nov2-e391f352-ci-proof.json",
+      "bytes": 21193,
+      "sha256": "61c0cf4043a25132e00d2f0254dfa018bc1fb970dfa34b0f3173c2d2c7b11b58",
+      "copied_without_modification": true
+    },
+    {
+      "path": "e391f352-source-identity.json",
+      "original_path": "/tmp/signalbrief-nov2-e391f352-source-identity.json",
+      "bytes": 1224,
+      "sha256": "a5e5d23efb3a2fc594bbad9c9257b1732366c39fe3595de2b9c0fcdb3a417ff7",
+      "copied_without_modification": true
+    },
+    {
+      "path": "e391f352-workspace-ci-proof.json",
+      "original_path": "/tmp/signalbrief-nov2-e391f352-ci-workspace-proof.json",
+      "bytes": 5750,
+      "sha256": "31e4841a07afde0d4ec556d964082467a7ba15f7adfdbea1aabe9efd38a0e99c",
+      "copied_without_modification": true
+    },
+    {
+      "path": "e391f352-workspace-ci-junit.xml",
+      "original_path": "/tmp/signalbrief-nov2-e391f352-workspace-replay.xml",
+      "bytes": 59661,
+      "sha256": "cd3f1d9056e90adbaf744431ea06eef9becb436b4a130d687806d08227805428",
+      "copied_without_modification": true
+    },
+    {
+      "path": "e391f352-workspace-ci.log",
+      "original_path": "/tmp/signalbrief-nov2-e391f352-ci-workspace-125135125272.log",
+      "bytes": 202476,
+      "sha256": "4f1202ce5d9e84447a83069bcdfaf7c44d2dec6548b16f5e1f02a170adb89d92",
+      "copied_without_modification": true
+    },
+    {
+      "path": "e391f352-web-push-proof.json",
+      "original_path": "/tmp/signalbrief-nov2-e391f352-ci-web-push-proof.json",
+      "bytes": 525,
+      "sha256": "e7ae427127709675bd7946a5e1f79210d60f76228ee1918e642eae15a76a5c03",
+      "copied_without_modification": true
+    },
+    {
+      "path": "e391f352-web-pr-proof.json",
+      "original_path": "/tmp/signalbrief-nov2-e391f352-ci-web-pr-proof.json",
+      "bytes": 532,
+      "sha256": "28485434bba508a9222d36f2ea65b88227602489c4c6fa15e87a54198d32b508",
+      "copied_without_modification": true
+    },
+    {
+      "path": "e391f352-web-push.log",
+      "original_path": "/tmp/signalbrief-nov2-e391f352-ci-web-push-125135110279.log",
+      "bytes": 99498,
+      "sha256": "537a3e4d2bf68fc794c708305bd2dd550ee0410199e62ff1e01c87b39272f882",
+      "copied_without_modification": true
+    },
+    {
+      "path": "e391f352-web-pr.log",
+      "original_path": "/tmp/signalbrief-nov2-e391f352-ci-web-pr-125135124981.log",
+      "bytes": 100352,
+      "sha256": "ff267c0120eead9c90a68949db76259bb2b77e12a1cf0112513bc015905aa198",
+      "copied_without_modification": true
+    }
+  ]
+}

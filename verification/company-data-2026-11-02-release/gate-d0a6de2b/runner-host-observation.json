@@ -1,0 +1,29 @@
+{
+  "observed_at": "2026-11-02T07:14:54.909Z",
+  "availableParallelism": 8,
+  "logical_cpus": 9,
+  "total_memory": 10451423232,
+  "free_memory": 7584620544,
+  "load": [
+    1.35,
+    1.98,
+    1.42
+  ],
+  "known_runner_environment": {
+    "CI": null,
+    "VITEST_MAX_THREADS": null,
+    "VITEST_MIN_THREADS": null,
+    "VITEST_MAX_FORKS": null,
+    "VITEST_MIN_FORKS": null,
+    "VITEST_MAX_WORKERS": null
+  },
+  "cgroup": {
+    "cpu.max": "800000 100000",
+    "cpu.stat": "usage_usec 11313921395\nuser_usec 9107757622\nsystem_usec 2206163772\nnice_usec 17998883\nnr_periods 149115\nnr_throttled 2222\nthrottled_usec 254846329\nnr_bursts 0\nburst_usec 0",
+    "memory.max": "8589934592",
+    "memory.current": "4355371008",
+    "memory.peak": "8590016512",
+    "memory.events": "low 0\nhigh 0\nmax 132583\noom 0\noom_kill 0\noom_group_kill 0"
+  },
+  "timing_note": "Post-failure observation; actual prior worker process concurrency has not been captured."
+}

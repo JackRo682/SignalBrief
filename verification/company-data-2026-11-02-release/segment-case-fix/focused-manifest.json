@@ -1,0 +1,101 @@
+{
+  "schema": "signalbrief.release-verification-artifacts.v1",
+  "created_at": "2026-11-02T07:06:09.826278+00:00",
+  "head_sha": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+  "source_tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+  "status": "FOCUSED_LOCAL_VERIFICATION_ONLY",
+  "runtime_sha256": "0197454bb8690907195974ab8e58639984b510f2e922a992ede8a6923d6424c1",
+  "review": "NO_BLOCKER_FOUND",
+  "before": {
+    "typescript_failed": 3,
+    "typescript_passed": 23
+  },
+  "after": {
+    "typescript_passed": 103,
+    "typescript_files": 5,
+    "synthetic_postgres_passed": 5,
+    "actual_snapshot_postgres_passed": 1,
+    "exact_evidence_bindings": 7,
+    "archives_preserved": 3
+  },
+  "qualification": "These are existing focused local/parser/persistence proofs. Mandatory full-gate and exact-commit CI evidence remain separate. No live SNDK profile-success claim is made.",
+  "artifact_count": 7,
+  "total_artifact_bytes": 11943,
+  "credential_review": {
+    "status": "NO_LIVE_CREDENTIALS_OR_PRIVATE_USER_IDS_IDENTIFIED",
+    "checks": [
+      "private_key",
+      "provider_token",
+      "jwt",
+      "bearer",
+      "secret_assignment",
+      "signed_query",
+      "url_password"
+    ],
+    "redactions": 0,
+    "raw_third_party_documents_copied": false,
+    "opaque_build_artifacts_copied": false
+  },
+  "tests_executed_for_archival": false,
+  "source_or_test_edits": false,
+  "git_stage_or_commit_actions": false,
+  "production_access": false,
+  "artifacts": [
+    {
+      "path": "independent-review.json",
+      "original_path": "/tmp/signalbrief-profile-segment-case-independent-review.json",
+      "status": "NO_BLOCKER_FOUND",
+      "bytes": 4225,
+      "sha256": "6eef1ad7681cd747ae1b84a8f75b47e05be1d22dffd7ac0a90779b1248585c36",
+      "copied_without_modification": true
+    },
+    {
+      "path": "typescript-before.log",
+      "original_path": "/tmp/signalbrief-profile-segment-case-red.log",
+      "status": "EXPECTED_REGRESSION_FAILURE",
+      "bytes": 3909,
+      "sha256": "687912407560a4091977ecabe7279b97717769ca698799b5ce0e9c3827530d3b",
+      "copied_without_modification": true
+    },
+    {
+      "path": "typescript-after.log",
+      "original_path": "/tmp/signalbrief-profile-segment-case-green.log",
+      "status": "PASS_103",
+      "bytes": 342,
+      "sha256": "c8cb1dc3cc0485c2987b7e5373f7f81f1612b52a0c92e6b2659ed88147b1f289",
+      "copied_without_modification": true
+    },
+    {
+      "path": "postgres-synthetic.log",
+      "original_path": "/tmp/signalbrief-profile-segment-case-pg.log",
+      "status": "PASS_5",
+      "bytes": 1145,
+      "sha256": "3ec409b39551b8eb1a2d6583a7d1d72e706b527016a08071ebfcab9948f5eb02",
+      "copied_without_modification": true
+    },
+    {
+      "path": "actual-collector-proof.json",
+      "original_path": "/tmp/signalbrief-profile-segment-case-actual-proof.json",
+      "status": "PASS_LOCAL_REPLAY",
+      "bytes": 1111,
+      "sha256": "ab3646c3a9d096d8975a7f8915fdd0e270d4ece5db81e7bc58cb24d603b00352",
+      "copied_without_modification": true
+    },
+    {
+      "path": "actual-collector.log",
+      "original_path": "/tmp/signalbrief-profile-segment-case-actual.log",
+      "status": "PASS_LOCAL_REPLAY",
+      "bytes": 957,
+      "sha256": "38e7a7f03049eb30316a272b57183185f44f1a9dd49eb1f29ee995ae447029ec",
+      "copied_without_modification": true
+    },
+    {
+      "path": "actual-snapshot-persistence.log",
+      "original_path": "/tmp/signalbrief-sndk-profile-persistence-replay.log",
+      "status": "PASS_1_LOCAL_POSTGRES",
+      "bytes": 254,
+      "sha256": "bfa55a5807f06d919d6410b34b6acdb0ea884ea073069c381fe51126adaf7ff4",
+      "copied_without_modification": true
+    }
+  ]
+}

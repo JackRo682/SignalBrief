@@ -1,0 +1,42 @@
+{
+  "verified_at": "2026-11-02T06:46:12.582818+00:00",
+  "commit": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+  "tree": "df510f8fc1f8c9ced59781289da5e55b6b914bbe",
+  "prior_tree": "21831a41bb205f7e4792fa8d086325a5db867ced",
+  "changed_paths": [
+    "apps/web/tests/mobile-search-company.test.tsx"
+  ],
+  "runtime_blobs_identical": true,
+  "settings": {
+    "SB_TEST_POSTGRES_URL": {
+      "matching_nonidentity_settings": 357,
+      "differences": [],
+      "shared_buffers": "128MB",
+      "max_connections": 100,
+      "timezone": "Asia/Tokyo"
+    },
+    "SB_TEST_HOSTED_POSTGRES_URL": {
+      "matching_nonidentity_settings": 357,
+      "differences": [],
+      "shared_buffers": "128MB",
+      "max_connections": 100,
+      "timezone": "Asia/Tokyo"
+    },
+    "SB_TEST_WORKSPACE_POSTGRES_URL": {
+      "matching_nonidentity_settings": 357,
+      "differences": [],
+      "shared_buffers": "128MB",
+      "max_connections": 100,
+      "timezone": "Asia/Tokyo"
+    },
+    "SB_TEST_CALENDAR_POSTGRES_URL": {
+      "matching_nonidentity_settings": 357,
+      "differences": [],
+      "shared_buffers": "128MB",
+      "max_connections": 100,
+      "timezone": "Asia/Tokyo"
+    }
+  },
+  "source_manifest": "/tmp/signalbrief-nov2-final-source-df510f8fc1f8c9ce.json",
+  "historical_failed_runs_preserved": true
+}

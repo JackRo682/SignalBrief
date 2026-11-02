@@ -1,0 +1,63 @@
+{
+  "recorded_at": "2026-11-02T06:44:05.651799+00:00",
+  "changed_paths": [
+    "apps/web/tests/mobile-search-company.test.tsx"
+  ],
+  "runtime_changes": false,
+  "test_sha256": "7d015eb6ff31224db27f628c42839aa256caf26c5cf4280459410098e7cc4c28",
+  "before": {
+    "command": [
+      "node",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "tests/mobile-search-company.test.tsx",
+      "-t",
+      "blocks saving when existing holdings cannot be loaded, and retries the read"
+    ],
+    "started_at": "2026-11-02T06:42:54.992229+00:00",
+    "finished_at": "2026-11-02T06:43:03.641740+00:00",
+    "returncode": 1,
+    "test_sha256": "018900a3b628b2873a225d1e2375621579879b521e50b80ae667a02f3c3e49c3"
+  },
+  "after": {
+    "command": [
+      "node",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "tests/mobile-search-company.test.tsx"
+    ],
+    "started_at": "2026-11-02T06:43:32.553900+00:00",
+    "finished_at": "2026-11-02T06:43:36.201328+00:00",
+    "returncode": 0,
+    "test_sha256": "7d015eb6ff31224db27f628c42839aa256caf26c5cf4280459410098e7cc4c28"
+  },
+  "targeted_eslint": "PASS (exit 0)",
+  "git_diff_check": 0,
+  "coverage": [
+    "explicit profile HTTP503 and separate failed holdings read",
+    "both real error surfaces rendered",
+    "holdings named-dialog alert exact error text",
+    "no holdings form, quantity input, Save button or PUT while read failed",
+    "retry only inside holdings dialog",
+    "exactly two portfolio GETs; profile fetch remains exactly one",
+    "recovered quantity and enabled Save; no implicit write",
+    "fetch stub restored after cleanup"
+  ],
+  "initial_failed_full_gate_preserved": "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/verification-proof.json",
+  "second_failed_full_gate_preserved": "/tmp/signalbrief-nov2-final-retry-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/verification-proof.json",
+  "full_rerun": "One fresh immutable full gate authorized by parent; preparation in progress.",
+  "typecheck": {
+    "command": [
+      "node",
+      "node_modules/typescript/bin/tsc",
+      "--noEmit",
+      "--incremental",
+      "false"
+    ],
+    "started_at": "2026-11-02T06:44:05.607828+00:00",
+    "finished_at": "2026-11-02T06:44:47.503344+00:00",
+    "returncode": 0
+  },
+  "published_test_only_commit": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+  "published_tree": "df510f8fc1f8c9ced59781289da5e55b6b914bbe"
+}

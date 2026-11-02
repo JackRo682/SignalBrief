@@ -1,0 +1,109 @@
+{
+  "source_commit": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+  "source_tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+  "bundles": [
+    {
+      "name": "signalbrief-us",
+      "version": 24,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "import_map": true,
+      "ezbr_sha256": "99e4fe870d679d45b79021d054cd12fcd80026d8e1b84d4957b83d4ce126759e",
+      "matched_files": [
+        "functions/signalbrief-us/index.ts",
+        "functions/signalbrief-api/us-handler.ts",
+        "functions/signalbrief-delivery/core.ts",
+        "functions/signalbrief-api/us-core.ts",
+        "functions/signalbrief-api/market-core.ts",
+        "functions/signalbrief-api/verification.ts",
+        "functions/signalbrief-api/company-financials.ts",
+        "functions/signalbrief-collector/dart-relay.ts",
+        "functions/signalbrief-api/company-financials-core.ts",
+        "functions/signalbrief-api/analysis-excerpt.ts",
+        "functions/signalbrief-api/deno.json"
+      ],
+      "type_only_omissions": []
+    },
+    {
+      "name": "signalbrief-discovery",
+      "version": 9,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "import_map": true,
+      "ezbr_sha256": "1ee7efb7f50bf2cf90505eb0aeb4044457413243be8f89423e9466c02629da46",
+      "matched_files": [
+        "functions/signalbrief-discovery/index.ts",
+        "functions/signalbrief-discovery/core.ts",
+        "functions/signalbrief-discovery/service.ts",
+        "functions/signalbrief-api/us-core.ts",
+        "functions/signalbrief-collector/dart-relay.ts",
+        "functions/signalbrief-collector/core.ts",
+        "functions/signalbrief-profiles/core.ts",
+        "functions/signalbrief-api/company-financials.ts",
+        "functions/signalbrief-api/company-financials-core.ts",
+        "functions/signalbrief-discovery/deno.json"
+      ],
+      "type_only_omissions": []
+    },
+    {
+      "name": "signalbrief-collector",
+      "version": 19,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "import_map": true,
+      "ezbr_sha256": "7e336aa62a3150e6bf24807c8cc8519142f224e8111d89bd2a40f18257d9a64b",
+      "matched_files": [
+        "functions/signalbrief-collector/index.ts",
+        "functions/signalbrief-delivery/index.ts",
+        "functions/signalbrief-api/us-core.ts",
+        "functions/signalbrief-delivery/core.ts",
+        "functions/signalbrief-delivery/dispatch.ts",
+        "functions/signalbrief-collector/dart-document.ts",
+        "functions/signalbrief-collector/dart-parser.ts",
+        "functions/signalbrief-collector/dart-document-core.ts",
+        "functions/signalbrief-collector/dart-relay.ts",
+        "functions/signalbrief-api/us-handler.ts",
+        "functions/signalbrief-api/market-core.ts",
+        "functions/signalbrief-api/verification.ts",
+        "functions/signalbrief-api/company-financials.ts",
+        "functions/signalbrief-api/company-financials-core.ts",
+        "functions/signalbrief-api/analysis-excerpt.ts",
+        "functions/signalbrief-collector/core.ts",
+        "functions/signalbrief-collector/deno.json"
+      ],
+      "type_only_omissions": []
+    },
+    {
+      "name": "signalbrief-profiles",
+      "version": 11,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "import_map": true,
+      "ezbr_sha256": "3c06cd2ba40e953238c1720d52659b7c175e751e4fbf26c873de7be8895be99b",
+      "matched_files": [
+        "functions/signalbrief-profiles/index.ts",
+        "functions/signalbrief-collector/dart-relay.ts",
+        "functions/signalbrief-api/us-core.ts",
+        "functions/signalbrief-profiles/core.ts",
+        "functions/signalbrief-profiles/enrichment.ts",
+        "functions/signalbrief-profiles/enrichment-service.ts",
+        "functions/signalbrief-profiles/enrichment-sec.ts",
+        "functions/signalbrief-profiles/enrichment-html.ts",
+        "functions/signalbrief-profiles/enrichment-dart.ts",
+        "functions/signalbrief-collector/core.ts",
+        "functions/signalbrief-profiles/enrichment-dart-core.ts",
+        "functions/signalbrief-profiles/deno.json"
+      ],
+      "type_only_omissions": [
+        "functions/signalbrief-profiles/enrichment-types.ts"
+      ]
+    },
+    {
+      "name": "signalbrief-calendar",
+      "version": 7,
+      "status": "ACTIVE",
+      "ezbr_sha256": "1a6951deb5e54737474e39ea5a4abae15025581d7d8334e7a8f651427b5ffe48",
+      "unchanged_by_final_profile_patch": true
+    }
+  ]
+}

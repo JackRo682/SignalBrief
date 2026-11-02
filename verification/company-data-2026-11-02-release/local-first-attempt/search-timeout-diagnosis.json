@@ -1,0 +1,170 @@
+{
+  "status": "UNRESOLVED_SQL_TIME_BUDGET_FAILURE",
+  "sqlstate": "57014",
+  "exception": "psycopg.errors.QueryCanceled",
+  "message": "canceling statement due to statement timeout",
+  "query": "select public.sb_redesign_workspace('design_directory',cast(:p as jsonb))",
+  "parameters": {
+    "p": {
+      "q": "visa"
+    }
+  },
+  "context": "SQL function sb_search_normalize statement1; PL/pgSQL app_content_private.redesign line53; sb_redesign_workspace",
+  "statement_timeout_seconds": 3,
+  "fixture_active_issuers": 14500,
+  "preceding_discovery_search_and_result_assertions": "PASS",
+  "server_error_utc": "2026-11-02T06:19:39.557Z",
+  "failed_case_seconds": 4.574,
+  "fixture_retained": false,
+  "explain_available": false,
+  "fixture_postflight": {
+    "public_users": null,
+    "company_directory": null,
+    "other_clients": 0
+  },
+  "workspace_config": {
+    "shared_buffers": "32MB",
+    "jit": "on",
+    "work_mem": "4MB",
+    "max_connections": 40,
+    "server_version": "16.15"
+  },
+  "previous_acceptance_shared_buffers": "128MB",
+  "host_observation": {
+    "observed_at": "2026-11-02T06:23:04.177986Z",
+    "contemporaneous_with_failure": false,
+    "reported_cpus": 9,
+    "cpu_quota": "800000/100000",
+    "loadavg": [
+      3.8125,
+      2.1708984375,
+      1.181640625
+    ],
+    "mem_available_kb": 6829992,
+    "attribution_to_resource_starvation": "Not established"
+  },
+  "unchanged_search_case_timings": [
+    {
+      "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[visa]",
+      "prior_seconds": 0.793,
+      "current_seconds": 0.846,
+      "status": "PASS"
+    },
+    {
+      "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[VISA]",
+      "prior_seconds": 0.095,
+      "current_seconds": 0.108,
+      "status": "PASS"
+    },
+    {
+      "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[\\uff36\\uff29\\uff33\\uff21]",
+      "prior_seconds": 0.091,
+      "current_seconds": 0.112,
+      "status": "PASS"
+    },
+    {
+      "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[Visa Inc.]",
+      "prior_seconds": 0.102,
+      "current_seconds": 0.32,
+      "status": "PASS"
+    },
+    {
+      "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[visa inc]",
+      "prior_seconds": 0.086,
+      "current_seconds": 2.734,
+      "status": "PASS"
+    },
+    {
+      "name": "test_exact_v_ticker_wins_over_many_prefixes_and_punctuated_v_names",
+      "prior_seconds": 0.128,
+      "current_seconds": 7.767,
+      "status": "PASS"
+    },
+    {
+      "name": "test_korean_alias_and_partial_name_coverage_is_not_suppressed",
+      "prior_seconds": 0.091,
+      "current_seconds": 0.165,
+      "status": "PASS"
+    },
+    {
+      "name": "test_new_rank_helper_is_private_and_existing_auth_guards_remain",
+      "prior_seconds": 0.081,
+      "current_seconds": 0.17,
+      "status": "PASS"
+    },
+    {
+      "name": "test_partial_queries_remain_usable_when_current_scope_has_no_strong_match",
+      "prior_seconds": 0.097,
+      "current_seconds": 0.122,
+      "status": "PASS"
+    },
+    {
+      "name": "test_precision_is_read_only_and_leaves_generic_evidence_search_and_dashboard_untouched",
+      "prior_seconds": 0.119,
+      "current_seconds": 0.16,
+      "status": "PASS"
+    },
+    {
+      "name": "test_provider_and_market_filter_apply_before_strong_match_suppression",
+      "prior_seconds": 0.117,
+      "current_seconds": 0.164,
+      "status": "PASS"
+    },
+    {
+      "name": "test_registered_exact_issuer_survives_discovery_dedupe_without_reintroducing_weak_rows",
+      "prior_seconds": 0.133,
+      "current_seconds": 0.163,
+      "status": "PASS"
+    },
+    {
+      "name": "test_registered_partial_query_pagination_and_counts_remain_consistent",
+      "prior_seconds": 0.114,
+      "current_seconds": 0.122,
+      "status": "PASS"
+    },
+    {
+      "name": "test_unregistered_strong_official_match_hides_registered_weak_company_rows",
+      "prior_seconds": 0.113,
+      "current_seconds": 0.136,
+      "status": "PASS"
+    },
+    {
+      "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[visa-expected0]",
+      "prior_seconds": 0.816,
+      "current_seconds": 4.574,
+      "status": "FAIL"
+    },
+    {
+      "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[V-expected1]",
+      "prior_seconds": 1.512,
+      "current_seconds": 4.594,
+      "status": "PASS"
+    },
+    {
+      "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[micro-expected2]",
+      "prior_seconds": 0.798,
+      "current_seconds": 1.273,
+      "status": "PASS"
+    },
+    {
+      "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[\\ub124\\uc774\\ubc84-expected3]",
+      "prior_seconds": 0.602,
+      "current_seconds": 0.725,
+      "status": "PASS"
+    },
+    {
+      "name": "test_catalogue_scale_common_letter_and_empty_registered_query_remain_bounded",
+      "prior_seconds": 1.598,
+      "current_seconds": 2.61,
+      "status": "PASS"
+    },
+    {
+      "name": "test_catalogue_scale_alias_expansion_is_once_per_search",
+      "prior_seconds": 0.852,
+      "current_seconds": 1.028,
+      "status": "PASS"
+    }
+  ],
+  "reruns_attempted": 0,
+  "budget_or_assertions_changed": false
+}

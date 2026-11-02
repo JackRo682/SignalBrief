@@ -1,0 +1,114 @@
+{
+  "observed_at": "2026-11-02T06:34:07.266Z",
+  "source": "root independently fetched GitHub exact-head workflow runs",
+  "commit": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+  "applicable_runs": [
+    {
+      "id": 41398788923,
+      "name": "Workspace schema security replay",
+      "event": "pull_request",
+      "head_sha": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T06:16:40Z"
+    },
+    {
+      "id": 41398788984,
+      "name": "Collector Edge verification",
+      "event": "pull_request",
+      "head_sha": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T06:16:18Z"
+    },
+    {
+      "id": 41398788898,
+      "name": "signalbrief-verification",
+      "event": "pull_request",
+      "head_sha": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T06:25:44Z"
+    },
+    {
+      "id": 41398788830,
+      "name": "Financial evidence benchmark",
+      "event": "pull_request",
+      "head_sha": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T06:17:13Z"
+    },
+    {
+      "id": 41398788858,
+      "name": "Reference application checks",
+      "event": "pull_request",
+      "head_sha": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T06:17:33Z"
+    },
+    {
+      "id": 41398788846,
+      "name": "official-calendar-verification",
+      "event": "pull_request",
+      "head_sha": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T06:17:20Z"
+    },
+    {
+      "id": 41398788874,
+      "name": "Hosted schema replay",
+      "event": "pull_request",
+      "head_sha": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T06:16:17Z"
+    },
+    {
+      "id": 41398762154,
+      "name": "signalbrief-verification",
+      "event": "push",
+      "head_sha": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T06:22:03Z"
+    },
+    {
+      "id": 41398761971,
+      "name": "Financial evidence benchmark",
+      "event": "push",
+      "head_sha": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T06:17:00Z"
+    },
+    {
+      "id": 41398762120,
+      "name": "official-calendar-verification",
+      "event": "push",
+      "head_sha": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T06:16:50Z"
+    },
+    {
+      "id": 41398762201,
+      "name": "Collector Edge verification",
+      "event": "push",
+      "head_sha": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+      "status": "completed",
+      "conclusion": "success",
+      "updated_at": "2026-11-02T06:15:35Z"
+    }
+  ],
+  "separate_expected_skipped": [
+    {
+      "id": 41398812036,
+      "name": "Production health",
+      "conclusion": "skipped"
+    }
+  ],
+  "local_gate_status": "Separate local retry pending; CI does not erase first local timeout."
+}

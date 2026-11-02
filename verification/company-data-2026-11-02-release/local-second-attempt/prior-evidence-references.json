@@ -1,0 +1,15 @@
+{
+  "recorded_at": "2026-11-02T06:31:54.989269+00:00",
+  "tree": "21831a41bb205f7e4792fa8d086325a5db867ced",
+  "commit": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+  "scope_and_six_deno_status": "PASS",
+  "additional_checks_performed_on_identical_source_in_first_run": true,
+  "additional_checks_not_repeated": true,
+  "evidence": "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/additional-checks.json",
+  "failed_first_full_run": "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/verification-proof.json",
+  "single_unchanged_case_diagnostic": "/tmp/signalbrief-nov2-search-timeout-diagnostic/diagnostic-run.json",
+  "settings_comparison": "/tmp/signalbrief-nov2-search-timeout-settings-comparison.json",
+  "fresh_matched_environment": "/tmp/signalbrief-nov2-isolated-final-retry-environment.json",
+  "root_cause_of_initial_timeout": "Not established",
+  "statement_timeout_seconds_unchanged": 3
+}

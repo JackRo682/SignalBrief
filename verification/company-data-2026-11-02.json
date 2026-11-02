@@ -1,173 +1,728 @@
 {
-  "status": "implementation_verified_release_in_progress",
+  "schema": "signalbrief.company-data-release.v2",
+  "status": "deployed_and_scoped_live_acceptance_passed",
+  "recorded_at": "2026-11-02T07:37:13.779423+00:00",
   "production_url": "https://signalbrief.online",
-  "baseline_runtime": "1541494637d89b46e2b2c53b15186c0e51f3ec62",
-  "source_branch": "fix/company-data-coverage-20261102",
-  "bridge": {
-    "commit": "07d6f0d8558eab84c09cbd801b6f4dc694c9e59c",
-    "tree": "f83ade5a29d16310ef708fce68833dcd374b22e9",
-    "branch": "fix/company-source-bridge-20261102",
-    "changed_files": 18,
-    "isolated_focused_tests": 148,
-    "isolated_build": "PASS",
-    "exact_remote_blob_match": true,
-    "ci": "SUCCESS",
-    "preview_deployment": "dpl_Go4fh8FndPn385SyW7SKjTEUceJM",
-    "production_deployment": "dpl_8mcUGeud1h97miwf2dYWGzqKu79B",
-    "ci_verification_run": 41374579803,
-    "ci_browser_passed": 90,
-    "ci_completed_at": "2026-11-02T02:00:24Z",
-    "production_status": "READY",
-    "production_alias": "https://signalbrief.online",
-    "production_branch": "07d6f0d8558eab84c09cbd801b6f4dc694c9e59c",
-    "public_release_check": {
-      "http_status": 200,
-      "commit": "07d6f0d8558eab84c09cbd801b6f4dc694c9e59c",
-      "internal_routes_unauthenticated_status": 401
-    }
-  },
-  "local": {
-    "browser_tests": {
-      "passed": 92,
-      "projects": [
-        "desktop",
-        "mobile"
-      ],
-      "fixture_scope": "isolated synthetic; unexpected external requests fail"
-    },
-    "initial_full_gate": {
-      "backend_passed": 829,
-      "backend_skipped": 0,
-      "frontend_passed": 1474,
-      "frontend_files": 111,
-      "build": "failed on outside-app imports; monorepo root fixed and targeted production build passed"
-    },
-    "repeat_gate": {
-      "result": "failed",
-      "causes": [
-        "hosted schema test reused a database that must be empty",
-        "real-time debounce assertion exceeded wall-clock deadline under load",
-        "generated Turbopack cache could not reopen after root change"
-      ],
-      "corrections": [
-        "fresh loopback-only hosted cluster",
-        "deterministic timer and controlled response test synchronization",
-        "clean generated build cache"
-      ]
-    },
-    "final_full_gate": {
-      "status": "PASS",
-      "checked_at": "2026-11-02T01:59:37.142843+00:00",
-      "stages": 8,
-      "backend_passed": 829,
-      "backend_skipped": 0,
-      "frontend_passed": 1474,
-      "frontend_files": 111,
-      "hosted_test_environment": "fresh loopback cluster on55436"
-    },
-    "scope_guard": "PASS",
-    "deno_entrypoints_checked": 6,
-    "ledger_aligned_postgres": {
-      "passed": 169,
-      "skipped": 0
-    },
-    "catalogue_scale_regression": {
-      "passed": 20,
-      "skipped": 0,
-      "active_synthetic_issuers": 14500,
-      "statement_timeout_seconds": 3,
-      "alias_expansion_calls_per_endpoint": 1,
-      "log": "verification/company-data-2026-11-02-local/search_catalogue_performance.log"
-    }
-  },
-  "actual_source_replays": {
-    "calendar_evidence": "verification/company-data-2026-11-02-calendar.json",
-    "visa_profile": "source-backed enrichment replay passed",
-    "visa_companyfacts_contexts": 44,
-    "naver_profile": "pending production acquisition",
-    "pinned_live_transport": "local DNS EAI_AGAIN; production acceptance pending"
+  "source": {
+    "commit": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+    "tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+    "branch": "main",
+    "pull_request": "https://github.com/JackRo682/SignalBrief/pull/42"
   },
   "production": {
-    "migrations": [
+    "web": {
+      "source_commit": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+      "source_tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+      "branch": "main",
+      "vercel": {
+        "id": "dpl_8bD58BeVs4kFFfnp58ThaU4yDG1V",
+        "state": "READY",
+        "target": "production",
+        "url": "https://signalbrief-9j3witci5-acme-c4f4.vercel.app",
+        "production_alias": "https://signalbrief.online",
+        "ready_at": "2026-11-02T07:33:39.644Z"
+      },
+      "public_release": {
+        "observed_at": "2026-11-02T07:34:58.178233+00:00",
+        "url": "https://signalbrief.online/api/release",
+        "http_status": 200,
+        "body": {
+          "release": "desktop-references-v1",
+          "commit": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+          "branch": "main"
+        }
+      }
+    },
+    "edge": [
       {
-        "name": "calendar_sec_ir_discovery",
-        "version": "20261102020437",
-        "path": "supabase/migrations/20261102020437_calendar_sec_ir_discovery.sql",
-        "sha256": "bc16706742848f5a2ab0e831f1b8b0e9fcb182f10e049f806f0b4a2d2c79688f"
+        "name": "signalbrief-us",
+        "version": 24,
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "import_map": true,
+        "ezbr_sha256": "99e4fe870d679d45b79021d054cd12fcd80026d8e1b84d4957b83d4ce126759e",
+        "matched_files": [
+          "functions/signalbrief-us/index.ts",
+          "functions/signalbrief-api/us-handler.ts",
+          "functions/signalbrief-delivery/core.ts",
+          "functions/signalbrief-api/us-core.ts",
+          "functions/signalbrief-api/market-core.ts",
+          "functions/signalbrief-api/verification.ts",
+          "functions/signalbrief-api/company-financials.ts",
+          "functions/signalbrief-collector/dart-relay.ts",
+          "functions/signalbrief-api/company-financials-core.ts",
+          "functions/signalbrief-api/analysis-excerpt.ts",
+          "functions/signalbrief-api/deno.json"
+        ],
+        "type_only_omissions": []
       },
       {
-        "name": "company_reported_financials",
-        "version": "20261102020442",
-        "path": "supabase/migrations/20261102020442_company_reported_financials.sql",
-        "sha256": "ce4965c3ed43e54410d4c111cd02fe5ff4b9d48bd38595de5b0dc82170a32730"
+        "name": "signalbrief-discovery",
+        "version": 9,
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "import_map": true,
+        "ezbr_sha256": "1ee7efb7f50bf2cf90505eb0aeb4044457413243be8f89423e9466c02629da46",
+        "matched_files": [
+          "functions/signalbrief-discovery/index.ts",
+          "functions/signalbrief-discovery/core.ts",
+          "functions/signalbrief-discovery/service.ts",
+          "functions/signalbrief-api/us-core.ts",
+          "functions/signalbrief-collector/dart-relay.ts",
+          "functions/signalbrief-collector/core.ts",
+          "functions/signalbrief-profiles/core.ts",
+          "functions/signalbrief-api/company-financials.ts",
+          "functions/signalbrief-api/company-financials-core.ts",
+          "functions/signalbrief-discovery/deno.json"
+        ],
+        "type_only_omissions": []
       },
       {
-        "name": "company_search_precision",
-        "version": "20261102020446",
-        "path": "supabase/migrations/20261102020446_company_search_precision.sql",
-        "sha256": "b56e78afbc51f775fe7c4324db1429b1cbc31b21f9496a7f5d53fc677d6355d6"
+        "name": "signalbrief-collector",
+        "version": 19,
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "import_map": true,
+        "ezbr_sha256": "7e336aa62a3150e6bf24807c8cc8519142f224e8111d89bd2a40f18257d9a64b",
+        "matched_files": [
+          "functions/signalbrief-collector/index.ts",
+          "functions/signalbrief-delivery/index.ts",
+          "functions/signalbrief-api/us-core.ts",
+          "functions/signalbrief-delivery/core.ts",
+          "functions/signalbrief-delivery/dispatch.ts",
+          "functions/signalbrief-collector/dart-document.ts",
+          "functions/signalbrief-collector/dart-parser.ts",
+          "functions/signalbrief-collector/dart-document-core.ts",
+          "functions/signalbrief-collector/dart-relay.ts",
+          "functions/signalbrief-api/us-handler.ts",
+          "functions/signalbrief-api/market-core.ts",
+          "functions/signalbrief-api/verification.ts",
+          "functions/signalbrief-api/company-financials.ts",
+          "functions/signalbrief-api/company-financials-core.ts",
+          "functions/signalbrief-api/analysis-excerpt.ts",
+          "functions/signalbrief-collector/core.ts",
+          "functions/signalbrief-collector/deno.json"
+        ],
+        "type_only_omissions": []
       },
       {
-        "name": "company_profile_source_enrichment",
-        "version": "20261102020450",
-        "path": "supabase/migrations/20261102020450_company_profile_source_enrichment.sql",
-        "sha256": "3b265ba1ebbf1c3ef710bc7db4b5fa84bceb538cbfa2699ec077d2611b7c7403"
+        "name": "signalbrief-profiles",
+        "version": 11,
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "import_map": true,
+        "ezbr_sha256": "3c06cd2ba40e953238c1720d52659b7c175e751e4fbf26c873de7be8895be99b",
+        "matched_files": [
+          "functions/signalbrief-profiles/index.ts",
+          "functions/signalbrief-collector/dart-relay.ts",
+          "functions/signalbrief-api/us-core.ts",
+          "functions/signalbrief-profiles/core.ts",
+          "functions/signalbrief-profiles/enrichment.ts",
+          "functions/signalbrief-profiles/enrichment-service.ts",
+          "functions/signalbrief-profiles/enrichment-sec.ts",
+          "functions/signalbrief-profiles/enrichment-html.ts",
+          "functions/signalbrief-profiles/enrichment-dart.ts",
+          "functions/signalbrief-collector/core.ts",
+          "functions/signalbrief-profiles/enrichment-dart-core.ts",
+          "functions/signalbrief-profiles/deno.json"
+        ],
+        "type_only_omissions": [
+          "functions/signalbrief-profiles/enrichment-types.ts"
+        ]
       },
       {
-        "name": "dart_profile_periodic_sources",
-        "version": "20261102020454",
-        "path": "supabase/migrations/20261102020454_dart_profile_periodic_sources.sql",
-        "sha256": "516c05dcd496eb945cfc026e943535c544d3dec40bc54fd93d58b7e76c9f87f7"
-      },
-      {
-        "name": "company_search_catalogue_performance",
-        "version": "20261102022052",
-        "path": "supabase/migrations/20261102022052_company_search_catalogue_performance.sql",
-        "sha256": "a190c4b4abdd8a977b727d9924ffcd867f6c77785e92a220229187728f60fbe5"
+        "name": "signalbrief-calendar",
+        "version": 7,
+        "status": "ACTIVE",
+        "ezbr_sha256": "1a6951deb5e54737474e39ea5a4abae15025581d7d8334e7a8f651427b5ffe48",
+        "unchanged_by_final_profile_patch": true
       }
     ],
-    "edge_versions": {},
-    "ui_commit": null,
-    "live_acceptance": [],
-    "migration_ledger_sha256_match": true,
-    "search_scale_followup": {
-      "observed_at": "2026-11-02T02:13:21.996Z",
-      "symptom": "registered company and official-directory visa searches failed after precision migration",
-      "database_sqlstate": "57014",
-      "discovery_status": 503,
-      "discovery_duration_ms": 16210,
-      "cause": "repeated sb_search_terms in per-row ranking over full official catalogue",
-      "status": "additive migration applied; live UI recheck pending",
-      "screenshot": "verification/company-data-2026-11-02-live/visa-search-before-performance-fix.jpg",
-      "applied_version": "20261102022052"
-    }
-  },
-  "limits": [
-    "Official sources may not publish every field or an upcoming event.",
-    "Unapproved model analyses remain in review.",
-    "No synthetic figures, profiles, events, or bookmarks are inserted into production.",
-    "This release does not certify exhaustive issuer coverage or zero defects globally."
-  ],
-  "published_source": {
-    "commit": "cd31aeda4d9d99a31c00f6873b66972b9a2c49f7",
-    "tree": "4210880978d5d51ec76be385fc592a9118e24bdb",
-    "pull_request": "https://github.com/JackRo682/SignalBrief/pull/40",
-    "changed_files": 96,
-    "all_staged_blob_matches": 1074,
-    "ci": "SUCCESS",
-    "ci_completed_at": "2026-11-02T02:22:22Z",
-    "required_workflow_runs_passed": 12,
-    "ci_browser_runs": [
+    "migrations": [
       {
-        "run": 41376425944,
-        "passed": 92,
-        "duration": "4.1m"
+        "version": "20261102020437",
+        "name": "calendar_sec_ir_discovery",
+        "sha256": "bc16706742848f5a2ab0e831f1b8b0e9fcb182f10e049f806f0b4a2d2c79688f",
+        "path": "supabase/migrations/20261102020437_calendar_sec_ir_discovery.sql"
       },
       {
-        "run": 41376451512,
-        "passed": 92,
-        "duration": "4.9m"
+        "version": "20261102020442",
+        "name": "company_reported_financials",
+        "sha256": "ce4965c3ed43e54410d4c111cd02fe5ff4b9d48bd38595de5b0dc82170a32730",
+        "path": "supabase/migrations/20261102020442_company_reported_financials.sql"
+      },
+      {
+        "version": "20261102020446",
+        "name": "company_search_precision",
+        "sha256": "b56e78afbc51f775fe7c4324db1429b1cbc31b21f9496a7f5d53fc677d6355d6",
+        "path": "supabase/migrations/20261102020446_company_search_precision.sql"
+      },
+      {
+        "version": "20261102020450",
+        "name": "company_profile_source_enrichment",
+        "sha256": "3b265ba1ebbf1c3ef710bc7db4b5fa84bceb538cbfa2699ec077d2611b7c7403",
+        "path": "supabase/migrations/20261102020450_company_profile_source_enrichment.sql"
+      },
+      {
+        "version": "20261102020454",
+        "name": "dart_profile_periodic_sources",
+        "sha256": "516c05dcd496eb945cfc026e943535c544d3dec40bc54fd93d58b7e76c9f87f7",
+        "path": "supabase/migrations/20261102020454_dart_profile_periodic_sources.sql"
+      },
+      {
+        "version": "20261102022052",
+        "name": "company_search_catalogue_performance",
+        "sha256": "a190c4b4abdd8a977b727d9924ffcd867f6c77785e92a220229187728f60fbe5",
+        "path": "supabase/migrations/20261102022052_company_search_catalogue_performance.sql"
+      },
+      {
+        "version": "20261102023317",
+        "name": "profile_official_source_binding",
+        "sha256": "75f74506a074c90b16947220d57fff947cafcff94219c58658555d01cbaf10f0",
+        "path": "supabase/migrations/20261102023317_profile_official_source_binding.sql"
+      },
+      {
+        "version": "20261102051051",
+        "name": "dart_financial_period_binding",
+        "sha256": "bf9dd2b29fc55117829430affb9f2e30d604fc0efba57566f0d860132f4e0c00",
+        "path": "supabase/migrations/20261102051051_dart_financial_period_binding.sql"
+      },
+      {
+        "version": "20261102051053",
+        "name": "calendar_sec_filed_events",
+        "sha256": "9b2d70726141b0c48fc95af3b06f18e70cedb11a0442ae50ef399af3e7b18118",
+        "path": "supabase/migrations/20261102051053_calendar_sec_filed_events.sql"
+      },
+      {
+        "version": "20261102051056",
+        "name": "samsung_calendar_history",
+        "sha256": "74f16d2111a3378e22c7513652bb785091fa723face2a774f87e97224efee4de",
+        "path": "supabase/migrations/20261102051056_samsung_calendar_history.sql"
+      },
+      {
+        "version": "20261102051058",
+        "name": "calendar_ir_navigation_labels",
+        "sha256": "dc5b81412b8c4d47b40d6326a72e259d56d6799dd1d92a2996eced441663e6bf",
+        "path": "supabase/migrations/20261102051058_calendar_ir_navigation_labels.sql"
+      },
+      {
+        "version": "20261102052148",
+        "name": "sec_profile_section_refresh",
+        "sha256": "4018846f5ecd92f4d7823a110561f6a5d492eb6fd2c6f3b32c701faf8bfbe28e",
+        "path": "supabase/migrations/20261102052148_sec_profile_section_refresh.sql"
+      },
+      {
+        "version": "20261102052159",
+        "name": "calendar_sec_filing_ingest_lock",
+        "sha256": "5f969a8e165416d89e5f90ad8e0f28019a21a3f37c9168389f400ffecd0cdf76",
+        "path": "supabase/migrations/20261102052159_calendar_sec_filing_ingest_lock.sql"
+      },
+      {
+        "version": "20261102054530",
+        "name": "calendar_drupal_event_lists",
+        "sha256": "5be047fa9ee3caf58120a91a53de35892756ef92c032adf0290cab41dfb2a056",
+        "path": "supabase/migrations/20261102054530_calendar_drupal_event_lists.sql"
+      },
+      {
+        "version": "20261102060038",
+        "name": "profile_dart_rows_refresh",
+        "sha256": "6867a4da3d98a2beca00839c3234abfb1feb53433fb9866503564f92f723721f",
+        "path": "supabase/migrations/20261102060038_profile_dart_rows_refresh.sql"
+      },
+      {
+        "version": "20261102065627",
+        "name": "sec_profile_identity_fields_refresh",
+        "sha256": "be13b53c89049018af49c4c83dfd71ee60da1e3d5dfedd791146adf1a566f27a",
+        "path": "supabase/migrations/20261102065627_sec_profile_identity_fields_refresh.sql"
+      }
+    ],
+    "all_16_migration_hashes_match_local_files": true,
+    "new_environment_variables": [],
+    "final_profile_collection": "Normal signed-in UI retry after natural failure cooldown; no manual data/lease/cooldown override."
+  },
+  "verification": {
+    "original_full_run": {
+      "status": "FAIL",
+      "stage_counts": {
+        "passed": 7,
+        "failed": 1,
+        "total": 8
+      },
+      "stages": {
+        "python_compile": "PASS",
+        "backend_tests": "PASS",
+        "openapi_export": "PASS",
+        "backend_lint": "PASS",
+        "frontend_lint": "PASS",
+        "frontend_typecheck": "PASS",
+        "frontend_unit_tests": "FAIL",
+        "frontend_build": "PASS"
+      },
+      "backend": {
+        "passed": 1104,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0,
+        "elapsed_seconds": 310.78,
+        "junit": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/pytest.xml"
+      },
+      "frontend": {
+        "passed": 1679,
+        "failed": 1,
+        "total": 1680,
+        "files_passed": 116,
+        "files_failed": 1,
+        "files_total": 117,
+        "elapsed_seconds": 46.52,
+        "log": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/frontend_unit_tests.log"
+      },
+      "failure": {
+        "file": "apps/web/tests/desktop-discovery.test.tsx",
+        "line": 52,
+        "test": "searches actual selected markets and identifies unsupported metric filters",
+        "error": "Test timed out in 5000ms",
+        "reported_test_duration_ms": 7269,
+        "assertion_specific_failure_logged": false,
+        "dom_snapshot_available": false,
+        "static_findings": [
+          "One initial awaited recent-search button, followed by synchronous fixture actions and URL/disabled-control assertions.",
+          "Workspace, API, navigation and quotes are isolated fixtures.",
+          "The test and its runtime UI path are unchanged by the profile parser delta."
+        ],
+        "cause": "Not established. Seven configured default forks and lifetime cgroup pressure are observations, not proof of causal oversubscription.",
+        "default_worker_ceiling": 7,
+        "actual_original_worker_concurrency": "Not captured",
+        "test_timeout_ms_unchanged": 5000
+      },
+      "proof": "verification/company-data-2026-11-02-release/gate-d0a6de2b/verification-proof.json"
+    },
+    "replacement_whole_frontend_stage": {
+      "status": "PASS_REPLACEMENT_FRONTEND_STAGE",
+      "command": [
+        "npm",
+        "run",
+        "test",
+        "--",
+        "--maxWorkers=2"
+      ],
+      "frontend": {
+        "passed": 1680,
+        "failed": 0,
+        "skipped": 0,
+        "files_passed": 117,
+        "files_total": 117,
+        "reported_duration_seconds": 103.04,
+        "desktop_discovery_file_passed": true,
+        "desktop_discovery_file_duration_ms": 4914.005381999999,
+        "case_level_duration_available": false
+      },
+      "test_timeout_ms_unchanged": 5000,
+      "source_assertions_and_test_counts_unchanged": true,
+      "proof": "verification/company-data-2026-11-02-release/frontend-d0a6de2b/verification-proof.json"
+    },
+    "exact_commit_ci": {
+      "status": "PASS",
+      "applicable_workflows": 9,
+      "successful_jobs": 17,
+      "browser_runs": [
+        {
+          "event": "push",
+          "run_id": 41403883268,
+          "job_id": 125141449176,
+          "status": "PASS",
+          "passed": 92,
+          "log_timestamp": "2026-11-02T07:14:16.5559240Z",
+          "duration": "5.1m",
+          "exact_summary": "2026-11-02T07:14:16.5559240Z   92 passed (5.1m)",
+          "log": "/tmp/signalbrief-nov2-d0a6de2b-ci-web-push-125141449176.log",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403883268/job/125141449176",
+          "log_bytes": 99493,
+          "log_sha256": "c313b08f39ba436aa0ea55097274933d90cfb947f1ac9a12ebfda305ffd7152b",
+          "terminal_result_lines": [
+            "2026-11-02T07:14:16.5559240Z   92 passed (5.1m)"
+          ]
+        },
+        {
+          "event": "pull_request",
+          "run_id": 41403897455,
+          "job_id": 125141492185,
+          "status": "PASS",
+          "passed": 92,
+          "log_timestamp": "2026-11-02T07:12:27.6417316Z",
+          "duration": "4.1m",
+          "exact_summary": "2026-11-02T07:12:27.6417316Z   92 passed (4.1m)",
+          "log": "/tmp/signalbrief-nov2-d0a6de2b-ci-web-pr-125141492185.log",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41403897455/job/125141492185",
+          "log_bytes": 100358,
+          "log_sha256": "1aa46a4d6aab4668763e3341ac58b7961c87841c607eefb49f21ecb0fc3773a5",
+          "terminal_result_lines": [
+            "2026-11-02T07:12:27.6417316Z   92 passed (4.1m)"
+          ]
+        }
+      ],
+      "browser_runs_are_separate_not_summed": true,
+      "proof": "verification/company-data-2026-11-02-release/d0a6de2b-ci-proof.json"
+    },
+    "interpretation": "Backend 1104 passed and replacement entire frontend 1680 passed; original full execution remains FAIL7/8. No claim of one PASS8/8 d0 run or a proven resource cause for the timeout.",
+    "profile_source_to_postgres": "Exact current SNDK collector output persisted through real local RPC; modified quote/name evidence still rejected.",
+    "focused_proof": "verification/company-data-2026-11-02-release/segment-case-fix/focused-manifest.json"
+  },
+  "live_acceptance": {
+    "observed_at": "2026-11-02T07:33:21.920192+00:00",
+    "ui_timezone": "Asia/Seoul",
+    "windows": {
+      "ui_past_from": "2026-08-04",
+      "ui_past_until": "2026-11-01",
+      "collection_from": "2026-08-04",
+      "collection_until": "2028-05-02",
+      "ui_upcoming_from": "2026-11-02",
+      "ui_upcoming_until": "2027-11-02"
+    },
+    "companies": [
+      {
+        "name": "Apple",
+        "ticker": "AAPL",
+        "provider": "sec",
+        "profile_status": null,
+        "profile_last_error": null,
+        "profile_checked_at": null,
+        "business_paragraphs": 0,
+        "products": 0,
+        "segments": 0,
+        "leadership": [],
+        "formation": [],
+        "reported_financial_contexts": 0,
+        "financial_status": null,
+        "financial_source_identity_and_archive_valid": false,
+        "calendar": {
+          "ui_past_90d": 0,
+          "ui_upcoming_365d": 1,
+          "collection_past_90d": 0,
+          "provider_total_visible": 1,
+          "collection_upcoming_18mo": 1,
+          "confirmed_but_not_public": 0
+        },
+        "analysis_status_counts": {
+          "sec:needs_review": 2
+        },
+        "limitations": null
+      },
+      {
+        "name": "Mastercard Inc",
+        "ticker": "MA",
+        "provider": "sec",
+        "profile_status": "ready",
+        "profile_last_error": null,
+        "profile_checked_at": "2026-11-02T05:22:26.619Z",
+        "business_paragraphs": 2,
+        "products": 8,
+        "segments": 1,
+        "leadership": [
+          {
+            "name": "Michael Miebach",
+            "role": "Chief Executive Officer",
+            "as_of": "2026-10-29",
+            "basis": "filing",
+            "source_id": "c6ae6a65046f0fb2719e86c5996828fb2c1bd361f17a699b7d2f89d589063d21"
+          }
+        ],
+        "formation": [
+          {
+            "date": "2001-05-09",
+            "kind": "incorporated",
+            "precision": "day",
+            "source_id": "84e1bdd8d4580f7e12bc79a1157e4a318598bb32a03bfb15e42b4b581d2c3583"
+          }
+        ],
+        "reported_financial_contexts": 56,
+        "financial_status": "ready",
+        "financial_source_identity_and_archive_valid": true,
+        "calendar": {
+          "ui_past_90d": 2,
+          "ui_upcoming_365d": 2,
+          "collection_past_90d": 2,
+          "provider_total_visible": 4,
+          "collection_upcoming_18mo": 2,
+          "confirmed_but_not_public": 0
+        },
+        "analysis_status_counts": {
+          "sec:needs_review": 1
+        },
+        "limitations": [
+          "leadership_as_of_filing"
+        ]
+      },
+      {
+        "name": "NAVER",
+        "ticker": "035420",
+        "provider": "dart",
+        "profile_status": "partial",
+        "profile_last_error": null,
+        "profile_checked_at": "2026-11-02T03:00:29.530Z",
+        "business_paragraphs": 2,
+        "products": 0,
+        "segments": 0,
+        "leadership": [],
+        "formation": [],
+        "reported_financial_contexts": 24,
+        "financial_status": "ready",
+        "financial_source_identity_and_archive_valid": true,
+        "calendar": {
+          "ui_past_90d": 2,
+          "ui_upcoming_365d": 1,
+          "collection_past_90d": 2,
+          "provider_total_visible": 3,
+          "collection_upcoming_18mo": 1,
+          "confirmed_but_not_public": 0
+        },
+        "analysis_status_counts": {
+          "dart:needs_review": 13
+        },
+        "limitations": [
+          "products_not_explicitly_identified",
+          "segments_not_explicitly_identified",
+          "source_markup_recovery_requires_review"
+        ]
+      },
+      {
+        "name": "삼성전자",
+        "ticker": "005930",
+        "provider": "dart",
+        "profile_status": "partial",
+        "profile_last_error": null,
+        "profile_checked_at": "2026-11-02T06:01:31.112Z",
+        "business_paragraphs": 2,
+        "products": 4,
+        "segments": 4,
+        "leadership": [],
+        "formation": [],
+        "reported_financial_contexts": 24,
+        "financial_status": "ready",
+        "financial_source_identity_and_archive_valid": true,
+        "calendar": {
+          "ui_past_90d": 13,
+          "ui_upcoming_365d": 0,
+          "collection_past_90d": 13,
+          "provider_total_visible": 13,
+          "collection_upcoming_18mo": 0,
+          "confirmed_but_not_public": 0
+        },
+        "analysis_status_counts": {
+          "dart:approved": 5,
+          "dart:needs_review": 15
+        },
+        "limitations": [
+          "source_markup_recovery_requires_review"
+        ]
+      },
+      {
+        "name": "Sandisk Corp",
+        "ticker": "SNDK",
+        "provider": "sec",
+        "profile_status": "ready",
+        "profile_last_error": null,
+        "profile_checked_at": "2026-11-02T07:28:57.706Z",
+        "business_paragraphs": 2,
+        "products": 2,
+        "segments": 1,
+        "leadership": [
+          {
+            "name": "David V. Goeckeler",
+            "role": "Chief Executive Officer",
+            "as_of": "2026-08-17",
+            "basis": "filing",
+            "source_id": "8b6963dfdfdca8f74c6b5f3d60a61a5182ddb7c7c29e2058cf120de217ff267c"
+          }
+        ],
+        "formation": [
+          {
+            "date": "2024-02-05",
+            "kind": "incorporated",
+            "precision": "day",
+            "source_id": "820d07c43039e041adf7f5f39bda39e652bc825a1a5b0d88b4734adcc5c5d4be"
+          }
+        ],
+        "reported_financial_contexts": 40,
+        "financial_status": "ready",
+        "financial_source_identity_and_archive_valid": true,
+        "calendar": {
+          "ui_past_90d": 5,
+          "ui_upcoming_365d": 1,
+          "collection_past_90d": 5,
+          "provider_total_visible": 6,
+          "collection_upcoming_18mo": 1,
+          "confirmed_but_not_public": 0
+        },
+        "analysis_status_counts": {
+          "sec:needs_review": 6
+        },
+        "limitations": [
+          "leadership_as_of_filing"
+        ]
+      },
+      {
+        "name": "Tesla",
+        "ticker": "TSLA",
+        "provider": "sec",
+        "profile_status": "partial",
+        "profile_last_error": null,
+        "profile_checked_at": "2026-11-02T06:00:47.486Z",
+        "business_paragraphs": 2,
+        "products": 9,
+        "segments": 2,
+        "leadership": [
+          {
+            "name": "Elon Musk",
+            "role": "Chief Executive Officer",
+            "as_of": "2026-01-29",
+            "basis": "filing",
+            "source_id": "6613b0ffabe8e9b2668eef50f40540756bd4ef03e2f633d489ca83aa58b99729"
+          }
+        ],
+        "formation": [],
+        "reported_financial_contexts": 52,
+        "financial_status": "ready",
+        "financial_source_identity_and_archive_valid": true,
+        "calendar": {
+          "ui_past_90d": 1,
+          "ui_upcoming_365d": 0,
+          "collection_past_90d": 1,
+          "provider_total_visible": 1,
+          "collection_upcoming_18mo": 0,
+          "confirmed_but_not_public": 0
+        },
+        "analysis_status_counts": {
+          "sec:approved": 3
+        },
+        "limitations": [
+          "leadership_as_of_filing",
+          "formation_date_not_verified"
+        ]
+      },
+      {
+        "name": "VISA INC.",
+        "ticker": "V",
+        "provider": "sec",
+        "profile_status": "ready",
+        "profile_last_error": null,
+        "profile_checked_at": "2026-11-02T02:50:21.823Z",
+        "business_paragraphs": 2,
+        "products": 10,
+        "segments": 1,
+        "leadership": [
+          {
+            "name": "Ryan McInerney",
+            "role": "Chief Executive Officer",
+            "as_of": "2026-11-02",
+            "basis": "official_page",
+            "source_id": "d290fb3501eb5d6a4bf794c31c985a6f0de6122472d9a77722585a29eb1a2779"
+          }
+        ],
+        "formation": [
+          {
+            "date": "2007-05-25",
+            "kind": "incorporated",
+            "precision": "day",
+            "source_id": "a6e99e11241f4cbc15b5ebf6b51310d4a87acef15b102072e1ba7784b1272bd4"
+          }
+        ],
+        "reported_financial_contexts": 44,
+        "financial_status": "ready",
+        "financial_source_identity_and_archive_valid": true,
+        "calendar": {
+          "ui_past_90d": 2,
+          "ui_upcoming_365d": 5,
+          "collection_past_90d": 2,
+          "provider_total_visible": 7,
+          "collection_upcoming_18mo": 5,
+          "confirmed_but_not_public": 0
+        },
+        "analysis_status_counts": {
+          "sec:needs_review": 3
+        },
+        "limitations": []
+      }
+    ],
+    "readonly_observation": "verification/company-data-2026-11-02-live/production-observation-d0a6de2b.json",
+    "search": {
+      "visa": "Actual UI returned canonical Visa/V without Televisa or VISANG",
+      "ls_watchlist_picker": "Actual UI returned LS and related official Korean companies; no follow mutation",
+      "sandisk": "Actual UI returned Sandisk/SNDK"
+    },
+    "calendar_signed_in_ui": {
+      "all_companies": {
+        "registered": 15,
+        "source_connected": 15,
+        "upcoming": 13,
+        "past": 48
+      },
+      "nvidia_selected": {
+        "upcoming": 1,
+        "past": 3,
+        "visible_grid_date": "2026-11-17"
+      },
+      "micron_selected": {
+        "upcoming": 0,
+        "past": 3,
+        "nearest_date": "2026-10-21"
+      },
+      "scope": "Observed current registered companies, past90days and future365days; does not certify all issuers or future dates."
+    },
+    "new_company_registration": "Mastercard selected through real company UI; new canonical company automatically collected profile,56 financial contexts,10 news results and2 upcoming/2 past events.",
+    "saved": {
+      "explicit_save_reload_persistence": "PASS",
+      "own_test_save_removed": true,
+      "original_empty_state_restored": true,
+      "history_enabled": false,
+      "auto_created_personal_bookmarks": false,
+      "empty_state": "Public source-backed suggestions are available; saved entries require explicit user action."
+    },
+    "naver_v1_snapshot_preserved": "87a77ef83963c1858409733245256c3d10f4ddf0c9167a460b499bfa85e33b25",
+    "screenshots": [
+      {
+        "path": "verification/company-data-2026-11-02-live/sandisk-profile-final.jpg",
+        "bytes": 72027,
+        "sha256": "d5ebf533c3a7ad11c29211e8c22db3459385b10dbedce540efa19b368633573c"
+      },
+      {
+        "path": "verification/company-data-2026-11-02-live/calendar-nvidia-selected-final.jpg",
+        "bytes": 65135,
+        "sha256": "1d27b24da3c82b417ad00d117c97c79d9bd61e05e63b489fba67efd8f1e5cfe5"
+      },
+      {
+        "path": "verification/company-data-2026-11-02-live/naver-cumulative-revenue-repaired.jpg",
+        "bytes": 51948,
+        "sha256": "3bd5ebcdafd09d0a2be968994a2b9530c068a720876c1c623835c5b4f7ffca76"
       }
     ]
+  },
+  "advisors": {
+    "proof": "verification/company-data-2026-11-02-release/production-advisors.json",
+    "errors": 0,
+    "warnings": {
+      "anon_security_definer_function_executable": 6,
+      "authenticated_security_definer_function_executable": 32,
+      "auth_leaked_password_protection": 1,
+      "multiple_permissive_policies": 16
+    },
+    "scope": "Current advisor findings retained. They are not an automatic finding of an exploitable vulnerability and have not all been remediated. No security setting or authentication permission was weakened."
+  },
+  "limits": [
+    "Official sources may not publish every profile field or an upcoming event; zeros are not replaced with invented records.",
+    "Filing leadership is dated, and legal incorporation is distinct from brand founding or separation.",
+    "Tesla formation is still unverified. NAVER new extractor products/segments remain unverified, with existing reviewed UI fallback retained.",
+    "DART recovered markup and partial SEC/Drupal event lists retain their coverage limitations.",
+    "Apple profile and financial snapshots were not newly verified in this acceptance scope.",
+    "Unapproved analyses remain in review; the repair does not auto-approve analyses or fill the personal Saved tab.",
+    "This release verifies the repaired flows and named acceptance cases; it does not certify exhaustive issuer coverage or zero bugs globally."
+  ],
+  "history": {
+    "earlier_release_index": "verification/company-data-2026-11-02-release/earlier-release-history.json",
+    "earlier_failures": [
+      "verification/company-data-2026-11-02-release/local-first-attempt/verification-proof.json",
+      "verification/company-data-2026-11-02-release/local-second-attempt/verification-proof.json"
+    ],
+    "e391_previous_success": "verification/company-data-2026-11-02-release/final-gate/verification-proof.json",
+    "note": "Versioned raw proofs retain their original timestamps/statuses, including pending statements that predate later completion. This index records final state."
   }
 }

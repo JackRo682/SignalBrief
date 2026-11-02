@@ -1,0 +1,26 @@
+{
+  "source_commit": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+  "source_tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+  "name": "signalbrief-profiles",
+  "version": 11,
+  "status": "ACTIVE",
+  "ezbr_sha256": "3c06cd2ba40e953238c1720d52659b7c175e751e4fbf26c873de7be8895be99b",
+  "matched_runtime_files": [
+    "functions/signalbrief-profiles/index.ts",
+    "functions/signalbrief-collector/dart-relay.ts",
+    "functions/signalbrief-api/us-core.ts",
+    "functions/signalbrief-profiles/core.ts",
+    "functions/signalbrief-profiles/enrichment.ts",
+    "functions/signalbrief-profiles/enrichment-service.ts",
+    "functions/signalbrief-profiles/enrichment-sec.ts",
+    "functions/signalbrief-profiles/enrichment-html.ts",
+    "functions/signalbrief-profiles/enrichment-dart.ts",
+    "functions/signalbrief-collector/core.ts",
+    "functions/signalbrief-profiles/enrichment-dart-core.ts",
+    "functions/signalbrief-profiles/deno.json"
+  ],
+  "type_only_omissions": [
+    "functions/signalbrief-profiles/enrichment-types.ts"
+  ],
+  "validation": "Exact-source9 CI workflows and17jobs pass, both92-case browser runs pass; backend1104 andfocused actual-source persistence pass. Local old-desktop-test timeout retained; full frontend maxWorkers2 verification is separate and in progress."
+}

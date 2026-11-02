@@ -1,0 +1,72 @@
+{
+  "commit": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+  "tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+  "name": "signalbrief-profiles",
+  "files": [
+    {
+      "name": "supabase/functions/signalbrief-api/us-core.ts",
+      "sha256": "59f3577f1ee16b9f2204a01ac7e041b196a3c30d0a271693cebbf740fbf00f79",
+      "bytes": 17214
+    },
+    {
+      "name": "supabase/functions/signalbrief-collector/core.ts",
+      "sha256": "9cddec609de4ae62711a605f41f18ae1ee8433c019a827ec4288519c7471361c",
+      "bytes": 2482
+    },
+    {
+      "name": "supabase/functions/signalbrief-collector/dart-relay.ts",
+      "sha256": "760a0dfb9a998ba73ece742f13e32d9e0548e0d6ffce6d07c71ef673e9114749",
+      "bytes": 2180
+    },
+    {
+      "name": "supabase/functions/signalbrief-profiles/core.ts",
+      "sha256": "77f7b190ddd8dd92ef2f650b61e057e90bee7b7e87c0e2e05fd34b43ac8cc622",
+      "bytes": 3717
+    },
+    {
+      "name": "supabase/functions/signalbrief-profiles/deno.json",
+      "sha256": "06ad4a63295e104b0e9daf746524fb928b2b12186987e2c1b7e8e40178b79d2f",
+      "bytes": 49
+    },
+    {
+      "name": "supabase/functions/signalbrief-profiles/enrichment-dart-core.ts",
+      "sha256": "34c324e87669e8e4187e4d8366ebe0732bd7cdad02638c4a292083e27dee72d7",
+      "bytes": 8378
+    },
+    {
+      "name": "supabase/functions/signalbrief-profiles/enrichment-dart.ts",
+      "sha256": "86f24ae9b2e665d96151bcb1df6e82b2c16ffe521ecfb7878043ad02dce1024c",
+      "bytes": 5561
+    },
+    {
+      "name": "supabase/functions/signalbrief-profiles/enrichment-html.ts",
+      "sha256": "ffb1726d4e980b39b26c51929370ce12b377c22781b380caa240c408d1158263",
+      "bytes": 5366
+    },
+    {
+      "name": "supabase/functions/signalbrief-profiles/enrichment-sec.ts",
+      "sha256": "0197454bb8690907195974ab8e58639984b510f2e922a992ede8a6923d6424c1",
+      "bytes": 28187
+    },
+    {
+      "name": "supabase/functions/signalbrief-profiles/enrichment-service.ts",
+      "sha256": "002bcac411fb8e913b6e7d80cac4d8bddcd0fa9bd028eaf3af2485487b232fe7",
+      "bytes": 11520
+    },
+    {
+      "name": "supabase/functions/signalbrief-profiles/enrichment-types.ts",
+      "sha256": "e4772aa26af5ff03146c5e5551a508c607bda1f408d5d2e3e93c9e8fa17eb6b6",
+      "bytes": 2586
+    },
+    {
+      "name": "supabase/functions/signalbrief-profiles/enrichment.ts",
+      "sha256": "9e19549cac559d743449d3f6feb273a97a2f78189e6149270cfa10cbd0b29f5f",
+      "bytes": 5848
+    },
+    {
+      "name": "supabase/functions/signalbrief-profiles/index.ts",
+      "sha256": "1fae73dbc5016b5ec1e01305fca2f4c9506297b075b5099ba6d87f3c4afd5ecf",
+      "bytes": 7844
+    }
+  ]
+}

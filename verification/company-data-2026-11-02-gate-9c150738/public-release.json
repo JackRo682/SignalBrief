@@ -1,0 +1,10 @@
+{
+  "checked_at": "2026-11-02T06:00:11.074168+00:00",
+  "url": "https://signalbrief.online/api/release",
+  "http_status": 200,
+  "body": {
+    "release": "desktop-references-v1",
+    "commit": "9c1507383fb513c23a4a33468b564cbbeafb71e2",
+    "branch": "main"
+  }
+}

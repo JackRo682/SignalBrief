@@ -1,0 +1,5540 @@
+{
+  "captured_at": "2026-11-02T07:04:55.783087+00:00",
+  "requested_revision": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+  "object_type": "tree",
+  "tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+  "source_directory": "/tmp/signalbrief-nov2-final-source-8dc572e4731c3d33",
+  "verified_tree": true,
+  "tracked_blob_count": 1105,
+  "blobs": [
+    {
+      "path": ".agent/PLANS.md",
+      "mode": "100644",
+      "sha": "6125a2e7e48f84928dce9bf15cbacab258c16142"
+    },
+    {
+      "path": ".dockerignore",
+      "mode": "100644",
+      "sha": "e4e6877dd0d5ed2de98dc75ea02aba1d66f97d7b"
+    },
+    {
+      "path": ".env.example",
+      "mode": "100644",
+      "sha": "10a33841957fbed0f6538873d34abf678db1769d"
+    },
+    {
+      "path": ".env.production.example",
+      "mode": "100644",
+      "sha": "99480d6af7178a63a5173d4b56828891a162ef89"
+    },
+    {
+      "path": ".gitattributes",
+      "mode": "100644",
+      "sha": "6224e7fb62154579cee484ec4263ec15a1ea5053"
+    },
+    {
+      "path": ".github/workflows/calendar.yml",
+      "mode": "100644",
+      "sha": "77d8c41726550e2b7ad572d5dea973bbf5ace232"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "mode": "100644",
+      "sha": "0e449a42f6301f0a10eb57681916ad233e907c72"
+    },
+    {
+      "path": ".github/workflows/collector-check.yml",
+      "mode": "100644",
+      "sha": "65f57a64a0079a7e68b7091b738deaa1262f3adb"
+    },
+    {
+      "path": ".github/workflows/financial-evaluation.yml",
+      "mode": "100644",
+      "sha": "f3b2633967221c37a58e13e49d90e924adf3c004"
+    },
+    {
+      "path": ".github/workflows/hosted-schema.yml",
+      "mode": "100644",
+      "sha": "018f86449ac6d444934bf6b807795bbd266e76d3"
+    },
+    {
+      "path": ".github/workflows/production-api-deploy.yml",
+      "mode": "100644",
+      "sha": "34681b4655e339e9e1937bf35dfaaa8a3c81d256"
+    },
+    {
+      "path": ".github/workflows/production-health.yml",
+      "mode": "100644",
+      "sha": "73317326c3fa025357b71fd739bb5ccd37bf1a13"
+    },
+    {
+      "path": ".github/workflows/reference-application.yml",
+      "mode": "100644",
+      "sha": "cf04f583932b0ff9269b4764fe374da867861444"
+    },
+    {
+      "path": ".github/workflows/reference-release.yml",
+      "mode": "100644",
+      "sha": "b73d67f54106861e35ec9a40044242e647bbdf1d"
+    },
+    {
+      "path": ".github/workflows/reference-tools.yml",
+      "mode": "100644",
+      "sha": "8dd9c9a9829b0f5433e014f55259b1c7a7fd1266"
+    },
+    {
+      "path": ".github/workflows/release-qa.yml",
+      "mode": "100644",
+      "sha": "538813448c1f0263b9d5c0375cd3654d270a88f6"
+    },
+    {
+      "path": ".github/workflows/us-integration.yml",
+      "mode": "100644",
+      "sha": "e717c582f259a7f3403a1d81e5f586bf1a5c7267"
+    },
+    {
+      "path": ".github/workflows/us-live-check.yml",
+      "mode": "100644",
+      "sha": "915040ffd9df66d3cc914b11f873dd51cd755cd3"
+    },
+    {
+      "path": ".github/workflows/workspace-schema.yml",
+      "mode": "100644",
+      "sha": "3da4630d267975325d3e8a695a584b76581522b9"
+    },
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "sha": "622aefd952c22e83f46d1f270a1c34112ec3f553"
+    },
+    {
+      "path": ".reference-release/manifest.json",
+      "mode": "100644",
+      "sha": "ae9d630951ddb6b3a32bda49522937ad7de8d5f0"
+    },
+    {
+      "path": "AGENTS.md",
+      "mode": "100644",
+      "sha": "445c4be965d92171b74aac28ed7f5b8325ab7eab"
+    },
+    {
+      "path": "DOT_HANDOFF_KO.md",
+      "mode": "100644",
+      "sha": "61d6514fec33b78e3dbe8959ddd3a6608b7820d0"
+    },
+    {
+      "path": "Dockerfile",
+      "mode": "100644",
+      "sha": "546e8be14f76d46c9ab39efd6666cf087a3f7185"
+    },
+    {
+      "path": "FILE_COUNTS.json",
+      "mode": "100644",
+      "sha": "70f1fa14d8cd54ccb0a8f4d886bd2e65b11857af"
+    },
+    {
+      "path": "MANIFEST.sha256",
+      "mode": "100644",
+      "sha": "c19c611eed0270897c70f48cc2673965374d16a3"
+    },
+    {
+      "path": "Makefile",
+      "mode": "100644",
+      "sha": "a202d2b62308fb9dd0162ce66dd0106b39d6376a"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "sha": "855e39f940e9c7fbae7cdcf153ba003720bb5af6"
+    },
+    {
+      "path": "START_HERE_KO.md",
+      "mode": "100644",
+      "sha": "5f6e4706e1ca8812d398a4e7a7de238d40379967"
+    },
+    {
+      "path": "alembic.ini",
+      "mode": "100644",
+      "sha": "4d1b50ed26319e153365de9bcfc686516e0d17af"
+    },
+    {
+      "path": "apps/api/signalbrief/__init__.py",
+      "mode": "100644",
+      "sha": "3dc1f76bc69e3f559bee6253b24fc93acee9e1f9"
+    },
+    {
+      "path": "apps/api/signalbrief/ai/__init__.py",
+      "mode": "100644",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "apps/api/signalbrief/ai/client.py",
+      "mode": "100644",
+      "sha": "d1b73629573016c267484b45e965699dab3dc5a0"
+    },
+    {
+      "path": "apps/api/signalbrief/ai/demo_extractor.py",
+      "mode": "100644",
+      "sha": "8316c72678eb732a8b9d25d96b516e23313c33e6"
+    },
+    {
+      "path": "apps/api/signalbrief/ai/evidence.py",
+      "mode": "100644",
+      "sha": "d22b9b93bb2a199f14541daed125431111bf6865"
+    },
+    {
+      "path": "apps/api/signalbrief/ai/schemas.py",
+      "mode": "100644",
+      "sha": "0ad4218f8dd6bf069ec2d7338f7f0a6c50cfa69c"
+    },
+    {
+      "path": "apps/api/signalbrief/ai/sec_table_evidence.py",
+      "mode": "100644",
+      "sha": "3e34ffa7dd93ba504a12a3d5ff9d00ac9e48f7f1"
+    },
+    {
+      "path": "apps/api/signalbrief/analytics.py",
+      "mode": "100644",
+      "sha": "a457bb2d230cc35aa0867a6ddf1a6863d6df1e62"
+    },
+    {
+      "path": "apps/api/signalbrief/api_schemas.py",
+      "mode": "100644",
+      "sha": "60cc318ab722dd989dd8e19d4335a0f02df1a53a"
+    },
+    {
+      "path": "apps/api/signalbrief/app.py",
+      "mode": "100644",
+      "sha": "0e9671d72fa037df15cdeeeb2dccc586ce38fd3c"
+    },
+    {
+      "path": "apps/api/signalbrief/auth.py",
+      "mode": "100644",
+      "sha": "944616016a6200493ec0a6347f9194efb5aed0dc"
+    },
+    {
+      "path": "apps/api/signalbrief/body_limit.py",
+      "mode": "100644",
+      "sha": "6714875d17a246d30fe9a7ba984dce639310fbe4"
+    },
+    {
+      "path": "apps/api/signalbrief/briefs.py",
+      "mode": "100644",
+      "sha": "4fa8c2b3fd71d0c278b54fb5826e4ae6eef5a53a"
+    },
+    {
+      "path": "apps/api/signalbrief/card_evidence.py",
+      "mode": "100644",
+      "sha": "0936b0324166807e295ae8788203b27a059443b0"
+    },
+    {
+      "path": "apps/api/signalbrief/changes.py",
+      "mode": "100644",
+      "sha": "628c6e3b38c58fd80412e1048f9c1fd7dd76cdcf"
+    },
+    {
+      "path": "apps/api/signalbrief/cli.py",
+      "mode": "100644",
+      "sha": "d88da195d51dec98a5b7128207199dec309a7667"
+    },
+    {
+      "path": "apps/api/signalbrief/config/ranking-v1.json",
+      "mode": "100644",
+      "sha": "404877b4ac346950ec50d88da6decdfc224b557e"
+    },
+    {
+      "path": "apps/api/signalbrief/db.py",
+      "mode": "100644",
+      "sha": "f43562819d9c6b5d15ec57200e5a7e1244ba53dd"
+    },
+    {
+      "path": "apps/api/signalbrief/errors.py",
+      "mode": "100644",
+      "sha": "5d907ed87ea370d57c0ea7a84afade784c95b78a"
+    },
+    {
+      "path": "apps/api/signalbrief/evaluation.py",
+      "mode": "100644",
+      "sha": "88ccfb9ad9058b6ec7ee4f7ca1373cb972a95c5c"
+    },
+    {
+      "path": "apps/api/signalbrief/financial_benchmark.py",
+      "mode": "100644",
+      "sha": "aac575ac689e4383e24a5790cbfc254ea82525cb"
+    },
+    {
+      "path": "apps/api/signalbrief/http_client.py",
+      "mode": "100644",
+      "sha": "504b29a1c9656121e32a3bea1690add601b90775"
+    },
+    {
+      "path": "apps/api/signalbrief/ingestion.py",
+      "mode": "100644",
+      "sha": "150588d48d3a4cbacf012e3b37f19b0468690fd2"
+    },
+    {
+      "path": "apps/api/signalbrief/jobs.py",
+      "mode": "100644",
+      "sha": "c4c2f417085082de908411da09656ecc2d6426c6"
+    },
+    {
+      "path": "apps/api/signalbrief/limits.py",
+      "mode": "100644",
+      "sha": "6c13c69dd78f244467997c76858a2bd246da7cb7"
+    },
+    {
+      "path": "apps/api/signalbrief/live_trial.py",
+      "mode": "100644",
+      "sha": "325fe328d4d8ce86ab4eb7736280f877ea160ed9"
+    },
+    {
+      "path": "apps/api/signalbrief/logging_config.py",
+      "mode": "100644",
+      "sha": "6da8c1dd0b6af1fedc48265b82b13dd234590b79"
+    },
+    {
+      "path": "apps/api/signalbrief/models.py",
+      "mode": "100644",
+      "sha": "c65b17916474d06b1f5f73eae99a3d073c097f67"
+    },
+    {
+      "path": "apps/api/signalbrief/notifications.py",
+      "mode": "100644",
+      "sha": "0009fe3e7fc93411fa0a642b680264c1f3b28939"
+    },
+    {
+      "path": "apps/api/signalbrief/ops.py",
+      "mode": "100644",
+      "sha": "a33f2dca936ccf2347e5cdf51f5c57d973220226"
+    },
+    {
+      "path": "apps/api/signalbrief/parser.py",
+      "mode": "100644",
+      "sha": "0cf9673cbe4901b393262c80f551bfe495b343be"
+    },
+    {
+      "path": "apps/api/signalbrief/pipeline.py",
+      "mode": "100644",
+      "sha": "6354ff3bb1e1cba51f828a91939cf64fb9ea62f2"
+    },
+    {
+      "path": "apps/api/signalbrief/prompts/benchmark-direct-v1.txt",
+      "mode": "100644",
+      "sha": "e6620ae3d53627de24e0d042d68412676476aa57"
+    },
+    {
+      "path": "apps/api/signalbrief/prompts/benchmark-linked-v1.txt",
+      "mode": "100644",
+      "sha": "0ec695b2fcf24c419181a3fa0f64656f81c7ce04"
+    },
+    {
+      "path": "apps/api/signalbrief/prompts/extract-v1.txt",
+      "mode": "100644",
+      "sha": "b3b2dc60c74fca30ca99560d5ed45e7463e7a024"
+    },
+    {
+      "path": "apps/api/signalbrief/prompts/followup-v1.txt",
+      "mode": "100644",
+      "sha": "4bf50b513f96d6ddd6a817e7a07a49ec0b7749d0"
+    },
+    {
+      "path": "apps/api/signalbrief/prompts/sec-table-v1.txt",
+      "mode": "100644",
+      "sha": "86b3a2e9e4f92de926db0a6911d86f3e157fa788"
+    },
+    {
+      "path": "apps/api/signalbrief/prompts/semantic-v1.txt",
+      "mode": "100644",
+      "sha": "dd8cb7cd19cb0be63e82f55b45e8a6a157d27751"
+    },
+    {
+      "path": "apps/api/signalbrief/providers/__init__.py",
+      "mode": "100644",
+      "sha": "248123b4a8a2c9c956689ac5bf00a12ef338e473"
+    },
+    {
+      "path": "apps/api/signalbrief/providers/base.py",
+      "mode": "100644",
+      "sha": "7e3ac053950413b7f33f98b1342736839410ba4a"
+    },
+    {
+      "path": "apps/api/signalbrief/providers/dart.py",
+      "mode": "100644",
+      "sha": "727168fdae0f1025ee3724f0988b2ffd6f688e6a"
+    },
+    {
+      "path": "apps/api/signalbrief/providers/sec.py",
+      "mode": "100644",
+      "sha": "c2b12a2b1c29b2c8576a070a78503877eb801486"
+    },
+    {
+      "path": "apps/api/signalbrief/questions.py",
+      "mode": "100644",
+      "sha": "df54b46228e7e68ee20dbb0178c2e13442cb00f6"
+    },
+    {
+      "path": "apps/api/signalbrief/ranking.py",
+      "mode": "100644",
+      "sha": "a8b476ae1e9bb93c4e8c834cfd6590d07b8a8ca6"
+    },
+    {
+      "path": "apps/api/signalbrief/routes.py",
+      "mode": "100644",
+      "sha": "25f6b2191318657f4c36d7c8f1660e9db8f10ae6"
+    },
+    {
+      "path": "apps/api/signalbrief/sec_tables.py",
+      "mode": "100644",
+      "sha": "b01c432aaac6273c0dff6d62c7a17a548a8bfbd5"
+    },
+    {
+      "path": "apps/api/signalbrief/seed.py",
+      "mode": "100644",
+      "sha": "885479b0d867a509ee23cbffe8b01c12be4adb1f"
+    },
+    {
+      "path": "apps/api/signalbrief/settings.py",
+      "mode": "100644",
+      "sha": "c748f03eeeecd99007b96d47a81a78036ebf7f06"
+    },
+    {
+      "path": "apps/api/signalbrief/storage.py",
+      "mode": "100644",
+      "sha": "f0b07b4260715ed86f038cfaf90919674d40e635"
+    },
+    {
+      "path": "apps/api/signalbrief/vector_search.py",
+      "mode": "100644",
+      "sha": "cfadd5fd4f6acec960ebe173a6bc075d4f3f0920"
+    },
+    {
+      "path": "apps/api/signalbrief/views.py",
+      "mode": "100644",
+      "sha": "7c97a7f4b1fb83e7bf1958356d7f2fc0705ea3ec"
+    },
+    {
+      "path": "apps/api/signalbrief/worker.py",
+      "mode": "100644",
+      "sha": "196219bbbaf23683dd2aac263a23ad287a645c4d"
+    },
+    {
+      "path": "apps/web/.env.local.example",
+      "mode": "100644",
+      "sha": "a9f7afcb088b5a531b48cd4ec9d04b97a236402b"
+    },
+    {
+      "path": "apps/web/AGENTS.md",
+      "mode": "100644",
+      "sha": "af3b7c84114bafeee578bf1adff2ef74af2cc6a2"
+    },
+    {
+      "path": "apps/web/CLAUDE.md",
+      "mode": "100644",
+      "sha": "43c994c2d3617f947bcb5adf1933e21dabe46bb5"
+    },
+    {
+      "path": "apps/web/Dockerfile",
+      "mode": "100644",
+      "sha": "dfa3358c036250f2e7a99403954571083ca8e7f3"
+    },
+    {
+      "path": "apps/web/e2e/auth-navigation.spec.ts",
+      "mode": "100644",
+      "sha": "451ba58a837acd66a58fa1566c8fbd8d524fdbec"
+    },
+    {
+      "path": "apps/web/e2e/career-analytics.spec.ts",
+      "mode": "100644",
+      "sha": "6f7a356ad3dc09e4811ab4f0cfaccb1c15da6917"
+    },
+    {
+      "path": "apps/web/e2e/company-connections.spec.ts",
+      "mode": "100644",
+      "sha": "8497cd9e16ee62a5d481886d58fbb3152e509d12"
+    },
+    {
+      "path": "apps/web/e2e/company-profile.spec.ts",
+      "mode": "100644",
+      "sha": "a23a8aa4d2e9ec6c9e224567d82c050c0332290c"
+    },
+    {
+      "path": "apps/web/e2e/completion.spec.ts",
+      "mode": "100644",
+      "sha": "876c9d6901b9c013f0a804534bc24488c888c1ee"
+    },
+    {
+      "path": "apps/web/e2e/daily-digest.spec.ts",
+      "mode": "100644",
+      "sha": "9504032e4de9f274dcba20b14cfb9181e950d8a6"
+    },
+    {
+      "path": "apps/web/e2e/demo.spec.ts",
+      "mode": "100644",
+      "sha": "1abeec9487a269faf3bf48ec177d8ee56d14a537"
+    },
+    {
+      "path": "apps/web/e2e/desktop-fixture.ts",
+      "mode": "100644",
+      "sha": "085f29ac403459627508948a605fe799f56b63a0"
+    },
+    {
+      "path": "apps/web/e2e/desktop-references.spec.ts",
+      "mode": "100644",
+      "sha": "65957e881258b10f9f11987c025e26d4aa50d613"
+    },
+    {
+      "path": "apps/web/e2e/fixtures.ts",
+      "mode": "100644",
+      "sha": "a07644ff5eb6682eb2c85f383a1ed6b13fb24383"
+    },
+    {
+      "path": "apps/web/e2e/isolation.spec.ts",
+      "mode": "100644",
+      "sha": "f1d96f38cee726dd3dd12e4417309bdce77ceeba"
+    },
+    {
+      "path": "apps/web/e2e/market-indices.spec.ts",
+      "mode": "100644",
+      "sha": "f6310fe133721279cc19775935c29170eca0c111"
+    },
+    {
+      "path": "apps/web/e2e/marketing-pages.spec.ts",
+      "mode": "100644",
+      "sha": "d5aef6645a3e6a12703205899dea64143763192e"
+    },
+    {
+      "path": "apps/web/e2e/mobile-authenticated.spec.ts",
+      "mode": "100644",
+      "sha": "06af46b1bfb0337ccc503c3a6486549edca8d494"
+    },
+    {
+      "path": "apps/web/e2e/mobile-details.spec.ts",
+      "mode": "100644",
+      "sha": "0d86aab64ef58616a5a516e50755209dd751c930"
+    },
+    {
+      "path": "apps/web/e2e/mobile-fixture.ts",
+      "mode": "100644",
+      "sha": "40d3aca515c8b87d828d403f6163972d62070704"
+    },
+    {
+      "path": "apps/web/e2e/news.spec.ts",
+      "mode": "100644",
+      "sha": "d3c3136e41e5dba5d6e248236ec3b0c05cece628"
+    },
+    {
+      "path": "apps/web/e2e/performance.spec.ts",
+      "mode": "100644",
+      "sha": "b6cf4127a6f887c50ae830d13df407d159a1e20b"
+    },
+    {
+      "path": "apps/web/e2e/public-navigation.ts",
+      "mode": "100644",
+      "sha": "be1eae790476ea86a1b34db7bca2e856e8cac5e5"
+    },
+    {
+      "path": "apps/web/e2e/quote-permissions.spec.ts",
+      "mode": "100644",
+      "sha": "2519950b71b14b38eaafe2c1dc3e3cff5bc800f6"
+    },
+    {
+      "path": "apps/web/e2e/redesign-reliability.spec.ts",
+      "mode": "100644",
+      "sha": "b0b9f8d2cba5c505b5a8de962ec24ba90ae4df1b"
+    },
+    {
+      "path": "apps/web/e2e/release.spec.ts",
+      "mode": "100644",
+      "sha": "5b95d5e8cdad5bf6af4b5b473046fc3d34a027c9"
+    },
+    {
+      "path": "apps/web/e2e/research-workspace-fixture.ts",
+      "mode": "100644",
+      "sha": "97c7395bca0f031c3b7e17abf0af6a8a2b68f6b6"
+    },
+    {
+      "path": "apps/web/e2e/research-workspace.spec.ts",
+      "mode": "100644",
+      "sha": "aad04cf0fef8a351a6c1df2b77e35160b9f6a8b3"
+    },
+    {
+      "path": "apps/web/e2e/research.spec.ts",
+      "mode": "100644",
+      "sha": "6162a0aec1b1e384507a120c2aa5a35b890bbfdb"
+    },
+    {
+      "path": "apps/web/e2e/responsive-design.spec.ts",
+      "mode": "100644",
+      "sha": "c96fc4d6cd90ba8a5fb65617710bfd873fa1f550"
+    },
+    {
+      "path": "apps/web/e2e/source-visibility.spec.ts",
+      "mode": "100644",
+      "sha": "6f1cd6f42a0ab4a9af7a3e458423cd68ec5f212c"
+    },
+    {
+      "path": "apps/web/e2e/ui-refinement.spec.ts",
+      "mode": "100644",
+      "sha": "98f36c6aae2d812e2adf69fe2bc51541bb8348c9"
+    },
+    {
+      "path": "apps/web/e2e/usability-study.spec.ts",
+      "mode": "100644",
+      "sha": "3ff4ee4298d8da0295e13fda1cdb4d14a542b541"
+    },
+    {
+      "path": "apps/web/e2e/workspace-pages.spec.ts",
+      "mode": "100644",
+      "sha": "4bf490a00e5a0e7acd827e034f4443e715e82551"
+    },
+    {
+      "path": "apps/web/eslint.config.mjs",
+      "mode": "100644",
+      "sha": "1c69d5bc69c5332bdbce2c63f19dc800b1a34fe4"
+    },
+    {
+      "path": "apps/web/next-env.d.ts",
+      "mode": "100644",
+      "sha": "ce4e94a6b10f160ee021fe18939af160d2927dcf"
+    },
+    {
+      "path": "apps/web/next.config.ts",
+      "mode": "100644",
+      "sha": "6f352012b1ebc715a7abfa30ce3f45edb0f1c477"
+    },
+    {
+      "path": "apps/web/package-lock.json",
+      "mode": "100644",
+      "sha": "a1e657dcf8ec88d7b61cf163aed0595535b8ff7f"
+    },
+    {
+      "path": "apps/web/package.json",
+      "mode": "100644",
+      "sha": "d619f530a8d9af518ba4acad8976309a0b64cb25"
+    },
+    {
+      "path": "apps/web/playwright.config.ts",
+      "mode": "100644",
+      "sha": "e63ddf4bbaf477d88a5702ba5a3fda7fdad2d22a"
+    },
+    {
+      "path": "apps/web/public/marketing/mountain.webp",
+      "mode": "100644",
+      "sha": "9147334c53b7655e00be96592f699a3b9d3ef44b"
+    },
+    {
+      "path": "apps/web/public/marketing/privacy-shield.webp",
+      "mode": "100644",
+      "sha": "958b8d1ec5b841d63e6b2736f38110a51e1c6eec"
+    },
+    {
+      "path": "apps/web/public/reference-assets/logos/000660.webp",
+      "mode": "100644",
+      "sha": "0b3a3ef44d439d02f5187a60df2474a878baa97e"
+    },
+    {
+      "path": "apps/web/public/reference-assets/logos/005380.webp",
+      "mode": "100644",
+      "sha": "cd8188b76203fe89c2ac05e7637e51651b5860ca"
+    },
+    {
+      "path": "apps/web/public/reference-assets/logos/005490.webp",
+      "mode": "100644",
+      "sha": "60753299c61ff926820524207f0b4777d9da3427"
+    },
+    {
+      "path": "apps/web/public/reference-assets/logos/005930.webp",
+      "mode": "100644",
+      "sha": "b0afe1a8ffb706a042f294a2d2d7c4e61f06e5c7"
+    },
+    {
+      "path": "apps/web/public/reference-assets/logos/035420.webp",
+      "mode": "100644",
+      "sha": "e4b9f3e0eeb7602120509dd46a241edcde28af8f"
+    },
+    {
+      "path": "apps/web/public/reference-assets/logos/035720.webp",
+      "mode": "100644",
+      "sha": "420465a34f4a5f50e9602086485f9b9225932ba2"
+    },
+    {
+      "path": "apps/web/public/reference-assets/logos/373220.webp",
+      "mode": "100644",
+      "sha": "8ed742f2e53a54f23ad4e5b1e347b8d887a6d0e2"
+    },
+    {
+      "path": "apps/web/public/reference-assets/logos/AAPL.webp",
+      "mode": "100644",
+      "sha": "f09e40f9f281c1ba06608c722c48ebf50dd5a508"
+    },
+    {
+      "path": "apps/web/public/reference-assets/logos/NVDA.webp",
+      "mode": "100644",
+      "sha": "18b2801caff5007ec2981132072ba85fecb8c2a1"
+    },
+    {
+      "path": "apps/web/public/reference-assets/logos/TSLA.webp",
+      "mode": "100644",
+      "sha": "4136b03f75ea5ad54f84e62102825a93da43bf85"
+    },
+    {
+      "path": "apps/web/public/reference-assets/onboarding-guide.webp",
+      "mode": "100644",
+      "sha": "a5f472a93d106ef9f8df732af5e2b093181a4e72"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/alerts/page.tsx",
+      "mode": "100644",
+      "sha": "419a66fcdb3bbfe386c0f486ba122a65aec6fcee"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/calendar/page.tsx",
+      "mode": "100644",
+      "sha": "0855ba879173f6cecf8ad26da3b7da398571cf75"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/companies/[id]/page.tsx",
+      "mode": "100644",
+      "sha": "53ddd62505571e7e7300d14c9d1481fe027bdc02"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/companies/[id]/timeline/page.tsx",
+      "mode": "100644",
+      "sha": "5aba8055d63f3399afb60ef43b1bf3005a0a3f33"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/documents/[id]/page.tsx",
+      "mode": "100644",
+      "sha": "c50a3d80494cb6104388ed5083b7b95fdb0e3f03"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/events/[id]/page.tsx",
+      "mode": "100644",
+      "sha": "d602ebfb023b7ef2c7e9d69b181a0ece4b9cfb35"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/explore/page.tsx",
+      "mode": "100644",
+      "sha": "b177e0fac311c6b0a752f724ae41abe806e1650a"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/help/page.tsx",
+      "mode": "100644",
+      "sha": "160038d967a1fc1d6d0d6a22949a42b9d722d664"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/layout.tsx",
+      "mode": "100644",
+      "sha": "0ca0aad521cff7385be0af3baf5136f4ea62e703"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/more/page.tsx",
+      "mode": "100644",
+      "sha": "731014a34d74af613e7ea41a4859c1a4828d93b3"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/onboarding/page.tsx",
+      "mode": "100644",
+      "sha": "a4264af1a1006da8b304509e512b77f42682de6b"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/ops/analytics/page.tsx",
+      "mode": "100644",
+      "sha": "784a7a1b93df0da76ca7ebde3763b45eeff08245"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/ops/documents/[id]/page.tsx",
+      "mode": "100644",
+      "sha": "3329214ebbdc21cc7997f572e5ecdb4b68a7e4fc"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/ops/evaluations/datasets/[id]/page.tsx",
+      "mode": "100644",
+      "sha": "7dc7bffe02f04d670aec9717e756b2920aac9b80"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/ops/evaluations/page.tsx",
+      "mode": "100644",
+      "sha": "40df6dbe275d6fb771382b2dfd157f041c0d4573"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/ops/evaluations/runs/[id]/page.tsx",
+      "mode": "100644",
+      "sha": "2467bfea69893c898d3e9415c9e2c5857e7d3d80"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/ops/experiments/[id]/page.tsx",
+      "mode": "100644",
+      "sha": "d80bdb3698bff6c2e21bc95608ddd52d319b28de"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/ops/experiments/page.tsx",
+      "mode": "100644",
+      "sha": "d0d3fc63008bfa6b0da58a663669ada9cb4593a2"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/ops/page.tsx",
+      "mode": "100644",
+      "sha": "bdbd6e72239aae0ef8f5d7d3d06d3788645a6df7"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/ops/quality/page.tsx",
+      "mode": "100644",
+      "sha": "144049f2ba36f5eec6bcbc49950d0e9b7e7789a3"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/ops/reliability/page.tsx",
+      "mode": "100644",
+      "sha": "e42e468e9cf3324a4a512bc1b7d051d2db9103a5"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/ops/reports/page.tsx",
+      "mode": "100644",
+      "sha": "cc0542c6b67abd1656b1ac84d16fc464906e183d"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/ops/runs/[id]/page.tsx",
+      "mode": "100644",
+      "sha": "795c563b27d503f70e0a440c476659f334318383"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/portfolio/page.tsx",
+      "mode": "100644",
+      "sha": "e874f07145180b91acf471ed175df8ba0f4f1af5"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/questions/page.tsx",
+      "mode": "100644",
+      "sha": "2662808dec92de2bf429134b0fd0410fb23dbb1c"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/saved/page.tsx",
+      "mode": "100644",
+      "sha": "f8e2b7cb482cfeb9742cbd9abe1c42ea81af2a16"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/search/page.tsx",
+      "mode": "100644",
+      "sha": "2578461ab8b2c4b685f116a1528db8651c76d85c"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/settings/account/page.tsx",
+      "mode": "100644",
+      "sha": "2b3c5626b34bdc210276f40e29206120a2ebe49e"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/settings/appearance/page.tsx",
+      "mode": "100644",
+      "sha": "9b3e2f5c32798aa2872d602b7d8e3f47b58d79fb"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/settings/notifications/page.tsx",
+      "mode": "100644",
+      "sha": "77336d0f189004e6ab58beb2d2f6f25b597d417e"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/settings/page.tsx",
+      "mode": "100644",
+      "sha": "6ef2745ffe059864d1bb53112172ab4acbc950a3"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/settings/security/page.tsx",
+      "mode": "100644",
+      "sha": "3694538660907332b86e419dad8fc40834a5c05e"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/timeline/page.tsx",
+      "mode": "100644",
+      "sha": "4ecabcfef125bde2a264c452d87b3f5d3e86038e"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/today/page.tsx",
+      "mode": "100644",
+      "sha": "1d7033c1b4b904913c6bce6300fd686305566dc8"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/us/page.tsx",
+      "mode": "100644",
+      "sha": "544a0f938250c87955ad71ba364fc049fab14de7"
+    },
+    {
+      "path": "apps/web/src/app/(workspace)/watchlist/page.tsx",
+      "mode": "100644",
+      "sha": "ba48eebb222dd856a1a25b81be1c4bbc357e238a"
+    },
+    {
+      "path": "apps/web/src/app/about/page.tsx",
+      "mode": "100644",
+      "sha": "95ff0a8237bb77db1e8356a648825cc61b6eef66"
+    },
+    {
+      "path": "apps/web/src/app/account-marketing.css",
+      "mode": "100644",
+      "sha": "dbfeb341466e36b4aafd31dd0288306a393451d0"
+    },
+    {
+      "path": "apps/web/src/app/api/[...path]/route.ts",
+      "mode": "100644",
+      "sha": "926ebd1b8d85c35bf63fc0ff0f924d6e3fe5f16a"
+    },
+    {
+      "path": "apps/web/src/app/api/auth-config/route.ts",
+      "mode": "100644",
+      "sha": "1c2bee90ab3d0168f1b84ecea602b77a14488c52"
+    },
+    {
+      "path": "apps/web/src/app/api/billing/checkout/route.ts",
+      "mode": "100644",
+      "sha": "c895cfd553cf25a5a3b2baa36da09849624b0ebb"
+    },
+    {
+      "path": "apps/web/src/app/api/billing/export/route.ts",
+      "mode": "100644",
+      "sha": "1a0956aa10ad7ad8efd7d98f50f20093339e3b48"
+    },
+    {
+      "path": "apps/web/src/app/api/billing/status/route.ts",
+      "mode": "100644",
+      "sha": "f304a6a1788b3b8545243149b2f6fbb08c264fcb"
+    },
+    {
+      "path": "apps/web/src/app/api/billing/webhook/route.ts",
+      "mode": "100644",
+      "sha": "ba069baad7cc7a4ef46ea0018445cdfc0e3cc708"
+    },
+    {
+      "path": "apps/web/src/app/api/company-discovery/route.ts",
+      "mode": "100644",
+      "sha": "4632001cc37751e015c711cb8f133f3de8509961"
+    },
+    {
+      "path": "apps/web/src/app/api/company-profile/route.ts",
+      "mode": "100644",
+      "sha": "d9d956e21abe08f723b90c4c3fcd7f5c4a56db5e"
+    },
+    {
+      "path": "apps/web/src/app/api/internal/calendar-source/route.ts",
+      "mode": "100644",
+      "sha": "37c6edd2a180093bb5bd2ef31f4464b8d3c2b5fa"
+    },
+    {
+      "path": "apps/web/src/app/api/internal/dart/route.ts",
+      "mode": "100644",
+      "sha": "f7a27f1520be3843a6c0eb031443c780665cc977"
+    },
+    {
+      "path": "apps/web/src/app/api/market/route.ts",
+      "mode": "100644",
+      "sha": "ef1ccdfac5b3295c190dee818f2f00645ab668ef"
+    },
+    {
+      "path": "apps/web/src/app/api/news/route.ts",
+      "mode": "100644",
+      "sha": "432158ae57583c0fe00375b50c1a53482f062d96"
+    },
+    {
+      "path": "apps/web/src/app/api/public-stats/route.ts",
+      "mode": "100644",
+      "sha": "af1bb6aeefe4bb9ff83da91d50e139eb7d110e1e"
+    },
+    {
+      "path": "apps/web/src/app/api/release/route.ts",
+      "mode": "100644",
+      "sha": "6823430ac61a819090dee81c4447100f5e332894"
+    },
+    {
+      "path": "apps/web/src/app/api/research/route.ts",
+      "mode": "100644",
+      "sha": "4d21a47a43d001ffaacab0a58071d1324f0b0a40"
+    },
+    {
+      "path": "apps/web/src/app/api/us/[...path]/route.ts",
+      "mode": "100644",
+      "sha": "ee0620d7bd2ba0019db821b9b0a0dee4b7c29829"
+    },
+    {
+      "path": "apps/web/src/app/api/workspace/route.ts",
+      "mode": "100644",
+      "sha": "66b648559c8e77790f80ee019aec09bb465c8ad8"
+    },
+    {
+      "path": "apps/web/src/app/auth/callback/page.tsx",
+      "mode": "100644",
+      "sha": "cb5bfc8bdb3492a4c85ed8b3dac1e0444f0c0470"
+    },
+    {
+      "path": "apps/web/src/app/billing/page.tsx",
+      "mode": "100644",
+      "sha": "494b9e1c8238a6d605d3b61241a564dabdeac0f6"
+    },
+    {
+      "path": "apps/web/src/app/customers/page.tsx",
+      "mode": "100644",
+      "sha": "6f58ea13de09483dbe6c6cdb618040f955a6566e"
+    },
+    {
+      "path": "apps/web/src/app/disclaimer/page.tsx",
+      "mode": "100644",
+      "sha": "5d27d289e88a05c4549a5a71e193277f44c2fd18"
+    },
+    {
+      "path": "apps/web/src/app/email/unsubscribe/route.ts",
+      "mode": "100644",
+      "sha": "5a3f45e89aa176451b245ee027adced6a3047b7b"
+    },
+    {
+      "path": "apps/web/src/app/error.tsx",
+      "mode": "100644",
+      "sha": "084686571b3e3d8ec764598a9383823734c18385"
+    },
+    {
+      "path": "apps/web/src/app/features/page.tsx",
+      "mode": "100644",
+      "sha": "0e9c1e1aebea58f3560afb4cc9b5f34c76b27764"
+    },
+    {
+      "path": "apps/web/src/app/fonts/LICENSE.txt",
+      "mode": "100644",
+      "sha": "497b88f9fa7623ba9f8fdac86b43dec5621984ed"
+    },
+    {
+      "path": "apps/web/src/app/fonts/PretendardVariable.woff2",
+      "mode": "100644",
+      "sha": "49c54b5152a184a243e85f7281ed338b6569987e"
+    },
+    {
+      "path": "apps/web/src/app/forgot-password/page.tsx",
+      "mode": "100644",
+      "sha": "abff65141158dc16830e53a6eac21fbb6ca96248"
+    },
+    {
+      "path": "apps/web/src/app/globals.css",
+      "mode": "100644",
+      "sha": "3d11a32164d02befa9a6e1ba8f38af39fdf8e22a"
+    },
+    {
+      "path": "apps/web/src/app/layout.tsx",
+      "mode": "100644",
+      "sha": "718da7a1afb7bf60aa14878abf1922a38014d2b1"
+    },
+    {
+      "path": "apps/web/src/app/login/page.tsx",
+      "mode": "100644",
+      "sha": "dcbae2d084cf7253612182e326c06decd04223dc"
+    },
+    {
+      "path": "apps/web/src/app/news/page.tsx",
+      "mode": "100644",
+      "sha": "53df8f233302f2f2c1806687120878cee71441e0"
+    },
+    {
+      "path": "apps/web/src/app/not-found.tsx",
+      "mode": "100644",
+      "sha": "f8edee32b4f839fd3bca08e24b1a914549d25a86"
+    },
+    {
+      "path": "apps/web/src/app/page.tsx",
+      "mode": "100644",
+      "sha": "3162cc5fa3180ee35c9ad76feea4a0419dab80b2"
+    },
+    {
+      "path": "apps/web/src/app/pricing/page.tsx",
+      "mode": "100644",
+      "sha": "660b7c89738e398a1b01fb087b28ef53d0d8818f"
+    },
+    {
+      "path": "apps/web/src/app/privacy/page.tsx",
+      "mode": "100644",
+      "sha": "a3087e2d58551558a82b3e31bd8bb176404db0a5"
+    },
+    {
+      "path": "apps/web/src/app/release-layout.css",
+      "mode": "100644",
+      "sha": "e43c62a9487589026968ca6ba175c1d939ec6694"
+    },
+    {
+      "path": "apps/web/src/app/reset-password/page.tsx",
+      "mode": "100644",
+      "sha": "68539d5546f543a401f2b3b22b14880346134ea6"
+    },
+    {
+      "path": "apps/web/src/app/signup/page.tsx",
+      "mode": "100644",
+      "sha": "98700ecd1d0acbd6a5da7831aa185523eb3189aa"
+    },
+    {
+      "path": "apps/web/src/app/sources/page.tsx",
+      "mode": "100644",
+      "sha": "a3079f27b4c46a7de9ad4d650969633b623e9c93"
+    },
+    {
+      "path": "apps/web/src/app/status/page.tsx",
+      "mode": "100644",
+      "sha": "d821ad8b78823c89a96c2ee5d705ffd24edc265b"
+    },
+    {
+      "path": "apps/web/src/app/study/[id]/page.tsx",
+      "mode": "100644",
+      "sha": "87d270bd7af15f035b32e7e9ddc0566d44b0232a"
+    },
+    {
+      "path": "apps/web/src/app/terms/page.tsx",
+      "mode": "100644",
+      "sha": "3944ea30d8df17d60ecaadf06fe94bb913eeb6e7"
+    },
+    {
+      "path": "apps/web/src/components/approved-document-analyses.tsx",
+      "mode": "100644",
+      "sha": "cfbb9bdac005d3e2493d3da52e31d5085f3205c0"
+    },
+    {
+      "path": "apps/web/src/components/auth-layout.tsx",
+      "mode": "100644",
+      "sha": "1ea79d3ebad63988aec2fadff87a425218370db2"
+    },
+    {
+      "path": "apps/web/src/components/auth.tsx",
+      "mode": "100644",
+      "sha": "2c798665b5e920d8c3de71a7b11289f6d630e48c"
+    },
+    {
+      "path": "apps/web/src/components/billing-page.tsx",
+      "mode": "100644",
+      "sha": "51d8e9ecf56c315a669ed9cd3bf6fa23df2116e2"
+    },
+    {
+      "path": "apps/web/src/components/calendar-range.tsx",
+      "mode": "100644",
+      "sha": "426e47d0c8711a99c4362d51de5978aa2fa682cb"
+    },
+    {
+      "path": "apps/web/src/components/company-financials.tsx",
+      "mode": "100644",
+      "sha": "3b790d57120dd0256f5076825f9c7657ff346888"
+    },
+    {
+      "path": "apps/web/src/components/company-introduction.tsx",
+      "mode": "100644",
+      "sha": "12100fa0b9294acd9276e27699f9f2c254651f81"
+    },
+    {
+      "path": "apps/web/src/components/company-news.tsx",
+      "mode": "100644",
+      "sha": "087850ba2c9426035411ab30038839da0d0bfa77"
+    },
+    {
+      "path": "apps/web/src/components/company-profile-evidence.tsx",
+      "mode": "100644",
+      "sha": "c214846a44002e40951f441d256087a419e42de4"
+    },
+    {
+      "path": "apps/web/src/components/company-profile.css",
+      "mode": "100644",
+      "sha": "15607b932ac4eb86feeeebf860fdedbfaf55f437"
+    },
+    {
+      "path": "apps/web/src/components/company-profile.tsx",
+      "mode": "100644",
+      "sha": "cff4fa672255d6d5784578e9ec3f32125e50fcf7"
+    },
+    {
+      "path": "apps/web/src/components/company-snapshot-introduction.tsx",
+      "mode": "100644",
+      "sha": "ad37b6d7936a5965bc29d6e61185cfc69de17e6a"
+    },
+    {
+      "path": "apps/web/src/components/company-widgets.tsx",
+      "mode": "100644",
+      "sha": "5455b102471e8f31cabed3e745bb89c23fc8f799"
+    },
+    {
+      "path": "apps/web/src/components/company-workspace.tsx",
+      "mode": "100644",
+      "sha": "a75ff06ed1cbfcd48231c52b86061483f0392cea"
+    },
+    {
+      "path": "apps/web/src/components/filing-analysis.tsx",
+      "mode": "100644",
+      "sha": "964481281f674e1150943a7557266c68d6fe3b4c"
+    },
+    {
+      "path": "apps/web/src/components/filing-timeline.css",
+      "mode": "100644",
+      "sha": "23cc5ce09dd949cc903c8399a4817dd92ca5e7fa"
+    },
+    {
+      "path": "apps/web/src/components/filing-timeline.tsx",
+      "mode": "100644",
+      "sha": "6a83c217bd67881dabe95a01a8ecfd9ab458c727"
+    },
+    {
+      "path": "apps/web/src/components/icons.tsx",
+      "mode": "100644",
+      "sha": "ea6e41b5e356df06e5bf503b618d418c299d342c"
+    },
+    {
+      "path": "apps/web/src/components/korean-news.css",
+      "mode": "100644",
+      "sha": "66a0683309288e151d798abcfc5fbc6330c10f11"
+    },
+    {
+      "path": "apps/web/src/components/korean-news.tsx",
+      "mode": "100644",
+      "sha": "c12fecdcb24b0e86f59864ad590c3e1ad42e153f"
+    },
+    {
+      "path": "apps/web/src/components/login-form.tsx",
+      "mode": "100644",
+      "sha": "ccbe76f6da385ef23873f3c0aa9d41d2f00fdf11"
+    },
+    {
+      "path": "apps/web/src/components/market-indices.css",
+      "mode": "100644",
+      "sha": "1c88d7f3a4892dbbcc552bf1e49bcd2c16fb5ac0"
+    },
+    {
+      "path": "apps/web/src/components/market-indices.tsx",
+      "mode": "100644",
+      "sha": "dbd257dc5b1d105c2ee29fea6a9554f21cb2d82e"
+    },
+    {
+      "path": "apps/web/src/components/market-widget.css",
+      "mode": "100644",
+      "sha": "d8bdfe952c384f07b0928294df118576625238d5"
+    },
+    {
+      "path": "apps/web/src/components/market-widget.tsx",
+      "mode": "100644",
+      "sha": "ada958fb568c71bf41314a329d340c7af5011297"
+    },
+    {
+      "path": "apps/web/src/components/marketing/actions.tsx",
+      "mode": "100644",
+      "sha": "7ef92337c93b4b8db8a206af82840fcb20e4af39"
+    },
+    {
+      "path": "apps/web/src/components/marketing/design.tsx",
+      "mode": "100644",
+      "sha": "93986e4ff95e19e78106b21e8e5513f619b4a0df"
+    },
+    {
+      "path": "apps/web/src/components/marketing/header.tsx",
+      "mode": "100644",
+      "sha": "2d8ccd1135931c06ba286e1ce091dd935bb9a63d"
+    },
+    {
+      "path": "apps/web/src/components/marketing/interactive.tsx",
+      "mode": "100644",
+      "sha": "86df188211b53f62d4bf9c2ea3d6ed5d46d68fc6"
+    },
+    {
+      "path": "apps/web/src/components/marketing/layout.tsx",
+      "mode": "100644",
+      "sha": "5f25c6bbad8f392f9843112834bd4a087b5e33fa"
+    },
+    {
+      "path": "apps/web/src/components/marketing/legal-reference.tsx",
+      "mode": "100644",
+      "sha": "3a5a683645ef7d65e05249992f43a5c3ccee8335"
+    },
+    {
+      "path": "apps/web/src/components/marketing/legal.tsx",
+      "mode": "100644",
+      "sha": "964bed468c4382b6dcf886d2d932813ae4118847"
+    },
+    {
+      "path": "apps/web/src/components/marketing/marketing.css",
+      "mode": "100644",
+      "sha": "337e1b4433e61e265b584137f1a412361df9e266"
+    },
+    {
+      "path": "apps/web/src/components/marketing/reference-pages.tsx",
+      "mode": "100644",
+      "sha": "4171c14565658a3bc662ce6f708a23474e7de794"
+    },
+    {
+      "path": "apps/web/src/components/marketing/reference.css",
+      "mode": "100644",
+      "sha": "bc15f0525d5c285fe1c3a3cf9b95d477275c4228"
+    },
+    {
+      "path": "apps/web/src/components/marketing/refinement.css",
+      "mode": "100644",
+      "sha": "e06d823af762884a9da720c4d2a5c2aa6a551d2e"
+    },
+    {
+      "path": "apps/web/src/components/marketing/responsive-design.css",
+      "mode": "100644",
+      "sha": "03e485d7279f47a70e452c4f5f23621b720ee595"
+    },
+    {
+      "path": "apps/web/src/components/marketing/screenshot-accessibility.css",
+      "mode": "100644",
+      "sha": "e1b3c947c8c7828704bb4115edf2b885bb1c5a4f"
+    },
+    {
+      "path": "apps/web/src/components/marketing/screenshot-design.css",
+      "mode": "100644",
+      "sha": "a53393d32ebb97beb6bb589afbf93e86a64d36b1"
+    },
+    {
+      "path": "apps/web/src/components/marketing/screenshot-preview.tsx",
+      "mode": "100644",
+      "sha": "5bd0e9bc16c758afa383c9669b0266fd4ee17cde"
+    },
+    {
+      "path": "apps/web/src/components/mfa-challenge.css",
+      "mode": "100644",
+      "sha": "7f24a61c61a22266d51cec1db8d838090345a69b"
+    },
+    {
+      "path": "apps/web/src/components/mfa-challenge.tsx",
+      "mode": "100644",
+      "sha": "3e068fb96d7952a4c50ff41e08b289bb72172950"
+    },
+    {
+      "path": "apps/web/src/components/research-resources.tsx",
+      "mode": "100644",
+      "sha": "d7e699b2d3fa1f9bcadf0f9cb1913c1bcae192bf"
+    },
+    {
+      "path": "apps/web/src/components/research-workspace.css",
+      "mode": "100644",
+      "sha": "952dbcb9e28bf5e2fea91635ee46a2e43dc3660c"
+    },
+    {
+      "path": "apps/web/src/components/reset-password-form.tsx",
+      "mode": "100644",
+      "sha": "d215049235f266fee8cba2d2aad105d7e93275ea"
+    },
+    {
+      "path": "apps/web/src/components/signed-in-home.tsx",
+      "mode": "100644",
+      "sha": "bbdf175e1d3512258059b157715302f3ea5d5bc5"
+    },
+    {
+      "path": "apps/web/src/components/source-overview.css",
+      "mode": "100644",
+      "sha": "e74324eeb29941300c4024f5cdfe5d9ea4f8eeb7"
+    },
+    {
+      "path": "apps/web/src/components/source-overview.tsx",
+      "mode": "100644",
+      "sha": "51f46554f788fd321e3e0473b11746584a7599c4"
+    },
+    {
+      "path": "apps/web/src/components/sourced-business-profile.tsx",
+      "mode": "100644",
+      "sha": "2578b990fb4b5bd9321c1bdfa675171391c66e81"
+    },
+    {
+      "path": "apps/web/src/components/tradingview-news.css",
+      "mode": "100644",
+      "sha": "d4d0fc4635583f155a6c5251db7b6afc4b9516fc"
+    },
+    {
+      "path": "apps/web/src/components/tradingview-news.tsx",
+      "mode": "100644",
+      "sha": "f29dafbb8369351cd86ce413f79d5958bf1bab8e"
+    },
+    {
+      "path": "apps/web/src/components/ui.tsx",
+      "mode": "100644",
+      "sha": "95172497e5d2e7230325bac37cb2de52c24af22b"
+    },
+    {
+      "path": "apps/web/src/components/use-company-financials.ts",
+      "mode": "100644",
+      "sha": "d7f3e158cf1591b507fc82ebb6e932cc9ed38eec"
+    },
+    {
+      "path": "apps/web/src/components/use-company-profile.ts",
+      "mode": "100644",
+      "sha": "55d7d71a1addaa67fddf10b3afa7c4f1115a8847"
+    },
+    {
+      "path": "apps/web/src/components/workspace-loading.tsx",
+      "mode": "100644",
+      "sha": "94a1a8ada2d3ac4a6ad5164b9698b4f32bd16cef"
+    },
+    {
+      "path": "apps/web/src/desktop/data.ts",
+      "mode": "100644",
+      "sha": "89861b48310764312858d142cb8db8a0326c089c"
+    },
+    {
+      "path": "apps/web/src/desktop/desktop.css",
+      "mode": "100644",
+      "sha": "07057b53180f94d50b4c6505cd840e96076c7664"
+    },
+    {
+      "path": "apps/web/src/desktop/questions.css",
+      "mode": "100644",
+      "sha": "a5fcde5653f1d413c4c3864ea27b0e045a6492ab"
+    },
+    {
+      "path": "apps/web/src/desktop/questions.tsx",
+      "mode": "100644",
+      "sha": "e1b0148b32d4dac3d507551edcc86e01aa11259f"
+    },
+    {
+      "path": "apps/web/src/desktop/research.css",
+      "mode": "100644",
+      "sha": "36921a7d2f5f1175f50ee13b8d6bf88358b38f1f"
+    },
+    {
+      "path": "apps/web/src/desktop/research.tsx",
+      "mode": "100644",
+      "sha": "15065d0faad73a6b8ca47192343947513aac4eb9"
+    },
+    {
+      "path": "apps/web/src/desktop/search-legacy.tsx",
+      "mode": "100644",
+      "sha": "4cc534c17be8bfb5152d661ca657201fc5abbe38"
+    },
+    {
+      "path": "apps/web/src/desktop/search.css",
+      "mode": "100644",
+      "sha": "a43073c0d2bb2aac04720268795d5cff73651094"
+    },
+    {
+      "path": "apps/web/src/desktop/search.tsx",
+      "mode": "100644",
+      "sha": "0364f74a4b1f6265681b926a0edf21ed08b5bab6"
+    },
+    {
+      "path": "apps/web/src/desktop/shell.css",
+      "mode": "100644",
+      "sha": "b82ff8f6d3346517e3dc33bef3439582abe2b811"
+    },
+    {
+      "path": "apps/web/src/desktop/shell.tsx",
+      "mode": "100644",
+      "sha": "59f847044d9b5dd4f2ada9a73d2ea3b64d9a83af"
+    },
+    {
+      "path": "apps/web/src/desktop/today-legacy.tsx",
+      "mode": "100644",
+      "sha": "c3198fab43cd8fd025aae47737f20a8faf6e09d4"
+    },
+    {
+      "path": "apps/web/src/desktop/today.css",
+      "mode": "100644",
+      "sha": "706174e7f9f02bb81a58a9bc82e842ad70e5e6ab"
+    },
+    {
+      "path": "apps/web/src/desktop/today.tsx",
+      "mode": "100644",
+      "sha": "04799df00b9af3e8f84742882436c10743821e5e"
+    },
+    {
+      "path": "apps/web/src/desktop/ui.tsx",
+      "mode": "100644",
+      "sha": "dfbcdd6b665826e6ac498c34990b61dcd19f7c71"
+    },
+    {
+      "path": "apps/web/src/desktop/watchlist-legacy.tsx",
+      "mode": "100644",
+      "sha": "849e3ec8d77115a7829e8fe3e4a6f13b54340e56"
+    },
+    {
+      "path": "apps/web/src/desktop/watchlist.css",
+      "mode": "100644",
+      "sha": "6694d64f3d18ae666df153016b12f696ade12ce8"
+    },
+    {
+      "path": "apps/web/src/desktop/watchlist.tsx",
+      "mode": "100644",
+      "sha": "8a1d55c8b7310c412646f7c6ecaf38f06e340742"
+    },
+    {
+      "path": "apps/web/src/lib/api.ts",
+      "mode": "100644",
+      "sha": "ace06b56f9ea523ac7837febbced8676c31de4d6"
+    },
+    {
+      "path": "apps/web/src/lib/approved-analysis-display.ts",
+      "mode": "100644",
+      "sha": "c35e1e4aa0835d152c1b6b462e1b2a226ff73be3"
+    },
+    {
+      "path": "apps/web/src/lib/auth-policy.ts",
+      "mode": "100644",
+      "sha": "38892ea01e20c1680e636ff024ecf0944a173f02"
+    },
+    {
+      "path": "apps/web/src/lib/company-business-profiles.ts",
+      "mode": "100644",
+      "sha": "bdcaba0ee07c9b427b62ab0243524bec0099c0dc"
+    },
+    {
+      "path": "apps/web/src/lib/company-financials-contract.ts",
+      "mode": "100644",
+      "sha": "a20ed0e4a5ae875d4c8681775882175b031a215c"
+    },
+    {
+      "path": "apps/web/src/lib/company-overview.ts",
+      "mode": "100644",
+      "sha": "040d10a33eb094d2d1e97b2935fd3a14410bf285"
+    },
+    {
+      "path": "apps/web/src/lib/company-profile-contract.ts",
+      "mode": "100644",
+      "sha": "10a9ac792bf391afaeaf5ae10c8a526d50f35f7b"
+    },
+    {
+      "path": "apps/web/src/lib/contracts.ts",
+      "mode": "100644",
+      "sha": "d21320a371284d7e0c412e0e8b3fb72db81b662e"
+    },
+    {
+      "path": "apps/web/src/lib/decimal-input.ts",
+      "mode": "100644",
+      "sha": "c9b5d0e45892c7ecbeed6779c39a6aaa5c3b80dd"
+    },
+    {
+      "path": "apps/web/src/lib/format.ts",
+      "mode": "100644",
+      "sha": "be63acc2bbf7d600be8413d1e502eaf8ad5d7ae2"
+    },
+    {
+      "path": "apps/web/src/lib/internal-navigation.ts",
+      "mode": "100644",
+      "sha": "24e7a75b89b651da82fcd6e0f8eceb4cf29483d8"
+    },
+    {
+      "path": "apps/web/src/lib/marketing.ts",
+      "mode": "100644",
+      "sha": "a26bdb556b2f1e2d8684a9ca89696f20fcd1a66e"
+    },
+    {
+      "path": "apps/web/src/lib/naver-news.ts",
+      "mode": "100644",
+      "sha": "173940ce433a5421d57405b869c7096f8ec0f02e"
+    },
+    {
+      "path": "apps/web/src/lib/news-contract.ts",
+      "mode": "100644",
+      "sha": "81e84e2e805a1365a43bb832ad2a5f5e9037c651"
+    },
+    {
+      "path": "apps/web/src/lib/oauth-callback.ts",
+      "mode": "100644",
+      "sha": "d5a21931803ec00b96d58bb1e8fe8fb17fc56229"
+    },
+    {
+      "path": "apps/web/src/lib/page-data-cache.ts",
+      "mode": "100644",
+      "sha": "123f300d641a872eeb4d0ccf3f4161015a654f1b"
+    },
+    {
+      "path": "apps/web/src/lib/product.ts",
+      "mode": "100644",
+      "sha": "a747ba9c8cd149e87d286e885dd1187905d71380"
+    },
+    {
+      "path": "apps/web/src/lib/quote-display.ts",
+      "mode": "100644",
+      "sha": "a6080676d7edefdb77a115951dca640d30f38912"
+    },
+    {
+      "path": "apps/web/src/lib/runtime-config.ts",
+      "mode": "100644",
+      "sha": "ba76cbb1f9852b6177ca4db4f0e7b55977f87866"
+    },
+    {
+      "path": "apps/web/src/lib/site-url.ts",
+      "mode": "100644",
+      "sha": "ab2f841c8137aaae7276ff986c52f2e2c74d3441"
+    },
+    {
+      "path": "apps/web/src/lib/supabase.ts",
+      "mode": "100644",
+      "sha": "0571edf1dc7575ad04b4a7137d81d90f34b7703d"
+    },
+    {
+      "path": "apps/web/src/lib/use-event-analytics.ts",
+      "mode": "100644",
+      "sha": "f757d2c7fe8256524a1f7e0859afe6ab94c839c9"
+    },
+    {
+      "path": "apps/web/src/lib/workspace-features.ts",
+      "mode": "100644",
+      "sha": "e99a913aba8b3c4126f0b841a884fc3c665244d4"
+    },
+    {
+      "path": "apps/web/src/mobile/account-security.css",
+      "mode": "100644",
+      "sha": "9fca37a19d1a070258eb9187a5ce7e0d2b1aff74"
+    },
+    {
+      "path": "apps/web/src/mobile/account.tsx",
+      "mode": "100644",
+      "sha": "a9786face7c84975fdc3d7ed9b1b75f714f600da"
+    },
+    {
+      "path": "apps/web/src/mobile/alerts.tsx",
+      "mode": "100644",
+      "sha": "275ab283a2e358de12d4f096792e2e49a07d295a"
+    },
+    {
+      "path": "apps/web/src/mobile/appearance.css",
+      "mode": "100644",
+      "sha": "ccc986d6bed18c86b270c259f006f76da572dafd"
+    },
+    {
+      "path": "apps/web/src/mobile/appearance.tsx",
+      "mode": "100644",
+      "sha": "09d29b7e7e8c66110ec22c19e69cd23daf499bce"
+    },
+    {
+      "path": "apps/web/src/mobile/brand-paths.ts",
+      "mode": "100644",
+      "sha": "3c6d214fcb3afec4f1a00d4c73aaa4885618aa7d"
+    },
+    {
+      "path": "apps/web/src/mobile/calendar-alerts.css",
+      "mode": "100644",
+      "sha": "0a0bf12f774771c83e79010f53553c136c41e344"
+    },
+    {
+      "path": "apps/web/src/mobile/calendar-legacy.tsx",
+      "mode": "100644",
+      "sha": "f22f1943af9546c2e6b40dd2299491c136b0e058"
+    },
+    {
+      "path": "apps/web/src/mobile/calendar.tsx",
+      "mode": "100644",
+      "sha": "63510f04f8c93b6c425f3ed5a3dc5c0e8220f263"
+    },
+    {
+      "path": "apps/web/src/mobile/collections.css",
+      "mode": "100644",
+      "sha": "88bbdd0ccd4dd542df12ee59c87a4f0940d98ab5"
+    },
+    {
+      "path": "apps/web/src/mobile/company-legacy.tsx",
+      "mode": "100644",
+      "sha": "408f651a632dfbbc9227c7cc62b6b1d161d6926c"
+    },
+    {
+      "path": "apps/web/src/mobile/company.css",
+      "mode": "100644",
+      "sha": "25ccb14e11d9ea7318bb2c83d6ff43c6a9341af2"
+    },
+    {
+      "path": "apps/web/src/mobile/company.tsx",
+      "mode": "100644",
+      "sha": "cf066518d0d09667d984fbee772328ed050bf8b3"
+    },
+    {
+      "path": "apps/web/src/mobile/detail-shell.css",
+      "mode": "100644",
+      "sha": "75852b27013c374fadd40e58aa17e77e0d646f1b"
+    },
+    {
+      "path": "apps/web/src/mobile/document.tsx",
+      "mode": "100644",
+      "sha": "31daf3fb4c8325d51f29cb4b539df054ddbf93ca"
+    },
+    {
+      "path": "apps/web/src/mobile/event.css",
+      "mode": "100644",
+      "sha": "7424dc0ccbfa410fdbb58453098bb9e07d39dd86"
+    },
+    {
+      "path": "apps/web/src/mobile/event.tsx",
+      "mode": "100644",
+      "sha": "9655684123d4db61e813763e95d11f23d018c24b"
+    },
+    {
+      "path": "apps/web/src/mobile/help.css",
+      "mode": "100644",
+      "sha": "123c9d9964b9d785fc0029c0abb5008ca4b5f32e"
+    },
+    {
+      "path": "apps/web/src/mobile/help.tsx",
+      "mode": "100644",
+      "sha": "414eb0194a0b799c844741d5245a7ad424bb9a74"
+    },
+    {
+      "path": "apps/web/src/mobile/mobile.css",
+      "mode": "100644",
+      "sha": "f48612f077342ccc66cb26310c04d5676a3969fb"
+    },
+    {
+      "path": "apps/web/src/mobile/notifications.tsx",
+      "mode": "100644",
+      "sha": "7d6224ac249054d8a8fbe892fae8d46c71f7745d"
+    },
+    {
+      "path": "apps/web/src/mobile/onboarding.css",
+      "mode": "100644",
+      "sha": "845e41fa54af434dcb576c02305f6964317585da"
+    },
+    {
+      "path": "apps/web/src/mobile/onboarding.tsx",
+      "mode": "100644",
+      "sha": "dbe4ea018afb25ca3f23359adf3bb10eb5661e5e"
+    },
+    {
+      "path": "apps/web/src/mobile/portfolio-math.ts",
+      "mode": "100644",
+      "sha": "8715ecde36eb23b1daf4cb54c26f285137bd193c"
+    },
+    {
+      "path": "apps/web/src/mobile/portfolio.tsx",
+      "mode": "100644",
+      "sha": "ee61d6bdf0576d1656deb189b44b19c790327c69"
+    },
+    {
+      "path": "apps/web/src/mobile/questions.tsx",
+      "mode": "100644",
+      "sha": "080173230165e49859444dd1ae8af0f7bcb242c2"
+    },
+    {
+      "path": "apps/web/src/mobile/research.css",
+      "mode": "100644",
+      "sha": "ebd5fb7f5ea2a5ffc338b0c9ab64b6dbe00105a2"
+    },
+    {
+      "path": "apps/web/src/mobile/responsive.tsx",
+      "mode": "100644",
+      "sha": "9ca2e1fbdcbb133fbab7f58ced1239712d52cc0f"
+    },
+    {
+      "path": "apps/web/src/mobile/saved.tsx",
+      "mode": "100644",
+      "sha": "ce3767ffb53ec186f83e35bc18ca10b6b639aabb"
+    },
+    {
+      "path": "apps/web/src/mobile/search-legacy.tsx",
+      "mode": "100644",
+      "sha": "d70aa741629ec7423230137c07d4d8644563c2eb"
+    },
+    {
+      "path": "apps/web/src/mobile/search.css",
+      "mode": "100644",
+      "sha": "85277fe0600234158f1bb198b318681ee35bf272"
+    },
+    {
+      "path": "apps/web/src/mobile/search.tsx",
+      "mode": "100644",
+      "sha": "2ee83342d479259b329ccfe06dbc8e15fdce5e25"
+    },
+    {
+      "path": "apps/web/src/mobile/security.tsx",
+      "mode": "100644",
+      "sha": "329d4ffa80531790af1ac180c3831855c27a2778"
+    },
+    {
+      "path": "apps/web/src/mobile/settings-notifications.css",
+      "mode": "100644",
+      "sha": "1e8e7d85490f9b444450173351f7a0af71d29d37"
+    },
+    {
+      "path": "apps/web/src/mobile/settings.tsx",
+      "mode": "100644",
+      "sha": "2a678b26f144fbf9c61a15dc7987e810b143d398"
+    },
+    {
+      "path": "apps/web/src/mobile/shell.tsx",
+      "mode": "100644",
+      "sha": "cd39e46f1ca645960ca0d845b5fbb88d7a3b015e"
+    },
+    {
+      "path": "apps/web/src/mobile/timeline.tsx",
+      "mode": "100644",
+      "sha": "beb7ec3732b541b7642d0c37af43d02a4cbd7f61"
+    },
+    {
+      "path": "apps/web/src/mobile/today-legacy.tsx",
+      "mode": "100644",
+      "sha": "6d9a7b480679da8ebf00c6f5c017350a7bf8f890"
+    },
+    {
+      "path": "apps/web/src/mobile/today.css",
+      "mode": "100644",
+      "sha": "8e3dde62c320256439c63615bdc4de5dc8f03bec"
+    },
+    {
+      "path": "apps/web/src/mobile/today.tsx",
+      "mode": "100644",
+      "sha": "75427f6481faf25bd9c2b9f2dbe8074998c55146"
+    },
+    {
+      "path": "apps/web/src/mobile/ui.tsx",
+      "mode": "100644",
+      "sha": "337b3a1caa327f95d26a1ae274bb7cfc304bb7ce"
+    },
+    {
+      "path": "apps/web/src/mobile/watchlist-legacy.tsx",
+      "mode": "100644",
+      "sha": "522ea3c3fa14883f15d8b1e1ab5903434b33aad4"
+    },
+    {
+      "path": "apps/web/src/mobile/watchlist.tsx",
+      "mode": "100644",
+      "sha": "eaa8045f625c91706b966aa9871c78135351e598"
+    },
+    {
+      "path": "apps/web/src/proxy.ts",
+      "mode": "100644",
+      "sha": "59aae8c672b548e9772ce3e0dd11b73dc1307730"
+    },
+    {
+      "path": "apps/web/src/redesign/analysis.tsx",
+      "mode": "100644",
+      "sha": "89e57f4cc8534588c9b8369b048c7a43f4699a4d"
+    },
+    {
+      "path": "apps/web/src/redesign/calendar-data.ts",
+      "mode": "100644",
+      "sha": "65cd7fd28ae9e2e7df475ad33bfc98d11687814c"
+    },
+    {
+      "path": "apps/web/src/redesign/calendar-utils.ts",
+      "mode": "100644",
+      "sha": "9f84665c59dd7019970c308dbde4c94a70e5f5b6"
+    },
+    {
+      "path": "apps/web/src/redesign/calendar.css",
+      "mode": "100644",
+      "sha": "eb7f4e2bf49ca63c9088325c71ff8b3d6e3e005c"
+    },
+    {
+      "path": "apps/web/src/redesign/calendar.tsx",
+      "mode": "100644",
+      "sha": "1a99f0ac88158250403df456f3d46b965c42de22"
+    },
+    {
+      "path": "apps/web/src/redesign/companies.tsx",
+      "mode": "100644",
+      "sha": "6d5975e2c29db886d0ba07c6e38a80c2e89ea627"
+    },
+    {
+      "path": "apps/web/src/redesign/company-discovery.css",
+      "mode": "100644",
+      "sha": "783ee9e15c748b29123e9eaf81823a7bb26127d3"
+    },
+    {
+      "path": "apps/web/src/redesign/company-discovery.tsx",
+      "mode": "100644",
+      "sha": "746660a512c3f37384598801c9d91dbd2819b0e5"
+    },
+    {
+      "path": "apps/web/src/redesign/company-search.ts",
+      "mode": "100644",
+      "sha": "bb180ee4947c0198a2ed5ca64eba2c26350510d6"
+    },
+    {
+      "path": "apps/web/src/redesign/company.tsx",
+      "mode": "100644",
+      "sha": "46139c3d5a6bda24e13fdedad588cad794d9d65a"
+    },
+    {
+      "path": "apps/web/src/redesign/dashboard-contract.ts",
+      "mode": "100644",
+      "sha": "ca7371e38d08f18d67d68af98e8840bd88bebd39"
+    },
+    {
+      "path": "apps/web/src/redesign/detail.css",
+      "mode": "100644",
+      "sha": "02ec92502135bf640c04e53f86ad88b8fef12529"
+    },
+    {
+      "path": "apps/web/src/redesign/event.tsx",
+      "mode": "100644",
+      "sha": "916ca150dc44b2141f437c58624cb613fd9817a5"
+    },
+    {
+      "path": "apps/web/src/redesign/home.tsx",
+      "mode": "100644",
+      "sha": "7110750bb432d14e33e8541739c6d6a9d5aaf8c2"
+    },
+    {
+      "path": "apps/web/src/redesign/notifications.tsx",
+      "mode": "100644",
+      "sha": "50678b6ae094f4aeb12171aa03d6b43b74035736"
+    },
+    {
+      "path": "apps/web/src/redesign/personal.css",
+      "mode": "100644",
+      "sha": "3df4049c64903d368c064a0f90509ef661b14a4e"
+    },
+    {
+      "path": "apps/web/src/redesign/saved.tsx",
+      "mode": "100644",
+      "sha": "5c29265d4b7fbc7813b9bb3804b41c0ca581a90c"
+    },
+    {
+      "path": "apps/web/src/redesign/search.tsx",
+      "mode": "100644",
+      "sha": "df273ae7e2e125e99bffee1df82843612ea26ae0"
+    },
+    {
+      "path": "apps/web/src/redesign/shell.tsx",
+      "mode": "100644",
+      "sha": "232d79a67fdfc99b2f6f62ee11297b7f70afaf15"
+    },
+    {
+      "path": "apps/web/src/redesign/styles.css",
+      "mode": "100644",
+      "sha": "7a80cf959fcea26c12ef2b821be65d63896f4510"
+    },
+    {
+      "path": "apps/web/src/redesign/ui.tsx",
+      "mode": "100644",
+      "sha": "cf054672a68d1ee98f146d3264bfb49fae6078f5"
+    },
+    {
+      "path": "apps/web/src/redesign/watchlist.tsx",
+      "mode": "100644",
+      "sha": "bb93a754318cf2b6b30416b3d71b7ead32fe7354"
+    },
+    {
+      "path": "apps/web/src/reference/controller.ts",
+      "mode": "100644",
+      "sha": "f0dbc2871e6020dac1342fe098ee7f5232cf0975"
+    },
+    {
+      "path": "apps/web/src/reference/legacy-summaries.ts",
+      "mode": "100644",
+      "sha": "16e2135c035ba4a74cdd70a966dc6513c1d23bc9"
+    },
+    {
+      "path": "apps/web/src/reference/market-contract.md",
+      "mode": "100644",
+      "sha": "faf0e8df814a0a0fb0f4fe9f0aa1d8643b7e5bf1"
+    },
+    {
+      "path": "apps/web/src/reference/overrides.css",
+      "mode": "100644",
+      "sha": "f0b04c71f081fb33c4072fbac7d243aa74171a0a"
+    },
+    {
+      "path": "apps/web/src/reference/publication.css",
+      "mode": "100644",
+      "sha": "816eec5591cce45c9c13ba079cb0738e12840df0"
+    },
+    {
+      "path": "apps/web/src/reference/publication.ts",
+      "mode": "100644",
+      "sha": "f5c76c70be3576424e9af091a5b6a3d9a97ab8b0"
+    },
+    {
+      "path": "apps/web/src/reference/reference-app.tsx",
+      "mode": "100644",
+      "sha": "3780f66a4ebb4b265b40a35b04037135bed0cb78"
+    },
+    {
+      "path": "apps/web/src/reference/reference.css",
+      "mode": "100644",
+      "sha": "acd075a19ec7cc398db36412e43e9a298365e6fa"
+    },
+    {
+      "path": "apps/web/src/reference/source-manifest.json",
+      "mode": "100644",
+      "sha": "76dcaee9bcf48962146749fbdaa60f6328c09d66"
+    },
+    {
+      "path": "apps/web/src/reference/templates.ts",
+      "mode": "100644",
+      "sha": "8df1f94f73187063b44c1843c09f4eead3188280"
+    },
+    {
+      "path": "apps/web/src/reference/usability.css",
+      "mode": "100644",
+      "sha": "f19657972271f9224e5d364187917eb6442e20b9"
+    },
+    {
+      "path": "apps/web/src/research/analytics.tsx",
+      "mode": "100644",
+      "sha": "32e2e5f1a8d9390210a52c69e47354365602f006"
+    },
+    {
+      "path": "apps/web/src/research/client.ts",
+      "mode": "100644",
+      "sha": "772a6a54a132eb895377ed040853b5d11d812e73"
+    },
+    {
+      "path": "apps/web/src/research/contracts.ts",
+      "mode": "100644",
+      "sha": "f15c3b1f7303cd142fefdb3167f91e61488d3a82"
+    },
+    {
+      "path": "apps/web/src/research/evaluation-setup.tsx",
+      "mode": "100644",
+      "sha": "42f69919d46d8be4b6555fce9e589f841996cba0"
+    },
+    {
+      "path": "apps/web/src/research/evaluations.tsx",
+      "mode": "100644",
+      "sha": "f0bb3f7ce5914b11840d022557451588cf67f9cf"
+    },
+    {
+      "path": "apps/web/src/research/experiments.tsx",
+      "mode": "100644",
+      "sha": "b69410c07c64471201a3838d969a50128158fd03"
+    },
+    {
+      "path": "apps/web/src/research/operations.tsx",
+      "mode": "100644",
+      "sha": "46ae1a4fa90d3769fcc02b0c41d7072ba85fb8ec"
+    },
+    {
+      "path": "apps/web/src/research/ops-links.tsx",
+      "mode": "100644",
+      "sha": "01b1d0cd6dba5ff495289f038ccd00f51fc11101"
+    },
+    {
+      "path": "apps/web/src/research/research.css",
+      "mode": "100644",
+      "sha": "85295455673c7cdf9c69bacbacdaeb3c4dbf4a38"
+    },
+    {
+      "path": "apps/web/src/research/shell.tsx",
+      "mode": "100644",
+      "sha": "2c44f5767c9fed3b91e94edc92486ed758eb0070"
+    },
+    {
+      "path": "apps/web/src/research/study.tsx",
+      "mode": "100644",
+      "sha": "e21766f3ba632b5f02fb03707904db5ac1fde4fc"
+    },
+    {
+      "path": "apps/web/src/research/tracker.tsx",
+      "mode": "100644",
+      "sha": "386008b7514d3d77e66a1edd9384a7afcd3f2af7"
+    },
+    {
+      "path": "apps/web/src/research/ui.tsx",
+      "mode": "100644",
+      "sha": "a5eade982ddefc0619939ff96b589336e4978705"
+    },
+    {
+      "path": "apps/web/src/screens/alerts.tsx",
+      "mode": "100644",
+      "sha": "fd8697a7de24b127b96e49fad081bc1633dc19e6"
+    },
+    {
+      "path": "apps/web/src/screens/calendar.tsx",
+      "mode": "100644",
+      "sha": "5b9bc7cd8bc831c9ec16f06fcd2bfb6a868b2965"
+    },
+    {
+      "path": "apps/web/src/screens/detail.tsx",
+      "mode": "100644",
+      "sha": "12d469cfcb9c07926fe7cdfe02800fa7cb438fbc"
+    },
+    {
+      "path": "apps/web/src/screens/explore.tsx",
+      "mode": "100644",
+      "sha": "3b4f596c9808b6a6b4088d24b8c43e7d43e77150"
+    },
+    {
+      "path": "apps/web/src/screens/onboarding.tsx",
+      "mode": "100644",
+      "sha": "aebfae9e248619497591fefb56f8c5624e4186a6"
+    },
+    {
+      "path": "apps/web/src/screens/ops-document.tsx",
+      "mode": "100644",
+      "sha": "82a7634c1b3a23e8c9eb5b30cabb4947e87bc2cb"
+    },
+    {
+      "path": "apps/web/src/screens/ops-run.tsx",
+      "mode": "100644",
+      "sha": "aedde9a7f4e69a0eb343f2e40ba952611e04da8b"
+    },
+    {
+      "path": "apps/web/src/screens/ops.tsx",
+      "mode": "100644",
+      "sha": "9203a2fc0c4bb33e52ad3a433761358a388bfaf8"
+    },
+    {
+      "path": "apps/web/src/screens/portfolio.tsx",
+      "mode": "100644",
+      "sha": "c530e142f08f8a879015f94b51533fa11e0e633a"
+    },
+    {
+      "path": "apps/web/src/screens/questions.tsx",
+      "mode": "100644",
+      "sha": "0ad4a13d042bbacb35f3a74b26734dd04ee4620f"
+    },
+    {
+      "path": "apps/web/src/screens/settings.tsx",
+      "mode": "100644",
+      "sha": "e80f750436d207e3eb8db73d8dc2b2aee3383fb3"
+    },
+    {
+      "path": "apps/web/src/screens/timeline.tsx",
+      "mode": "100644",
+      "sha": "74f0e180588533ded10cdbfa268023619dbcad09"
+    },
+    {
+      "path": "apps/web/src/screens/today.tsx",
+      "mode": "100644",
+      "sha": "b35cbc555547d9cdae1b292669da8eeb2cc35ef5"
+    },
+    {
+      "path": "apps/web/src/screens/watchlist.tsx",
+      "mode": "100644",
+      "sha": "bbba1af2e6fb0d0bcfa063fcafd73d225a35c2fb"
+    },
+    {
+      "path": "apps/web/src/server/billing.ts",
+      "mode": "100644",
+      "sha": "92b7e938e48db737765e1082f8809b0b6178ae5e"
+    },
+    {
+      "path": "apps/web/src/server/calendar-source.ts",
+      "mode": "100644",
+      "sha": "684a1260c1b18be5087d04b5daee2f452fbc9bf9"
+    },
+    {
+      "path": "apps/web/src/server/dart-directory-archive.ts",
+      "mode": "100644",
+      "sha": "1239bc21a562193583cd2bf46af586dba7de82cf"
+    },
+    {
+      "path": "apps/web/src/server/dart-directory.ts",
+      "mode": "100644",
+      "sha": "70358ea758538607d69d7460536c0d10474ab82b"
+    },
+    {
+      "path": "apps/web/src/server/dart-profile-archive.ts",
+      "mode": "100644",
+      "sha": "80dda1b7ce13a858bffff4bdcb1aaed38c182293"
+    },
+    {
+      "path": "apps/web/src/server/dart-relay.ts",
+      "mode": "100644",
+      "sha": "6975d7678b43572e9c7b519a608efc6887c64578"
+    },
+    {
+      "path": "apps/web/src/server/us-proxy.ts",
+      "mode": "100644",
+      "sha": "59fba73e9843dbe737faa6e21274c3c9875ba9a6"
+    },
+    {
+      "path": "apps/web/src/workspace/account.tsx",
+      "mode": "100644",
+      "sha": "32cdba704961d200125111be1388f5bdf7d79f59"
+    },
+    {
+      "path": "apps/web/src/workspace/appearance.tsx",
+      "mode": "100644",
+      "sha": "eeb5218f62408bedc49fd2dc27e9720c1c51cef9"
+    },
+    {
+      "path": "apps/web/src/workspace/client.ts",
+      "mode": "100644",
+      "sha": "a5b960002acbea8066f2bd4278c8ea38230977b0"
+    },
+    {
+      "path": "apps/web/src/workspace/company.tsx",
+      "mode": "100644",
+      "sha": "82ec5c5d88bc06711c42caa8600a5d21c1e7135f"
+    },
+    {
+      "path": "apps/web/src/workspace/content-alerts.tsx",
+      "mode": "100644",
+      "sha": "8f8ea64bdb73fb3be6350a175bd9f9d25edca492"
+    },
+    {
+      "path": "apps/web/src/workspace/contracts.ts",
+      "mode": "100644",
+      "sha": "5ce6e260eabf6b6948190c00de8bf09234b02014"
+    },
+    {
+      "path": "apps/web/src/workspace/daily-digest.css",
+      "mode": "100644",
+      "sha": "58251bd241e24eb64f66b7595737d67b0991fbd3"
+    },
+    {
+      "path": "apps/web/src/workspace/daily-digest.tsx",
+      "mode": "100644",
+      "sha": "aa5ac78475cf9e5dd6a501d7bf50e1d4584bc2e9"
+    },
+    {
+      "path": "apps/web/src/workspace/help-content.ts",
+      "mode": "100644",
+      "sha": "cdb98d48dd7631b15fe7e477da1b5791aa3014f3"
+    },
+    {
+      "path": "apps/web/src/workspace/help.tsx",
+      "mode": "100644",
+      "sha": "41029261acd4b9fe48d97797e4d47f555f3a841d"
+    },
+    {
+      "path": "apps/web/src/workspace/market.ts",
+      "mode": "100644",
+      "sha": "5c2efdf564aa2376751e706e43ef8c5cea1ecb18"
+    },
+    {
+      "path": "apps/web/src/workspace/monitoring.css",
+      "mode": "100644",
+      "sha": "026d8e42969d88c237245eb16942496b91adb7ae"
+    },
+    {
+      "path": "apps/web/src/workspace/monitoring.tsx",
+      "mode": "100644",
+      "sha": "a96d01c36720e62723aa50de1cab47668eca1c04"
+    },
+    {
+      "path": "apps/web/src/workspace/more.tsx",
+      "mode": "100644",
+      "sha": "57e1333716c9877af6520751e2fd72a65fc1311b"
+    },
+    {
+      "path": "apps/web/src/workspace/notifications.tsx",
+      "mode": "100644",
+      "sha": "0826f45fe308b20ca1b31c47765ab06fd8f6ecad"
+    },
+    {
+      "path": "apps/web/src/workspace/preferences.tsx",
+      "mode": "100644",
+      "sha": "f624a41143740bd909e347b2f184f965c99f2554"
+    },
+    {
+      "path": "apps/web/src/workspace/quote-message.ts",
+      "mode": "100644",
+      "sha": "6635a871e65bb0e51ddf5b016552c434e3281207"
+    },
+    {
+      "path": "apps/web/src/workspace/research-calendar.tsx",
+      "mode": "100644",
+      "sha": "149265bd0dc400f20e11c5284021de040298f3e4"
+    },
+    {
+      "path": "apps/web/src/workspace/research-onboarding.tsx",
+      "mode": "100644",
+      "sha": "c93ff6bb209934dbfd16c98f0f654698eacbb2a5"
+    },
+    {
+      "path": "apps/web/src/workspace/research-search.tsx",
+      "mode": "100644",
+      "sha": "c7503fa2d2efe9103ab10e6613f466093c0e9826"
+    },
+    {
+      "path": "apps/web/src/workspace/saved.tsx",
+      "mode": "100644",
+      "sha": "57539905bc44bd8a504fb069866e1e87f68904a2"
+    },
+    {
+      "path": "apps/web/src/workspace/search.tsx",
+      "mode": "100644",
+      "sha": "f5206d945b4a60a8bd1df92fc4e710b01d2b507c"
+    },
+    {
+      "path": "apps/web/src/workspace/security.tsx",
+      "mode": "100644",
+      "sha": "7c5b224a2c780b50f2edbb2e79609935ebf5866c"
+    },
+    {
+      "path": "apps/web/src/workspace/ui.tsx",
+      "mode": "100644",
+      "sha": "f5cf129bbcb8166c8338d5c9236262d49de77037"
+    },
+    {
+      "path": "apps/web/src/workspace/unavailable.tsx",
+      "mode": "100644",
+      "sha": "2bff63c5656701ef0f16a3d89702ac2a4764f66b"
+    },
+    {
+      "path": "apps/web/src/workspace/workspace.css",
+      "mode": "100644",
+      "sha": "013516a469c053559124ded3c464229868bbaa63"
+    },
+    {
+      "path": "apps/web/tests/api.test.ts",
+      "mode": "100644",
+      "sha": "1ff406777364676df1b05b5bfb281649abce0db8"
+    },
+    {
+      "path": "apps/web/tests/approved-analysis-display.test.ts",
+      "mode": "100644",
+      "sha": "0f9e66ebbc1f20d3ebaa7d195f27140aaf813641"
+    },
+    {
+      "path": "apps/web/tests/auth-policy.test.ts",
+      "mode": "100644",
+      "sha": "491d463dac5a50b1869f7774f0d43c2aa1fa2b43"
+    },
+    {
+      "path": "apps/web/tests/auth-runtime.test.ts",
+      "mode": "100644",
+      "sha": "d16cb23064883c3b5db1a6f8c25906cb42424f20"
+    },
+    {
+      "path": "apps/web/tests/billing-return.test.tsx",
+      "mode": "100644",
+      "sha": "075ef2214974791977df4534d27fac845d33f347"
+    },
+    {
+      "path": "apps/web/tests/billing-sql.test.ts",
+      "mode": "100644",
+      "sha": "5207aa5bc9c34fd0047610b16e46edf53d2cd8c5"
+    },
+    {
+      "path": "apps/web/tests/billing-webhook.test.ts",
+      "mode": "100644",
+      "sha": "8df613d90b28bffb5a9da7e8def6b333caa88d8e"
+    },
+    {
+      "path": "apps/web/tests/billing.test.ts",
+      "mode": "100644",
+      "sha": "56357c3e58c0aa31a944f54a9ab9ce6f95d24f07"
+    },
+    {
+      "path": "apps/web/tests/cache-isolation.setup.ts",
+      "mode": "100644",
+      "sha": "cc3f5ffffca5a97a2350fb74faaca50ac3707179"
+    },
+    {
+      "path": "apps/web/tests/calendar-dart-ir.test.ts",
+      "mode": "100644",
+      "sha": "6c3deee7344a12583cc764b8e76d3c71372e030a"
+    },
+    {
+      "path": "apps/web/tests/calendar-drupal-events.test.ts",
+      "mode": "100644",
+      "sha": "a1f06eab8865a1b693ba42f730d08966879038eb"
+    },
+    {
+      "path": "apps/web/tests/calendar-q4.test.ts",
+      "mode": "100644",
+      "sha": "9454362727b1ee58c476b36fb47859ab6b0bbe81"
+    },
+    {
+      "path": "apps/web/tests/calendar-sec-ir.test.ts",
+      "mode": "100644",
+      "sha": "e75c0fddc7674a638ebf0fe0298a168147c5f048"
+    },
+    {
+      "path": "apps/web/tests/calendar-source-integration.test.ts",
+      "mode": "100644",
+      "sha": "808fba9f3d25608f810123c666b835c34215c500"
+    },
+    {
+      "path": "apps/web/tests/calendar-source-relay.test.ts",
+      "mode": "100644",
+      "sha": "9171b3c706c5fc8c6df08bb36c2f0954d3e42a63"
+    },
+    {
+      "path": "apps/web/tests/calendar-source-route.test.ts",
+      "mode": "100644",
+      "sha": "9021185a91348bcfb0f5b35e239afa67651511cf"
+    },
+    {
+      "path": "apps/web/tests/calendar-source.test.ts",
+      "mode": "100644",
+      "sha": "fb2cce3deb2c048e506d36b7b1a5ff64805c52c0"
+    },
+    {
+      "path": "apps/web/tests/calendar-worker.test.ts",
+      "mode": "100644",
+      "sha": "baea776411cedadf950896b4419d0f2c7513469e"
+    },
+    {
+      "path": "apps/web/tests/card-evidence.test.ts",
+      "mode": "100644",
+      "sha": "1a4b06b7cffb7c056672784195625e0de15d6cd2"
+    },
+    {
+      "path": "apps/web/tests/collector.test.ts",
+      "mode": "100644",
+      "sha": "0eb307273960636d23c934d29d2b77f91b4efba2"
+    },
+    {
+      "path": "apps/web/tests/company-data-sql.test.ts",
+      "mode": "100644",
+      "sha": "8120297279101cc8231a046de1e13e4a3aab1997"
+    },
+    {
+      "path": "apps/web/tests/company-data-ui.test.tsx",
+      "mode": "100644",
+      "sha": "8a3a0f05634fa112e314289078b6dc000178cfa6"
+    },
+    {
+      "path": "apps/web/tests/company-discovery-edge.test.ts",
+      "mode": "100644",
+      "sha": "464fc03e74a5ea39a943bde14a7c90fc13ad56e0"
+    },
+    {
+      "path": "apps/web/tests/company-discovery.test.tsx",
+      "mode": "100644",
+      "sha": "2a5c9f85662b0ac4c457de05b3e5da7ec295d8f6"
+    },
+    {
+      "path": "apps/web/tests/company-financials-api.test.ts",
+      "mode": "100644",
+      "sha": "983c65774e23ffe3d568121c37fcdbfe5b5a2ba8"
+    },
+    {
+      "path": "apps/web/tests/company-financials-core.test.ts",
+      "mode": "100644",
+      "sha": "3239d0319049b86f65ae88da624ac64042dd5ccd"
+    },
+    {
+      "path": "apps/web/tests/company-financials-edge.test.ts",
+      "mode": "100644",
+      "sha": "c5808a785ac17423db89e8f6b889ea030a44d813"
+    },
+    {
+      "path": "apps/web/tests/company-news-route.test.ts",
+      "mode": "100644",
+      "sha": "9d09d5f188504a37436612f8c35a74b0f47dd513"
+    },
+    {
+      "path": "apps/web/tests/company-overview.test.tsx",
+      "mode": "100644",
+      "sha": "f9c29a427f8ea5da1de0be60a4c54839f076c976"
+    },
+    {
+      "path": "apps/web/tests/company-picker-integration.test.tsx",
+      "mode": "100644",
+      "sha": "098e7951426b7994b5b7041188c2cd49bf67f089"
+    },
+    {
+      "path": "apps/web/tests/company-profile-amendments.test.ts",
+      "mode": "100644",
+      "sha": "95bf03898d0e6b98576a63489a43a36a073c4ca5"
+    },
+    {
+      "path": "apps/web/tests/company-profile-core.test.ts",
+      "mode": "100644",
+      "sha": "fa81dcdb4df33bc2627f9bbc62dd4624fdfa6bcf"
+    },
+    {
+      "path": "apps/web/tests/company-profile-dart-edge.test.ts",
+      "mode": "100644",
+      "sha": "c4f114cf9a9f89066df95a415c28cdcf86f21677"
+    },
+    {
+      "path": "apps/web/tests/company-profile-dart-rows.test.ts",
+      "mode": "100644",
+      "sha": "ffb198b3ddb12229e71598f275f5f722811c3d64"
+    },
+    {
+      "path": "apps/web/tests/company-profile-edge.test.ts",
+      "mode": "100644",
+      "sha": "bbe9df0e8493e575feb7905583a48d8ae1c965d1"
+    },
+    {
+      "path": "apps/web/tests/company-profile-enrichment-cache.test.ts",
+      "mode": "100644",
+      "sha": "1c5d7ade2810df73e65dc621f3c58511483dc7ca"
+    },
+    {
+      "path": "apps/web/tests/company-profile-enrichment-service.test.ts",
+      "mode": "100644",
+      "sha": "3f567abfb3ee047eff2eedab0cd8e4b8b430397e"
+    },
+    {
+      "path": "apps/web/tests/company-profile-enrichment.test.ts",
+      "mode": "100644",
+      "sha": "95467c07928c8935563289e1df44b2224a0c07b8"
+    },
+    {
+      "path": "apps/web/tests/company-profile-route.test.ts",
+      "mode": "100644",
+      "sha": "4a5901382e708f9f0deec5753d560a5d2f5d2a0a"
+    },
+    {
+      "path": "apps/web/tests/company-profile-sec-offerings.test.ts",
+      "mode": "100644",
+      "sha": "9c3325d2b4daf667af41c48f5316cb52d47d8be1"
+    },
+    {
+      "path": "apps/web/tests/company-profile-sec-structure.test.ts",
+      "mode": "100644",
+      "sha": "da9054206da00fa611c0b5006c73e4dc365cac87"
+    },
+    {
+      "path": "apps/web/tests/company-profile-timestamps.test.tsx",
+      "mode": "100644",
+      "sha": "123ff670bf9ea59d7e90530a1420fb4bc806e817"
+    },
+    {
+      "path": "apps/web/tests/company-profile.test.tsx",
+      "mode": "100644",
+      "sha": "531cb6766fb3eaeeda321528786008163035edc3"
+    },
+    {
+      "path": "apps/web/tests/customer-content-sql.test.ts",
+      "mode": "100644",
+      "sha": "83dd0adb3a72d6abfac31ac0446e91850f6cbeaa"
+    },
+    {
+      "path": "apps/web/tests/daily-digest.test.tsx",
+      "mode": "100644",
+      "sha": "41d191389b33f88ad60ad51a9a29a16197829569"
+    },
+    {
+      "path": "apps/web/tests/dart-directory-archive.test.ts",
+      "mode": "100644",
+      "sha": "aae5d5ca9aee10e5b76412ada7e9639df82f548d"
+    },
+    {
+      "path": "apps/web/tests/dart-directory-fixture.ts",
+      "mode": "100644",
+      "sha": "dcabdf617b8d7dbd425fec773a847c14d2c94690"
+    },
+    {
+      "path": "apps/web/tests/dart-directory-integration.test.ts",
+      "mode": "100644",
+      "sha": "7e40860ce4f459f17dfc5fa1ed1693791143402f"
+    },
+    {
+      "path": "apps/web/tests/dart-parser.test.ts",
+      "mode": "100644",
+      "sha": "f3de2b60fb2dce7e03fd84de9e11ef9c46151e5b"
+    },
+    {
+      "path": "apps/web/tests/dart-profile-archive.test.ts",
+      "mode": "100644",
+      "sha": "8732f0cf86dd638dfe9e05038ed593736ee9265a"
+    },
+    {
+      "path": "apps/web/tests/dart-profile-fixture.ts",
+      "mode": "100644",
+      "sha": "c608cfdc1175b16bc0e757721cebe6eb342e819f"
+    },
+    {
+      "path": "apps/web/tests/dart-relay-route.test.ts",
+      "mode": "100644",
+      "sha": "6d42e1a8bfd73c7993d8b6580d1e817fc2d376f9"
+    },
+    {
+      "path": "apps/web/tests/dart-relay.test.ts",
+      "mode": "100644",
+      "sha": "00d20551bdda47ffac023341f5b21dceeea40211"
+    },
+    {
+      "path": "apps/web/tests/decimal-input.test.ts",
+      "mode": "100644",
+      "sha": "d2c19a0cc22eb251e9e07a8040476aba30170265"
+    },
+    {
+      "path": "apps/web/tests/desktop-data.test.tsx",
+      "mode": "100644",
+      "sha": "1b83e08d358c541ea41353c912671bd22e49e1cd"
+    },
+    {
+      "path": "apps/web/tests/desktop-discovery.test.tsx",
+      "mode": "100644",
+      "sha": "b11f771c832181b417744583da8aba996996c17d"
+    },
+    {
+      "path": "apps/web/tests/desktop-questions.test.tsx",
+      "mode": "100644",
+      "sha": "c9d6ac209a557729c25029a3fd57b1df54fa3456"
+    },
+    {
+      "path": "apps/web/tests/desktop-research.test.tsx",
+      "mode": "100644",
+      "sha": "66f420c5ac7b923e10deded035a04e915ca78991"
+    },
+    {
+      "path": "apps/web/tests/desktop-today.test.tsx",
+      "mode": "100644",
+      "sha": "f9b431c637f55ade0173a1a9b7188b606fb4bd63"
+    },
+    {
+      "path": "apps/web/tests/discovery-core.test.ts",
+      "mode": "100644",
+      "sha": "478b0ac25c29f92268656728e74f35d6c36be154"
+    },
+    {
+      "path": "apps/web/tests/discovery-route.test.ts",
+      "mode": "100644",
+      "sha": "5bbda0e49e1eb5e2affe3dfb019122490e22ca0b"
+    },
+    {
+      "path": "apps/web/tests/email-dispatch-readiness.test.ts",
+      "mode": "100644",
+      "sha": "0c3e13a5bfacf0debd7a1d6c7bc511a38a5ec76e"
+    },
+    {
+      "path": "apps/web/tests/email-unsubscribe.test.ts",
+      "mode": "100644",
+      "sha": "6d5032721afa6ecc50217df8f957817b38171967"
+    },
+    {
+      "path": "apps/web/tests/eod-quotes.test.ts",
+      "mode": "100644",
+      "sha": "850eedcfa503a3f775420b4d35ddf00ab7f0d917"
+    },
+    {
+      "path": "apps/web/tests/event-analytics.test.tsx",
+      "mode": "100644",
+      "sha": "c01673641dc6086be97a93460ac6dd9fec685029"
+    },
+    {
+      "path": "apps/web/tests/feed-performance.test.ts",
+      "mode": "100644",
+      "sha": "6c7ca3f2d77ff905ce067fb46290d87f337a904f"
+    },
+    {
+      "path": "apps/web/tests/filing-analysis.test.tsx",
+      "mode": "100644",
+      "sha": "68e4a4d92cc5eccab7ab9341b8aa486ac89f9b89"
+    },
+    {
+      "path": "apps/web/tests/format.test.ts",
+      "mode": "100644",
+      "sha": "1952800affc2b2c871c4c660acdd82ecd88f40bf"
+    },
+    {
+      "path": "apps/web/tests/hosted-performance.test.ts",
+      "mode": "100644",
+      "sha": "06b51dad010d451849b0869a19103c6d768ef8a6"
+    },
+    {
+      "path": "apps/web/tests/legacy-summaries.test.ts",
+      "mode": "100644",
+      "sha": "dc9e8e99cb3eed826119f2e1960ed28e870e2232"
+    },
+    {
+      "path": "apps/web/tests/lint-root-glob.test.ts",
+      "mode": "100644",
+      "sha": "cec59f78f925e02f41ebe42934250e252bdf6965"
+    },
+    {
+      "path": "apps/web/tests/login-form.test.tsx",
+      "mode": "100644",
+      "sha": "bd0c8752e07e032ffa1c9ad1e1ed43a5dce9d10f"
+    },
+    {
+      "path": "apps/web/tests/market-indices.test.tsx",
+      "mode": "100644",
+      "sha": "d3a1f79f6b58de4ae784838e7824a08e406b7247"
+    },
+    {
+      "path": "apps/web/tests/market-widget.test.tsx",
+      "mode": "100644",
+      "sha": "d5e0bd47ab700eeb67e9049f6975a8ccf3c2f0cf"
+    },
+    {
+      "path": "apps/web/tests/mobile-account-security.test.tsx",
+      "mode": "100644",
+      "sha": "c310fefd88b754921e436facbbb1c08c0779217f"
+    },
+    {
+      "path": "apps/web/tests/mobile-appearance-research.test.tsx",
+      "mode": "100644",
+      "sha": "600cf01f9825954b41c296b1a69ca2863faacdaf"
+    },
+    {
+      "path": "apps/web/tests/mobile-appearance.test.tsx",
+      "mode": "100644",
+      "sha": "6f39cccc5f0628e72508aedccca649dacff62e63"
+    },
+    {
+      "path": "apps/web/tests/mobile-flow.test.tsx",
+      "mode": "100644",
+      "sha": "c6ad66a805e747dc54c8b68cebc1c24e740911a2"
+    },
+    {
+      "path": "apps/web/tests/mobile-help.test.tsx",
+      "mode": "100644",
+      "sha": "649a5e67481637c101b91b3b3a62ec1f713a4548"
+    },
+    {
+      "path": "apps/web/tests/mobile-market.test.ts",
+      "mode": "100644",
+      "sha": "391a26e658b5493f3a3140fe46436a5e6b0fc245"
+    },
+    {
+      "path": "apps/web/tests/mobile-notification-calendar.test.tsx",
+      "mode": "100644",
+      "sha": "12a15daf2e0234a262160ea993a1198516f1f4fa"
+    },
+    {
+      "path": "apps/web/tests/mobile-onboarding.test.tsx",
+      "mode": "100644",
+      "sha": "94b6fcfb759c1b7a694bbe017e45c50446e0e986"
+    },
+    {
+      "path": "apps/web/tests/mobile-portfolio.test.ts",
+      "mode": "100644",
+      "sha": "5687ea02185b32f65959159a90ce0edcc1c8714d"
+    },
+    {
+      "path": "apps/web/tests/mobile-research.test.tsx",
+      "mode": "100644",
+      "sha": "e7cc04840470000f0ceef6e79920d8f30e6efc98"
+    },
+    {
+      "path": "apps/web/tests/mobile-search-company.test.tsx",
+      "mode": "100644",
+      "sha": "3eb37e395d728dc75709b9da2dc13b377366a8ad"
+    },
+    {
+      "path": "apps/web/tests/naver-news.test.ts",
+      "mode": "100644",
+      "sha": "1b02a645ee86eb9a6185eae82f84244c284cb005"
+    },
+    {
+      "path": "apps/web/tests/navigation-performance.test.ts",
+      "mode": "100644",
+      "sha": "61ce1a4869f09dc45b5166522022d7fe37e481a2"
+    },
+    {
+      "path": "apps/web/tests/oauth-us.test.ts",
+      "mode": "100644",
+      "sha": "6e9c527c09970ccc2f0dbd47a874f90d86627684"
+    },
+    {
+      "path": "apps/web/tests/operational-readiness.test.ts",
+      "mode": "100644",
+      "sha": "726a63a29d2262b530924735e3c0ac3c9849265b"
+    },
+    {
+      "path": "apps/web/tests/product.test.ts",
+      "mode": "100644",
+      "sha": "33d4bc323ebcbecbc57ca3670df28245ba50ae03"
+    },
+    {
+      "path": "apps/web/tests/provider-completion.test.ts",
+      "mode": "100644",
+      "sha": "1777f43c6ded1faa563cd216991c323fa533e8b5"
+    },
+    {
+      "path": "apps/web/tests/proxy.test.ts",
+      "mode": "100644",
+      "sha": "965e8fd9b8c31a6561d2a34079e425e50d874df9"
+    },
+    {
+      "path": "apps/web/tests/publication.test.ts",
+      "mode": "100644",
+      "sha": "0c765558cb63bfbf2ea4d55a856be86a1165ad95"
+    },
+    {
+      "path": "apps/web/tests/question-evidence.test.ts",
+      "mode": "100644",
+      "sha": "6f6b1eeae9aeed850c8489631fe243c77226f796"
+    },
+    {
+      "path": "apps/web/tests/quote-display.test.ts",
+      "mode": "100644",
+      "sha": "26748df80b7b721998ff448714d02f93e6411291"
+    },
+    {
+      "path": "apps/web/tests/quote-message.test.ts",
+      "mode": "100644",
+      "sha": "a721b2706e43d4429eaccd2d948d5a20de78853a"
+    },
+    {
+      "path": "apps/web/tests/redesign-calendar-data.test.tsx",
+      "mode": "100644",
+      "sha": "800fefcb2191e69381d7ca5f5e507a4ef2ec3a67"
+    },
+    {
+      "path": "apps/web/tests/redesign-calendar.test.ts",
+      "mode": "100644",
+      "sha": "4a441b3e599a6247b105be99b50b95de3dd33e72"
+    },
+    {
+      "path": "apps/web/tests/redesign-dashboard-sql.test.ts",
+      "mode": "100644",
+      "sha": "4526bd94bddbb4eb7cdc06291fbd055c381afb52"
+    },
+    {
+      "path": "apps/web/tests/redesign-details.test.tsx",
+      "mode": "100644",
+      "sha": "4e3d53d3c544d32db7ec08094dafdb5c56f22a13"
+    },
+    {
+      "path": "apps/web/tests/redesign-discovery.test.tsx",
+      "mode": "100644",
+      "sha": "707753f326beb3058d268838986fab96cfbd47cc"
+    },
+    {
+      "path": "apps/web/tests/redesign-event.test.tsx",
+      "mode": "100644",
+      "sha": "cdd603dcaf5a7d982c9f1c154ff83a944122279c"
+    },
+    {
+      "path": "apps/web/tests/redesign-personal.test.tsx",
+      "mode": "100644",
+      "sha": "5449b97a265c2d807769a1205eb2dc10cec5afbe"
+    },
+    {
+      "path": "apps/web/tests/redesign-reminders-sql.test.ts",
+      "mode": "100644",
+      "sha": "4216db6d73158dca196a7b3f3384f5c95bb8695f"
+    },
+    {
+      "path": "apps/web/tests/redesign-saved-entrypoints.test.tsx",
+      "mode": "100644",
+      "sha": "978ea96d265f297ae1e8562eaf7844debd1681ba"
+    },
+    {
+      "path": "apps/web/tests/redesign-saved-reliability.test.tsx",
+      "mode": "100644",
+      "sha": "daee19e7fe66cae210e1ce89b32359ddcc0c4687"
+    },
+    {
+      "path": "apps/web/tests/reference.test.ts",
+      "mode": "100644",
+      "sha": "22d4568967e2d83a99f4ef876d60ae6651a95931"
+    },
+    {
+      "path": "apps/web/tests/research-workspace.test.tsx",
+      "mode": "100644",
+      "sha": "dd429374ed80dc3010b27aed4f1bff364f227d78"
+    },
+    {
+      "path": "apps/web/tests/research.test.ts",
+      "mode": "100644",
+      "sha": "54be785e41e9cc075119eab60634c0c3d35acc94"
+    },
+    {
+      "path": "apps/web/tests/runtime-config.test.ts",
+      "mode": "100644",
+      "sha": "b8ebd6238723180d5a009bd3d8802fc61cf14f32"
+    },
+    {
+      "path": "apps/web/tests/search-scope.test.tsx",
+      "mode": "100644",
+      "sha": "4c2c273e2f2f2a8e08ecff1e3cb24af5cf8a5829"
+    },
+    {
+      "path": "apps/web/tests/signed-in-content-screens.test.tsx",
+      "mode": "100644",
+      "sha": "144f9f1141959ce5b46df0085db4c1c23bf5cbc3"
+    },
+    {
+      "path": "apps/web/tests/site-proxy.test.ts",
+      "mode": "100644",
+      "sha": "9a81dcc8c380153cfa8516f39e7af598187c8889"
+    },
+    {
+      "path": "apps/web/tests/source-visibility-sql.test.ts",
+      "mode": "100644",
+      "sha": "9b450a38ce592613e4962b05ee3d3a9faca9827f"
+    },
+    {
+      "path": "apps/web/tests/status-coverage.test.tsx",
+      "mode": "100644",
+      "sha": "dea756249fed139c7cde2e67869ee6e7d203be80"
+    },
+    {
+      "path": "apps/web/tests/tradingview-news.test.tsx",
+      "mode": "100644",
+      "sha": "fb905f8324149e64823bbd977715512fdae005a5"
+    },
+    {
+      "path": "apps/web/tests/us-providers.test.ts",
+      "mode": "100644",
+      "sha": "f933fc837fbf564cbbd3930bc68d830a76ec98a8"
+    },
+    {
+      "path": "apps/web/tests/us-proxy.test.ts",
+      "mode": "100644",
+      "sha": "6c1fcdced94b522e97b8959d282946ee42fd02db"
+    },
+    {
+      "path": "apps/web/tests/widget-policy.test.ts",
+      "mode": "100644",
+      "sha": "403141aa18e810bcba9dc50e538fc67f111bc830"
+    },
+    {
+      "path": "apps/web/tests/workspace.test.ts",
+      "mode": "100644",
+      "sha": "89f04ae121bddb24dec5261b7ac1915100ad558b"
+    },
+    {
+      "path": "apps/web/tsconfig.json",
+      "mode": "100644",
+      "sha": "71c4a9bb98f6063878942146e3fedcf5c12f56ad"
+    },
+    {
+      "path": "apps/web/types/edge-parser.d.ts",
+      "mode": "100644",
+      "sha": "1c3c0a920f78768e98d886f5f36f6902bf1d3670"
+    },
+    {
+      "path": "apps/web/vercel.json",
+      "mode": "100644",
+      "sha": "a146fe9114727295a6360986bb2c8e7a93f7fc75"
+    },
+    {
+      "path": "apps/web/vitest.config.ts",
+      "mode": "100644",
+      "sha": "6f161479ee2d4006558c5074f7454085006c352a"
+    },
+    {
+      "path": "docker-compose.yml",
+      "mode": "100644",
+      "sha": "bd4c1370f3f98c53b2f423f8ff7c6a22e724dc68"
+    },
+    {
+      "path": "docs/ACCEPTANCE_CRITERIA.md",
+      "mode": "100644",
+      "sha": "492e37733d3fc521302443e317bb3c9fc4d5a95a"
+    },
+    {
+      "path": "docs/AI_EVAL.md",
+      "mode": "100644",
+      "sha": "6f666e7d7f18164cc207d1681486cd8a197e05a3"
+    },
+    {
+      "path": "docs/AI_SYSTEM.md",
+      "mode": "100644",
+      "sha": "586084f8f6f5e75919cfa10aa0cdaebdad34c296"
+    },
+    {
+      "path": "docs/ANALYTICS.md",
+      "mode": "100644",
+      "sha": "4eb0bb3c35fd13ef8d889f1d2230811d45a5301c"
+    },
+    {
+      "path": "docs/API_SPEC.md",
+      "mode": "100644",
+      "sha": "6913c16a7546e9da36aa52e16245aad445ae0afd"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "mode": "100644",
+      "sha": "97eed3b8809a06d0ce7bbe0e1e0d817cbebb65ef"
+    },
+    {
+      "path": "docs/AUTH_NAVIGATION_PERFORMANCE_2026-10-04.md",
+      "mode": "100644",
+      "sha": "ba1bbf7e66bbe0f68860b65a2227c7626d82eb09"
+    },
+    {
+      "path": "docs/AUTH_PUBLIC_PAGES_DOMAIN_2026-10-04.md",
+      "mode": "100644",
+      "sha": "2ccd4880bb542c5eeac67578dd006e3517a8b54f"
+    },
+    {
+      "path": "docs/BUILD_PLAN.md",
+      "mode": "100644",
+      "sha": "e8af57053d1eff174548dbc6a0a457a70fc1e226"
+    },
+    {
+      "path": "docs/CALENDAR_AUTOMATION_AND_SAVED_2026-11-01.md",
+      "mode": "100644",
+      "sha": "5865f5f08982844c53339d511308c44562568f29"
+    },
+    {
+      "path": "docs/CALENDAR_REPAIR_2026-10-19.md",
+      "mode": "100644",
+      "sha": "ff647d903c8e2ef0fa86eeecb23ebc34cfb9f5b6"
+    },
+    {
+      "path": "docs/COMPANY_DATA_COVERAGE_2026-11-02.md",
+      "mode": "100644",
+      "sha": "4198dc031f7577e4b1e667dd24095d3b1b291d82"
+    },
+    {
+      "path": "docs/COMPANY_DETAIL_CONNECTIONS.md",
+      "mode": "100644",
+      "sha": "d7dbfaaca52767fccf4717c5b724a144d00b551a"
+    },
+    {
+      "path": "docs/COMPANY_PROFILES_2026-10-18.md",
+      "mode": "100644",
+      "sha": "462c32b494afdc43b4dae972a1542b69cd5e2e03"
+    },
+    {
+      "path": "docs/COMPLETION_RELEASE_2026-10-31.md",
+      "mode": "100644",
+      "sha": "ed08358b1766b79b4bbdc2da5bcce30478df74df"
+    },
+    {
+      "path": "docs/CROSS_SCREEN_RELIABILITY_2026-11-01.md",
+      "mode": "100644",
+      "sha": "18a697d7599f6e10a85d3de514947fc0ad234c59"
+    },
+    {
+      "path": "docs/CURRENT_SETUP_AND_BLOCKERS.md",
+      "mode": "100644",
+      "sha": "54e075f7ffb6381a3cae89fe6b75077e0bcf2ec9"
+    },
+    {
+      "path": "docs/DAILY_DIGEST_2026-10-18.md",
+      "mode": "100644",
+      "sha": "4062c619d23412772e16d9029d7c591fd061a987"
+    },
+    {
+      "path": "docs/DART_ACTIVATION_2026-10-14.md",
+      "mode": "100644",
+      "sha": "2ab4159b6a9465be44f75bab3e5972adf23749b6"
+    },
+    {
+      "path": "docs/DART_DRAFT_REVIEW_2026-10-31.md",
+      "mode": "100644",
+      "sha": "6e5a18a6e2ec90bbfe28287f172c036b19f6c44e"
+    },
+    {
+      "path": "docs/DATA_MODEL.md",
+      "mode": "100644",
+      "sha": "6c4bdb4cd3c066006453478d7b1026452dc69cf8"
+    },
+    {
+      "path": "docs/DEPENDENCY_SECURITY_2026-10-02.md",
+      "mode": "100644",
+      "sha": "90bed9b524ed897e6b00013b7a05c99c2df6724e"
+    },
+    {
+      "path": "docs/DEPLOYMENT.md",
+      "mode": "100644",
+      "sha": "bd96ab821fb1d53321f1235a97b22da69b28cac0"
+    },
+    {
+      "path": "docs/DESKTOP_REFERENCES_RELEASE_20261007.md",
+      "mode": "100644",
+      "sha": "412eb9ff48472fc9806731c8a3b4b35736605667"
+    },
+    {
+      "path": "docs/EXTERNAL_REFERENCES.md",
+      "mode": "100644",
+      "sha": "f5d8975021705f105bb94abf539a2b3c1ad12923"
+    },
+    {
+      "path": "docs/FINAL_TECHNICAL_VALIDATION_20261009.md",
+      "mode": "100644",
+      "sha": "e02c240203449676a2d68c653d19a587ac2f58e9"
+    },
+    {
+      "path": "docs/FINANCIAL_EVALUATION_CASE_STUDIES.md",
+      "mode": "100644",
+      "sha": "622822057ec8816d960259b4685f0b4a656db7a4"
+    },
+    {
+      "path": "docs/GITHUB_SOURCE_UPDATE_2026-10-02.md",
+      "mode": "100644",
+      "sha": "fb8d74eef28a500bff4a96db19fb84b85db449da"
+    },
+    {
+      "path": "docs/HOME_MARKET_INDICES_2026-10-19.md",
+      "mode": "100644",
+      "sha": "1fb4e0900ebf6dfa9f2903f7b25794a75b7b6b1a"
+    },
+    {
+      "path": "docs/HOSTED_RELEASE_SCOPE.md",
+      "mode": "100644",
+      "sha": "89dbd229cacea0eea68c60b37f603d406dc44c8a"
+    },
+    {
+      "path": "docs/HOSTED_SECURITY_REVIEW.md",
+      "mode": "100644",
+      "sha": "5902cd5020f90d21b673877c3882d48ed9847698"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_STATUS.md",
+      "mode": "100644",
+      "sha": "5dd24cfcf95f7254642f49a903d2416aa8660fac"
+    },
+    {
+      "path": "docs/LIVE_COMPLETION_STATUS_20261008.md",
+      "mode": "100644",
+      "sha": "4c6187bc48c152f371cc55409b57ef18846a7d34"
+    },
+    {
+      "path": "docs/LIVE_CONNECTED_PILOT_20261008.md",
+      "mode": "100644",
+      "sha": "e4346b3feb02693752f311f8c2f6fdca1db52848"
+    },
+    {
+      "path": "docs/LIVE_TRIAL_RUNBOOK_KO.md",
+      "mode": "100644",
+      "sha": "186cad11d8df5bfe0dd884dde242c03a088fe9bd"
+    },
+    {
+      "path": "docs/LOCAL_VERIFICATION_2026-10-02.md",
+      "mode": "100644",
+      "sha": "b6b88af7dc35f4dc3eaa1fa11b259c77d7ed993f"
+    },
+    {
+      "path": "docs/MARKETING_DESIGNS_2026-10-04.md",
+      "mode": "100644",
+      "sha": "e4fb3cc3ea3d86210c7c0442213a1d369f1b195f"
+    },
+    {
+      "path": "docs/MOBILE_BRAND_ASSETS.md",
+      "mode": "100644",
+      "sha": "01eac6f55e4386b150278f4e7c5a0315bc67c8df"
+    },
+    {
+      "path": "docs/MOBILE_DETAILS_RELEASE_20261006.md",
+      "mode": "100644",
+      "sha": "72c9466a6a5d2f51cae974ea826c99d130943c1b"
+    },
+    {
+      "path": "docs/MOBILE_RELEASE_20261006.md",
+      "mode": "100644",
+      "sha": "a6246103d98828af2b3eecf46d24154c83a531e6"
+    },
+    {
+      "path": "docs/MVP_SCOPE.md",
+      "mode": "100644",
+      "sha": "fb0ba94f298f3db76a21f296494c1808ff81d743"
+    },
+    {
+      "path": "docs/NEWS_ACTIVATION_2026-10-18.md",
+      "mode": "100644",
+      "sha": "62c1d8d6006357ebcab181657d734baff3bda7e0"
+    },
+    {
+      "path": "docs/NEWS_INTEGRATION_2026-10-16.md",
+      "mode": "100644",
+      "sha": "c5bc1db7ed3d1f898e201d362e9270af01da941c"
+    },
+    {
+      "path": "docs/OPERATIONS.md",
+      "mode": "100644",
+      "sha": "84fa685c81893d0addebbdf96e2cba7b0aba9387"
+    },
+    {
+      "path": "docs/PORTFOLIO_12_SLIDES_KO.md",
+      "mode": "100644",
+      "sha": "2e692b7e336a8a24ac0b3e90876b65d3fbe87791"
+    },
+    {
+      "path": "docs/POST_LOGIN_RELIABILITY_2026-11-01.md",
+      "mode": "100644",
+      "sha": "c1057da4f6c1b4b93653b620997250d4a994cd4e"
+    },
+    {
+      "path": "docs/PRD.md",
+      "mode": "100644",
+      "sha": "545e6a1e573bc93976a4801bcd56a169bee38b99"
+    },
+    {
+      "path": "docs/PRELOGIN_DESIGN_2026-10-05.md",
+      "mode": "100644",
+      "sha": "a5de7c407a9c3069f71b580736b676d79593d6b0"
+    },
+    {
+      "path": "docs/PRODUCTION_PROVIDERS_2026-10-14.md",
+      "mode": "100644",
+      "sha": "7529d67b7e914155ee098c572d5a16e60d8a4f22"
+    },
+    {
+      "path": "docs/PROVIDER_COMPLETION_2026-10-14.md",
+      "mode": "100644",
+      "sha": "6117cc4bed29947b58724094ec0b1bec82eebe6e"
+    },
+    {
+      "path": "docs/PROVIDER_READINESS_2026-10-14.md",
+      "mode": "100644",
+      "sha": "65d0f00a4a56debaa292828464bec13e76f1903a"
+    },
+    {
+      "path": "docs/PUBLIC_REDESIGN_2026-10-05.md",
+      "mode": "100644",
+      "sha": "75814412d7a31a6c41386cc3165809e73b586c93"
+    },
+    {
+      "path": "docs/REFERENCE_PUBLICATION_R2.md",
+      "mode": "100644",
+      "sha": "62ea6a075f7d994b7d9775dc42ae7966bd70a0ec"
+    },
+    {
+      "path": "docs/REFERENCE_RELEASE.md",
+      "mode": "100644",
+      "sha": "a38b6f8298cee9fc7d50379ce20912e82f82921c"
+    },
+    {
+      "path": "docs/RESEARCH_ADMIN.md",
+      "mode": "100644",
+      "sha": "2e30026cae146c5cc070feaa57bf1e0a7fc14cdf"
+    },
+    {
+      "path": "docs/RESPONSIVE_DESIGN_SOURCES_2026-10-04.json",
+      "mode": "100644",
+      "sha": "2ca9e6b29937c2a9fc47d3d5bb648e7abb36bec4"
+    },
+    {
+      "path": "docs/RESPONSIVE_UI_2026-10-04.md",
+      "mode": "100644",
+      "sha": "52fa853e0a54c4cd9842b16208619768128fd369"
+    },
+    {
+      "path": "docs/SECURITY.md",
+      "mode": "100644",
+      "sha": "58ff8b3773144c88e308c110f1542d96b3279f00"
+    },
+    {
+      "path": "docs/SECURITY_ADVISORY_20261003.md",
+      "mode": "100644",
+      "sha": "7fe36a1fecd998830e538cb55290993c6f2247c7"
+    },
+    {
+      "path": "docs/SECURITY_UPDATE_20261030.md",
+      "mode": "100644",
+      "sha": "2235ab9cd86a3e049d7fedf551f53671fcc683af"
+    },
+    {
+      "path": "docs/SEC_DRAFT_REVIEW_2026-10-31.md",
+      "mode": "100644",
+      "sha": "6d7ecd97885f0cfae5ed0311510b2c9a03f11f51"
+    },
+    {
+      "path": "docs/SEC_TABLE_REPAIR_20261008.md",
+      "mode": "100644",
+      "sha": "842bb4dd9ac45d8f51a1d5939fa518f6ce939ab8"
+    },
+    {
+      "path": "docs/SIGNALBRIEF_FINAL_REPORT_KO.md",
+      "mode": "100644",
+      "sha": "9d468225e75bcefc541c93b576fc724148a8cddc"
+    },
+    {
+      "path": "docs/SIGNED_IN_CONTENT_CONTRACT.md",
+      "mode": "100644",
+      "sha": "bfc15c2fd19a4d82330f6192f1b83c7c981d01de"
+    },
+    {
+      "path": "docs/SIGNED_IN_OPERATIONS_2026-10-31.md",
+      "mode": "100644",
+      "sha": "56518fa5442c6036e6d4c99263bf1ebd8c356ba5"
+    },
+    {
+      "path": "docs/SIGNED_IN_RELEASE_2026-10-31.md",
+      "mode": "100644",
+      "sha": "af469cfb35074c947a58d1884d6fe892bb11508c"
+    },
+    {
+      "path": "docs/SIGNED_IN_RELEASE_CHECKS.md",
+      "mode": "100644",
+      "sha": "ffe9791f489ae5e2f99618b8f5fe4097d10dfc3b"
+    },
+    {
+      "path": "docs/SOURCE_REQUEST.md",
+      "mode": "100644",
+      "sha": "ad18c54535650aeeae83d555fdd2b96b42a6d98c"
+    },
+    {
+      "path": "docs/UI_REFINEMENT_2026-10-04.md",
+      "mode": "100644",
+      "sha": "bcbde2ce543534885873078ce15af9b33a944784"
+    },
+    {
+      "path": "docs/USABILITY_EXPERIMENT.md",
+      "mode": "100644",
+      "sha": "e9c4b11794060c8f1c89daa76cda4d07c23f119e"
+    },
+    {
+      "path": "docs/USER_RESEARCH.md",
+      "mode": "100644",
+      "sha": "fa6e59f1524a381004855dbb8f75a0256e9e1c3d"
+    },
+    {
+      "path": "docs/US_PROVIDER_RELEASE.md",
+      "mode": "100644",
+      "sha": "920ab78ad7e035421ba70a8b715f8de0586e35af"
+    },
+    {
+      "path": "docs/UX_SPEC.md",
+      "mode": "100644",
+      "sha": "003f9ae19e81bb6ef297af1313e1f7dde3dba980"
+    },
+    {
+      "path": "docs/VERIFICATION.md",
+      "mode": "100644",
+      "sha": "d536d4ab1135c7896f4469c493173b2d0313546f"
+    },
+    {
+      "path": "docs/WORKSPACE_RELEASE_20261005.md",
+      "mode": "100644",
+      "sha": "e5705a8fea2d10a8bacaabbb0543cd8e4ef8bfdd"
+    },
+    {
+      "path": "docs/audits/2026-10-30-source-visibility-checks.json",
+      "mode": "100644",
+      "sha": "880a225acd3f119b4831ea323576356de20013bd"
+    },
+    {
+      "path": "docs/audits/2026-10-30-source-visibility.md",
+      "mode": "100644",
+      "sha": "b4757d5a9861f8c48e8e06af0d0b5c26ea116b06"
+    },
+    {
+      "path": "docs/career/API_CASE_STUDY.md",
+      "mode": "100644",
+      "sha": "ea7f392c140ccc209f1edbe9fc9b209633ac9069"
+    },
+    {
+      "path": "docs/career/PRODUCT_METRICS.md",
+      "mode": "100644",
+      "sha": "479690dfd9be0bfadea5af6a3f2d1641c1f3d0c2"
+    },
+    {
+      "path": "docs/career/SQL_CASE_STUDY.md",
+      "mode": "100644",
+      "sha": "eb8582a3b9dac24895d65ad0c642b514aa8bdc3e"
+    },
+    {
+      "path": "docs/career/TECHNICAL_VERIFICATION.md",
+      "mode": "100644",
+      "sha": "53716a777aa732359f6375bb2f607a87a40dd7c9"
+    },
+    {
+      "path": "docs/career/evidence/api-openapi.json",
+      "mode": "100644",
+      "sha": "6cb3063fcfefc754df13b800fe56a3a8426d2c06"
+    },
+    {
+      "path": "docs/career/evidence/ci-checks.json",
+      "mode": "100644",
+      "sha": "9c91f930c39b23442b3966084a011e7286da7dec"
+    },
+    {
+      "path": "docs/career/evidence/ci-frontend-tests.txt",
+      "mode": "100644",
+      "sha": "5c16f263bd7a5c2a9b743f3961a42462d07d0b5c"
+    },
+    {
+      "path": "docs/career/evidence/local-checks.json",
+      "mode": "100644",
+      "sha": "c0333d7c9e61e520782190f3cfa9f9f55601ae32"
+    },
+    {
+      "path": "docs/career/evidence/postgres-results.xml",
+      "mode": "100644",
+      "sha": "3e7f261f1f0f3d9c71b0e211b7bf40e9b8b9a3d2"
+    },
+    {
+      "path": "docs/career/evidence/schema-constraints.json",
+      "mode": "100644",
+      "sha": "33c4c785b876090a9c35ef91e797ea5a53faadb9"
+    },
+    {
+      "path": "docs/career/evidence/schema-snapshot.json",
+      "mode": "100644",
+      "sha": "9ab2b6cb8a1b7db44cead0de0a3a1f3dc49dd253"
+    },
+    {
+      "path": "docs/career/sql/01_signup.sql",
+      "mode": "100644",
+      "sha": "ed12a17e6504285b079979ac05d271148d46526f"
+    },
+    {
+      "path": "docs/career/sql/02_watchlist.sql",
+      "mode": "100644",
+      "sha": "657d6454cbf5574b0c03e1d78a836fdcb5b05fe8"
+    },
+    {
+      "path": "docs/career/sql/03_first_detail.sql",
+      "mode": "100644",
+      "sha": "016dcfe39fb6ced77a9d8ef94790bae45e0e0333"
+    },
+    {
+      "path": "docs/career/sql/04_evidence.sql",
+      "mode": "100644",
+      "sha": "d49ec16efd73ae5cf382a68d4e7c35bdc9c2b19d"
+    },
+    {
+      "path": "docs/career/sql/05_retention.sql",
+      "mode": "100644",
+      "sha": "0fe96679e83886141db0cf3a083ee3c7f89b0f70"
+    },
+    {
+      "path": "docs/career/sql/06_followup.sql",
+      "mode": "100644",
+      "sha": "14d0a255a4b0a4268bfa97d3a72f5035757fe634"
+    },
+    {
+      "path": "docs/career/sql/07_feedback.sql",
+      "mode": "100644",
+      "sha": "d79a2f48105d8280d34d2f15d738988b398a7155"
+    },
+    {
+      "path": "docs/career/sql/08_processing.sql",
+      "mode": "100644",
+      "sha": "65e033c7ea55937d86257a4e06745e25b4b879b7"
+    },
+    {
+      "path": "docs/career/sql/09_citations.sql",
+      "mode": "100644",
+      "sha": "37e3a6dccfb75f86a670d5109fbceda25b551cf4"
+    },
+    {
+      "path": "docs/career/sql/10_numeric.sql",
+      "mode": "100644",
+      "sha": "b189617ffb1612f440b59066a502c4692baff349"
+    },
+    {
+      "path": "docs/career/sql/11_watchlist_join.sql",
+      "mode": "100644",
+      "sha": "6d6eaa24998f79440c7279f32f564d960f36d9cf"
+    },
+    {
+      "path": "docs/career/sql/12_latest_attempt.sql",
+      "mode": "100644",
+      "sha": "f68d2d1728901fcde9aaa2f2a6a6569e57682dab"
+    },
+    {
+      "path": "docs/career/sql/13_ordered_funnel.sql",
+      "mode": "100644",
+      "sha": "3c2984575e9a1f19c52be31d6998fb37f2058889"
+    },
+    {
+      "path": "docs/career/sql/14_cohorts.sql",
+      "mode": "100644",
+      "sha": "fd504747593b272baeb9bded28e93c53655e59ac"
+    },
+    {
+      "path": "docs/career/sql/15_daily_activity.sql",
+      "mode": "100644",
+      "sha": "3775eddfd9e28a03ed9e0b1cf088b29197490f8b"
+    },
+    {
+      "path": "docs/career/sql/16_event_quality.sql",
+      "mode": "100644",
+      "sha": "8892ce06c409d02064a5be92690b76c7570b1e87"
+    },
+    {
+      "path": "docs/career/sql/17_citation_integrity.sql",
+      "mode": "100644",
+      "sha": "b372f4e4e94ac9387a72bab6154e26aea4b57aba"
+    },
+    {
+      "path": "docs/career/sql/18_numeric_integrity.sql",
+      "mode": "100644",
+      "sha": "0a8e02d30f1416c3d2d1412f741b1aa626b7f917"
+    },
+    {
+      "path": "docs/career/sql/fixture.sql",
+      "mode": "100644",
+      "sha": "377d9905c8b9cfca6386afd3bf0c5baf8c7e6b59"
+    },
+    {
+      "path": "docs/desktop-mobile-baseline.json",
+      "mode": "100644",
+      "sha": "0a6aa9baf85856354f46963f3e8dc1d4280b09cc"
+    },
+    {
+      "path": "docs/marketing-design/source-manifest.json",
+      "mode": "100644",
+      "sha": "20014543f60e00a6e9490c782ae5cf4a7dbbdbb3"
+    },
+    {
+      "path": "docs/reference-browser-checks.json",
+      "mode": "100644",
+      "sha": "148672adc9123675fdbf76b5c038c7477279dc7a"
+    },
+    {
+      "path": "docs/render.production.example.yaml",
+      "mode": "100644",
+      "sha": "f15816d521455e71a34911bb99eaa953aeef0249"
+    },
+    {
+      "path": "docs/reviews/dart-drafts-2026-10-31.json",
+      "mode": "100644",
+      "sha": "f5c59d4e1c8ab729528514e5510c9a48b533a578"
+    },
+    {
+      "path": "docs/signed-in-workspace-boundary.json",
+      "mode": "100644",
+      "sha": "e9ec25bd1c1c5ef0fd537a519640fb64b315069a"
+    },
+    {
+      "path": "docs/sql/collector.sql",
+      "mode": "100644",
+      "sha": "ec4d8d11dadaa9e2ff39f3c16641ece0329290ba"
+    },
+    {
+      "path": "docs/sql/daily-digest.sql",
+      "mode": "100644",
+      "sha": "05419e75b81aaa1b2b9b7ba191f66e1a948c683e"
+    },
+    {
+      "path": "docs/sql/dart-documents.sql",
+      "mode": "100644",
+      "sha": "da002bb98176e53640534b2d8c16b5f170c6fffa"
+    },
+    {
+      "path": "docs/sql/dart-relay.sql",
+      "mode": "100644",
+      "sha": "ee5aa472d40d8ea87ef57696eec49c7a0f3d6108"
+    },
+    {
+      "path": "docs/sql/dart-retry.sql",
+      "mode": "100644",
+      "sha": "08a6bd3c132b72b5f9576f35cd681a71a05c1544"
+    },
+    {
+      "path": "docs/sql/delivery.sql",
+      "mode": "100644",
+      "sha": "0339477e944a6b6df8173d25e9e89f095fd94bfa"
+    },
+    {
+      "path": "docs/sql/market.sql",
+      "mode": "100644",
+      "sha": "87a5f9e8053a4e3d0d4943f7e857a6461157a26d"
+    },
+    {
+      "path": "docs/sql/notification-schedule.sql",
+      "mode": "100644",
+      "sha": "21b037374b819a339aacaff6de5ee18aded2ecb8"
+    },
+    {
+      "path": "docs/verification/2026-11-01/calendar-lg-automatic-live.jpg",
+      "mode": "100644",
+      "sha": "dcd7972f44d4da36b8a3f390628b2c1ab64d5760"
+    },
+    {
+      "path": "docs/verification/2026-11-01/calendar-nvidia-live.jpg",
+      "mode": "100644",
+      "sha": "eff1dc040324edda1b409d3481eea4d11edc3273"
+    },
+    {
+      "path": "docs/verification/2026-11-01/micron-calendar-detail.png",
+      "mode": "100644",
+      "sha": "c14801568562ed67e7749bc38d51bbdb48117b02"
+    },
+    {
+      "path": "docs/verification/2026-11-01/naver-introduction.png",
+      "mode": "100644",
+      "sha": "59398272b51a6de76be124a976b537f563de7a4e"
+    },
+    {
+      "path": "docs/verification/2026-11-01/saved-empty-discovery-live.jpg",
+      "mode": "100644",
+      "sha": "cf2d0ac2f91b579efc6888cbcb26b4d048ec7fbb"
+    },
+    {
+      "path": "docs/verification/2026-11-01/saved-persisted-live.jpg",
+      "mode": "100644",
+      "sha": "ec44c4ebb89da66d0a8ce66c907cbf2ae71df1ff"
+    },
+    {
+      "path": "docs/verification/2026-11-01/saved-roundtrip.png",
+      "mode": "100644",
+      "sha": "f9353f7785f473eeb387cd0c7b62289adc93ac37"
+    },
+    {
+      "path": "evals/README.md",
+      "mode": "100644",
+      "sha": "ffdee78a3dbc77092edf5363b01931ce42476803"
+    },
+    {
+      "path": "evals/datasets/synthetic-v1.jsonl",
+      "mode": "100644",
+      "sha": "4151dc7608f7c510897d64e5102f98f6009c9e9d"
+    },
+    {
+      "path": "evals/financial-v1/README.md",
+      "mode": "100644",
+      "sha": "bff805257a3615daf63d51b9e7a2f15788929bf2"
+    },
+    {
+      "path": "evals/financial-v1/adversarial.json",
+      "mode": "100644",
+      "sha": "47fa578cf3d9b8e27ad923c7dc4e7a756bec6077"
+    },
+    {
+      "path": "evals/financial-v1/human-review.csv",
+      "mode": "100644",
+      "sha": "f4973bc99744eebce371696528c36cbf482494e7"
+    },
+    {
+      "path": "evals/financial-v1/manifest.json",
+      "mode": "100644",
+      "sha": "df071582c2b17d824121f8bd4cbbf61ac742284b"
+    },
+    {
+      "path": "evals/financial-v1/manifest.sha256",
+      "mode": "100644",
+      "sha": "3ecbb4406b1faf12ce7d955bf5cf292a5d232383"
+    },
+    {
+      "path": "evals/financial-v1/metadata/AAPL.json.gz",
+      "mode": "100644",
+      "sha": "620c03e7fffbc6d44da15cc0431e2c1a1ff46057"
+    },
+    {
+      "path": "evals/financial-v1/metadata/CIK0000789019-submissions-001.json.gz",
+      "mode": "100644",
+      "sha": "f8c8848566fa6816efcd29186ac5c9776c3cc4e3"
+    },
+    {
+      "path": "evals/financial-v1/metadata/CIK0001045810-submissions-001.json.gz",
+      "mode": "100644",
+      "sha": "76f500c685f062e79196b1834ac59848a33fe65f"
+    },
+    {
+      "path": "evals/financial-v1/metadata/MSFT.json.gz",
+      "mode": "100644",
+      "sha": "b3df69e3c8736e2a7b9ff42cb6aba2137c11c9a8"
+    },
+    {
+      "path": "evals/financial-v1/metadata/NVDA.json.gz",
+      "mode": "100644",
+      "sha": "6ccb117e68dfec4eb50b9cd4f0635239fa00edb7"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-20-000010.htm.gz",
+      "mode": "100644",
+      "sha": "1fd6910cf881b41fd89d79da436c09bb55aaafc8"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-20-000052.htm.gz",
+      "mode": "100644",
+      "sha": "70364e7ededd2e9d820c1de45088d6a63eaaaba7"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-20-000062.htm.gz",
+      "mode": "100644",
+      "sha": "9aa77a09e92a347c45686018b146369673ba479d"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-21-000010.htm.gz",
+      "mode": "100644",
+      "sha": "f628972f81289af1cd4c2fee06032062bc5a3eff"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-21-000056.htm.gz",
+      "mode": "100644",
+      "sha": "5fbccd37a174df7574ee24b2530e20063e453dd9"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-21-000065.htm.gz",
+      "mode": "100644",
+      "sha": "cd82a79b0971d3e935d81f338ace7a0196b55cc5"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-22-000007.htm.gz",
+      "mode": "100644",
+      "sha": "4f0b70c6cc4ecd1f78fb3ec358a459d44811833d"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-22-000059.htm.gz",
+      "mode": "100644",
+      "sha": "82955579e051304b8510967425ee3ea6b2ef7047"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-22-000070.htm.gz",
+      "mode": "100644",
+      "sha": "57fe59e7d8111029c44a700b56d75dfefdca2d68"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-23-000006.htm.gz",
+      "mode": "100644",
+      "sha": "b67b2920714d4d7eb919eb0168e769ebd2673f5b"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-24-000081.htm.gz",
+      "mode": "100644",
+      "sha": "d436d24e863e8c659eb73ff4a60e8a58014d25e8"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-25-000008.htm.gz",
+      "mode": "100644",
+      "sha": "dd019c484c8d85dd8c8b5a599a9fa6420b867594"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-25-000057.htm.gz",
+      "mode": "100644",
+      "sha": "673c8667d046a26ca042a1346bb7d0e286d94c09"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-25-000073.htm.gz",
+      "mode": "100644",
+      "sha": "22af14a680c57a509bd1cfe27bcb493054c4879f"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-26-000006.htm.gz",
+      "mode": "100644",
+      "sha": "a107335d421305e9d088f9e87c83746b05a80b69"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-26-000013.htm.gz",
+      "mode": "100644",
+      "sha": "f3b4c3401f769488045193bc26b69017c48345c9"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000320193-26-000020.htm.gz",
+      "mode": "100644",
+      "sha": "9015819f02a93495c6bdbc580b22fc4c3ee39068"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000950170-24-118967.htm.gz",
+      "mode": "100644",
+      "sha": "96d222310fba73f24d2b8f21fdae254f0fbfeac3"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000950170-25-010491.htm.gz",
+      "mode": "100644",
+      "sha": "c05cf43dde751dfd78d9e6a5816753c7e6614bdd"
+    },
+    {
+      "path": "evals/financial-v1/originals/0000950170-25-061046.htm.gz",
+      "mode": "100644",
+      "sha": "b614f82a8add084567c33ee2ec08f39ad6776bce"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001045810-20-000065.htm.gz",
+      "mode": "100644",
+      "sha": "232178181b20211c6dd2cda22b92f40d0210928c"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001045810-20-000147.htm.gz",
+      "mode": "100644",
+      "sha": "2bcb785a346597702a1e7158fc51372d60524c1e"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001045810-20-000189.htm.gz",
+      "mode": "100644",
+      "sha": "0a1c6ddae3a2c98c76849d67955cd5cd4de5a397"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001045810-21-000064.htm.gz",
+      "mode": "100644",
+      "sha": "04336fe36cd2213053e766376662423a7a238032"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001045810-21-000131.htm.gz",
+      "mode": "100644",
+      "sha": "ddc58792c47b5186aa56ac2ff33db6d8e22c53bd"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001045810-21-000163.htm.gz",
+      "mode": "100644",
+      "sha": "37386032f9ebea33c0062c9e4cc06dc1f0b26537"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001045810-22-000079.htm.gz",
+      "mode": "100644",
+      "sha": "6c60f103e14abc977aabb33a6c41f2f4f8979e0f"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001045810-22-000147.htm.gz",
+      "mode": "100644",
+      "sha": "68cb38fd5e35dfe6ba08bd722e6dc3d26c5fc988"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001045810-22-000166.htm.gz",
+      "mode": "100644",
+      "sha": "29a6ccd17100da004dc043e27219ae5c27df183c"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001045810-24-000316.htm.gz",
+      "mode": "100644",
+      "sha": "d6d7246d0c9c963464b675f5b408eec9aa2f681c"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001045810-25-000116.htm.gz",
+      "mode": "100644",
+      "sha": "502aef8c9677e6b270ae273fe145e2c7719b83f9"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001045810-25-000209.htm.gz",
+      "mode": "100644",
+      "sha": "6f1ee9a05d88c2b9f779387be276cb0fa9c7a61c"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001045810-25-000230.htm.gz",
+      "mode": "100644",
+      "sha": "fb2e2342f029f3752f473a63ffd34f7e682ee584"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001045810-26-000052.htm.gz",
+      "mode": "100644",
+      "sha": "c9cb33b088554dc4979823dc8aae8d14fdb7104f"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001045810-26-000075.htm.gz",
+      "mode": "100644",
+      "sha": "359923e219130e30aec2ae0caceb63dc2f04e731"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001193125-25-256321.htm.gz",
+      "mode": "100644",
+      "sha": "0751c846172947c8bea947802ee38d4ae4d826ff"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001193125-26-027207.htm.gz",
+      "mode": "100644",
+      "sha": "427d327cbb15fb7d260ba8c99e3f23377f452334"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001193125-26-191507.htm.gz",
+      "mode": "100644",
+      "sha": "dd89a7d2669721062685f7e4224d9fb3451f89e4"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001564590-20-002450.htm.gz",
+      "mode": "100644",
+      "sha": "ddde39c680e3d303ec317383784e9be3c9eafd5e"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001564590-20-019706.htm.gz",
+      "mode": "100644",
+      "sha": "404f56a6061ad866d1fb470a1571416dbc698cf0"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001564590-20-047996.htm.gz",
+      "mode": "100644",
+      "sha": "3a54934edf4e9fe36dec4a84b637e4dad541595f"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001564590-21-002316.htm.gz",
+      "mode": "100644",
+      "sha": "1792d47836ed187907e77ff28559c65db004909b"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001564590-21-020891.htm.gz",
+      "mode": "100644",
+      "sha": "d286792c6d81cfe3ec1f7ce38c7576aa06ac42cf"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001564590-21-051992.htm.gz",
+      "mode": "100644",
+      "sha": "fe80a7c3b63577742cc8f54341fb11b9335af633"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001564590-22-002324.htm.gz",
+      "mode": "100644",
+      "sha": "47b4a050d2d4068f3f7b04123f5cfcc8e01c23ed"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001564590-22-015675.htm.gz",
+      "mode": "100644",
+      "sha": "91e8e6bcfce0e2fd3edcb3d0a337c5c71f49e3c7"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001564590-22-035087.htm.gz",
+      "mode": "100644",
+      "sha": "8ef214810c24c067dc360559d1cc6acca0988d4f"
+    },
+    {
+      "path": "evals/financial-v1/originals/0001564590-23-000733.htm.gz",
+      "mode": "100644",
+      "sha": "181695753fe054b34dce6d8d7bc866bb8704896f"
+    },
+    {
+      "path": "evals/reports/20261002T103229658349Z-synthetic-v1.json",
+      "mode": "100644",
+      "sha": "2a76756b843dca1757c100353d594d62c2440d1e"
+    },
+    {
+      "path": "evals/reports/20261002T103229658349Z-synthetic-v1.md",
+      "mode": "100644",
+      "sha": "ef668a5a6da7229db23bb89687ddd4ffda4ed271"
+    },
+    {
+      "path": "evals/reports/20261002T111222347040Z-synthetic-v1.json",
+      "mode": "100644",
+      "sha": "db8762dbda4c1a9e855f22e34a47b87a510df51a"
+    },
+    {
+      "path": "evals/reports/20261002T111222347040Z-synthetic-v1.md",
+      "mode": "100644",
+      "sha": "d7685214ec19f14d4bb5469706a95dd611e6eb81"
+    },
+    {
+      "path": "evals/reports/20261002T111421453807Z-synthetic-v1.json",
+      "mode": "100644",
+      "sha": "be87629d71fce2282cb7f04992da5770aff85a6f"
+    },
+    {
+      "path": "evals/reports/20261002T111421453807Z-synthetic-v1.md",
+      "mode": "100644",
+      "sha": "172e9aefd237ca8a983b38eea546df7b32085b5b"
+    },
+    {
+      "path": "evals/reports/20261002T112929306317Z-synthetic-v1.json",
+      "mode": "100644",
+      "sha": "970c49ca16d92167dd26781fa6e0051ba9d664d8"
+    },
+    {
+      "path": "evals/reports/20261002T112929306317Z-synthetic-v1.md",
+      "mode": "100644",
+      "sha": "67c2df455c1c92a35a674883fdbe4dcde9bb2b7c"
+    },
+    {
+      "path": "evals/reports/20261002T115736618680Z-synthetic-v1.json",
+      "mode": "100644",
+      "sha": "ca3f946321f2cff074ad28f20dccd8e12d2e321c"
+    },
+    {
+      "path": "evals/reports/20261002T115736618680Z-synthetic-v1.md",
+      "mode": "100644",
+      "sha": "172e9aefd237ca8a983b38eea546df7b32085b5b"
+    },
+    {
+      "path": "evals/reports/20261002T121744493288Z-synthetic-v1.json",
+      "mode": "100644",
+      "sha": "0016d9abdc6f29510d0cba876a64c4f024a58c6c"
+    },
+    {
+      "path": "evals/reports/20261002T121744493288Z-synthetic-v1.md",
+      "mode": "100644",
+      "sha": "172e9aefd237ca8a983b38eea546df7b32085b5b"
+    },
+    {
+      "path": "packages/shared/README.md",
+      "mode": "100644",
+      "sha": "afdf9170a78237aa851fdca1d1d1115104fdde73"
+    },
+    {
+      "path": "packages/shared/openapi.json",
+      "mode": "100644",
+      "sha": "ad27600ebc5860452e265d3b071710051d05be0d"
+    },
+    {
+      "path": "packages/shared/research-openapi.json",
+      "mode": "100644",
+      "sha": "4c2450fe9d3ae4c5ceb3f6b69bc5a6c253f5d345"
+    },
+    {
+      "path": "pyproject.toml",
+      "mode": "100644",
+      "sha": "b8fd464ae767956ee40e158e35f242ec97b580ef"
+    },
+    {
+      "path": "scripts/check_final_sec.py",
+      "mode": "100644",
+      "sha": "c7e7755e7328bcd951967de675c9c3334b2bd31d"
+    },
+    {
+      "path": "scripts/check_hosted_api.py",
+      "mode": "100644",
+      "sha": "9eac34434bb4c2a174f9221da8364257814eff13"
+    },
+    {
+      "path": "scripts/check_production.py",
+      "mode": "100644",
+      "sha": "652e31e9865735d5efd64ceb80f2b15b3d43db42"
+    },
+    {
+      "path": "scripts/check_real_trial_sources.py",
+      "mode": "100644",
+      "sha": "030e8192c5eaa6c3094238d351cd7b2559e116a2"
+    },
+    {
+      "path": "scripts/check_sec_table_pilot.py",
+      "mode": "100644",
+      "sha": "d4db0fa3d88bb9c311dd96c7ac25e3a90e07cb93"
+    },
+    {
+      "path": "scripts/check_ts_syntax.cjs",
+      "mode": "100644",
+      "sha": "7ee83140307edef54f809763cb22ac8d8079f9e0"
+    },
+    {
+      "path": "scripts/dev.py",
+      "mode": "100644",
+      "sha": "25263ce244d97a87ace06c09a94711bb348c3aa0"
+    },
+    {
+      "path": "scripts/export_openapi.py",
+      "mode": "100644",
+      "sha": "31172a3d93819f1c7707f7ab1e4254f5342e9494"
+    },
+    {
+      "path": "scripts/export_research_contract.cjs",
+      "mode": "100644",
+      "sha": "ee4bdc3773fa4994e75b802d09f95bc62b23671b"
+    },
+    {
+      "path": "scripts/hosted_baseline.py",
+      "mode": "100644",
+      "sha": "3e309a57c5b60e83b814e21691a76a4fda26371f"
+    },
+    {
+      "path": "scripts/package_desktop_references.py",
+      "mode": "100644",
+      "sha": "ef3916fcf7887d004a8dc3c2b3ce3815eca7921b"
+    },
+    {
+      "path": "scripts/package_mobile_details.py",
+      "mode": "100644",
+      "sha": "57fcd54d6360857801f98a38120f003c0f525c7b"
+    },
+    {
+      "path": "scripts/prepare_financial_benchmark.py",
+      "mode": "100644",
+      "sha": "cdd24304838109c330dcd3bbcaa83b9d4af87be5"
+    },
+    {
+      "path": "scripts/provider-readiness.mjs",
+      "mode": "100644",
+      "sha": "e358635b4d4121b282263585b1726db346431d26"
+    },
+    {
+      "path": "scripts/provider-readiness.test.mjs",
+      "mode": "100644",
+      "sha": "8c7f855a324a930b2c67dbdc95ca578f18240dd1"
+    },
+    {
+      "path": "scripts/run_financial_adversarial.py",
+      "mode": "100644",
+      "sha": "eb58cd231e9dba330efea1a47bfcdfd53a42a369"
+    },
+    {
+      "path": "scripts/run_financial_benchmark.py",
+      "mode": "100644",
+      "sha": "1090378906e440a010b7e69ab4967ea6ffd7b9c0"
+    },
+    {
+      "path": "scripts/verify.py",
+      "mode": "100644",
+      "sha": "b65a409090cb31adfe6c241c30a11b0bea9c0709"
+    },
+    {
+      "path": "scripts/verify_desktop_isolation.py",
+      "mode": "100644",
+      "sha": "47cece242828a38705b8b0d93c9302b3e302c530"
+    },
+    {
+      "path": "scripts/verify_workspace_scope.py",
+      "mode": "100644",
+      "sha": "7e16e67c55fab9b1432454935b9ca373c7398216"
+    },
+    {
+      "path": "supabase/enable_vector.sql",
+      "mode": "100644",
+      "sha": "24bbc54199c0e3ef4e7614b250c5cc98ff58d8c0"
+    },
+    {
+      "path": "supabase/functions/signalbrief-api/analysis-excerpt.ts",
+      "mode": "100644",
+      "sha": "5d6117b248c4787d00c0a425ff0f87551774dc79"
+    },
+    {
+      "path": "supabase/functions/signalbrief-api/calendar_test.ts",
+      "mode": "100644",
+      "sha": "5ec120db7e50d9ad04698575f26d003923edd456"
+    },
+    {
+      "path": "supabase/functions/signalbrief-api/card-evidence.ts",
+      "mode": "100644",
+      "sha": "88fcd47cad5eb596bc9b63011e02cb543fe7c1a6"
+    },
+    {
+      "path": "supabase/functions/signalbrief-api/company-financials-core.ts",
+      "mode": "100644",
+      "sha": "a91358532384a218147ec903b2d593efee7a5e42"
+    },
+    {
+      "path": "supabase/functions/signalbrief-api/company-financials.ts",
+      "mode": "100644",
+      "sha": "d84a5b52d6f0f81b958f0f5cf9ae3a268642bd60"
+    },
+    {
+      "path": "supabase/functions/signalbrief-api/deno.json",
+      "mode": "100644",
+      "sha": "cf9293b529afde846fdc6facb0e91032f2b8442f"
+    },
+    {
+      "path": "supabase/functions/signalbrief-api/index.ts",
+      "mode": "100644",
+      "sha": "ef0d1f6acb1d33174b3276b4c84d41a57e2a553e"
+    },
+    {
+      "path": "supabase/functions/signalbrief-api/market-core.ts",
+      "mode": "100644",
+      "sha": "65cc7e705cfc9a8746afd345eee85e3b46da3715"
+    },
+    {
+      "path": "supabase/functions/signalbrief-api/operational-readiness.ts",
+      "mode": "100644",
+      "sha": "4f96236e9f6a0f01b7282515a3b751875594def0"
+    },
+    {
+      "path": "supabase/functions/signalbrief-api/question-evidence.ts",
+      "mode": "100644",
+      "sha": "ac0e3215d9faeee244cab33f01fce6dd929774ce"
+    },
+    {
+      "path": "supabase/functions/signalbrief-api/us-core.ts",
+      "mode": "100644",
+      "sha": "b91a8515b461c82eadc69d13abb13268bff92f89"
+    },
+    {
+      "path": "supabase/functions/signalbrief-api/us-handler.ts",
+      "mode": "100644",
+      "sha": "71e3c7182d89308313a1af81cd1eb20612233cfd"
+    },
+    {
+      "path": "supabase/functions/signalbrief-api/verification.ts",
+      "mode": "100644",
+      "sha": "c6cc72e5a206bbef36e6e78711c742286742c5da"
+    },
+    {
+      "path": "supabase/functions/signalbrief-calendar/core.ts",
+      "mode": "100644",
+      "sha": "322d57e1f0a44621f0c7cf6041e0cc01a7581d4e"
+    },
+    {
+      "path": "supabase/functions/signalbrief-calendar/core_test.ts",
+      "mode": "100644",
+      "sha": "6696ee36da2149ec82fafe5ec4a22c54b17f5dd8"
+    },
+    {
+      "path": "supabase/functions/signalbrief-calendar/dart-ir.ts",
+      "mode": "100644",
+      "sha": "7ca46d424e434b879e019ace6bdf286a5157f9c8"
+    },
+    {
+      "path": "supabase/functions/signalbrief-calendar/deno.json",
+      "mode": "100644",
+      "sha": "d29ef0262a525187c7fb9e6a0096adc81adf9be1"
+    },
+    {
+      "path": "supabase/functions/signalbrief-calendar/index.ts",
+      "mode": "100644",
+      "sha": "9d026e12e831e358d859e6916db110f0cac704fd"
+    },
+    {
+      "path": "supabase/functions/signalbrief-calendar/micron-q4.ts",
+      "mode": "100644",
+      "sha": "c20cbe5c64a7a5326eefd5df9eaeccd488c6af53"
+    },
+    {
+      "path": "supabase/functions/signalbrief-calendar/public-source.ts",
+      "mode": "100644",
+      "sha": "fada3845aafecc92119edcd99a2cb987dffb42fd"
+    },
+    {
+      "path": "supabase/functions/signalbrief-calendar/sec-ir.ts",
+      "mode": "100644",
+      "sha": "3e71b239e412ef5b65cf41a8dc6e46486530169b"
+    },
+    {
+      "path": "supabase/functions/signalbrief-calendar/source-relay.ts",
+      "mode": "100644",
+      "sha": "2d5b83389690cae8d3f08bad5e5ad9399de7db6e"
+    },
+    {
+      "path": "supabase/functions/signalbrief-collector/core.ts",
+      "mode": "100644",
+      "sha": "5a59290c09a5f028f8160d6fa1cd156780faa4f2"
+    },
+    {
+      "path": "supabase/functions/signalbrief-collector/dart-document-core.ts",
+      "mode": "100644",
+      "sha": "adc06e3d7c8e4366bd43044497b0128a70d15a86"
+    },
+    {
+      "path": "supabase/functions/signalbrief-collector/dart-document.ts",
+      "mode": "100644",
+      "sha": "52e0e31e3454afa559ad5d2f2a164a8ee9670a4c"
+    },
+    {
+      "path": "supabase/functions/signalbrief-collector/dart-parser.ts",
+      "mode": "100644",
+      "sha": "8c0fd99f152fc5d126430f4df9ee689db8c96a56"
+    },
+    {
+      "path": "supabase/functions/signalbrief-collector/dart-relay.ts",
+      "mode": "100644",
+      "sha": "3f8e3890ddc12d048cc47cad34f8d0ea94c86d28"
+    },
+    {
+      "path": "supabase/functions/signalbrief-collector/deno.json",
+      "mode": "100644",
+      "sha": "d29ef0262a525187c7fb9e6a0096adc81adf9be1"
+    },
+    {
+      "path": "supabase/functions/signalbrief-collector/index.ts",
+      "mode": "100644",
+      "sha": "3b06fe51b992f76a76cbf678fa64c442446430d3"
+    },
+    {
+      "path": "supabase/functions/signalbrief-delivery/core.ts",
+      "mode": "100644",
+      "sha": "d97d066de4291d731104673e625148101ca2854b"
+    },
+    {
+      "path": "supabase/functions/signalbrief-delivery/deno.json",
+      "mode": "100644",
+      "sha": "d29ef0262a525187c7fb9e6a0096adc81adf9be1"
+    },
+    {
+      "path": "supabase/functions/signalbrief-delivery/dispatch.ts",
+      "mode": "100644",
+      "sha": "dd64228819d9506ebd6934f7d32bf7e384b0166e"
+    },
+    {
+      "path": "supabase/functions/signalbrief-delivery/index.ts",
+      "mode": "100644",
+      "sha": "fedfefccecea8cb5af1764bd776d7c58f10b60f4"
+    },
+    {
+      "path": "supabase/functions/signalbrief-delivery/webhook.ts",
+      "mode": "100644",
+      "sha": "e5f6956e2375e016ae4cedaf91280c2aa56f1833"
+    },
+    {
+      "path": "supabase/functions/signalbrief-discovery/core.ts",
+      "mode": "100644",
+      "sha": "6586e44d1ac90bdc7a320a3b942df5045b636d20"
+    },
+    {
+      "path": "supabase/functions/signalbrief-discovery/deno.json",
+      "mode": "100644",
+      "sha": "cf9293b529afde846fdc6facb0e91032f2b8442f"
+    },
+    {
+      "path": "supabase/functions/signalbrief-discovery/index.ts",
+      "mode": "100644",
+      "sha": "ab9d2e3189f5d8a135a452bbb5a172737356442f"
+    },
+    {
+      "path": "supabase/functions/signalbrief-discovery/service.ts",
+      "mode": "100644",
+      "sha": "2972f17444a425a0eaf0944a7b02f5f14df66992"
+    },
+    {
+      "path": "supabase/functions/signalbrief-notifications/deno.json",
+      "mode": "100644",
+      "sha": "d29ef0262a525187c7fb9e6a0096adc81adf9be1"
+    },
+    {
+      "path": "supabase/functions/signalbrief-notifications/index.ts",
+      "mode": "100644",
+      "sha": "109da9c6d273786d4c8a8394f73f21f1da8ace2f"
+    },
+    {
+      "path": "supabase/functions/signalbrief-profiles/core.ts",
+      "mode": "100644",
+      "sha": "90273905156286da2c238d0df8808f5c4731b528"
+    },
+    {
+      "path": "supabase/functions/signalbrief-profiles/deno.json",
+      "mode": "100644",
+      "sha": "cf9293b529afde846fdc6facb0e91032f2b8442f"
+    },
+    {
+      "path": "supabase/functions/signalbrief-profiles/enrichment-dart-core.ts",
+      "mode": "100644",
+      "sha": "5a60a0681c45121a0fc83631db3b3bec5f0def4a"
+    },
+    {
+      "path": "supabase/functions/signalbrief-profiles/enrichment-dart.ts",
+      "mode": "100644",
+      "sha": "5ef1f56fa4f191a1247bbb96afe6623e20bc0a64"
+    },
+    {
+      "path": "supabase/functions/signalbrief-profiles/enrichment-html.ts",
+      "mode": "100644",
+      "sha": "ba434adbbcded36fa7c46e078fbecbbf7ead3be6"
+    },
+    {
+      "path": "supabase/functions/signalbrief-profiles/enrichment-sec.ts",
+      "mode": "100644",
+      "sha": "a0930a7ac6bae58f42d163845f723f2084c93846"
+    },
+    {
+      "path": "supabase/functions/signalbrief-profiles/enrichment-service.ts",
+      "mode": "100644",
+      "sha": "d62c3052caf77d8de1aed79636884248ad7d0c33"
+    },
+    {
+      "path": "supabase/functions/signalbrief-profiles/enrichment-types.ts",
+      "mode": "100644",
+      "sha": "a32f80a269ec363f98526df8469403b0691e461b"
+    },
+    {
+      "path": "supabase/functions/signalbrief-profiles/enrichment.ts",
+      "mode": "100644",
+      "sha": "0e3771e60e6a31f27312b1fa096a9770fe4819c2"
+    },
+    {
+      "path": "supabase/functions/signalbrief-profiles/index.ts",
+      "mode": "100644",
+      "sha": "31fab8da5bb0608bc39577f0e2ef3a7dd9acc6d5"
+    },
+    {
+      "path": "supabase/functions/signalbrief-research/core.ts",
+      "mode": "100644",
+      "sha": "59db58bed6f111f70034f915aa534da995e62bc3"
+    },
+    {
+      "path": "supabase/functions/signalbrief-research/deno.json",
+      "mode": "100644",
+      "sha": "37a84200585957c2f4ab1033e5e2c07ee0e67a81"
+    },
+    {
+      "path": "supabase/functions/signalbrief-research/index.ts",
+      "mode": "100644",
+      "sha": "9b01a61de67291003e5f143e4290732a5ac743fa"
+    },
+    {
+      "path": "supabase/functions/signalbrief-us/index.ts",
+      "mode": "100644",
+      "sha": "25e8abf8bb60599e423c1f22e2269e2954e219bb"
+    },
+    {
+      "path": "supabase/hosted/20261003003202_signalbrief_web_rls_and_profiles.sql",
+      "mode": "100644",
+      "sha": "15ee04baaec7262bccfd31e3b5da2b944abc48ac"
+    },
+    {
+      "path": "supabase/hosted/20261003003242_signalbrief_atomic_user_mutations.sql",
+      "mode": "100644",
+      "sha": "6f02cca4b19fcb3591f307baea604e0979263211"
+    },
+    {
+      "path": "supabase/hosted/20261003005619_signalbrief_web_audit_and_answers.sql",
+      "mode": "100644",
+      "sha": "a85b303956f2103c6c3e7f9db639994df1c98919"
+    },
+    {
+      "path": "supabase/hosted/20261003022928_signalbrief_release_hardening.sql",
+      "mode": "100644",
+      "sha": "ce8736d3219cf5da7093d70be2093e904e78882a"
+    },
+    {
+      "path": "supabase/hosted/20261003033010_signalbrief_web_workflow_completion.sql",
+      "mode": "100644",
+      "sha": "c5debfaa9677d62de7cf05d78444b3256d952fd4"
+    },
+    {
+      "path": "supabase/hosted/20261003033301_signalbrief_canonical_change_answers.sql",
+      "mode": "100644",
+      "sha": "fd24dcb1d7269e3347befa196eeb4159c8cf63e2"
+    },
+    {
+      "path": "supabase/hosted/20261003035500_signalbrief_reconcile_regex_literals.sql",
+      "mode": "100644",
+      "sha": "de54ad987a9fa4e808e8cdc493aba377748bf3a1"
+    },
+    {
+      "path": "supabase/hosted/README.md",
+      "mode": "100644",
+      "sha": "46305ef0ad43fba06adf296a8b235c7615588b93"
+    },
+    {
+      "path": "supabase/migrations/20261019070909_official_calendar_ingestion.sql",
+      "mode": "100644",
+      "sha": "33ec15f0bcef67f49c1dafc7ad07a5c44bfe8db7"
+    },
+    {
+      "path": "supabase/migrations/20261019071743_official_calendar_schedule.sql",
+      "mode": "100644",
+      "sha": "a91fa6189711124decc6fa499faf5829c629e9db"
+    },
+    {
+      "path": "supabase/migrations/20261019073620_official_calendar_reminders.sql",
+      "mode": "100644",
+      "sha": "0399fe9fa1f6de6a173cbce9836e671f55af661f"
+    },
+    {
+      "path": "supabase/migrations/20261101014441_screenshot_dashboard.sql",
+      "mode": "100644",
+      "sha": "0f55c7c237776c9c4ba3d8c88fa93934e04ef699"
+    },
+    {
+      "path": "supabase/migrations/20261101041747_company_discovery_reliability.sql",
+      "mode": "100644",
+      "sha": "07d13e86e976bcf65a8414d933c3aa3704c496a0"
+    },
+    {
+      "path": "supabase/migrations/20261101041751_calendar_reliability.sql",
+      "mode": "100644",
+      "sha": "1cb64cd7a71b48e9c847a45cb56d42d489865889"
+    },
+    {
+      "path": "supabase/migrations/20261101050721_official_directory_english_names.sql",
+      "mode": "100644",
+      "sha": "40a1aae531839247b2d10296c78ca9afa6c26274"
+    },
+    {
+      "path": "supabase/migrations/20261101055057_dart_alphanumeric_stock_codes.sql",
+      "mode": "100644",
+      "sha": "5660f181730ff759c70df1c83918396fddf3075e"
+    },
+    {
+      "path": "supabase/migrations/20261101072153_company_official_overview.sql",
+      "mode": "100644",
+      "sha": "2b091a888f69caefd6e241ce48036d18ba375b1c"
+    },
+    {
+      "path": "supabase/migrations/20261101072155_company_picker_discovery_filters.sql",
+      "mode": "100644",
+      "sha": "126f3d7a24c25be836326d0598953aa2b88df22b"
+    },
+    {
+      "path": "supabase/migrations/20261101072157_micron_q4_calendar.sql",
+      "mode": "100644",
+      "sha": "1c43530c5f8244e3f6f16a6cdc71ebbc6d5731f6"
+    },
+    {
+      "path": "supabase/migrations/20261101103903_calendar_source_onboarding.sql",
+      "mode": "100644",
+      "sha": "ac94f1dc4ed68332d3f97cce17c0e8bcbf0ec94f"
+    },
+    {
+      "path": "supabase/migrations/20261101111341_calendar_dart_correction_lineage.sql",
+      "mode": "100644",
+      "sha": "ac86fca3b4924a0fb677829f0ded9bca1d7d15b1"
+    },
+    {
+      "path": "supabase/migrations/20261102020437_calendar_sec_ir_discovery.sql",
+      "mode": "100644",
+      "sha": "1b05f913361452db727e2593ac9b27c087b5f1dd"
+    },
+    {
+      "path": "supabase/migrations/20261102020442_company_reported_financials.sql",
+      "mode": "100644",
+      "sha": "200bf4a2600d9ce2461c34a364a376e04ae72194"
+    },
+    {
+      "path": "supabase/migrations/20261102020446_company_search_precision.sql",
+      "mode": "100644",
+      "sha": "8db33b8cf9c72a2b0bcb48e9778945ed00b063aa"
+    },
+    {
+      "path": "supabase/migrations/20261102020450_company_profile_source_enrichment.sql",
+      "mode": "100644",
+      "sha": "695ff1ae701e0083a15e0bfcb2cf7f592d10bec8"
+    },
+    {
+      "path": "supabase/migrations/20261102020454_dart_profile_periodic_sources.sql",
+      "mode": "100644",
+      "sha": "8a53ef3fa7dfe63074962ce6e7942736fe5a7989"
+    },
+    {
+      "path": "supabase/migrations/20261102022052_company_search_catalogue_performance.sql",
+      "mode": "100644",
+      "sha": "f8537c732cbb5bf6401490a58952488be90db39a"
+    },
+    {
+      "path": "supabase/migrations/20261102023317_profile_official_source_binding.sql",
+      "mode": "100644",
+      "sha": "f87176b30eb46f8c4fedf1a237caf7bcb8344202"
+    },
+    {
+      "path": "supabase/migrations/20261102051051_dart_financial_period_binding.sql",
+      "mode": "100644",
+      "sha": "4ff1ff28205e96b8c4b8a06346a4ffbb869fa56d"
+    },
+    {
+      "path": "supabase/migrations/20261102051053_calendar_sec_filed_events.sql",
+      "mode": "100644",
+      "sha": "e5decf3fdc27e000b24ffd9ef154a9d1fadc5642"
+    },
+    {
+      "path": "supabase/migrations/20261102051056_samsung_calendar_history.sql",
+      "mode": "100644",
+      "sha": "812659b72da28dab2c864a34ae40351e579613f6"
+    },
+    {
+      "path": "supabase/migrations/20261102051058_calendar_ir_navigation_labels.sql",
+      "mode": "100644",
+      "sha": "f36d7bac632e7caf70b32f16a2f5ffdb70d76438"
+    },
+    {
+      "path": "supabase/migrations/20261102052148_sec_profile_section_refresh.sql",
+      "mode": "100644",
+      "sha": "95717f9db75c16aa62e417f0d31aaa5a2c35043f"
+    },
+    {
+      "path": "supabase/migrations/20261102052159_calendar_sec_filing_ingest_lock.sql",
+      "mode": "100644",
+      "sha": "22053668eca6322031200a32812248b8539d2d3a"
+    },
+    {
+      "path": "supabase/migrations/20261102054530_calendar_drupal_event_lists.sql",
+      "mode": "100644",
+      "sha": "2654b460441488aca259faebd60b6f84046ef6c5"
+    },
+    {
+      "path": "supabase/migrations/20261102060038_profile_dart_rows_refresh.sql",
+      "mode": "100644",
+      "sha": "710fcbad99598fe91c923de0a378c1e8fa901560"
+    },
+    {
+      "path": "supabase/migrations/20261102065627_sec_profile_identity_fields_refresh.sql",
+      "mode": "100644",
+      "sha": "1fac5950565ec0779eb62981aca7a29de14e3433"
+    },
+    {
+      "path": "supabase/migrations/env.py",
+      "mode": "100644",
+      "sha": "fc0cdb5c3656b2e3e190236159950b1af5226c23"
+    },
+    {
+      "path": "supabase/migrations/script.py.mako",
+      "mode": "100644",
+      "sha": "857684a75f09c90ccb6c299bdb4e1ffbbfc95bb8"
+    },
+    {
+      "path": "supabase/migrations/versions/001_initial.py",
+      "mode": "100644",
+      "sha": "086bdbbc1a9eb954f8c4cb321f7b1f893483c057"
+    },
+    {
+      "path": "supabase/migrations/versions/002_rls.py",
+      "mode": "100644",
+      "sha": "c67c9d4513661d2bd41ab8c8aaa5c87615ef8c2b"
+    },
+    {
+      "path": "supabase/reference-migrations/20261003_reference_screens.sql",
+      "mode": "100644",
+      "sha": "4c49ea9068f2b680b1c926532f52f7be89f220b1"
+    },
+    {
+      "path": "supabase/research-migrations/20261010114340_research_admin.sql",
+      "mode": "100644",
+      "sha": "75be8063f9b42c637819f327c41a556040149282"
+    },
+    {
+      "path": "supabase/us-migrations/20261003093000_us_providers.sql",
+      "mode": "100644",
+      "sha": "abdf4711f9e07fb457a43f64ea2b6463a54b7106"
+    },
+    {
+      "path": "supabase/us-migrations/20261003094500_remove_provisioning.sql",
+      "mode": "100644",
+      "sha": "ddf3f29f75d36fe07cfc0e6212b4f74ec9946eeb"
+    },
+    {
+      "path": "supabase/us-migrations/20261003100000_analysis_review.sql",
+      "mode": "100644",
+      "sha": "3f0c8254d054a5b94be3feb274a939ca8ea16744"
+    },
+    {
+      "path": "supabase/workspace-migrations/20261005094000_workspace_mfa.sql",
+      "mode": "100644",
+      "sha": "2f98aa4891558f7fcd966cbf7e2b80683bfe60a3"
+    },
+    {
+      "path": "supabase/workspace-migrations/20261005094500_workspace_pages.sql",
+      "mode": "100644",
+      "sha": "aad31ef2e27fa95cbaef8acf143724779cc2b175"
+    },
+    {
+      "path": "supabase/workspace-migrations/20261005095000_workspace_guards.sql",
+      "mode": "100644",
+      "sha": "19be8908fbfd9b5dfc300363134db25ba750111d"
+    },
+    {
+      "path": "supabase/workspace-migrations/20261006091139_mobile_search_history.sql",
+      "mode": "100644",
+      "sha": "db755ab3d6866991fc5bc18ca79b9f4ad443bd2e"
+    },
+    {
+      "path": "supabase/workspace-migrations/20261006130828_mobile_document_detail.sql",
+      "mode": "100644",
+      "sha": "369c2c4204bdac613260bbd2a9d265378ad57a09"
+    },
+    {
+      "path": "supabase/workspace-migrations/20261018054538_korean_company_profiles.sql",
+      "mode": "100644",
+      "sha": "4cde653a5441d9570dfff597298985a2d2723f97"
+    },
+    {
+      "path": "supabase/workspace-migrations/20261019071121_company_detail_connections.sql",
+      "mode": "100644",
+      "sha": "06303b512068532a2e3856977713a7e02b1da84e"
+    },
+    {
+      "path": "supabase/workspace-migrations/20261030120000_source_visibility.sql",
+      "mode": "100644",
+      "sha": "ac9846df21242265e8538e5d1493971c48da4b53"
+    },
+    {
+      "path": "supabase/workspace-migrations/20261031103225_hosted_checkout_pass.sql",
+      "mode": "100644",
+      "sha": "7c77101e6dc392ad5e7a71d96189505e7844cc87"
+    },
+    {
+      "path": "supabase/workspace-migrations/20261031125310_signed_in_content_workspace.sql",
+      "mode": "100644",
+      "sha": "14521b6f119affde44042dd6bed151c70927b1a2"
+    },
+    {
+      "path": "supabase/workspace-migrations/20261031132007_email_readiness_gate.sql",
+      "mode": "100644",
+      "sha": "98c17c335a272b50c6376d627fa8dfbd617a0e60"
+    },
+    {
+      "path": "supabase/workspace-rollbacks/20261030120000_source_visibility.sql",
+      "mode": "100644",
+      "sha": "ac3ae1ec19449fc6f45131934b99d28437774a46"
+    },
+    {
+      "path": "supabase/workspace-rollbacks/20261031125310_signed_in_content_workspace.resume.sql",
+      "mode": "100644",
+      "sha": "32e51df354a3823a6444a2d70c65e7342b862425"
+    },
+    {
+      "path": "supabase/workspace-rollbacks/20261031125310_signed_in_content_workspace.sql",
+      "mode": "100644",
+      "sha": "9f7a25f6ec6f820984639caeaf5c9ae86a6dbbc7"
+    },
+    {
+      "path": "supabase/workspace-rollbacks/20261031132007_email_readiness_gate.sql",
+      "mode": "100644",
+      "sha": "6bc938d2bc06e22222a055a7160c14a5dbc190cf"
+    },
+    {
+      "path": "tests/conftest.py",
+      "mode": "100644",
+      "sha": "8c5b6c8199cc70ffb04a86c0361e792439c4ce24"
+    },
+    {
+      "path": "tests/fixtures/README.md",
+      "mode": "100644",
+      "sha": "dfa0a5ced901453e99e9dc6f3f4d726a86397462"
+    },
+    {
+      "path": "tests/fixtures/dart-list.json",
+      "mode": "100644",
+      "sha": "b389a15f89ea2a2525e26fea5e7436a53f5b5de5"
+    },
+    {
+      "path": "tests/fixtures/sec-archive.json",
+      "mode": "100644",
+      "sha": "edfe57adc1dfbabdd822559e97a9ecf9dea88fe8"
+    },
+    {
+      "path": "tests/fixtures/sec-submissions.json",
+      "mode": "100644",
+      "sha": "d31d97ef5bd46b6c3ee1fbf2107080f7e8f54fae"
+    },
+    {
+      "path": "tests/fixtures/sec/aapl-20260328.htm.gz",
+      "mode": "100644",
+      "sha": "deaeac09a9bdab9c4514beeb81a640ed2ce47583"
+    },
+    {
+      "path": "tests/fixtures/sec/aapl-20260328.reference.json",
+      "mode": "100644",
+      "sha": "b3aa610ad0016a9cfd977f396fd3a8a5a52f3b18"
+    },
+    {
+      "path": "tests/fixtures/sec/aapl-20260627.htm.gz",
+      "mode": "100644",
+      "sha": "53a5457184133a991dc67ff7e31238cf41a66320"
+    },
+    {
+      "path": "tests/fixtures/sec/aapl-20260627.reference.json",
+      "mode": "100644",
+      "sha": "40c551ab1df26c50a3bd367dc342917a5368d0d3"
+    },
+    {
+      "path": "tests/reference/browser_checks.py",
+      "mode": "100644",
+      "sha": "0df33f8310f54b8a0d723a18e950f3e60217ab0d"
+    },
+    {
+      "path": "tests/reference/build_harness.mjs",
+      "mode": "100644",
+      "sha": "83397949cab5858ab635ca466a1380d7fac4be28"
+    },
+    {
+      "path": "tests/reference/fixture.js",
+      "mode": "100644",
+      "sha": "30292008f5e8619b3bcada288235b4355155ba0d"
+    },
+    {
+      "path": "tests/test_ai_budget.py",
+      "mode": "100644",
+      "sha": "b5a43c5550689d31309170176779d738890dfc6b"
+    },
+    {
+      "path": "tests/test_api.py",
+      "mode": "100644",
+      "sha": "bda638cfabc963ff36b9b108725c586ee0d60570"
+    },
+    {
+      "path": "tests/test_calendar_dart_corrections.py",
+      "mode": "100644",
+      "sha": "4967cb5f4fc237f73fab27b01d0674fd5dfb03f7"
+    },
+    {
+      "path": "tests/test_calendar_dart_ingestion.py",
+      "mode": "100644",
+      "sha": "0e48d1d3426b861732029451eba33446c980f2fc"
+    },
+    {
+      "path": "tests/test_calendar_drupal_events.py",
+      "mode": "100644",
+      "sha": "744695a66c9c36605f4a93f9c8eae7b62b8f66d2"
+    },
+    {
+      "path": "tests/test_calendar_ingestion.py",
+      "mode": "100644",
+      "sha": "89196e18b79db4ef27ebbce7a3d1733e147e926b"
+    },
+    {
+      "path": "tests/test_calendar_ir_navigation.py",
+      "mode": "100644",
+      "sha": "5ccda5f9462cf247fe1f23e1913379d763047a75"
+    },
+    {
+      "path": "tests/test_calendar_onboarding.py",
+      "mode": "100644",
+      "sha": "eff30433ba4ea4c7344ed2082faa8ca18ddbf41e"
+    },
+    {
+      "path": "tests/test_calendar_samsung.py",
+      "mode": "100644",
+      "sha": "077f63e55ee352e06f3321efaca1595094593d09"
+    },
+    {
+      "path": "tests/test_calendar_sec_filing.py",
+      "mode": "100644",
+      "sha": "5cccd90b5ae7d3674c1217c49d636cdb1812dc99"
+    },
+    {
+      "path": "tests/test_calendar_sec_filing_lock.py",
+      "mode": "100644",
+      "sha": "be568b27988835cc9e7790e9bc06ef8096dc7f7f"
+    },
+    {
+      "path": "tests/test_calendar_sec_ir.py",
+      "mode": "100644",
+      "sha": "f0f207ed6c76739be1e98d19c40c5ac19f2753e7"
+    },
+    {
+      "path": "tests/test_card_evidence.py",
+      "mode": "100644",
+      "sha": "5b6c41d965936805f40879a05c13f2b2572df673"
+    },
+    {
+      "path": "tests/test_career_api.py",
+      "mode": "100644",
+      "sha": "e36c7c33235b3d1e2cf77acb3dc23a114c4a9f99"
+    },
+    {
+      "path": "tests/test_career_sql.py",
+      "mode": "100644",
+      "sha": "4fe364328b5632ec030a65a6ed2899830ae55739"
+    },
+    {
+      "path": "tests/test_cors_rate_limit.py",
+      "mode": "100644",
+      "sha": "bb6e35ef831f8505257bcf0f396346807be61975"
+    },
+    {
+      "path": "tests/test_daily_digest_sql.py",
+      "mode": "100644",
+      "sha": "06c5cd769f24c7d249efa27ba375c932130282be"
+    },
+    {
+      "path": "tests/test_desktop_isolation.py",
+      "mode": "100644",
+      "sha": "37116dacc0593f8f84bf8819a43669dc9e696da9"
+    },
+    {
+      "path": "tests/test_email_readiness_sql.py",
+      "mode": "100644",
+      "sha": "2bf23177920d9e289ca6b60eb511671a8ae24c06"
+    },
+    {
+      "path": "tests/test_evidence.py",
+      "mode": "100644",
+      "sha": "d115906375574be5cd3e7ddd0ba7eabd4ef364a5"
+    },
+    {
+      "path": "tests/test_feed_summaries.py",
+      "mode": "100644",
+      "sha": "974f4030f8dd7ab7a85f01f1d1169b0ea9783013"
+    },
+    {
+      "path": "tests/test_financial_benchmark.py",
+      "mode": "100644",
+      "sha": "115e7b2f9b7c9b7c945c38b0150a47e140af260b"
+    },
+    {
+      "path": "tests/test_hosted_schema.py",
+      "mode": "100644",
+      "sha": "6de6c180abbd1bc845de183fb670427b25bf3260"
+    },
+    {
+      "path": "tests/test_ingestion_parser.py",
+      "mode": "100644",
+      "sha": "f5f2b10fbfc41239b40322ebe7ef6807910abca4"
+    },
+    {
+      "path": "tests/test_jobs_http.py",
+      "mode": "100644",
+      "sha": "9300f288278a438ba0a1f0521c3328882680541c"
+    },
+    {
+      "path": "tests/test_live_trial.py",
+      "mode": "100644",
+      "sha": "c4496f2c5c31bd94d6885adc07decd07c3bffe9f"
+    },
+    {
+      "path": "tests/test_llm_eval.py",
+      "mode": "100644",
+      "sha": "cf85bc9469e56b7a6213c578e00daad108692038"
+    },
+    {
+      "path": "tests/test_micron_calendar_ingestion.py",
+      "mode": "100644",
+      "sha": "6d385b0adf5a20b538067a1e3de362f83fe54b62"
+    },
+    {
+      "path": "tests/test_migrations.py",
+      "mode": "100644",
+      "sha": "6b1f69c60e0b0d5e750069c53b1fcd497d882913"
+    },
+    {
+      "path": "tests/test_provider_delivery_sql.py",
+      "mode": "100644",
+      "sha": "44047c7e1be105f293045fa62635d3c29d5ed00a"
+    },
+    {
+      "path": "tests/test_providers.py",
+      "mode": "100644",
+      "sha": "62eaee417a83251a5dd1e18905e5a58660c8f92d"
+    },
+    {
+      "path": "tests/test_review_regressions.py",
+      "mode": "100644",
+      "sha": "45814407ab2d7186554dff0831d80070f44858c4"
+    },
+    {
+      "path": "tests/test_sec_table_pipeline.py",
+      "mode": "100644",
+      "sha": "d387a8c42de72a15ea1b668bb6ffe735f80b7497"
+    },
+    {
+      "path": "tests/test_sec_tables.py",
+      "mode": "100644",
+      "sha": "6fc77c5eab2df52a5f035cc3ad6ae2012281d3d7"
+    },
+    {
+      "path": "tests/test_web_route_contracts.py",
+      "mode": "100644",
+      "sha": "fc5fa3bdf1a156dced47e067de9eaa5a3732e36e"
+    },
+    {
+      "path": "tests/test_workspace_scope.py",
+      "mode": "100644",
+      "sha": "6dcdd68d254371aa49aa1ae2a40a8ae522521761"
+    },
+    {
+      "path": "tests/us/google_browser_probe.py",
+      "mode": "100644",
+      "sha": "fe18ab191df536dc323be2893a23f9b42fcf0ae4"
+    },
+    {
+      "path": "tests/workspace/test_billing.py",
+      "mode": "100644",
+      "sha": "c8abea5eb336d588995567cee2ec571ab3c27ec4"
+    },
+    {
+      "path": "tests/workspace/test_calendar_reliability.py",
+      "mode": "100644",
+      "sha": "35aa1f637423ea9049dd2215cdbc47e5d7b87487"
+    },
+    {
+      "path": "tests/workspace/test_company_financials.py",
+      "mode": "100644",
+      "sha": "d40b9b35877acc437bfc7694c22672d39b0f1fd9"
+    },
+    {
+      "path": "tests/workspace/test_company_official_overview.py",
+      "mode": "100644",
+      "sha": "9d9236d57488637df2a235e5876a1521774cf4cc"
+    },
+    {
+      "path": "tests/workspace/test_company_picker_discovery.py",
+      "mode": "100644",
+      "sha": "2522426a71492e74f5b74ca4b4110fb83ffd275e"
+    },
+    {
+      "path": "tests/workspace/test_company_profile_dart.py",
+      "mode": "100644",
+      "sha": "ef34c86820e7cfa487432d91989bbd528c299f04"
+    },
+    {
+      "path": "tests/workspace/test_company_profile_dart_rows_refresh.py",
+      "mode": "100644",
+      "sha": "4f7f08cb9281e2feceac381eec01511801733f79"
+    },
+    {
+      "path": "tests/workspace/test_company_profile_enrichment.py",
+      "mode": "100644",
+      "sha": "a12c86621559fb03422b489b66bdc4ac683a76a1"
+    },
+    {
+      "path": "tests/workspace/test_company_profile_identity_fields_refresh.py",
+      "mode": "100644",
+      "sha": "bb711ab622a5e67f78dcfdbfc37ab49b881b6f91"
+    },
+    {
+      "path": "tests/workspace/test_company_profile_official_source.py",
+      "mode": "100644",
+      "sha": "eba0ba5cf74eea464e24a95d61938c3281bd949b"
+    },
+    {
+      "path": "tests/workspace/test_company_profile_section_refresh.py",
+      "mode": "100644",
+      "sha": "033dfb60cc2638cb65503327a28b7871831e1c07"
+    },
+    {
+      "path": "tests/workspace/test_company_profile_segment_persistence.py",
+      "mode": "100644",
+      "sha": "d74ed5d494d2600c5cd08825deeeabdc080bcad8"
+    },
+    {
+      "path": "tests/workspace/test_company_search_performance.py",
+      "mode": "100644",
+      "sha": "8d38522d6d914dc417221dfebcd90e608d25c8cb"
+    },
+    {
+      "path": "tests/workspace/test_company_search_precision.py",
+      "mode": "100644",
+      "sha": "4333c244a17189aa97a3e35496cfffb1692f7599"
+    },
+    {
+      "path": "tests/workspace/test_dart_financial_period_binding.py",
+      "mode": "100644",
+      "sha": "fcd734e96e69e4b23afbdc6042aac173ed550ed6"
+    },
+    {
+      "path": "tests/workspace/test_discovery_reliability.py",
+      "mode": "100644",
+      "sha": "439a30f95c6b684a42719e369056ae60facea39a"
+    },
+    {
+      "path": "tests/workspace/test_research.py",
+      "mode": "100644",
+      "sha": "948dadfc1ff1a7f6f9c8c3cd6ca32df4b6a3a3d6"
+    },
+    {
+      "path": "tests/workspace/test_source_visibility.py",
+      "mode": "100644",
+      "sha": "46d4e9f7110b50ecf8d44d4d2aa96d73968e9b09"
+    },
+    {
+      "path": "tests/workspace/test_workspace_schema.py",
+      "mode": "100644",
+      "sha": "b7e381ec4a19ad67ec6707316b4a4966e2c09184"
+    },
+    {
+      "path": "tools/usability-study.html",
+      "mode": "100644",
+      "sha": "a2aee1c54bc6d6d381896b558a099048c51a755a"
+    },
+    {
+      "path": "verification/adversarial-tests.log",
+      "mode": "100644",
+      "sha": "7e53caffba4dcee4464ef03ce8d836ec3a3a7f5c"
+    },
+    {
+      "path": "verification/audit-20261030/local-first-checks.json",
+      "mode": "100644",
+      "sha": "f4e401279753fd3f039a7437c59087d3df31a4cc"
+    },
+    {
+      "path": "verification/audit-20261030/widget-unit-tests.log",
+      "mode": "100644",
+      "sha": "def1b064886ca103050800199e3312ef2b416628"
+    },
+    {
+      "path": "verification/backend_lint.log",
+      "mode": "100644",
+      "sha": "1f5f344d054fae10f39140fb7199c99321d9190a"
+    },
+    {
+      "path": "verification/backend_tests.log",
+      "mode": "100644",
+      "sha": "227f6438cf5d75fc4de7907af53a70ed1c91f4ff"
+    },
+    {
+      "path": "verification/browser-desktop.log",
+      "mode": "100644",
+      "sha": "87098ad155fa9315395dc9ee3a5ee28c7be4703d"
+    },
+    {
+      "path": "verification/browser-mobile.log",
+      "mode": "100644",
+      "sha": "2a93b2744b42b7dab9d6a6796b6727782f3d6239"
+    },
+    {
+      "path": "verification/calendar-automation-2026-11-01.json",
+      "mode": "100644",
+      "sha": "218b4aa20d0bbad89291d705bfdb150bb7a3dcf1"
+    },
+    {
+      "path": "verification/changed-files.json",
+      "mode": "100644",
+      "sha": "d8bad79ebb95495b62b03db34e416ed4d2042c26"
+    },
+    {
+      "path": "verification/checks.json",
+      "mode": "100644",
+      "sha": "cb48abc6377454851d0e65a5bfbf21cf42b6821b"
+    },
+    {
+      "path": "verification/company-data-2026-11-02-bridge/ci-proof.json",
+      "mode": "100644",
+      "sha": "0146f2e17c98ed4c2a3fc816f757c6577759deaa"
+    },
+    {
+      "path": "verification/company-data-2026-11-02-bridge/dependency-delta.json",
+      "mode": "100644",
+      "sha": "4a80150372c62a498e231e0c7350d1c07300aaff"
+    },
+    {
+      "path": "verification/company-data-2026-11-02-bridge/manifest.json",
+      "mode": "100644",
+      "sha": "cdd32845e43c9d9615c5b4982bb413a23c6d1b41"
+    },
+    {
+      "path": "verification/company-data-2026-11-02-bridge/proof.json",
+      "mode": "100644",
+      "sha": "774162bf8129ef53a9df273a6c08873ef4463be3"
+    },
+    {
+      "path": "verification/company-data-2026-11-02-bridge/published-identity.json",
+      "mode": "100644",
+      "sha": "51ac80974b283d05cda33991d9691d5864435f9b"
+    },
+    {
+      "path": "verification/company-data-2026-11-02-calendar.json",
+      "mode": "100644",
+      "sha": "87c34abb83cb3b87de8767e245f3bbc4ae685401"
+    },
+    {
+      "path": "verification/company-data-2026-11-02-full-source-identity.json",
+      "mode": "100644",
+      "sha": "c86811a1c1bd3fa8f244b20ec4ebde241ec65023"
+    },
+    {
+      "path": "verification/company-data-2026-11-02-local/backend_tests.log",
+      "mode": "100644",
+      "sha": "17107af492d10f012295f984f417d4638f5100f1"
+    },
+    {
+      "path": "verification/company-data-2026-11-02-local/checks.json",
+      "mode": "100644",
+      "sha": "1641fb06e3514d2747e9b83fd351f369fab4caa7"
+    },
+    {
+      "path": "verification/company-data-2026-11-02-local/frontend_build.log",
+      "mode": "100644",
+      "sha": "5f7d609a8f5949a7ff22e087a5a9e274983129e7"
+    },
+    {
+      "path": "verification/company-data-2026-11-02-local/frontend_unit_tests.log",
+      "mode": "100644",
+      "sha": "991981a5bd3a14127adadb8ed1cb2afa4d9b88a5"
+    },
+    {
+      "path": "verification/company-data-2026-11-02-local/ledger-aligned-pg.log",
+      "mode": "100644",
+      "sha": "727dcf0f451c2133eb7ac9dc70477e17a4920474"
+    },
+    {
+      "path": "verification/company-data-2026-11-02-local/search_catalogue_performance.log",
+      "mode": "100644",
+      "sha": "cb6a06efa154f0967171d7bb7b0a8374386726c3"
+    },
+    {
+      "path": "verification/company-data-2026-11-02.json",
+      "mode": "100644",
+      "sha": "53f2746301f027b7db70f798b646de1959c9225b"
+    },
+    {
+      "path": "verification/coverage.json",
+      "mode": "100644",
+      "sha": "dae9c16d605d820135a82ec1ba8116e578cec045"
+    },
+    {
+      "path": "verification/coverage.log",
+      "mode": "100644",
+      "sha": "7affd618a312f3eea1663e640603da1e96876a4c"
+    },
+    {
+      "path": "verification/cross-screen-2026-11-01.json",
+      "mode": "100644",
+      "sha": "fe224c9bf35bc3ec2911d350107f1dafc6bb15ce"
+    },
+    {
+      "path": "verification/final-20261009/hosted-readonly.json",
+      "mode": "100644",
+      "sha": "afe1e9fd562d1d856dacd88fae19f35759b6e1bb"
+    },
+    {
+      "path": "verification/final-20261009/npm-audit.json",
+      "mode": "100644",
+      "sha": "024d49785aefca5aad86b5102d45dbb75ca264b8"
+    },
+    {
+      "path": "verification/final-20261009/npm-production-audit.json",
+      "mode": "100644",
+      "sha": "ccf772b4be407cfda9cc5f3e30117737f9d6927e"
+    },
+    {
+      "path": "verification/final-20261009/sec-and-cost.json",
+      "mode": "100644",
+      "sha": "25839c93ef9a05e496c2df7ad67e533ba753a0b2"
+    },
+    {
+      "path": "verification/financial-20261010/adversarial-ci.json",
+      "mode": "100644",
+      "sha": "bdf194dc2d638aa3cc901625d9b6f4ce0f3614af"
+    },
+    {
+      "path": "verification/financial-20261010/adversarial.json",
+      "mode": "100644",
+      "sha": "bdf194dc2d638aa3cc901625d9b6f4ce0f3614af"
+    },
+    {
+      "path": "verification/financial-20261010/adversarial.log",
+      "mode": "100644",
+      "sha": "7d47f656e9990ade62e105234c7963b6dc27e36f"
+    },
+    {
+      "path": "verification/financial-20261010/adversarial.xml",
+      "mode": "100644",
+      "sha": "db2f155a783903373d1aa2ccdf1256f221874c38"
+    },
+    {
+      "path": "verification/financial-20261010/backend-delivery.log",
+      "mode": "100644",
+      "sha": "425abb3047e213376a8bd06cae38b37d8b688aab"
+    },
+    {
+      "path": "verification/financial-20261010/backend-delivery.xml",
+      "mode": "100644",
+      "sha": "eb4178cb4b47cdb849e4430ac16f19e4929c2d72"
+    },
+    {
+      "path": "verification/financial-20261010/backend-final.log",
+      "mode": "100644",
+      "sha": "9e2c652688e706ef3686486e9893765da14fc699"
+    },
+    {
+      "path": "verification/financial-20261010/backend-final.xml",
+      "mode": "100644",
+      "sha": "bc0feebd600062ec603f59477644761cf9310087"
+    },
+    {
+      "path": "verification/financial-20261010/backend.xml",
+      "mode": "100644",
+      "sha": "0ff8a717df0c9a5bfa61923335d0d98db45acc98"
+    },
+    {
+      "path": "verification/financial-20261010/baseline-backend.log",
+      "mode": "100644",
+      "sha": "4a3caefc7de8057462a3fcdd7126adcd9289884e"
+    },
+    {
+      "path": "verification/financial-20261010/ci-checks.json",
+      "mode": "100644",
+      "sha": "e5e722497abcc1f3d9e18b17e17c8c478ca361a8"
+    },
+    {
+      "path": "verification/financial-20261010/ci-frontend_build.log",
+      "mode": "100644",
+      "sha": "f27c7cb64d5d8ec61ee00c29522d8c453a54ac6c"
+    },
+    {
+      "path": "verification/financial-20261010/ci-frontend_unit_tests.log",
+      "mode": "100644",
+      "sha": "fc48ecdb73da634cc96ef7fcdaa3b33ac4ca88b6"
+    },
+    {
+      "path": "verification/financial-20261010/development-B-ci.json",
+      "mode": "100644",
+      "sha": "a1a159e266d41637b621f47a21e3366b9f0a97ed"
+    },
+    {
+      "path": "verification/financial-20261010/development-B-final.json",
+      "mode": "100644",
+      "sha": "eb7fd21061f988b9ebe03dffaa58561f80f441e8"
+    },
+    {
+      "path": "verification/financial-20261010/development-B-portable.json",
+      "mode": "100644",
+      "sha": "eb7fd21061f988b9ebe03dffaa58561f80f441e8"
+    },
+    {
+      "path": "verification/financial-20261010/development-B-pre-normalization.json",
+      "mode": "100644",
+      "sha": "c1170458edeceaf6838e64eed72dca2c0a3042a8"
+    },
+    {
+      "path": "verification/financial-20261010/development-B-v2.json",
+      "mode": "100644",
+      "sha": "3ac202abb243a81562c4efd20e7ccdda7e8b5c8f"
+    },
+    {
+      "path": "verification/financial-20261010/development-B.json",
+      "mode": "100644",
+      "sha": "41d0d69ecb183891f0535fd41d4da43dc9063b9b"
+    },
+    {
+      "path": "verification/financial-20261010/hosted-readonly.json",
+      "mode": "100644",
+      "sha": "afe1e9fd562d1d856dacd88fae19f35759b6e1bb"
+    },
+    {
+      "path": "verification/financial-20261010/initial-backend_tests.log.gz",
+      "mode": "100644",
+      "sha": "97f95cc5e5445cf62e07b4ba398920757d192bf7"
+    },
+    {
+      "path": "verification/financial-20261010/initial-checks.json",
+      "mode": "100644",
+      "sha": "0925c5be985b0d9e3c3debc49d79e6a37659c608"
+    },
+    {
+      "path": "verification/financial-20261010/initial-frontend_build.log",
+      "mode": "100644",
+      "sha": "2a6d425def091b1812d407237f24f325c7d813c4"
+    },
+    {
+      "path": "verification/financial-20261010/initial-frontend_lint.log",
+      "mode": "100644",
+      "sha": "1d7075b4bf86880ff048437e55cf71ba19eb9db2"
+    },
+    {
+      "path": "verification/financial-20261010/initial-frontend_typecheck.log",
+      "mode": "100644",
+      "sha": "b93c2e280a97bb4c6478c0928913df55d9474d74"
+    },
+    {
+      "path": "verification/financial-20261010/initial-frontend_unit_tests.log",
+      "mode": "100644",
+      "sha": "3c550f499b0c4c27d1c61c11d5c38586c2a6d01c"
+    },
+    {
+      "path": "verification/financial-20261010/initial-manifest.json.gz",
+      "mode": "100644",
+      "sha": "8ab096bdb7754208d4d31f75f9e119e395026fe7"
+    },
+    {
+      "path": "verification/financial-20261010/npm-audit-20261010.json",
+      "mode": "100644",
+      "sha": "024d49785aefca5aad86b5102d45dbb75ca264b8"
+    },
+    {
+      "path": "verification/financial-20261010/npm-production-audit-20261010.json",
+      "mode": "100644",
+      "sha": "ccf772b4be407cfda9cc5f3e30117737f9d6927e"
+    },
+    {
+      "path": "verification/financial-20261010/postgres-final.xml.gz",
+      "mode": "100644",
+      "sha": "d557b027fc4ded897ced5f4bdb6291d537660ca2"
+    },
+    {
+      "path": "verification/financial-20261010/postgres-initial.log.gz",
+      "mode": "100644",
+      "sha": "cbeb4729e459c41964d0119bb5f98fa456991146"
+    },
+    {
+      "path": "verification/financial-20261010/python-audit.json",
+      "mode": "100644",
+      "sha": "512587b85265d36b9cdde8e7ef035b4362f85bbb"
+    },
+    {
+      "path": "verification/financial-20261010/remote-status.json",
+      "mode": "100644",
+      "sha": "66b3d9e22ab99e1db66f73dfa71da46cb5d5a5ed"
+    },
+    {
+      "path": "verification/financial-20261010/summary.json",
+      "mode": "100644",
+      "sha": "d883ac48f5250ff3249838036872826a02f534b6"
+    },
+    {
+      "path": "verification/financial-20261010/usability-study-desktop.png",
+      "mode": "100644",
+      "sha": "fd77b1725b98a2c5943afd6b7578980074a64ccd"
+    },
+    {
+      "path": "verification/financial-20261010/usability-study-mobile.png",
+      "mode": "100644",
+      "sha": "6a81d5e674824f9bb637f10bbc55517d4bcb6c62"
+    },
+    {
+      "path": "verification/financial-20261010/workspace.log",
+      "mode": "100644",
+      "sha": "b28aa9a76990f26ac5c1b6e2095004d9699d91e6"
+    },
+    {
+      "path": "verification/financial-20261010/workspace.xml",
+      "mode": "100644",
+      "sha": "8e6ecd0b409610ead3a206e5d647efa3162333bd"
+    },
+    {
+      "path": "verification/frontend-upgrade-checks.json",
+      "mode": "100644",
+      "sha": "60a3d0b3b8c1016f91eb96d77ebf4e84660188ad"
+    },
+    {
+      "path": "verification/frontend_build.log",
+      "mode": "100644",
+      "sha": "8aac765f5a65eac67822a0e8ac599b5986a98d50"
+    },
+    {
+      "path": "verification/frontend_lint.log",
+      "mode": "100644",
+      "sha": "0a3c8ddd1079d957ae170f80f148deb5923e7268"
+    },
+    {
+      "path": "verification/frontend_typecheck.log",
+      "mode": "100644",
+      "sha": "d00245a5b1ca19cc4ef2599b8ac1c74c6eb7e14e"
+    },
+    {
+      "path": "verification/frontend_unit_tests.log",
+      "mode": "100644",
+      "sha": "3186e4c98ce8f6ae8bb79c8fc8f0c7d53a7cbd7a"
+    },
+    {
+      "path": "verification/github-publication-frontend-checks.json",
+      "mode": "100644",
+      "sha": "7a25d048aa23aa98a35e61fdaa34f97449474e8c"
+    },
+    {
+      "path": "verification/live-20261008/checks.json",
+      "mode": "100644",
+      "sha": "b8d7f93a36d2e763e632e15d856ef78e51723227"
+    },
+    {
+      "path": "verification/live-20261008/connected-pilot.json",
+      "mode": "100644",
+      "sha": "b4845a48117fb9460f0ca326d968a01f88fb2433"
+    },
+    {
+      "path": "verification/live-20261008/hosted-readonly.json",
+      "mode": "100644",
+      "sha": "afe1e9fd562d1d856dacd88fae19f35759b6e1bb"
+    },
+    {
+      "path": "verification/live-20261008/issuer-selection.json",
+      "mode": "100644",
+      "sha": "2f652f7355d0b74d47cfe411dd18e0552110a423"
+    },
+    {
+      "path": "verification/live-20261008/local-source-check.json",
+      "mode": "100644",
+      "sha": "aa504c266558f91a8db6bc3de137a394c8993490"
+    },
+    {
+      "path": "verification/live-20261008/manifest.json",
+      "mode": "100644",
+      "sha": "8679a79139b650dd553984f7acdc2763a487cada"
+    },
+    {
+      "path": "verification/native-postgres-workspace.xml",
+      "mode": "100644",
+      "sha": "62d7c22ec6a9376f3c461e6152f496e3d31b700e"
+    },
+    {
+      "path": "verification/npm-audit-before-upgrade.json",
+      "mode": "100644",
+      "sha": "568305c32c28f4542a7998913f7767dd15e1d511"
+    },
+    {
+      "path": "verification/npm-audit.json",
+      "mode": "100644",
+      "sha": "ccf772b4be407cfda9cc5f3e30117737f9d6927e"
+    },
+    {
+      "path": "verification/npm-resolved-test-toolchain.log",
+      "mode": "100644",
+      "sha": "bd032ffef7926564c0a753d16e6a302cf3f15df8"
+    },
+    {
+      "path": "verification/npm-upgrade.log",
+      "mode": "100644",
+      "sha": "d3e0dec4e79951eef6783ab95a2d4b5e00cc57b2"
+    },
+    {
+      "path": "verification/openapi_export.log",
+      "mode": "100644",
+      "sha": "1d56604256828e1b7f2687285f568d8b4a268b1c"
+    },
+    {
+      "path": "verification/post-login-2026-11-01.json",
+      "mode": "100644",
+      "sha": "152c0b97e1a3a59427fb8d4caa9d834b8aa40354"
+    },
+    {
+      "path": "verification/postgres-tests.log",
+      "mode": "100644",
+      "sha": "dc43543ddd4057ba693fa2ae769d480d155ca18d"
+    },
+    {
+      "path": "verification/production-public-browser.log",
+      "mode": "100644",
+      "sha": "cf528daf357a9d68a3ccc417afcc0cc7187bc8c3"
+    },
+    {
+      "path": "verification/pytest.xml",
+      "mode": "100644",
+      "sha": "20b1ce9a0e19790662da61173fb31ba7370346af"
+    },
+    {
+      "path": "verification/python-dependencies.txt",
+      "mode": "100644",
+      "sha": "5103b5455713b10d549f2eb49b7d6482c1a0246b"
+    },
+    {
+      "path": "verification/python-dependency-check.log",
+      "mode": "100644",
+      "sha": "c688d8ccdad82420475fc31cb40020cccfeeef2b"
+    },
+    {
+      "path": "verification/python_compile.log",
+      "mode": "100644",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "verification/quarter-regressions.log",
+      "mode": "100644",
+      "sha": "5f7f125fe1d4d2cb8a8e9a9e7e83094bc13a67b6"
+    },
+    {
+      "path": "verification/research-release.json",
+      "mode": "100644",
+      "sha": "e83933e1fbe80d7afbfbd8f5da1b67f18e47f2a6"
+    },
+    {
+      "path": "verification/research-workspace-e2e-desktop.log",
+      "mode": "100644",
+      "sha": "4a82705c0b81d3229c1c55dacd832c4fda6e4440"
+    },
+    {
+      "path": "verification/research-workspace-e2e-mobile.log",
+      "mode": "100644",
+      "sha": "b2366d452671884c9172c5be918d55469e8707e3"
+    },
+    {
+      "path": "verification/research-workspace-e2e.log",
+      "mode": "100644",
+      "sha": "ae5edd42989be7a0da9b09229ff64681dc0f714c"
+    },
+    {
+      "path": "verification/research-workspace-evidence-reload.log",
+      "mode": "100644",
+      "sha": "4f21958f97fce2e9b0302d4de8a85a4ea329f34c"
+    },
+    {
+      "path": "verification/research-workspace-layout-check.log",
+      "mode": "100644",
+      "sha": "a8c37dc0780704b414481a449faaaf23d8336de8"
+    },
+    {
+      "path": "verification/sec-tables-20261008/checks.json",
+      "mode": "100644",
+      "sha": "18e2a83f0901eea7a128da1ebbd7c3dcd179f529"
+    },
+    {
+      "path": "verification/sec-tables-20261008/live.json",
+      "mode": "100644",
+      "sha": "8fcf4b59fe09469862335a6798ff01b499320a24"
+    },
+    {
+      "path": "verification/sec-tables-20261008/offline.json",
+      "mode": "100644",
+      "sha": "1f9c31aead310b5d196f6e769aeb6cdf862dd420"
+    },
+    {
+      "path": "verification/signed-in-release-browser-initial.log",
+      "mode": "100644",
+      "sha": "ba0cdb356ce54f7565114dbe43211fd92303514a"
+    },
+    {
+      "path": "verification/signed-in-release-browser.log",
+      "mode": "100644",
+      "sha": "6d7489f0a35135d6a198c2eca26fe17ba52fdb81"
+    },
+    {
+      "path": "verification/source-provenance.json",
+      "mode": "100644",
+      "sha": "96d310a2c267658d972bbf252a518a7bbc3cbc2e"
+    },
+    {
+      "path": "verification/summary.json",
+      "mode": "100644",
+      "sha": "d631c345f3ab6271c96e22ef8425d3dc65e552fd"
+    },
+    {
+      "path": "verification/supplier/MANIFEST.sha256",
+      "mode": "100644",
+      "sha": "48974e1f89b95a9720b864e510ba28eb4a48d498"
+    },
+    {
+      "path": "verification/supplier/backend_tests.log",
+      "mode": "100644",
+      "sha": "909abd69189c66624a156be6bf99a56ca75cf2e2"
+    },
+    {
+      "path": "verification/supplier/checks.json",
+      "mode": "100644",
+      "sha": "ab52e05966a53d4614fb2109406223fd9dfff0df"
+    },
+    {
+      "path": "verification/supplier/coverage.json",
+      "mode": "100644",
+      "sha": "91db1ff7d4ce895487a9cae14d4464ab641c1685"
+    },
+    {
+      "path": "verification/supplier/coverage.log",
+      "mode": "100644",
+      "sha": "ce8f853a386872822971a1f3f040d088c4cc274b"
+    },
+    {
+      "path": "verification/supplier/evals/20261002T103229658349Z-synthetic-v1.json",
+      "mode": "100644",
+      "sha": "2a76756b843dca1757c100353d594d62c2440d1e"
+    },
+    {
+      "path": "verification/supplier/evals/20261002T103229658349Z-synthetic-v1.md",
+      "mode": "100644",
+      "sha": "ef668a5a6da7229db23bb89687ddd4ffda4ed271"
+    },
+    {
+      "path": "verification/supplier/openapi_export.log",
+      "mode": "100644",
+      "sha": "1d56604256828e1b7f2687285f568d8b4a268b1c"
+    },
+    {
+      "path": "verification/supplier/pytest.xml",
+      "mode": "100644",
+      "sha": "1dd90a13b78941e7da212a5070bf9933e35f54f2"
+    },
+    {
+      "path": "verification/supplier/python_compile.log",
+      "mode": "100644",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "verification/supplier/summary.json",
+      "mode": "100644",
+      "sha": "2e1e1d4c5e0816f6009af1cec823f03a632dd61e"
+    },
+    {
+      "path": "verification/supplier/typescript-syntax.json",
+      "mode": "100644",
+      "sha": "f2779e7ea3ad72576b5e121ad02402cf897d63a6"
+    },
+    {
+      "path": "verification/synthetic-eval.log",
+      "mode": "100644",
+      "sha": "acd4f6db8614d015a586b72b81b6ea1a6651c12d"
+    },
+    {
+      "path": "verification/typescript-syntax.json",
+      "mode": "100644",
+      "sha": "f2779e7ea3ad72576b5e121ad02402cf897d63a6"
+    },
+    {
+      "path": "workers/README.md",
+      "mode": "100644",
+      "sha": "905f9a3ceffee9f614695de7da4f5387c7576f9d"
+    }
+  ],
+  "package_lock_sha256": "4d5b81bdd2f857705a751066b7da666c5ba6364f896a12bef4dc785a344039c5",
+  "dependencies": "Independent reflink/copy; no shared node_modules or .next symlink",
+  "shared_git_mutations": false,
+  "shared_source_mutations": false
+}

@@ -1,0 +1,79 @@
+{
+  "recorded_at": "2026-11-02T07:17:56.886278+00:00",
+  "source_commit": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+  "source_tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+  "status": "FAIL",
+  "returncode": 1,
+  "started_at": "2026-11-02T07:05:35.480184+00:00",
+  "finished_at": "2026-11-02T07:13:33.083092+00:00",
+  "stage_counts": {
+    "passed": 7,
+    "failed": 1,
+    "total": 8
+  },
+  "stages": {
+    "python_compile": "PASS",
+    "backend_tests": "PASS",
+    "openapi_export": "PASS",
+    "backend_lint": "PASS",
+    "frontend_lint": "PASS",
+    "frontend_typecheck": "PASS",
+    "frontend_unit_tests": "FAIL",
+    "frontend_build": "PASS"
+  },
+  "backend": {
+    "passed": 1104,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "elapsed_seconds": 310.78,
+    "junit": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/pytest.xml"
+  },
+  "frontend": {
+    "passed": 1679,
+    "failed": 1,
+    "total": 1680,
+    "files_passed": 116,
+    "files_failed": 1,
+    "files_total": 117,
+    "elapsed_seconds": 46.52,
+    "log": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/frontend_unit_tests.log"
+  },
+  "failure": {
+    "file": "apps/web/tests/desktop-discovery.test.tsx",
+    "line": 52,
+    "test": "searches actual selected markets and identifies unsupported metric filters",
+    "error": "Test timed out in 5000ms",
+    "reported_test_duration_ms": 7269,
+    "assertion_specific_failure_logged": false,
+    "dom_snapshot_available": false,
+    "static_findings": [
+      "One initial awaited recent-search button, followed by synchronous fixture actions and URL/disabled-control assertions.",
+      "Workspace, API, navigation and quotes are isolated fixtures.",
+      "The test and its runtime UI path are unchanged by the profile parser delta."
+    ],
+    "cause": "Not established. Seven configured default forks and lifetime cgroup pressure are observations, not proof of causal oversubscription.",
+    "default_worker_ceiling": 7,
+    "actual_original_worker_concurrency": "Not captured",
+    "test_timeout_ms_unchanged": 5000
+  },
+  "lint": {
+    "errors": 0,
+    "existing_warnings": 5
+  },
+  "historical_outputs_restored": true,
+  "protected_path_count": 12,
+  "source_identity": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/post-gate-source-identity.json",
+  "source_preflight": "/tmp/signalbrief-nov2-d0a6-release-source-preflight.json",
+  "settings": "/tmp/signalbrief-nov2-isolated-d0a6-release-environment.json",
+  "runner_config": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/resolved-vitest-config.json",
+  "host_observations": [
+    "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/post-unit-failure-host-observation.json",
+    "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/runner-host-observation.json"
+  ],
+  "test_timing_comparison": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/vitest-file-timing-comparison.json",
+  "authorized_next_step": "A single separate whole frontend run with maxWorkers=2 on identical source; it does not relabel this failed full run.",
+  "replacement_frontend_directory": "/tmp/signalbrief-nov2-d0a6-bounded-frontend",
+  "shared_source_or_index_mutations": false,
+  "production_access": false
+}

@@ -1,0 +1,193 @@
+{
+  "schema": "signalbrief.release-verification-artifacts.v1",
+  "created_at": "2026-11-02T07:34:11.966634+00:00",
+  "source_commit": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+  "source_tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+  "status": "FAIL_ORIGINAL_FULL_RUN",
+  "original_proof_status": "FAIL",
+  "scope": "Exact-byte proof/log/identity archive. The original full run remains FAIL; the bounded whole frontend PASS is separate replacement-stage evidence.",
+  "artifact_count": 20,
+  "total_artifact_bytes": 192300,
+  "excluded_files": [
+    "generated/apps/web/next-env.d.ts",
+    "generated/packages/shared/openapi.json",
+    "original-vitest-results-cache.json"
+  ],
+  "exclusion_reason": "Generated source files and inherited Vitest result caches are excluded; no node_modules or application source is copied.",
+  "test_statement": {
+    "original_full_run": {
+      "status": "FAIL",
+      "stages_passed": 7,
+      "stages_failed": 1,
+      "backend_passed": 1104,
+      "backend_skipped": 0,
+      "frontend_passed": 1679,
+      "frontend_failed": 1,
+      "failure": "Existing desktop exploration case exceeded unchanged5000ms test timeout; original failed log retained."
+    },
+    "bounded_frontend": {
+      "status": "PASS_REPLACEMENT_FRONTEND_STAGE",
+      "passed": 1680,
+      "failed": 0,
+      "skipped": 0,
+      "files": 117,
+      "max_workers": 2,
+      "test_timeout_ms": 5000,
+      "assertions_and_source_unchanged": true
+    },
+    "original_full_run_relabelled": false,
+    "causal_oversubscription": "Not established; original run lacks contemporaneous resource trace."
+  },
+  "credential_review": {
+    "live_credentials_identified": 0,
+    "literal_synthetic_negative_test_url_candidates_reviewed": 2,
+    "redactions": 0,
+    "original_bytes_preserved": true
+  },
+  "runtime_test_source_and_index_unchanged": true,
+  "protected_root_outputs_unchanged": true,
+  "tests_executed_for_archival": false,
+  "production_access": false,
+  "artifacts": [
+    {
+      "path": "backend_lint.log",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/backend_lint.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "copied_without_modification": true
+    },
+    {
+      "path": "backend_tests.log",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/backend_tests.log",
+      "bytes": 2348,
+      "sha256": "221cffa12f8393592ea9fb844c8e0a18c47d50980a4d46a2b1cfb3191f0a477b",
+      "copied_without_modification": true
+    },
+    {
+      "path": "capture.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/capture.json",
+      "bytes": 2550,
+      "sha256": "c58583ad6329ad75da8b7ff414450be38508ad7311fc0de4b920fa6bb5d38898",
+      "copied_without_modification": true
+    },
+    {
+      "path": "checks.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/checks.json",
+      "bytes": 3648,
+      "sha256": "b09219c3e4a03d6f58dcf8c8e559614ce8aad8ee5ef13110013316ee58c35cd9",
+      "copied_without_modification": true
+    },
+    {
+      "path": "checks.raw.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/checks.raw.json",
+      "bytes": 2830,
+      "sha256": "ff56b25137047899beb563ed036e3c314c041301c9226f0bb3b671b4b9a076e4",
+      "copied_without_modification": true
+    },
+    {
+      "path": "execution-context.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/execution-context.json",
+      "bytes": 818,
+      "sha256": "a24a6f20cc07ef494fd8b5a157713b604c7968917bf368bdfde22c12d4fcb1d2",
+      "copied_without_modification": true
+    },
+    {
+      "path": "frontend_build.log",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/frontend_build.log",
+      "bytes": 2377,
+      "sha256": "72c41ac705901ffcf47f61a274b2a74eeba768eb389beb55657a1135f93319b5",
+      "copied_without_modification": true
+    },
+    {
+      "path": "frontend_lint.log",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/frontend_lint.log",
+      "bytes": 2176,
+      "sha256": "29c0893c487999effbb5f23ea53bbac0b7575b545c6e7236288955888275b7fe",
+      "copied_without_modification": true
+    },
+    {
+      "path": "frontend_typecheck.log",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/frontend_typecheck.log",
+      "bytes": 150,
+      "sha256": "0de20295514b336741fa40b90fd006465011076fe0551be02d7fcbc6503e8a61",
+      "copied_without_modification": true
+    },
+    {
+      "path": "frontend_unit_tests.log",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/frontend_unit_tests.log",
+      "bytes": 1412,
+      "sha256": "56743c85cc51794f04de0cf4fb168d09d5031bc6bd7109ddbb33f07b07f84553",
+      "copied_without_modification": true
+    },
+    {
+      "path": "openapi_export.log",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/openapi_export.log",
+      "bytes": 54,
+      "sha256": "72fca25b046a70d4fcb6815f85b53f06daec9aae2727be815c3f5b2305960b48",
+      "copied_without_modification": true
+    },
+    {
+      "path": "post-gate-source-identity.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/post-gate-source-identity.json",
+      "bytes": 341,
+      "sha256": "88df34ef449c05c46217120d471a3ec4fd22a979e36e68f7aea5a7618978abc4",
+      "copied_without_modification": true
+    },
+    {
+      "path": "post-unit-failure-host-observation.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/post-unit-failure-host-observation.json",
+      "bytes": 777,
+      "sha256": "cc6f3aa69baa25d4897e6c18119c8741704b7c31cfd847bd86093a9b889a8e28",
+      "copied_without_modification": true
+    },
+    {
+      "path": "pytest.xml",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/pytest.xml",
+      "bytes": 162383,
+      "sha256": "0d9283b8a6484729a5360733bc3e5cb9beb37d89bb9e7426e2e03ef7dad02b83",
+      "copied_without_modification": true
+    },
+    {
+      "path": "python_compile.log",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/python_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copied_without_modification": true
+    },
+    {
+      "path": "resolved-vitest-config.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/resolved-vitest-config.json",
+      "bytes": 403,
+      "sha256": "247f14de78b1d01e1c1ba2877b71a6ed594c2456feaee778b7f4b4aac573809b",
+      "copied_without_modification": true
+    },
+    {
+      "path": "runner-host-observation.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/runner-host-observation.json",
+      "bytes": 958,
+      "sha256": "36a1de86e2eec655a44b3f6d4f8341751f029556ed230be62de57a59288c37a4",
+      "copied_without_modification": true
+    },
+    {
+      "path": "verification-proof.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/verification-proof.json",
+      "bytes": 3481,
+      "sha256": "fe097dafc36b97eab2071c53f5584283da2735b2a7c9ee38124978b241fd2cd2",
+      "copied_without_modification": true
+    },
+    {
+      "path": "verifier-console.log",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/verifier-console.log",
+      "bytes": 2831,
+      "sha256": "394f317abf6cb9943a6c1568e5f20a97fa1c03f98a94243a0c73e1effb1d19eb",
+      "copied_without_modification": true
+    },
+    {
+      "path": "vitest-file-timing-comparison.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6-release-gate-artifacts/8dc572e4731c3d3346c4be8609abe77bd47f1007/vitest-file-timing-comparison.json",
+      "bytes": 2744,
+      "sha256": "dfb734e157de9209ae62ac2746a0c58f2fe4f942f212b984af0996fd46ca7f09",
+      "copied_without_modification": true
+    }
+  ]
+}

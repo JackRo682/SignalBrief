@@ -1,0 +1,148 @@
+{
+  "run_id": 41401834020,
+  "job_id": 125135125272,
+  "job_url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834020/job/125135125272",
+  "head_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+  "postgres_major": 17,
+  "test_command": "python -m pytest tests/workspace -q --junitxml=workspace-replay.xml",
+  "exact_summary": "2026-11-02T06:45:47.2340797Z 355 passed, 2 warnings in 30.58s",
+  "suite": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "355",
+    "time": "30.581",
+    "timestamp": "2026-11-02T06:45:16.542203+00:00",
+    "hostname": "runnervm48cm3"
+  },
+  "search_scale_cases": [
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[visa]",
+      "time": "0.304",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[VISA]",
+      "time": "0.064",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[\\uff36\\uff29\\uff33\\uff21]",
+      "time": "0.064",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[Visa Inc.]",
+      "time": "0.062",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[visa inc]",
+      "time": "0.061",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_exact_v_ticker_wins_over_many_prefixes_and_punctuated_v_names",
+      "time": "0.062",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_korean_alias_and_partial_name_coverage_is_not_suppressed",
+      "time": "0.068",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_new_rank_helper_is_private_and_existing_auth_guards_remain",
+      "time": "0.058",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_partial_queries_remain_usable_when_current_scope_has_no_strong_match",
+      "time": "0.068",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_precision_is_read_only_and_leaves_generic_evidence_search_and_dashboard_untouched",
+      "time": "0.082",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_provider_and_market_filter_apply_before_strong_match_suppression",
+      "time": "0.074",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_registered_exact_issuer_survives_discovery_dedupe_without_reintroducing_weak_rows",
+      "time": "0.091",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_registered_partial_query_pagination_and_counts_remain_consistent",
+      "time": "0.078",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_unregistered_strong_official_match_hides_registered_weak_company_rows",
+      "time": "0.079",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[visa-expected0]",
+      "time": "1.058",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[V-expected1]",
+      "time": "1.813",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[micro-expected2]",
+      "time": "1.058",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[\\ub124\\uc774\\ubc84-expected3]",
+      "time": "0.863",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_catalogue_scale_common_letter_and_empty_registered_query_remain_bounded",
+      "time": "1.819",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.workspace.test_company_search_performance",
+      "name": "test_catalogue_scale_alias_expansion_is_once_per_search",
+      "time": "1.085",
+      "status": "PASS"
+    }
+  ],
+  "artifact_id": 13121707106,
+  "artifact_sha256": "293606562affe32981cd0715c7d96a636e7dba4703ace55e995699df14689ab5",
+  "xml": "/tmp/signalbrief-nov2-e391f352-workspace-replay.xml",
+  "xml_sha256": "cd3f1d9056e90adbaf744431ea06eef9becb436b4a130d687806d08227805428",
+  "log": "/tmp/signalbrief-nov2-e391f352-ci-workspace-125135125272.log",
+  "log_sha256": "4f1202ce5d9e84447a83069bcdfaf7c44d2dec6548b16f5e1f02a170adb89d92",
+  "qualification": "This completed CI run is independent of the two preserved local failed attempts; it does not establish a causal environment explanation."
+}

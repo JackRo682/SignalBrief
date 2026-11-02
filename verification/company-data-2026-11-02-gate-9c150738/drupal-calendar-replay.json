@@ -1,0 +1,137 @@
+{
+  "status": "frozen",
+  "date": "2026-11-02",
+  "files": {
+    "supabase/functions/signalbrief-calendar/sec-ir.ts": "e3a10a5aa4c1518fdec11e219223cf29b9924c4de71fdb5fc709866a1a96fbaa",
+    "supabase/migrations/20261102052909_calendar_drupal_event_lists.sql": "5be047fa9ee3caf58120a91a53de35892756ef92c032adf0290cab41dfb2a056",
+    "apps/web/tests/calendar-drupal-events.test.ts": "719055c662da874ecd97d094ac1894d5fa1d432fae073fb87a38d392b9cb11f4",
+    "tests/test_calendar_drupal_events.py": "472661003df6a4f58b09a834889f200996e268ac68b603d7c529f324fd70eda8",
+    ".github/workflows/calendar.yml": "7eaf22614318ac1f550643a9b663371731189caa48a9d112b0285d935ed76f01"
+  },
+  "tests": {
+    "drupal_vitest": 21,
+    "related_calendar_vitest": 145,
+    "independent_postgres": 65,
+    "actual_manifest_postgres": 1,
+    "before_fix_failures": 19
+  },
+  "actual_collector": {
+    "status": "PASS",
+    "mode": "full-collector-replay-of-original-public-bytes",
+    "source": {
+      "key": "sec-ir-0002023554",
+      "company_id": "10000000-0000-4000-8000-000000000042",
+      "provider": "sec",
+      "provider_company_id": "0002023554",
+      "ticker": "SNDK",
+      "market": "NASDAQ",
+      "adapter": "sec-ir",
+      "url": "https://www.sec.gov/edgar/browse/?CIK=0002023554"
+    },
+    "requests": [
+      "https://data.sec.gov/submissions/CIK0002023554.json",
+      "https://www.sec.gov/Archives/edgar/data/2023554/000162828026068243/sndk-20261029.htm",
+      "https://www.sec.gov/Archives/edgar/data/2023554/000162828026068243/sndkq1-27ex991xpressrelease.htm",
+      "https://investor.sandisk.com/",
+      "https://investor.sandisk.com/news-events/events"
+    ],
+    "archives": [
+      {
+        "object_key": "calendar/sec-ir-0002023554/discovery/4cb2f4d90e61a975b52c64c1abcd5001e00189459bae1adb0c869e0bbdb61c41.json",
+        "sha256": "4cb2f4d90e61a975b52c64c1abcd5001e00189459bae1adb0c869e0bbdb61c41",
+        "bytes": 41087,
+        "type": "application/json"
+      },
+      {
+        "object_key": "calendar/sec-ir-0002023554/discovery/77ad99a4034b3973d0493f6d9a063da1d7b67a818d63cd563c97bd581f3b4d3b.html",
+        "sha256": "77ad99a4034b3973d0493f6d9a063da1d7b67a818d63cd563c97bd581f3b4d3b",
+        "bytes": 35266,
+        "type": "text/html"
+      },
+      {
+        "object_key": "calendar/sec-ir-0002023554/discovery/aa60f696ac8757547839f434ae00bca33febd369e4bd08895e3b318389549a46.html",
+        "sha256": "aa60f696ac8757547839f434ae00bca33febd369e4bd08895e3b318389549a46",
+        "bytes": 325409,
+        "type": "text/html"
+      },
+      {
+        "object_key": "calendar/sec-ir-0002023554/discovery/77ff65519fbbf858a35199d2bb95ec07444513e2f9b941aecd2f4e1b2107183c.html",
+        "sha256": "77ff65519fbbf858a35199d2bb95ec07444513e2f9b941aecd2f4e1b2107183c",
+        "bytes": 64245,
+        "type": "text/html; charset=UTF-8"
+      },
+      {
+        "object_key": "calendar/sec-ir-0002023554/discovery/23d23017429bdbb52b9bbb41d9ac8907e7df0173a01f0474e4ba0109b1185d99.html",
+        "sha256": "23d23017429bdbb52b9bbb41d9ac8907e7df0173a01f0474e4ba0109b1185d99",
+        "bytes": 85699,
+        "type": "text/html; charset=UTF-8"
+      },
+      {
+        "object_key": "calendar/sec-ir-0002023554/normalized/4692a18406c99b527bbef00bb1feb41199d3fcf33f0601c00f555bb8ede34610.txt",
+        "sha256": "4692a18406c99b527bbef00bb1feb41199d3fcf33f0601c00f555bb8ede34610",
+        "bytes": 2515,
+        "type": "text/plain; charset=utf-8"
+      },
+      {
+        "object_key": "calendar/sec-ir-0002023554/5fd444c664d1794a222cd419c2941c579202d2b10518e0635126ba53cfd03ae5.json",
+        "sha256": "5fd444c664d1794a222cd419c2941c579202d2b10518e0635126ba53cfd03ae5",
+        "bytes": 10351,
+        "type": "application/json"
+      }
+    ],
+    "manifest_sha256": "5fd444c664d1794a222cd419c2941c579202d2b10518e0635126ba53cfd03ae5",
+    "manifest_object_key": "calendar/sec-ir-0002023554/5fd444c664d1794a222cd419c2941c579202d2b10518e0635126ba53cfd03ae5.json",
+    "format": "drupal-list",
+    "coverage": "published-event-list",
+    "complete": false,
+    "row_count": 26,
+    "upcoming": 1,
+    "past": 5,
+    "dates": [
+      "2026-11-17",
+      "2026-10-29",
+      "2026-09-09",
+      "2026-09-08",
+      "2026-08-13",
+      "2026-08-05"
+    ],
+    "binding": {
+      "url": "https://investor.sandisk.com/",
+      "document_url": "https://www.sec.gov/Archives/edgar/data/2023554/000162828026068243/sndkq1-27ex991xpressrelease.htm",
+      "quote": "e live and archived conference call/webcast and the earnings presentation can be accessed online at investor.sandisk.com. About Sandisk Built on more than three decades of innovation, Sandisk is a vertically integrated g",
+      "location": "normalized-text/explicit-investor-relations-url"
+    }
+  },
+  "actual_postgres": {
+    "status": "PASS",
+    "mode": "actual-collector-manifest-through-disposable-postgresql",
+    "manifest_sha256": "5fd444c664d1794a222cd419c2941c579202d2b10518e0635126ba53cfd03ae5",
+    "format": "drupal-list",
+    "complete": false,
+    "coverage": "published-event-list",
+    "source_rows": 26,
+    "authenticated_upcoming": 1,
+    "authenticated_past": 5,
+    "verified_originals": 7,
+    "dates": [
+      "2026-08-05",
+      "2026-08-13",
+      "2026-09-08",
+      "2026-09-09",
+      "2026-10-29",
+      "2026-11-17"
+    ],
+    "list_url": "https://investor.sandisk.com/news-events/events",
+    "events_original_sha256": "23d23017429bdbb52b9bbb41d9ac8907e7df0173a01f0474e4ba0109b1185d99"
+  },
+  "deployment": [
+    "Apply additive52909 SQL before the new calendar Edge",
+    "Deploy existing calendar entrypoint/dependency bundle with updated sec-ir.ts",
+    "Root requests canonical SNDK source refresh through existing service-only queue, then verifies counts in actual UI"
+  ],
+  "limitations": [
+    "Published static list is partial, not exhaustive; omitted entries never withdraw prior events",
+    "Dates are source-local published calendar days, with no inferred timezone or UTC conversion",
+    "Existing issuer binding, fixed transport budgets, private original archives and grants remain unchanged"
+  ]
+}

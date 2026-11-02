@@ -1,0 +1,41 @@
+{
+  "prepared_at": "2026-11-02T05:36:21.008108+00:00",
+  "clusters": {
+    "SB_TEST_POSTGRES_URL": {
+      "port": 55446,
+      "database": "signalbrief_test",
+      "data_directory": "/tmp/sb-pg-tests/isolated-acceptance-20261102/base/data",
+      "listen_addresses": "127.0.0.1",
+      "user_tables": 0
+    },
+    "SB_TEST_HOSTED_POSTGRES_URL": {
+      "port": 55447,
+      "database": "hosted_test",
+      "data_directory": "/tmp/sb-pg-tests/isolated-acceptance-20261102/hosted/data",
+      "listen_addresses": "127.0.0.1",
+      "user_tables": 0
+    },
+    "SB_TEST_WORKSPACE_POSTGRES_URL": {
+      "port": 55448,
+      "database": "workspace_test",
+      "data_directory": "/tmp/sb-pg-tests/isolated-acceptance-20261102/workspace/data",
+      "listen_addresses": "127.0.0.1",
+      "user_tables": 0
+    },
+    "SB_TEST_CALENDAR_POSTGRES_URL": {
+      "port": 55449,
+      "database": "calendar_test",
+      "data_directory": "/tmp/sb-pg-tests/isolated-acceptance-20261102/calendar/data",
+      "listen_addresses": "127.0.0.1",
+      "user_tables": 0
+    }
+  },
+  "environment": {
+    "SB_TEST_POSTGRES_URL": "postgresql+psycopg://postgres@127.0.0.1:55446/signalbrief_test",
+    "SB_TEST_HOSTED_POSTGRES_URL": "postgresql+psycopg://postgres@127.0.0.1:55447/hosted_test",
+    "SB_TEST_WORKSPACE_POSTGRES_URL": "postgresql+psycopg://postgres@127.0.0.1:55448/workspace_test",
+    "SB_TEST_CALENDAR_POSTGRES_URL": "postgresql://postgres@127.0.0.1:55449/calendar_test"
+  },
+  "existing_clusters_modified": false,
+  "production_access": false
+}

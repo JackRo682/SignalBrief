@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-11-02T07:16:14.218Z",
+  "config_file": "/tmp/signalbrief-nov2-final-source-8dc572e4731c3d33/apps/web/vitest.config.ts",
+  "pool": "forks",
+  "maxWorkers": null,
+  "isolate": true,
+  "testTimeout": 5000,
+  "watch": false,
+  "availableParallelism": 8,
+  "derived_worker_ceiling": 7,
+  "note": "Resolved without running tests; prior actual concurrent workers were not observed."
+}

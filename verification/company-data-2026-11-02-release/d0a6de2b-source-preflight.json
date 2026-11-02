@@ -1,0 +1,75 @@
+{
+  "verified_at": "2026-11-02T07:05:19.208379+00:00",
+  "commit": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+  "tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+  "prior_tree": "df510f8fc1f8c9ced59781289da5e55b6b914bbe",
+  "changed_paths": [
+    {
+      "path": "apps/web/tests/company-profile-sec-offerings.test.ts",
+      "before_blob": "2c2338e2171f399ea233a14ac76b537a9a9dfd35",
+      "after_blob": "9c3325d2b4daf667af41c48f5316cb52d47d8be1"
+    },
+    {
+      "path": "supabase/functions/signalbrief-profiles/enrichment-sec.ts",
+      "before_blob": "e70e8f48b6f68dbd98942d84af3b562c1e9aa125",
+      "after_blob": "a0930a7ac6bae58f42d163845f723f2084c93846"
+    },
+    {
+      "path": "supabase/migrations/20261102060524_sec_profile_identity_fields_refresh.sql",
+      "before_blob": "1fac5950565ec0779eb62981aca7a29de14e3433",
+      "after_blob": null
+    },
+    {
+      "path": "supabase/migrations/20261102065627_sec_profile_identity_fields_refresh.sql",
+      "before_blob": null,
+      "after_blob": "1fac5950565ec0779eb62981aca7a29de14e3433"
+    },
+    {
+      "path": "tests/workspace/test_company_profile_identity_fields_refresh.py",
+      "before_blob": "4aa3cd0e0c73894b5ca4ef2af502119fc0ee6e1d",
+      "after_blob": "bb711ab622a5e67f78dcfdbfc37ab49b881b6f91"
+    },
+    {
+      "path": "tests/workspace/test_company_profile_segment_persistence.py",
+      "before_blob": null,
+      "after_blob": "d74ed5d494d2600c5cd08825deeeabdc080bcad8"
+    }
+  ],
+  "runtime_changed_paths": [
+    "supabase/functions/signalbrief-profiles/enrichment-sec.ts"
+  ],
+  "profile_parser_sha256": "0197454bb8690907195974ab8e58639984b510f2e922a992ede8a6923d6424c1",
+  "migration_rename_bytes_identical": true,
+  "settings": {
+    "SB_TEST_POSTGRES_URL": {
+      "matching_nonidentity_settings": 357,
+      "differences": [],
+      "shared_buffers": "128MB",
+      "max_connections": 100,
+      "timezone": "Asia/Tokyo"
+    },
+    "SB_TEST_HOSTED_POSTGRES_URL": {
+      "matching_nonidentity_settings": 357,
+      "differences": [],
+      "shared_buffers": "128MB",
+      "max_connections": 100,
+      "timezone": "Asia/Tokyo"
+    },
+    "SB_TEST_WORKSPACE_POSTGRES_URL": {
+      "matching_nonidentity_settings": 357,
+      "differences": [],
+      "shared_buffers": "128MB",
+      "max_connections": 100,
+      "timezone": "Asia/Tokyo"
+    },
+    "SB_TEST_CALENDAR_POSTGRES_URL": {
+      "matching_nonidentity_settings": 357,
+      "differences": [],
+      "shared_buffers": "128MB",
+      "max_connections": 100,
+      "timezone": "Asia/Tokyo"
+    }
+  },
+  "source_manifest": "/tmp/signalbrief-nov2-final-source-8dc572e4731c3d33.json",
+  "prior_gate_artifacts_preserved": true
+}

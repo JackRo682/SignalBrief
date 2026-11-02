@@ -1,0 +1,181 @@
+{
+  "scope": "Tesla selected-amendment identity failure and generic explicit unchanged-original recovery",
+  "recorded_at": "2026-11-02T05:42:49.281550+00:00",
+  "files": {
+    "supabase/functions/signalbrief-profiles/enrichment-sec.ts": "5bf560bb3edce2b647f98a27642b9ff99181e4e854be6385c07080d0a8d2b82f",
+    "supabase/functions/signalbrief-profiles/enrichment-service.ts": "002bcac411fb8e913b6e7d80cac4d8bddcd0fa9bd028eaf3af2485487b232fe7",
+    "apps/web/tests/company-profile-amendments.test.ts": "0aa2d93c3db9262eff44f5652c55410fda53dda307e432e35c65c8feef57cd30"
+  },
+  "tests": {
+    "focused_passed": 77,
+    "focused_files": 4,
+    "new_cases": 20,
+    "initial_regression_failures": 5,
+    "additional_missing_or_unknown_flag_regression_failures": 2
+  },
+  "actual_collector_replay": {
+    "kind": "local-full-collector-replay-of-official-archived-bytes-not-production-acceptance",
+    "completed_at": "2026-11-02T05:41:58.481Z",
+    "selected_amendment_accession": "0001104659-26-053166",
+    "source_sha256": "ef65ead556eda2cdcbf9eeb034dbf5304defb97d26638e5508253ba5f63e5f0d",
+    "result_status": "partial",
+    "counts": {
+      "business": 2,
+      "products": 9,
+      "segments": 2,
+      "leadership": 1,
+      "formation": 0,
+      "sources": 3
+    },
+    "leadership": [
+      {
+        "name": "Elon Musk",
+        "as_of": "2026-01-29",
+        "basis": "filing"
+      }
+    ],
+    "limitations": [
+      "leadership_as_of_filing",
+      "formation_date_not_verified"
+    ],
+    "exact_evidence_checks": 14,
+    "schema_valid": true,
+    "requests": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1318605/000110465926053166/tm2611837d1_10ka.htm",
+        "archived_fixture_found": true
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm",
+        "archived_fixture_found": true
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+        "archived_fixture_found": true
+      }
+    ],
+    "reserves": 3,
+    "archives": [
+      {
+        "key": "profiles/sec/ef65ead556eda2cdcbf9eeb034dbf5304defb97d26638e5508253ba5f63e5f0d.html",
+        "sha256": "ef65ead556eda2cdcbf9eeb034dbf5304defb97d26638e5508253ba5f63e5f0d",
+        "bytes": 691580,
+        "type": "text/html; charset=utf-8"
+      },
+      {
+        "key": "profiles/sec/0ca5ec9b0b00aee3dafbcf36bef90756e7013a29cf23d39dbb3a09d9dc50ee19.html",
+        "sha256": "0ca5ec9b0b00aee3dafbcf36bef90756e7013a29cf23d39dbb3a09d9dc50ee19",
+        "bytes": 1605248,
+        "type": "text/html; charset=utf-8"
+      },
+      {
+        "key": "profiles/sec/6613b0ffabe8e9b2668eef50f40540756bd4ef03e2f633d489ca83aa58b99729.html",
+        "sha256": "6613b0ffabe8e9b2668eef50f40540756bd4ef03e2f633d489ca83aa58b99729",
+        "bytes": 2391638,
+        "type": "text/html; charset=utf-8"
+      }
+    ]
+  },
+  "six_prior_filings": {
+    "kind": "local-replay-of-official-source-bytes-not-production-acceptance",
+    "completed_at": "2026-11-02T05:41:59.989Z",
+    "parser_sha256": "5bf560bb3edce2b647f98a27642b9ff99181e4e854be6385c07080d0a8d2b82f",
+    "filings": [
+      {
+        "filing": "mastercard-10-k",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1141391/000114139126000013/ma-20251231.htm",
+        "source_sha256": "6ebb22f87fb28f7392d35e24d66a3895dc700d66747c9df224ac0feebc8186da",
+        "published_on": "2026-02-11",
+        "counts": {
+          "business": 2,
+          "products": 8,
+          "segments": 1,
+          "leadership": 1,
+          "formation": 0
+        },
+        "exact_evidence_checks": 12,
+        "fields_unchanged": true
+      },
+      {
+        "filing": "mastercard-10-q",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1141391/000114139126000124/ma-20260930.htm",
+        "source_sha256": "c6ae6a65046f0fb2719e86c5996828fb2c1bd361f17a699b7d2f89d589063d21",
+        "published_on": "2026-10-29",
+        "counts": {
+          "business": 0,
+          "products": 0,
+          "segments": 1,
+          "leadership": 1,
+          "formation": 0
+        },
+        "exact_evidence_checks": 2,
+        "fields_unchanged": true
+      },
+      {
+        "filing": "tesla-10-k",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+        "source_sha256": "6613b0ffabe8e9b2668eef50f40540756bd4ef03e2f633d489ca83aa58b99729",
+        "published_on": "2026-01-29",
+        "counts": {
+          "business": 2,
+          "products": 9,
+          "segments": 2,
+          "leadership": 1,
+          "formation": 0
+        },
+        "exact_evidence_checks": 14,
+        "fields_unchanged": true
+      },
+      {
+        "filing": "tesla-10-q",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm",
+        "source_sha256": "0ca5ec9b0b00aee3dafbcf36bef90756e7013a29cf23d39dbb3a09d9dc50ee19",
+        "published_on": "2026-10-22",
+        "counts": {
+          "business": 0,
+          "products": 0,
+          "segments": 2,
+          "leadership": 0,
+          "formation": 0
+        },
+        "exact_evidence_checks": 2,
+        "fields_unchanged": true
+      },
+      {
+        "filing": "visa-10-k",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1403161/000140316125000089/v-20250930.htm",
+        "source_sha256": "843c0cab39d63ef150d3676a32ceafb6b968fdf8514ddc4ab047c3a654680484",
+        "published_on": "2025-11-06",
+        "counts": {
+          "business": 2,
+          "products": 10,
+          "segments": 1,
+          "leadership": 1,
+          "formation": 0
+        },
+        "exact_evidence_checks": 14,
+        "fields_unchanged": true
+      },
+      {
+        "filing": "visa-10-q",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1403161/000140316126000104/v-20260630.htm",
+        "source_sha256": "721f029137c5a0fb666162d0b73e5f5ec3f638847bfa94ba5f5b188db66d2e45",
+        "published_on": "2026-07-29",
+        "counts": {
+          "business": 0,
+          "products": 0,
+          "segments": 1,
+          "leadership": 1,
+          "formation": 0
+        },
+        "exact_evidence_checks": 2,
+        "fields_unchanged": true
+      }
+    ],
+    "exact_evidence_checks": 46,
+    "all_fields_and_normalization_unchanged": true
+  },
+  "deployed": false,
+  "production_access": false,
+  "shared_index_mutations": false
+}

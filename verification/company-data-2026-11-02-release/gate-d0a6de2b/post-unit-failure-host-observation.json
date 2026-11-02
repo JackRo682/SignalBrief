@@ -1,0 +1,18 @@
+{
+  "observed_at": "2026-11-02T07:14:05.771999+00:00",
+  "timing_note": "Captured after frontend timeout while the verifier continued into build; not contemporaneous causal proof.",
+  "memory": {
+    "MemTotal": "10206468 kB",
+    "MemAvailable": "7410508 kB",
+    "SwapTotal": "0 kB",
+    "SwapFree": "0 kB"
+  },
+  "readings": {
+    "/proc/loadavg": "2.87 2.31 1.49 1/414 82044",
+    "/sys/fs/cgroup/cpu.max": "800000 100000",
+    "/sys/fs/cgroup/cpu.stat": "usage_usec 11312357204\nuser_usec 9107264837\nsystem_usec 2205092366\nnice_usec 17998883\nnr_periods 148749\nnr_throttled 2222\nthrottled_usec 254846329\nnr_bursts 0\nburst_usec 0",
+    "/sys/fs/cgroup/memory.current": "4344594432",
+    "/sys/fs/cgroup/memory.max": "8589934592"
+  },
+  "verification_processes": []
+}

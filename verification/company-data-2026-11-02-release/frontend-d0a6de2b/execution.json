@@ -1,0 +1,19 @@
+{
+  "commit": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+  "tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+  "started_at": "2026-11-02T07:17:18.535918+00:00",
+  "finished_at": "2026-11-02T07:19:02.835616+00:00",
+  "command": [
+    "npm",
+    "run",
+    "test",
+    "--",
+    "--maxWorkers=2"
+  ],
+  "returncode": 0,
+  "configured_max_workers": 2,
+  "test_timeout_ms_unchanged": 5000,
+  "source_or_assertion_changes": false,
+  "original_full_gate_remains": "FAIL; separate replacement evidence for only its failed frontend unit stage.",
+  "source_manifest": "/tmp/signalbrief-nov2-final-source-8dc572e4731c3d33.json"
+}

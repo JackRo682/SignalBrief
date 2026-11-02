@@ -1,0 +1,41 @@
+{
+  "tree": "83dfd0059308766381aad2e5b1dfeb2c1c069155",
+  "published_commit": "9c1507383fb513c23a4a33468b564cbbeafb71e2",
+  "completed_at": "2026-11-02T05:50:00.457225+00:00",
+  "source_directory": "/tmp/signalbrief-nov2-final-source-83dfd00593087663",
+  "checks": [
+    {
+      "name": "Deno API / US / profiles / discovery",
+      "entrypoints": 4,
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/deno-api-us-profiles-discovery.log"
+    },
+    {
+      "name": "Deno collector",
+      "entrypoints": 1,
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/deno-collector.log"
+    },
+    {
+      "name": "Deno calendar",
+      "entrypoints": 1,
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/deno-calendar.log"
+    },
+    {
+      "name": "Workspace scope guard",
+      "exit_code": 0,
+      "status": "PASS",
+      "log": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/scope.log"
+    }
+  ],
+  "deno_flags": [
+    "--cached-only",
+    "--no-lock"
+  ],
+  "source_mutations": false,
+  "production_access": false
+}

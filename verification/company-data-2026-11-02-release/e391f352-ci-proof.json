@@ -1,0 +1,545 @@
+{
+  "checked_at": "2026-11-02T06:54:46.308Z",
+  "repository": "JackRo682/SignalBrief",
+  "branch": "fix/company-data-coverage-20261102",
+  "pull_request": 41,
+  "head_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+  "source_tree": "df510f8fc1f8c9ced59781289da5e55b6b914bbe",
+  "parent_sha": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+  "status": "PASS",
+  "scope": "Exact-SHA GitHub CI; local full-gate evidence is independent.",
+  "required_run_count": 9,
+  "required_runs_all_success": true,
+  "successful_job_count": 17,
+  "required_runs": [
+    {
+      "id": 41401834038,
+      "name": "Hosted schema replay",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834038",
+      "created_at": "2026-11-02T06:44:36Z",
+      "updated_at": "2026-11-02T06:45:25Z",
+      "jobs": [
+        {
+          "id": 125135125179,
+          "name": "hosted-postgres",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834038/job/125135125179"
+        }
+      ]
+    },
+    {
+      "id": 41401834001,
+      "name": "Collector Edge verification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834001",
+      "created_at": "2026-11-02T06:44:36Z",
+      "updated_at": "2026-11-02T06:44:51Z",
+      "jobs": [
+        {
+          "id": 125135125209,
+          "name": "edge",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834001/job/125135125209"
+        }
+      ]
+    },
+    {
+      "id": 41401834056,
+      "name": "Financial evidence benchmark",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834056",
+      "created_at": "2026-11-02T06:44:36Z",
+      "updated_at": "2026-11-02T06:46:07Z",
+      "jobs": [
+        {
+          "id": 125135125080,
+          "name": "offline-benchmark",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834056/job/125135125080"
+        },
+        {
+          "id": 125135125450,
+          "name": "study-browser",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834056/job/125135125450"
+        }
+      ]
+    },
+    {
+      "id": 41401834020,
+      "name": "Workspace schema security replay",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834020",
+      "created_at": "2026-11-02T06:44:36Z",
+      "updated_at": "2026-11-02T06:45:51Z",
+      "jobs": [
+        {
+          "id": 125135125272,
+          "name": "workspace-postgres",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834020/job/125135125272"
+        }
+      ]
+    },
+    {
+      "id": 41401834009,
+      "name": "official-calendar-verification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834009",
+      "created_at": "2026-11-02T06:44:36Z",
+      "updated_at": "2026-11-02T06:46:23Z",
+      "jobs": [
+        {
+          "id": 125135125092,
+          "name": "calendar",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834009/job/125135125092"
+        }
+      ]
+    },
+    {
+      "id": 41401834007,
+      "name": "Reference application checks",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834007",
+      "created_at": "2026-11-02T06:44:36Z",
+      "updated_at": "2026-11-02T06:46:39Z",
+      "jobs": [
+        {
+          "id": 125135125095,
+          "name": "rendered-controls",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834007/job/125135125095"
+        }
+      ]
+    },
+    {
+      "id": 41401834019,
+      "name": "signalbrief-verification",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834019",
+      "created_at": "2026-11-02T06:44:36Z",
+      "updated_at": "2026-11-02T06:54:39Z",
+      "jobs": [
+        {
+          "id": 125135124981,
+          "name": "web",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834019/job/125135124981"
+        },
+        {
+          "id": 125135125284,
+          "name": "postgres",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834019/job/125135125284"
+        },
+        {
+          "id": 125135125359,
+          "name": "backend",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834019/job/125135125359"
+        },
+        {
+          "id": 125135125380,
+          "name": "python-audit",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834019/job/125135125380"
+        }
+      ]
+    },
+    {
+      "id": 41401828915,
+      "name": "Financial evidence benchmark",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401828915",
+      "created_at": "2026-11-02T06:44:33Z",
+      "updated_at": "2026-11-02T06:46:03Z",
+      "jobs": [
+        {
+          "id": 125135109893,
+          "name": "offline-benchmark",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401828915/job/125135109893"
+        },
+        {
+          "id": 125135110183,
+          "name": "study-browser",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401828915/job/125135110183"
+        }
+      ]
+    },
+    {
+      "id": 41401828822,
+      "name": "signalbrief-verification",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401828822",
+      "created_at": "2026-11-02T06:44:33Z",
+      "updated_at": "2026-11-02T06:54:11Z",
+      "jobs": [
+        {
+          "id": 125135110008,
+          "name": "postgres",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401828822/job/125135110008"
+        },
+        {
+          "id": 125135110165,
+          "name": "backend",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401828822/job/125135110165"
+        },
+        {
+          "id": 125135110168,
+          "name": "python-audit",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401828822/job/125135110168"
+        },
+        {
+          "id": 125135110279,
+          "name": "web",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401828822/job/125135110279"
+        }
+      ]
+    }
+  ],
+  "browser": [
+    {
+      "event": "push",
+      "run_id": 41401828822,
+      "job_id": 125135110279,
+      "status": "PASS",
+      "passed": 92,
+      "log_timestamp": "2026-11-02T06:54:04.5631863Z",
+      "duration": "4.8m",
+      "exact_summary": "2026-11-02T06:54:04.5631863Z   92 passed (4.8m)",
+      "log": "/tmp/signalbrief-nov2-e391f352-ci-web-push-125135110279.log",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401828822/job/125135110279",
+      "log_bytes": 99498,
+      "log_sha256": "537a3e4d2bf68fc794c708305bd2dd550ee0410199e62ff1e01c87b39272f882"
+    },
+    {
+      "event": "pull_request",
+      "run_id": 41401834019,
+      "job_id": 125135124981,
+      "status": "PASS",
+      "passed": 92,
+      "log_timestamp": "2026-11-02T06:54:31.6678174Z",
+      "duration": "5.0m",
+      "exact_summary": "2026-11-02T06:54:31.6678174Z   92 passed (5.0m)",
+      "log": "/tmp/signalbrief-nov2-e391f352-ci-web-pr-125135124981.log",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834019/job/125135124981",
+      "log_bytes": 100352,
+      "log_sha256": "ff267c0120eead9c90a68949db76259bb2b77e12a1cf0112513bc015905aa198"
+    }
+  ],
+  "browser_counts_are_separate_runs_not_summed": true,
+  "conditional_skips": [
+    {
+      "kind": "branch_deployment_health",
+      "run_id": 41401876752,
+      "job_id": 125135319220,
+      "name": "Production health/health",
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401876752/job/125135319220",
+      "reason": "Expected branch deployment-status conditional skip; excluded from applicable push/PR workflow count."
+    }
+  ],
+  "non_triggered_workflows": [
+    {
+      "name": "Release QA",
+      "events": [
+        "push",
+        "pull_request"
+      ],
+      "reason": "No changed PR path matches this workflow and the feature branch is outside its configured push branches. No run or legacy-browser job was triggered; none was manually requested.",
+      "definition_url": "https://github.com/JackRo682/SignalBrief/blob/e391f352112a2dd6ffc60e6c488db0c57b814bf4/.github/workflows/release-qa.yml",
+      "pull_request_paths": [
+        "apps/web/package.json",
+        "apps/web/package-lock.json",
+        "apps/web/tests/lint-root-glob.test.ts",
+        ".github/workflows/release-qa.yml"
+      ],
+      "matching_changed_paths": [],
+      "configured_push_branches": [
+        "main",
+        "codex/functional-ui-20261003",
+        "codex/reference-publish-20261003"
+      ]
+    },
+    {
+      "name": "official-calendar-verification",
+      "events": [
+        "push"
+      ],
+      "reason": "The only new push change is a web unit-test file, outside the calendar push path filters. The cumulative PR calendar run did execute and passed.",
+      "definition_url": "https://github.com/JackRo682/SignalBrief/blob/e391f352112a2dd6ffc60e6c488db0c57b814bf4/.github/workflows/calendar.yml"
+    },
+    {
+      "name": "Collector Edge verification",
+      "events": [
+        "push"
+      ],
+      "reason": "The only new push change is a web unit-test file, outside the collector push path filters. The cumulative PR collector run did execute and passed.",
+      "definition_url": "https://github.com/JackRo682/SignalBrief/blob/e391f352112a2dd6ffc60e6c488db0c57b814bf4/.github/workflows/collector-check.yml"
+    }
+  ],
+  "push_changed_files": [
+    "apps/web/tests/mobile-search-company.test.tsx"
+  ],
+  "pull_request_changed_files": [
+    "apps/web/tests/company-financials-core.test.ts",
+    "apps/web/tests/company-profile-sec-offerings.test.ts",
+    "apps/web/tests/mobile-search-company.test.tsx",
+    "supabase/functions/signalbrief-api/company-financials-core.ts",
+    "supabase/functions/signalbrief-profiles/enrichment-html.ts",
+    "supabase/functions/signalbrief-profiles/enrichment-sec.ts",
+    "supabase/migrations/20261102060038_profile_dart_rows_refresh.sql",
+    "supabase/migrations/20261102060524_sec_profile_identity_fields_refresh.sql",
+    "tests/workspace/test_company_profile_dart_rows_refresh.py",
+    "tests/workspace/test_company_profile_identity_fields_refresh.py"
+  ],
+  "runtime_blob_identity": {
+    "checked_at": "2026-11-02T06:45:32.751Z",
+    "status": "PASS",
+    "base_commit": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+    "base_tree": "21831a41bb205f7e4792fa8d086325a5db867ced",
+    "head_commit": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+    "head_tree": "df510f8fc1f8c9ced59781289da5e55b6b914bbe",
+    "base_blob_count": 1104,
+    "head_blob_count": 1104,
+    "unchanged_blobs_and_modes": 1103,
+    "changed_blobs": [
+      {
+        "path": "apps/web/tests/mobile-search-company.test.tsx",
+        "before": {
+          "sha": "547f961eca8852f5adee330bd7e020a5b8b7ab5c",
+          "mode": "100644"
+        },
+        "after": {
+          "sha": "3eb37e395d728dc75709b9da2dc13b377366a8ad",
+          "mode": "100644"
+        }
+      }
+    ],
+    "all_runtime_blobs_and_modes_identical": true,
+    "trees_complete": true,
+    "source": "GitHub Git Trees API, recursive exact immutable trees",
+    "source_urls": [
+      "https://api.github.com/repos/JackRo682/SignalBrief/git/trees/21831a41bb205f7e4792fa8d086325a5db867ced?recursive=1",
+      "https://api.github.com/repos/JackRo682/SignalBrief/git/trees/df510f8fc1f8c9ced59781289da5e55b6b914bbe?recursive=1"
+    ],
+    "local_tests_rerun": false,
+    "git_or_source_mutations": false,
+    "production_access": false
+  },
+  "local_acceptance_qualification": {
+    "previous_attempts": "The two previous local FAIL results remain preserved separately and are not reclassified by this CI result.",
+    "current_tree": "The independent full local verifier report is separately owned by verification_env and root; its checks are not counted here.",
+    "causal_environment_attribution": "Not established by CI or isolated diagnostic success."
+  },
+  "source": "GitHub connector exact-head workflow runs, terminal jobs, completed web/workspace logs, existing Workspace JUnit artifact, and complete immutable Git Trees API comparison.",
+  "local_tests_rerun": false,
+  "git_or_source_mutations": false,
+  "production_access": false,
+  "workspace_search_scale": {
+    "run_id": 41401834020,
+    "job_id": 125135125272,
+    "job_url": "https://github.com/JackRo682/SignalBrief/actions/runs/41401834020/job/125135125272",
+    "head_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+    "postgres_major": 17,
+    "test_command": "python -m pytest tests/workspace -q --junitxml=workspace-replay.xml",
+    "exact_summary": "2026-11-02T06:45:47.2340797Z 355 passed, 2 warnings in 30.58s",
+    "suite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "355",
+      "time": "30.581",
+      "timestamp": "2026-11-02T06:45:16.542203+00:00",
+      "hostname": "runnervm48cm3"
+    },
+    "search_scale_cases": [
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[visa]",
+        "time": "0.304",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[VISA]",
+        "time": "0.064",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[\\uff36\\uff29\\uff33\\uff21]",
+        "time": "0.064",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[Visa Inc.]",
+        "time": "0.062",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_complete_latin_company_match_suppresses_substrings_before_cap[visa inc]",
+        "time": "0.061",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_exact_v_ticker_wins_over_many_prefixes_and_punctuated_v_names",
+        "time": "0.062",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_korean_alias_and_partial_name_coverage_is_not_suppressed",
+        "time": "0.068",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_new_rank_helper_is_private_and_existing_auth_guards_remain",
+        "time": "0.058",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_partial_queries_remain_usable_when_current_scope_has_no_strong_match",
+        "time": "0.068",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_precision_is_read_only_and_leaves_generic_evidence_search_and_dashboard_untouched",
+        "time": "0.082",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_provider_and_market_filter_apply_before_strong_match_suppression",
+        "time": "0.074",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_registered_exact_issuer_survives_discovery_dedupe_without_reintroducing_weak_rows",
+        "time": "0.091",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_registered_partial_query_pagination_and_counts_remain_consistent",
+        "time": "0.078",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_unregistered_strong_official_match_hides_registered_weak_company_rows",
+        "time": "0.079",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[visa-expected0]",
+        "time": "1.058",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[V-expected1]",
+        "time": "1.813",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[micro-expected2]",
+        "time": "1.058",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_catalogue_scale_exact_partial_and_korean_queries_finish_inside_sql_budget[\\ub124\\uc774\\ubc84-expected3]",
+        "time": "0.863",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_catalogue_scale_common_letter_and_empty_registered_query_remain_bounded",
+        "time": "1.819",
+        "status": "PASS"
+      },
+      {
+        "classname": "tests.workspace.test_company_search_performance",
+        "name": "test_catalogue_scale_alias_expansion_is_once_per_search",
+        "time": "1.085",
+        "status": "PASS"
+      }
+    ],
+    "artifact_id": 13121707106,
+    "artifact_sha256": "293606562affe32981cd0715c7d96a636e7dba4703ace55e995699df14689ab5",
+    "xml": "/tmp/signalbrief-nov2-e391f352-workspace-replay.xml",
+    "xml_sha256": "cd3f1d9056e90adbaf744431ea06eef9becb436b4a130d687806d08227805428",
+    "log": "/tmp/signalbrief-nov2-e391f352-ci-workspace-125135125272.log",
+    "log_sha256": "4f1202ce5d9e84447a83069bcdfaf7c44d2dec6548b16f5e1f02a170adb89d92",
+    "qualification": "This completed CI run is independent of the two preserved local failed attempts; it does not establish a causal environment explanation."
+  },
+  "runtime_blob_identity_file": {
+    "path": "/tmp/signalbrief-nov2-e391f352-source-identity.json",
+    "bytes": 1224,
+    "sha256": "a5e5d23efb3a2fc594bbad9c9257b1732366c39fe3595de2b9c0fcdb3a417ff7"
+  }
+}

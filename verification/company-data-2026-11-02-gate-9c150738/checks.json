@@ -1,0 +1,114 @@
+{
+  "checked_at": "2026-11-02T05:53:19.213529+00:00",
+  "full_release_suite": true,
+  "results": [
+    {
+      "check": "python_compile",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "compileall",
+        "-q",
+        "apps/api",
+        "tests",
+        "scripts"
+      ],
+      "log": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/python_compile.log"
+    },
+    {
+      "check": "backend_tests",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "--junitxml=/tmp/signalbrief-nov2-final-source-83dfd00593087663/verification/pytest.xml"
+      ],
+      "log": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/backend_tests.log"
+    },
+    {
+      "check": "openapi_export",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "scripts/export_openapi.py"
+      ],
+      "log": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/openapi_export.log"
+    },
+    {
+      "check": "backend_lint",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "apps/api",
+        "tests",
+        "scripts"
+      ],
+      "log": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/backend_lint.log"
+    },
+    {
+      "check": "frontend_lint",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm",
+        "run",
+        "lint"
+      ],
+      "log": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/frontend_lint.log"
+    },
+    {
+      "check": "frontend_typecheck",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm",
+        "run",
+        "typecheck"
+      ],
+      "log": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/frontend_typecheck.log"
+    },
+    {
+      "check": "frontend_unit_tests",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm",
+        "run",
+        "test"
+      ],
+      "log": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/frontend_unit_tests.log"
+    },
+    {
+      "check": "frontend_build",
+      "status": "PASS",
+      "returncode": 0,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/npm",
+        "run",
+        "build"
+      ],
+      "log": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/frontend_build.log"
+    }
+  ],
+  "not_in_this_script": [
+    "Real provider credentials",
+    "Google OAuth redirects",
+    "Hosted deployment",
+    "Human-labeled financial Gold Dataset",
+    "Browser E2E (run Playwright separately)"
+  ],
+  "capture": {
+    "original_report": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/checks.raw.json",
+    "historical_outputs_restored": true
+  }
+}

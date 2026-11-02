@@ -1,0 +1,216 @@
+{
+  "status": "implementation_verified_release_in_progress",
+  "production_url": "https://signalbrief.online",
+  "baseline_runtime": "1541494637d89b46e2b2c53b15186c0e51f3ec62",
+  "source_branch": "fix/company-data-coverage-20261102",
+  "bridge": {
+    "commit": "07d6f0d8558eab84c09cbd801b6f4dc694c9e59c",
+    "tree": "f83ade5a29d16310ef708fce68833dcd374b22e9",
+    "branch": "fix/company-source-bridge-20261102",
+    "changed_files": 18,
+    "isolated_focused_tests": 148,
+    "isolated_build": "PASS",
+    "exact_remote_blob_match": true,
+    "ci": "SUCCESS",
+    "preview_deployment": "dpl_Go4fh8FndPn385SyW7SKjTEUceJM",
+    "production_deployment": "dpl_8mcUGeud1h97miwf2dYWGzqKu79B",
+    "ci_verification_run": 41374579803,
+    "ci_browser_passed": 90,
+    "ci_completed_at": "2026-11-02T02:00:24Z",
+    "production_status": "READY",
+    "production_alias": "https://signalbrief.online",
+    "production_branch": "07d6f0d8558eab84c09cbd801b6f4dc694c9e59c",
+    "public_release_check": {
+      "http_status": 200,
+      "commit": "07d6f0d8558eab84c09cbd801b6f4dc694c9e59c",
+      "internal_routes_unauthenticated_status": 401
+    }
+  },
+  "local": {
+    "browser_tests": {
+      "passed": 92,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "fixture_scope": "isolated synthetic; unexpected external requests fail"
+    },
+    "initial_full_gate": {
+      "backend_passed": 829,
+      "backend_skipped": 0,
+      "frontend_passed": 1474,
+      "frontend_files": 111,
+      "build": "failed on outside-app imports; monorepo root fixed and targeted production build passed"
+    },
+    "repeat_gate": {
+      "result": "failed",
+      "causes": [
+        "hosted schema test reused a database that must be empty",
+        "real-time debounce assertion exceeded wall-clock deadline under load",
+        "generated Turbopack cache could not reopen after root change"
+      ],
+      "corrections": [
+        "fresh loopback-only hosted cluster",
+        "deterministic timer and controlled response test synchronization",
+        "clean generated build cache"
+      ]
+    },
+    "final_full_gate": {
+      "status": "PASS",
+      "checked_at": "2026-11-02T01:59:37.142843+00:00",
+      "stages": 8,
+      "backend_passed": 829,
+      "backend_skipped": 0,
+      "frontend_passed": 1474,
+      "frontend_files": 111,
+      "hosted_test_environment": "fresh loopback cluster on55436"
+    },
+    "scope_guard": "PASS",
+    "deno_entrypoints_checked": 6,
+    "ledger_aligned_postgres": {
+      "passed": 169,
+      "skipped": 0
+    },
+    "catalogue_scale_regression": {
+      "passed": 20,
+      "skipped": 0,
+      "active_synthetic_issuers": 14500,
+      "statement_timeout_seconds": 3,
+      "alias_expansion_calls_per_endpoint": 1,
+      "log": "verification/company-data-2026-11-02-local/search_catalogue_performance.log"
+    }
+  },
+  "actual_source_replays": {
+    "calendar_evidence": "verification/company-data-2026-11-02-calendar.json",
+    "visa_profile": "source-backed enrichment replay passed",
+    "visa_companyfacts_contexts": 44,
+    "naver_profile": "pending production acquisition",
+    "pinned_live_transport": "local DNS EAI_AGAIN; production acceptance pending"
+  },
+  "production": {
+    "migrations": [
+      {
+        "name": "calendar_sec_ir_discovery",
+        "version": "20261102020437",
+        "path": "supabase/migrations/20261102020437_calendar_sec_ir_discovery.sql",
+        "sha256": "bc16706742848f5a2ab0e831f1b8b0e9fcb182f10e049f806f0b4a2d2c79688f"
+      },
+      {
+        "name": "company_reported_financials",
+        "version": "20261102020442",
+        "path": "supabase/migrations/20261102020442_company_reported_financials.sql",
+        "sha256": "ce4965c3ed43e54410d4c111cd02fe5ff4b9d48bd38595de5b0dc82170a32730"
+      },
+      {
+        "name": "company_search_precision",
+        "version": "20261102020446",
+        "path": "supabase/migrations/20261102020446_company_search_precision.sql",
+        "sha256": "b56e78afbc51f775fe7c4324db1429b1cbc31b21f9496a7f5d53fc677d6355d6"
+      },
+      {
+        "name": "company_profile_source_enrichment",
+        "version": "20261102020450",
+        "path": "supabase/migrations/20261102020450_company_profile_source_enrichment.sql",
+        "sha256": "3b265ba1ebbf1c3ef710bc7db4b5fa84bceb538cbfa2699ec077d2611b7c7403"
+      },
+      {
+        "name": "dart_profile_periodic_sources",
+        "version": "20261102020454",
+        "path": "supabase/migrations/20261102020454_dart_profile_periodic_sources.sql",
+        "sha256": "516c05dcd496eb945cfc026e943535c544d3dec40bc54fd93d58b7e76c9f87f7"
+      },
+      {
+        "name": "company_search_catalogue_performance",
+        "version": "20261102022052",
+        "path": "supabase/migrations/20261102022052_company_search_catalogue_performance.sql",
+        "sha256": "a190c4b4abdd8a977b727d9924ffcd867f6c77785e92a220229187728f60fbe5"
+      }
+    ],
+    "edge_versions": {
+      "signalbrief-us": {
+        "version": 22,
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "ezbr_sha256": "36a672055ec2b10c976129f60eff666b7c5e55c7306f31e8b3029696d54db5d3"
+      },
+      "signalbrief-profiles": {
+        "version": 6,
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "ezbr_sha256": "bde991ff487b3a3674ffae98717b1ac716c8cba1540948c43f908940132a5a63"
+      },
+      "signalbrief-collector": {
+        "version": 17,
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "ezbr_sha256": "3fbdd013117df85c6b3408b25b6c72823d9a41cbe4f99f1f20b10d7a353378a0"
+      },
+      "signalbrief-discovery": {
+        "version": 7,
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "ezbr_sha256": "31f7f35abf9a0ddad81123bcc03e043223283c5586e6c30f087944c35db8d991"
+      },
+      "signalbrief-calendar": {
+        "version": 5,
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "ezbr_sha256": "9de3717ca3921b1086f24f288d7d590e661f573c810a41a7823b95c21fe6ce03"
+      }
+    },
+    "ui_commit": null,
+    "live_acceptance": [],
+    "migration_ledger_sha256_match": true,
+    "search_scale_followup": {
+      "observed_at": "2026-11-02T02:13:21.996Z",
+      "symptom": "registered company and official-directory visa searches failed after precision migration",
+      "database_sqlstate": "57014",
+      "discovery_status": 503,
+      "discovery_duration_ms": 16210,
+      "cause": "repeated sb_search_terms in per-row ranking over full official catalogue",
+      "status": "live screenshot and visible DOM confirmed visa returns only canonical VISA INC.",
+      "screenshot": "verification/company-data-2026-11-02-live/visa-search-before-performance-fix.jpg",
+      "applied_version": "20261102022052",
+      "live_acceptance": {
+        "query": "visa",
+        "visible_company_links": 1,
+        "ticker": "V",
+        "company_name": "VISA INC.",
+        "unrelated_results_visible": false,
+        "client_runtime": "Node bridge 07d6f0d8; search SQL fix is live"
+      }
+    },
+    "calendar_sec_ir_ready": {
+      "enabled": true,
+      "initial_dispatched": 2
+    }
+  },
+  "limits": [
+    "Official sources may not publish every field or an upcoming event.",
+    "Unapproved model analyses remain in review.",
+    "No synthetic figures, profiles, events, or bookmarks are inserted into production.",
+    "This release does not certify exhaustive issuer coverage or zero defects globally."
+  ],
+  "published_source": {
+    "commit": "cd31aeda4d9d99a31c00f6873b66972b9a2c49f7",
+    "tree": "4210880978d5d51ec76be385fc592a9118e24bdb",
+    "pull_request": "https://github.com/JackRo682/SignalBrief/pull/40",
+    "changed_files": 96,
+    "all_staged_blob_matches": 1074,
+    "ci": "SUCCESS",
+    "ci_completed_at": "2026-11-02T02:22:22Z",
+    "required_workflow_runs_passed": 12,
+    "ci_browser_runs": [
+      {
+        "run": 41376425944,
+        "passed": 92,
+        "duration": "4.1m"
+      },
+      {
+        "run": 41376451512,
+        "passed": 92,
+        "duration": "4.9m"
+      }
+    ]
+  }
+}

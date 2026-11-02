@@ -1,0 +1,1020 @@
+﻿2026-11-02T06:15:41.4888579Z Current runner version: '2.338.2'
+2026-11-02T06:15:41.4923591Z ##[group]Runner Image Provisioner
+2026-11-02T06:15:41.4925045Z Hosted Compute Agent
+2026-11-02T06:15:41.4926202Z Version: 20261021.618
+2026-11-02T06:15:41.4927430Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-02T06:15:41.4928778Z Build Date: 2026-10-21T00:45:21Z
+2026-11-02T06:15:41.4930222Z Worker ID: {529ecd5e-a4a6-4ade-a619-7f4813016654}
+2026-11-02T06:15:41.4931484Z Region: centralus
+2026-11-02T06:15:41.4932493Z Cloud: Azure
+2026-11-02T06:15:41.4933802Z ##[endgroup]
+2026-11-02T06:15:41.4936274Z ##[group]Operating System
+2026-11-02T06:15:41.4937539Z Ubuntu
+2026-11-02T06:15:41.4938545Z 24.04.5
+2026-11-02T06:15:41.4939587Z LTS
+2026-11-02T06:15:41.4940605Z ##[endgroup]
+2026-11-02T06:15:41.4941605Z ##[group]Runner Image
+2026-11-02T06:15:41.4942789Z Image: ubuntu-24.04
+2026-11-02T06:15:41.4944200Z Version: 20261025.353.1
+2026-11-02T06:15:41.4946450Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-02T06:15:41.4949292Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-11-02T06:15:41.4951295Z ##[endgroup]
+2026-11-02T06:15:41.4953667Z ##[group]GITHUB_TOKEN Permissions
+2026-11-02T06:15:41.4956776Z Contents: read
+2026-11-02T06:15:41.4957920Z Metadata: read
+2026-11-02T06:15:41.4959176Z ##[endgroup]
+2026-11-02T06:15:41.4962305Z Secret source: Actions
+2026-11-02T06:15:41.4964338Z Cache mode: write
+2026-11-02T06:15:41.4965953Z Prepare workflow directory
+2026-11-02T06:15:41.5326108Z Prepare all required actions
+2026-11-02T06:15:41.5398326Z Getting action download info
+2026-11-02T06:15:41.8221596Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-02T06:15:41.9610448Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-11-02T06:15:42.0611196Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-02T06:15:42.1374847Z Download action repository 'denoland/setup-deno@v2' (SHA:22d081ff2d3a40755e97629de92e3bcbfa7cf2ed)
+2026-11-02T06:15:42.4970730Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-02T06:15:42.7217744Z Complete job name: web
+2026-11-02T06:15:42.8259438Z ##[group]Run actions/checkout@v4
+2026-11-02T06:15:42.8260945Z with:
+2026-11-02T06:15:42.8261796Z   repository: JackRo682/SignalBrief
+2026-11-02T06:15:42.8270025Z   token: ***
+2026-11-02T06:15:42.8270912Z   ssh-strict: true
+2026-11-02T06:15:42.8271793Z   ssh-user: git
+2026-11-02T06:15:42.8272633Z   persist-credentials: true
+2026-11-02T06:15:42.8273859Z   clean: true
+2026-11-02T06:15:42.8274712Z   sparse-checkout-cone-mode: true
+2026-11-02T06:15:42.8275703Z   fetch-depth: 1
+2026-11-02T06:15:42.8276521Z   fetch-tags: false
+2026-11-02T06:15:42.8277356Z   show-progress: true
+2026-11-02T06:15:42.8278214Z   lfs: false
+2026-11-02T06:15:42.8279044Z   submodules: false
+2026-11-02T06:15:42.8279916Z   set-safe-directory: true
+2026-11-02T06:15:42.8280854Z   allow-unsafe-pr-checkout: false
+2026-11-02T06:15:42.8282335Z ##[endgroup]
+2026-11-02T06:15:43.1736941Z Syncing repository: JackRo682/SignalBrief
+2026-11-02T06:15:43.1739552Z ##[group]Getting Git version info
+2026-11-02T06:15:43.1741008Z Working directory is '/home/runner/work/SignalBrief/SignalBrief'
+2026-11-02T06:15:43.1744278Z [command]/usr/bin/git version
+2026-11-02T06:15:43.1851650Z git version 2.56.0
+2026-11-02T06:15:43.1875034Z ##[endgroup]
+2026-11-02T06:15:43.1892841Z Temporarily overriding HOME='/home/runner/work/_temp/d5bc6f3c-6c51-4668-a784-c03451f7ba1e' before making global git config changes
+2026-11-02T06:15:43.1898720Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-02T06:15:43.1904780Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/SignalBrief/SignalBrief
+2026-11-02T06:15:43.1978766Z Deleting the contents of '/home/runner/work/SignalBrief/SignalBrief'
+2026-11-02T06:15:43.1982689Z ##[group]Initializing the repository
+2026-11-02T06:15:43.1987089Z [command]/usr/bin/git init /home/runner/work/SignalBrief/SignalBrief
+2026-11-02T06:15:43.2116130Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-02T06:15:43.2119584Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-02T06:15:43.2122274Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-02T06:15:43.2124762Z hint: call:
+2026-11-02T06:15:43.2126145Z hint:
+2026-11-02T06:15:43.2127514Z hint: 	git config --global init.defaultBranch <name>
+2026-11-02T06:15:43.2129717Z hint:
+2026-11-02T06:15:43.2132089Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-02T06:15:43.2135732Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-02T06:15:43.2138163Z hint:
+2026-11-02T06:15:43.2139370Z hint: 	git branch -m <name>
+2026-11-02T06:15:43.2140615Z hint:
+2026-11-02T06:15:43.2142223Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-02T06:15:43.2146119Z Initialized empty Git repository in /home/runner/work/SignalBrief/SignalBrief/.git/
+2026-11-02T06:15:43.2150287Z [command]/usr/bin/git remote add origin https://github.com/JackRo682/SignalBrief
+2026-11-02T06:15:43.2199108Z ##[endgroup]
+2026-11-02T06:15:43.2201085Z ##[group]Disabling automatic garbage collection
+2026-11-02T06:15:43.2203853Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-02T06:15:43.2247745Z ##[endgroup]
+2026-11-02T06:15:43.2249523Z ##[group]Setting up auth
+2026-11-02T06:15:43.2251309Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-02T06:15:43.2341884Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-02T06:15:43.2803692Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-02T06:15:43.2852098Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-02T06:15:43.3094664Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-02T06:15:43.3141644Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-02T06:15:43.3384874Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-02T06:15:43.3434839Z ##[endgroup]
+2026-11-02T06:15:43.3437469Z ##[group]Fetching the repository
+2026-11-02T06:15:43.3451638Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +c99604c549351335690953fb891164bc7fcb0d74:refs/remotes/pull/41/merge
+2026-11-02T06:15:44.2610119Z From https://github.com/JackRo682/SignalBrief
+2026-11-02T06:15:44.2613516Z  * [new ref]         c99604c549351335690953fb891164bc7fcb0d74 -> pull/41/merge
+2026-11-02T06:15:44.2620261Z ##[endgroup]
+2026-11-02T06:15:44.2622712Z ##[group]Determining the checkout info
+2026-11-02T06:15:44.2625415Z ##[endgroup]
+2026-11-02T06:15:44.2626574Z [command]/usr/bin/git sparse-checkout disable
+2026-11-02T06:15:44.2699356Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-02T06:15:44.2737984Z ##[group]Checking out the ref
+2026-11-02T06:15:44.2740989Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/41/merge
+2026-11-02T06:15:44.3810582Z Note: switching to 'refs/remotes/pull/41/merge'.
+2026-11-02T06:15:44.3811781Z 
+2026-11-02T06:15:44.3812677Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-02T06:15:44.3815289Z changes and commit them, and you can discard any commits you make in this
+2026-11-02T06:15:44.3817550Z state without impacting any branches by switching back to a branch.
+2026-11-02T06:15:44.3819174Z 
+2026-11-02T06:15:44.3820016Z If you want to create a new branch to retain commits you create, you may
+2026-11-02T06:15:44.3822040Z do so (now or later) by using -c with the switch command. Example:
+2026-11-02T06:15:44.3823377Z 
+2026-11-02T06:15:44.3824010Z   git switch -c <new-branch-name>
+2026-11-02T06:15:44.3824820Z 
+2026-11-02T06:15:44.3825269Z Or undo this operation with:
+2026-11-02T06:15:44.3826239Z 
+2026-11-02T06:15:44.3826653Z   git switch -
+2026-11-02T06:15:44.3827217Z 
+2026-11-02T06:15:44.3828121Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-02T06:15:44.3829469Z 
+2026-11-02T06:15:44.3830977Z HEAD is now at c99604c Merge ee9cdc7813bee865de8c18ae61fc44489ce84632 into 9c1507383fb513c23a4a33468b564cbbeafb71e2
+2026-11-02T06:15:44.3835642Z ##[endgroup]
+2026-11-02T06:15:44.3883841Z [command]/usr/bin/git log -1 --format=%H
+2026-11-02T06:15:44.3917960Z c99604c549351335690953fb891164bc7fcb0d74
+2026-11-02T06:15:44.4328390Z ##[group]Run actions/setup-node@v4
+2026-11-02T06:15:44.4329591Z with:
+2026-11-02T06:15:44.4330447Z   node-version: 22
+2026-11-02T06:15:44.4331398Z   always-auth: false
+2026-11-02T06:15:44.4332365Z   check-latest: false
+2026-11-02T06:15:44.4341886Z   token: ***
+2026-11-02T06:15:44.4342787Z ##[endgroup]
+2026-11-02T06:15:44.5879746Z (node:2326) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-02T06:15:44.5885960Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-02T06:15:44.5890420Z Found in cache @ /opt/hostedtoolcache/node/22.23.4/x64
+2026-11-02T06:15:44.5892456Z ##[group]Environment details
+2026-11-02T06:15:45.0599223Z node: v22.23.4
+2026-11-02T06:15:45.0600437Z npm: 10.9.9
+2026-11-02T06:15:45.0601470Z yarn: 1.22.22
+2026-11-02T06:15:45.0604245Z ##[endgroup]
+2026-11-02T06:15:45.0880698Z ##[group]Run actions/setup-python@v5
+2026-11-02T06:15:45.0881851Z with:
+2026-11-02T06:15:45.0882721Z   python-version: 3.12
+2026-11-02T06:15:45.0884024Z   check-latest: false
+2026-11-02T06:15:45.0892592Z   token: ***
+2026-11-02T06:15:45.0893784Z   update-environment: true
+2026-11-02T06:15:45.0894836Z   allow-prereleases: false
+2026-11-02T06:15:45.0895862Z   freethreaded: false
+2026-11-02T06:15:45.0896811Z ##[endgroup]
+2026-11-02T06:15:45.2306342Z ##[group]Installed versions
+2026-11-02T06:15:45.2398280Z (node:2359) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-02T06:15:45.2403380Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-02T06:15:45.2406361Z Successfully set up CPython (3.12.15)
+2026-11-02T06:15:45.2409177Z ##[endgroup]
+2026-11-02T06:15:45.2618091Z ##[group]Run pip install -e '.[dev]'
+2026-11-02T06:15:45.2619922Z [36;1mpip install -e '.[dev]'[0m
+2026-11-02T06:15:45.2677639Z shell: /usr/bin/bash -e {0}
+2026-11-02T06:15:45.2679330Z env:
+2026-11-02T06:15:45.2681078Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:15:45.2684190Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-11-02T06:15:45.2687081Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:15:45.2689691Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:15:45.2692377Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:15:45.2695286Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-02T06:15:45.2697557Z ##[endgroup]
+2026-11-02T06:15:46.1804731Z Obtaining file:///home/runner/work/SignalBrief/SignalBrief
+2026-11-02T06:15:46.1822033Z   Installing build dependencies: started
+2026-11-02T06:15:47.1638409Z   Installing build dependencies: finished with status 'done'
+2026-11-02T06:15:47.1644851Z   Checking if build backend supports build_editable: started
+2026-11-02T06:15:47.4883818Z   Checking if build backend supports build_editable: finished with status 'done'
+2026-11-02T06:15:47.4891342Z   Getting requirements to build editable: started
+2026-11-02T06:15:47.8282623Z   Getting requirements to build editable: finished with status 'done'
+2026-11-02T06:15:47.8292237Z   Preparing editable metadata (pyproject.toml): started
+2026-11-02T06:15:48.0286417Z   Preparing editable metadata (pyproject.toml): finished with status 'done'
+2026-11-02T06:15:48.1774834Z Collecting fastapi==0.133.1 (from signalbrief==0.1.0)
+2026-11-02T06:15:48.2549448Z   Downloading fastapi-0.133.1-py3-none-any.whl.metadata (30 kB)
+2026-11-02T06:15:48.3044901Z Collecting starlette==1.3.1 (from signalbrief==0.1.0)
+2026-11-02T06:15:48.3178578Z   Downloading starlette-1.3.1-py3-none-any.whl.metadata (6.4 kB)
+2026-11-02T06:15:48.3547541Z Collecting uvicorn<1,>=0.34 (from uvicorn[standard]<1,>=0.34->signalbrief==0.1.0)
+2026-11-02T06:15:48.3683363Z   Downloading uvicorn-0.54.0-py3-none-any.whl.metadata (6.6 kB)
+2026-11-02T06:15:48.7099324Z Collecting sqlalchemy<2.1,>=2.0.45 (from signalbrief==0.1.0)
+2026-11-02T06:15:48.7262060Z   Downloading sqlalchemy-2.0.55-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (9.7 kB)
+2026-11-02T06:15:48.7623739Z Collecting alembic<2,>=1.14 (from signalbrief==0.1.0)
+2026-11-02T06:15:48.7757445Z   Downloading alembic-1.20.1-py3-none-any.whl.metadata (7.3 kB)
+2026-11-02T06:15:48.8044018Z Collecting psycopg<4,>=3.2 (from psycopg[binary]<4,>=3.2->signalbrief==0.1.0)
+2026-11-02T06:15:48.8173283Z   Downloading psycopg-3.3.6-py3-none-any.whl.metadata (4.4 kB)
+2026-11-02T06:15:48.9320456Z Collecting pydantic<3,>=2.12 (from signalbrief==0.1.0)
+2026-11-02T06:15:48.9454206Z   Downloading pydantic-2.14.2-py3-none-any.whl.metadata (137 kB)
+2026-11-02T06:15:48.9947586Z Collecting pydantic-settings<3,>=2.8 (from signalbrief==0.1.0)
+2026-11-02T06:15:49.0080172Z   Downloading pydantic_settings-2.16.2-py3-none-any.whl.metadata (4.0 kB)
+2026-11-02T06:15:49.0369587Z Collecting httpx<0.29,>=0.28 (from signalbrief==0.1.0)
+2026-11-02T06:15:49.0503627Z   Downloading httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+2026-11-02T06:15:49.0796675Z Collecting PyJWT<3,>=2.10 (from PyJWT[crypto]<3,>=2.10->signalbrief==0.1.0)
+2026-11-02T06:15:49.0931571Z   Downloading pyjwt-2.15.1-py3-none-any.whl.metadata (3.5 kB)
+2026-11-02T06:15:49.1211660Z Collecting beautifulsoup4<5,>=4.13 (from signalbrief==0.1.0)
+2026-11-02T06:15:49.1344322Z   Downloading beautifulsoup4-4.15.0-py3-none-any.whl.metadata (3.8 kB)
+2026-11-02T06:15:49.1584143Z Collecting defusedxml<1,>=0.7 (from signalbrief==0.1.0)
+2026-11-02T06:15:49.1714226Z   Downloading defusedxml-0.7.1-py2.py3-none-any.whl.metadata (32 kB)
+2026-11-02T06:15:49.2310885Z Collecting sentry-sdk<3,>=2.20 (from sentry-sdk[fastapi]<3,>=2.20->signalbrief==0.1.0)
+2026-11-02T06:15:49.2445361Z   Downloading sentry_sdk-2.73.0-py3-none-any.whl.metadata (11 kB)
+2026-11-02T06:15:49.2970645Z Collecting pytest<10,>=8.3 (from signalbrief==0.1.0)
+2026-11-02T06:15:49.3101518Z   Downloading pytest-9.2.0-py3-none-any.whl.metadata (7.9 kB)
+2026-11-02T06:15:49.6752219Z Collecting ruff<1,>=0.11 (from signalbrief==0.1.0)
+2026-11-02T06:15:49.6887025Z   Downloading ruff-0.17.3-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (20 kB)
+2026-11-02T06:15:49.8081442Z Collecting mypy<2,>=1.15 (from signalbrief==0.1.0)
+2026-11-02T06:15:49.8216985Z   Downloading mypy-1.20.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-11-02T06:15:49.8493660Z Collecting pytest-cov<8,>=6 (from signalbrief==0.1.0)
+2026-11-02T06:15:49.8624561Z   Downloading pytest_cov-7.1.0-py3-none-any.whl.metadata (32 kB)
+2026-11-02T06:15:49.8971716Z Collecting typing-extensions>=4.8.0 (from fastapi==0.133.1->signalbrief==0.1.0)
+2026-11-02T06:15:49.9103880Z   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-11-02T06:15:49.9336395Z Collecting typing-inspection>=0.4.2 (from fastapi==0.133.1->signalbrief==0.1.0)
+2026-11-02T06:15:49.9469628Z   Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+2026-11-02T06:15:49.9698922Z Collecting annotated-doc>=0.0.2 (from fastapi==0.133.1->signalbrief==0.1.0)
+2026-11-02T06:15:49.9832918Z   Downloading annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)
+2026-11-02T06:15:50.0149573Z Collecting anyio<5,>=3.6.2 (from starlette==1.3.1->signalbrief==0.1.0)
+2026-11-02T06:15:50.0284458Z   Downloading anyio-4.16.0-py3-none-any.whl.metadata (4.7 kB)
+2026-11-02T06:15:50.0630879Z Collecting Mako (from alembic<2,>=1.14->signalbrief==0.1.0)
+2026-11-02T06:15:50.0764538Z   Downloading mako-1.4.3-py3-none-any.whl.metadata (2.9 kB)
+2026-11-02T06:15:50.1048382Z Collecting idna>=2.8 (from anyio<5,>=3.6.2->starlette==1.3.1->signalbrief==0.1.0)
+2026-11-02T06:15:50.1179491Z   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+2026-11-02T06:15:50.1488186Z Collecting soupsieve>=1.6.1 (from beautifulsoup4<5,>=4.13->signalbrief==0.1.0)
+2026-11-02T06:15:50.1621269Z   Downloading soupsieve-3.0.4-py3-none-any.whl.metadata (4.4 kB)
+2026-11-02T06:15:50.1957475Z Collecting certifi (from httpx<0.29,>=0.28->signalbrief==0.1.0)
+2026-11-02T06:15:50.2090765Z   Downloading certifi-2026.10.23-py3-none-any.whl.metadata (2.5 kB)
+2026-11-02T06:15:50.2370940Z Collecting httpcore==1.* (from httpx<0.29,>=0.28->signalbrief==0.1.0)
+2026-11-02T06:15:50.2503358Z   Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+2026-11-02T06:15:50.2782169Z Collecting h11>=0.16 (from httpcore==1.*->httpx<0.29,>=0.28->signalbrief==0.1.0)
+2026-11-02T06:15:50.2912708Z   Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+2026-11-02T06:15:50.3165233Z Collecting mypy_extensions>=1.0.0 (from mypy<2,>=1.15->signalbrief==0.1.0)
+2026-11-02T06:15:50.3298647Z   Downloading mypy_extensions-1.1.0-py3-none-any.whl.metadata (1.1 kB)
+2026-11-02T06:15:50.3541104Z Collecting pathspec>=1.0.0 (from mypy<2,>=1.15->signalbrief==0.1.0)
+2026-11-02T06:15:50.3672269Z   Downloading pathspec-1.1.1-py3-none-any.whl.metadata (14 kB)
+2026-11-02T06:15:50.5087053Z Collecting librt>=0.8.0 (from mypy<2,>=1.15->signalbrief==0.1.0)
+2026-11-02T06:15:50.5224495Z   Downloading librt-0.16.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (1.3 kB)
+2026-11-02T06:15:50.7045459Z Collecting psycopg-binary==3.3.6 (from psycopg[binary]<4,>=3.2->signalbrief==0.1.0)
+2026-11-02T06:15:50.7180456Z   Downloading psycopg_binary-3.3.6-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.7 kB)
+2026-11-02T06:15:50.7430963Z Collecting annotated-types>=0.6.0 (from pydantic<3,>=2.12->signalbrief==0.1.0)
+2026-11-02T06:15:50.7562300Z   Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+2026-11-02T06:15:51.4678855Z Collecting pydantic-core==2.50.2 (from pydantic<3,>=2.12->signalbrief==0.1.0)
+2026-11-02T06:15:51.4813831Z   Downloading pydantic_core-2.50.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.5 kB)
+2026-11-02T06:15:51.5103587Z Collecting python-dotenv>=1.2.2 (from pydantic-settings<3,>=2.8->signalbrief==0.1.0)
+2026-11-02T06:15:51.5236725Z   Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+2026-11-02T06:15:51.7174898Z Collecting cryptography>=3.4.0 (from PyJWT[crypto]<3,>=2.10->signalbrief==0.1.0)
+2026-11-02T06:15:51.7308794Z   Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_x86_64.whl.metadata (4.4 kB)
+2026-11-02T06:15:51.7550714Z Collecting iniconfig>=2 (from pytest<10,>=8.3->signalbrief==0.1.0)
+2026-11-02T06:15:51.7683344Z   Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+2026-11-02T06:15:51.7785525Z Collecting packaging>=24 (from pytest<10,>=8.3->signalbrief==0.1.0)
+2026-11-02T06:15:51.7797404Z   Using cached packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+2026-11-02T06:15:51.8029314Z Collecting pluggy<2,>=1.6 (from pytest<10,>=8.3->signalbrief==0.1.0)
+2026-11-02T06:15:51.8161109Z   Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+2026-11-02T06:15:51.8455816Z Collecting pygments>=2.15 (from pytest<10,>=8.3->signalbrief==0.1.0)
+2026-11-02T06:15:51.8586441Z   Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+2026-11-02T06:15:52.2698186Z Collecting coverage>=7.10.6 (from coverage[toml]>=7.10.6->pytest-cov<8,>=6->signalbrief==0.1.0)
+2026-11-02T06:15:52.2833455Z   Downloading coverage-7.17.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (8.1 kB)
+2026-11-02T06:15:52.3523777Z Collecting urllib3>=1.26.11 (from sentry-sdk<3,>=2.20->sentry-sdk[fastapi]<3,>=2.20->signalbrief==0.1.0)
+2026-11-02T06:15:52.3657925Z   Downloading urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+2026-11-02T06:15:52.5266292Z Collecting greenlet>=1 (from sqlalchemy<2.1,>=2.0.45->signalbrief==0.1.0)
+2026-11-02T06:15:52.5401314Z   Downloading greenlet-3.5.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (3.8 kB)
+2026-11-02T06:15:52.5702569Z Collecting click>=7.0 (from uvicorn<1,>=0.34->uvicorn[standard]<1,>=0.34->signalbrief==0.1.0)
+2026-11-02T06:15:52.5833851Z   Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+2026-11-02T06:15:52.6312846Z Collecting httptools>=0.8.0 (from uvicorn[standard]<1,>=0.34->signalbrief==0.1.0)
+2026-11-02T06:15:52.6446237Z   Downloading httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (3.5 kB)
+2026-11-02T06:15:52.6924289Z Collecting pyyaml>=5.1 (from uvicorn[standard]<1,>=0.34->signalbrief==0.1.0)
+2026-11-02T06:15:52.7058881Z   Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-11-02T06:15:52.7576895Z Collecting uvloop>=0.15.1 (from uvicorn[standard]<1,>=0.34->signalbrief==0.1.0)
+2026-11-02T06:15:52.7711586Z   Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.1 kB)
+2026-11-02T06:15:52.8586290Z Collecting watchfiles>=0.20 (from uvicorn[standard]<1,>=0.34->signalbrief==0.1.0)
+2026-11-02T06:15:52.8720917Z   Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+2026-11-02T06:15:53.0096692Z Collecting websockets>=13.0 (from uvicorn[standard]<1,>=0.34->signalbrief==0.1.0)
+2026-11-02T06:15:53.0232328Z   Downloading websockets-17.4-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (6.3 kB)
+2026-11-02T06:15:53.1386121Z Collecting cffi>=2.0.0 (from cryptography>=3.4.0->PyJWT[crypto]<3,>=2.10->signalbrief==0.1.0)
+2026-11-02T06:15:53.1521430Z   Downloading cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.5 kB)
+2026-11-02T06:15:53.1765195Z Collecting pycparser (from cffi>=2.0.0->cryptography>=3.4.0->PyJWT[crypto]<3,>=2.10->signalbrief==0.1.0)
+2026-11-02T06:15:53.1895878Z   Downloading pycparser-3.12-py3-none-any.whl.metadata (9.7 kB)
+2026-11-02T06:15:53.2712922Z Collecting MarkupSafe>=2.0 (from Mako->alembic<2,>=1.14->signalbrief==0.1.0)
+2026-11-02T06:15:53.2847514Z   Downloading markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+2026-11-02T06:15:53.3035391Z Downloading fastapi-0.133.1-py3-none-any.whl (109 kB)
+2026-11-02T06:15:53.3216024Z Downloading starlette-1.3.1-py3-none-any.whl (73 kB)
+2026-11-02T06:15:53.3375577Z Downloading alembic-1.20.1-py3-none-any.whl (270 kB)
+2026-11-02T06:15:53.3646391Z Downloading anyio-4.16.0-py3-none-any.whl (134 kB)
+2026-11-02T06:15:53.3803654Z Downloading beautifulsoup4-4.15.0-py3-none-any.whl (109 kB)
+2026-11-02T06:15:53.3959059Z Downloading defusedxml-0.7.1-py2.py3-none-any.whl (25 kB)
+2026-11-02T06:15:53.4112130Z Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+2026-11-02T06:15:53.4267127Z Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+2026-11-02T06:15:53.4420739Z Downloading mypy-1.20.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (14.7 MB)
+2026-11-02T06:15:53.5188089Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 14.7/14.7 MB 199.7 MB/s  0:00:00
+2026-11-02T06:15:53.5325196Z Downloading psycopg-3.3.6-py3-none-any.whl (215 kB)
+2026-11-02T06:15:53.5485915Z Downloading psycopg_binary-3.3.6-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.2 MB)
+2026-11-02T06:15:53.5660803Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.2/5.2 MB 333.4 MB/s  0:00:00
+2026-11-02T06:15:53.5795064Z Downloading pydantic-2.14.2-py3-none-any.whl (490 kB)
+2026-11-02T06:15:53.5965056Z Downloading pydantic_core-2.50.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.2 MB)
+2026-11-02T06:15:53.6057142Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 292.8 MB/s  0:00:00
+2026-11-02T06:15:53.6189379Z Downloading pydantic_settings-2.16.2-py3-none-any.whl (81 kB)
+2026-11-02T06:15:53.6342672Z Downloading pyjwt-2.15.1-py3-none-any.whl (33 kB)
+2026-11-02T06:15:53.6508522Z Downloading pytest-9.2.0-py3-none-any.whl (411 kB)
+2026-11-02T06:15:53.6670689Z Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+2026-11-02T06:15:53.6824853Z Downloading pytest_cov-7.1.0-py3-none-any.whl (22 kB)
+2026-11-02T06:15:53.6983349Z Downloading ruff-0.17.3-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (10.6 MB)
+2026-11-02T06:15:53.7341666Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.6/10.6 MB 319.1 MB/s  0:00:00
+2026-11-02T06:15:53.7481336Z Downloading sentry_sdk-2.73.0-py3-none-any.whl (549 kB)
+2026-11-02T06:15:53.7533354Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 549.0/549.0 kB 96.6 MB/s  0:00:00
+2026-11-02T06:15:53.7668017Z Downloading sqlalchemy-2.0.55-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (3.5 MB)
+2026-11-02T06:15:53.7805963Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.5/3.5 MB 293.4 MB/s  0:00:00
+2026-11-02T06:15:53.7940911Z Downloading uvicorn-0.54.0-py3-none-any.whl (87 kB)
+2026-11-02T06:15:53.8098571Z Downloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+2026-11-02T06:15:53.8249299Z Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+2026-11-02T06:15:53.8402282Z Downloading click-8.5.0-py3-none-any.whl (125 kB)
+2026-11-02T06:15:53.8563500Z Downloading coverage-7.17.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (261 kB)
+2026-11-02T06:15:53.8727155Z Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_x86_64.whl (4.8 MB)
+2026-11-02T06:15:53.8890774Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.8/4.8 MB 342.8 MB/s  0:00:00
+2026-11-02T06:15:53.9026196Z Downloading cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (221 kB)
+2026-11-02T06:15:53.9188220Z Downloading greenlet-3.5.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (621 kB)
+2026-11-02T06:15:53.9239640Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 621.4/621.4 kB 124.7 MB/s  0:00:00
+2026-11-02T06:15:53.9373779Z Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+2026-11-02T06:15:53.9530709Z Downloading httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (552 kB)
+2026-11-02T06:15:53.9595462Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 552.8/552.8 kB 67.2 MB/s  0:00:00
+2026-11-02T06:15:53.9727192Z Downloading idna-3.20-py3-none-any.whl (69 kB)
+2026-11-02T06:15:53.9879547Z Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+2026-11-02T06:15:54.0033998Z Downloading librt-0.16.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (531 kB)
+2026-11-02T06:15:54.0083815Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 532.0/532.0 kB 103.2 MB/s  0:00:00
+2026-11-02T06:15:54.0216794Z Downloading mypy_extensions-1.1.0-py3-none-any.whl (5.0 kB)
+2026-11-02T06:15:54.0249089Z Using cached packaging-26.3-py3-none-any.whl (129 kB)
+2026-11-02T06:15:54.0382792Z Downloading pathspec-1.1.1-py3-none-any.whl (57 kB)
+2026-11-02T06:15:54.0542189Z Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+2026-11-02T06:15:54.0607817Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 233.2 MB/s  0:00:00
+2026-11-02T06:15:54.0738358Z Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+2026-11-02T06:15:54.0894238Z Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+2026-11-02T06:15:54.0951420Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.9/807.9 kB 162.9 MB/s  0:00:00
+2026-11-02T06:15:54.1086371Z Downloading soupsieve-3.0.4-py3-none-any.whl (42 kB)
+2026-11-02T06:15:54.1237272Z Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-11-02T06:15:54.1392532Z Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+2026-11-02T06:15:54.1543316Z Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+2026-11-02T06:15:54.1700835Z Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (4.5 MB)
+2026-11-02T06:15:54.1855775Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 343.3 MB/s  0:00:00
+2026-11-02T06:15:54.1989216Z Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (458 kB)
+2026-11-02T06:15:54.2150311Z Downloading websockets-17.4-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (226 kB)
+2026-11-02T06:15:54.2306746Z Downloading certifi-2026.10.23-py3-none-any.whl (135 kB)
+2026-11-02T06:15:54.2461520Z Downloading mako-1.4.3-py3-none-any.whl (80 kB)
+2026-11-02T06:15:54.2619432Z Downloading markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+2026-11-02T06:15:54.2776047Z Downloading pycparser-3.12-py3-none-any.whl (62 kB)
+2026-11-02T06:15:54.4528366Z Building wheels for collected packages: signalbrief
+2026-11-02T06:15:54.4537451Z   Building editable for signalbrief (pyproject.toml): started
+2026-11-02T06:15:54.6844692Z   Building editable for signalbrief (pyproject.toml): finished with status 'done'
+2026-11-02T06:15:54.6850775Z   Created wheel for signalbrief: filename=signalbrief-0.1.0-0.editable-py3-none-any.whl size=1801 sha256=b26a814d16a316b77f3d592dd0fa249e625f499f65893b21714b737d2c5ae586
+2026-11-02T06:15:54.6853804Z   Stored in directory: /tmp/pip-ephem-wheel-cache-6djh5tqn/wheels/b5/d4/93/76908085c3f8819c551bada16a050f22d9742dce974dc17f2c
+2026-11-02T06:15:54.6869054Z Successfully built signalbrief
+2026-11-02T06:15:54.7892470Z Installing collected packages: websockets, uvloop, urllib3, typing-extensions, soupsieve, ruff, pyyaml, python-dotenv, PyJWT, pygments, pycparser, psycopg-binary, pluggy, pathspec, packaging, mypy_extensions, MarkupSafe, librt, iniconfig, idna, httptools, h11, greenlet, defusedxml, coverage, click, certifi, annotated-types, annotated-doc, uvicorn, typing-inspection, sqlalchemy, sentry-sdk, pytest, pydantic-core, psycopg, mypy, Mako, httpcore, cffi, beautifulsoup4, anyio, watchfiles, starlette, pytest-cov, pydantic, httpx, cryptography, alembic, pydantic-settings, fastapi, signalbrief
+2026-11-02T06:16:01.7690025Z 
+2026-11-02T06:16:01.7737969Z Successfully installed Mako-1.4.3 MarkupSafe-3.0.4 PyJWT-2.15.1 alembic-1.20.1 annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.16.0 beautifulsoup4-4.15.0 certifi-2026.10.23 cffi-2.1.1 click-8.5.0 coverage-7.17.0 cryptography-50.0.2 defusedxml-0.7.1 fastapi-0.133.1 greenlet-3.5.6 h11-0.16.0 httpcore-1.0.9 httptools-0.9.0 httpx-0.28.1 idna-3.20 iniconfig-2.3.1 librt-0.16.0 mypy-1.20.2 mypy_extensions-1.1.0 packaging-26.3 pathspec-1.1.1 pluggy-1.7.0 psycopg-3.3.6 psycopg-binary-3.3.6 pycparser-3.12 pydantic-2.14.2 pydantic-core-2.50.2 pydantic-settings-2.16.2 pygments-2.21.0 pytest-9.2.0 pytest-cov-7.1.0 python-dotenv-1.2.4 pyyaml-6.0.3 ruff-0.17.3 sentry-sdk-2.73.0 signalbrief-0.1.0 soupsieve-3.0.4 sqlalchemy-2.0.55 starlette-1.3.1 typing-extensions-4.16.0 typing-inspection-0.4.4 urllib3-2.8.0 uvicorn-0.54.0 uvloop-0.23.0 watchfiles-1.3.0 websockets-17.4
+2026-11-02T06:16:01.9875324Z ##[group]Run if [ -f package-lock.json ]; then npm ci; else npm install; fi
+2026-11-02T06:16:01.9875919Z [36;1mif [ -f package-lock.json ]; then npm ci; else npm install; fi[0m
+2026-11-02T06:16:01.9897237Z shell: /usr/bin/bash -e {0}
+2026-11-02T06:16:01.9897489Z env:
+2026-11-02T06:16:01.9897751Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:16:01.9898193Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-11-02T06:16:01.9898624Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:16:01.9899015Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:16:01.9899427Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:16:01.9899807Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-02T06:16:01.9900126Z ##[endgroup]
+2026-11-02T06:16:03.9254281Z npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+2026-11-02T06:16:26.5786974Z npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+2026-11-02T06:16:59.2994327Z 
+2026-11-02T06:16:59.2995073Z added 453 packages, and audited 454 packages in 57s
+2026-11-02T06:16:59.2995396Z 
+2026-11-02T06:16:59.2995576Z 165 packages are looking for funding
+2026-11-02T06:16:59.2995880Z   run `npm fund` for details
+2026-11-02T06:16:59.5256766Z 
+2026-11-02T06:16:59.5257539Z 16 moderate severity vulnerabilities
+2026-11-02T06:16:59.5257963Z 
+2026-11-02T06:16:59.5258382Z To address issues that do not require attention, run:
+2026-11-02T06:16:59.5259008Z   npm audit fix
+2026-11-02T06:16:59.5259248Z 
+2026-11-02T06:16:59.5259664Z To address all issues (including breaking changes), run:
+2026-11-02T06:16:59.5260270Z   npm audit fix --force
+2026-11-02T06:16:59.5260624Z 
+2026-11-02T06:16:59.5260854Z Run `npm audit` for details.
+2026-11-02T06:16:59.6289928Z ##[group]Run denoland/setup-deno@v2
+2026-11-02T06:16:59.6290339Z with:
+2026-11-02T06:16:59.6290545Z   deno-version: v2.x
+2026-11-02T06:16:59.6290773Z   deno-binary-name: deno
+2026-11-02T06:16:59.6290999Z   cache: false
+2026-11-02T06:16:59.6291195Z env:
+2026-11-02T06:16:59.6291452Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:16:59.6291895Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-11-02T06:16:59.6292316Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:16:59.6292685Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:16:59.6293363Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:16:59.6293804Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-02T06:16:59.6294138Z ##[endgroup]
+2026-11-02T06:16:59.9370475Z Going to install stable version 2.9.8.
+2026-11-02T06:16:59.9380480Z Downloading Deno from https://github.com/denoland/deno/releases/download/v2.9.8/deno-x86_64-unknown-linux-gnu.zip.
+2026-11-02T06:17:00.3159933Z [command]/usr/bin/unzip -o -q /home/runner/work/_temp/9fd7aa8c-3ce1-489d-8d4a-23bb8f9271d8
+2026-11-02T06:17:01.0942326Z Cached Deno to /opt/hostedtoolcache/deno/2.9.8/x64.
+2026-11-02T06:17:01.0951185Z Installation complete.
+2026-11-02T06:17:01.1122732Z ##[group]Run deno check --no-lock --config supabase/functions/signalbrief-api/deno.json supabase/functions/signalbrief-api/index.ts supabase/functions/signalbrief-us/index.ts supabase/functions/signalbrief-profiles/index.ts supabase/functions/signalbrief-discovery/index.ts
+2026-11-02T06:17:01.1125286Z [36;1mdeno check --no-lock --config supabase/functions/signalbrief-api/deno.json supabase/functions/signalbrief-api/index.ts supabase/functions/signalbrief-us/index.ts supabase/functions/signalbrief-profiles/index.ts supabase/functions/signalbrief-discovery/index.ts[0m
+2026-11-02T06:17:01.1147212Z shell: /usr/bin/bash -e {0}
+2026-11-02T06:17:01.1147462Z env:
+2026-11-02T06:17:01.1147731Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:17:01.1148215Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-11-02T06:17:01.1148662Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:17:01.1149099Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:17:01.1149502Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:17:01.1149900Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-02T06:17:01.1150222Z ##[endgroup]
+2026-11-02T06:17:01.1433900Z [0m[32mDownload[0m https://registry.npmjs.org/@supabase%2fsupabase-js
+2026-11-02T06:17:01.1533808Z [0m[32mDownload[0m https://registry.npmjs.org/htmlparser2
+2026-11-02T06:17:01.3574645Z [0m[32mDownload[0m https://registry.npmjs.org/@opentelemetry%2fapi
+2026-11-02T06:17:01.3576117Z [0m[32mDownload[0m https://registry.npmjs.org/@supabase%2fauth-js
+2026-11-02T06:17:01.3577527Z [0m[32mDownload[0m https://registry.npmjs.org/@supabase%2ffunctions-js
+2026-11-02T06:17:01.3579005Z [0m[32mDownload[0m https://registry.npmjs.org/@supabase%2fpostgrest-js
+2026-11-02T06:17:01.3580260Z [0m[32mDownload[0m https://registry.npmjs.org/@supabase%2frealtime-js
+2026-11-02T06:17:01.3581133Z [0m[32mDownload[0m https://registry.npmjs.org/@supabase%2fstorage-js
+2026-11-02T06:17:01.3581816Z [0m[32mDownload[0m https://registry.npmjs.org/domelementtype
+2026-11-02T06:17:01.3582506Z [0m[32mDownload[0m https://registry.npmjs.org/domhandler
+2026-11-02T06:17:01.3583365Z [0m[32mDownload[0m https://registry.npmjs.org/domutils
+2026-11-02T06:17:01.3583965Z [0m[32mDownload[0m https://registry.npmjs.org/entities
+2026-11-02T06:17:01.4351332Z [0m[32mDownload[0m https://registry.npmjs.org/tslib
+2026-11-02T06:17:01.4352473Z [0m[32mDownload[0m https://registry.npmjs.org/@supabase%2fphoenix
+2026-11-02T06:17:01.4353793Z [0m[32mDownload[0m https://registry.npmjs.org/iceberg-js
+2026-11-02T06:17:01.4354766Z [0m[32mDownload[0m https://registry.npmjs.org/dom-serializer
+2026-11-02T06:17:01.4737116Z [0m[32mDownload[0m https://registry.npmjs.org/@supabase/supabase-js/-/supabase-js-2.117.2.tgz
+2026-11-02T06:17:01.4738658Z [0m[32mDownload[0m https://registry.npmjs.org/htmlparser2/-/htmlparser2-10.0.0.tgz
+2026-11-02T06:17:01.4740208Z [0m[32mDownload[0m https://registry.npmjs.org/@supabase/storage-js/-/storage-js-2.117.2.tgz
+2026-11-02T06:17:01.4741738Z [0m[32mDownload[0m https://registry.npmjs.org/@supabase/realtime-js/-/realtime-js-2.117.2.tgz
+2026-11-02T06:17:01.4743496Z [0m[32mDownload[0m https://registry.npmjs.org/@supabase/functions-js/-/functions-js-2.117.2.tgz
+2026-11-02T06:17:01.4745112Z [0m[32mDownload[0m https://registry.npmjs.org/@supabase/auth-js/-/auth-js-2.117.2.tgz
+2026-11-02T06:17:01.4746282Z [0m[32mDownload[0m https://registry.npmjs.org/@supabase/postgrest-js/-/postgrest-js-2.117.2.tgz
+2026-11-02T06:17:01.4747188Z [0m[32mDownload[0m https://registry.npmjs.org/domutils/-/domutils-3.2.2.tgz
+2026-11-02T06:17:01.4748074Z [0m[32mDownload[0m https://registry.npmjs.org/domelementtype/-/domelementtype-2.3.0.tgz
+2026-11-02T06:17:01.4748984Z [0m[32mDownload[0m https://registry.npmjs.org/domhandler/-/domhandler-5.0.3.tgz
+2026-11-02T06:17:01.4750099Z [0m[32mDownload[0m https://registry.npmjs.org/entities/-/entities-6.0.1.tgz
+2026-11-02T06:17:01.4750987Z [0m[32mDownload[0m https://registry.npmjs.org/iceberg-js/-/iceberg-js-0.8.1.tgz
+2026-11-02T06:17:01.4751776Z [0m[32mDownload[0m https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz
+2026-11-02T06:17:01.4752600Z [0m[32mDownload[0m https://registry.npmjs.org/@supabase/phoenix/-/phoenix-0.4.5.tgz
+2026-11-02T06:17:01.4754134Z [0m[32mDownload[0m https://registry.npmjs.org/dom-serializer/-/dom-serializer-2.0.0.tgz
+2026-11-02T06:17:01.4755076Z [0m[32mDownload[0m https://registry.npmjs.org/entities/-/entities-4.5.0.tgz
+2026-11-02T06:17:01.5610013Z [0m[32mCheck[0m supabase/functions/signalbrief-api/index.ts
+2026-11-02T06:17:01.5610649Z [0m[32mCheck[0m supabase/functions/signalbrief-us/index.ts
+2026-11-02T06:17:01.5611228Z [0m[32mCheck[0m supabase/functions/signalbrief-profiles/index.ts
+2026-11-02T06:17:01.5611810Z [0m[32mCheck[0m supabase/functions/signalbrief-discovery/index.ts
+2026-11-02T06:17:03.9022386Z ##[group]Run python scripts/verify.py --full
+2026-11-02T06:17:03.9022800Z [36;1mpython scripts/verify.py --full[0m
+2026-11-02T06:17:03.9044692Z shell: /usr/bin/bash -e {0}
+2026-11-02T06:17:03.9044948Z env:
+2026-11-02T06:17:03.9045216Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:17:03.9045667Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-11-02T06:17:03.9046136Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:17:03.9046520Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:17:03.9046917Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:17:03.9047304Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-02T06:17:03.9047628Z ##[endgroup]
+2026-11-02T06:20:15.3001468Z {
+2026-11-02T06:20:15.3001979Z   "checked_at": "2026-11-02T06:20:15.299491+00:00",
+2026-11-02T06:20:15.3002342Z   "full_release_suite": true,
+2026-11-02T06:20:15.3002675Z   "results": [
+2026-11-02T06:20:15.3002874Z     {
+2026-11-02T06:20:15.3003897Z       "check": "python_compile",
+2026-11-02T06:20:15.3004220Z       "status": "PASS",
+2026-11-02T06:20:15.3004458Z       "returncode": 0,
+2026-11-02T06:20:15.3004689Z       "command": [
+2026-11-02T06:20:15.3005007Z         "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+2026-11-02T06:20:15.3005360Z         "-m",
+2026-11-02T06:20:15.3005579Z         "compileall",
+2026-11-02T06:20:15.3005812Z         "-q",
+2026-11-02T06:20:15.3006006Z         "apps/api",
+2026-11-02T06:20:15.3006220Z         "tests",
+2026-11-02T06:20:15.3006419Z         "scripts"
+2026-11-02T06:20:15.3006616Z       ],
+2026-11-02T06:20:15.3006866Z       "log": "verification/python_compile.log"
+2026-11-02T06:20:15.3007153Z     },
+2026-11-02T06:20:15.3007330Z     {
+2026-11-02T06:20:15.3007550Z       "check": "backend_tests",
+2026-11-02T06:20:15.3007801Z       "status": "PASS",
+2026-11-02T06:20:15.3008023Z       "returncode": 0,
+2026-11-02T06:20:15.3008246Z       "command": [
+2026-11-02T06:20:15.3008541Z         "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+2026-11-02T06:20:15.3008857Z         "-m",
+2026-11-02T06:20:15.3009051Z         "pytest",
+2026-11-02T06:20:15.3009274Z         "-q",
+2026-11-02T06:20:15.3009798Z         "--junitxml=/home/runner/work/SignalBrief/SignalBrief/verification/pytest.xml"
+2026-11-02T06:20:15.3010222Z       ],
+2026-11-02T06:20:15.3010466Z       "log": "verification/backend_tests.log"
+2026-11-02T06:20:15.3010767Z     },
+2026-11-02T06:20:15.3010943Z     {
+2026-11-02T06:20:15.3011172Z       "check": "openapi_export",
+2026-11-02T06:20:15.3011429Z       "status": "PASS",
+2026-11-02T06:20:15.3011654Z       "returncode": 0,
+2026-11-02T06:20:15.3011876Z       "command": [
+2026-11-02T06:20:15.3012174Z         "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+2026-11-02T06:20:15.3012539Z         "scripts/export_openapi.py"
+2026-11-02T06:20:15.3012795Z       ],
+2026-11-02T06:20:15.3013413Z       "log": "verification/openapi_export.log"
+2026-11-02T06:20:15.3013760Z     },
+2026-11-02T06:20:15.3013950Z     {
+2026-11-02T06:20:15.3014162Z       "check": "backend_lint",
+2026-11-02T06:20:15.3014416Z       "status": "PASS",
+2026-11-02T06:20:15.3014643Z       "returncode": 0,
+2026-11-02T06:20:15.3014856Z       "command": [
+2026-11-02T06:20:15.3015148Z         "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+2026-11-02T06:20:15.3015455Z         "-m",
+2026-11-02T06:20:15.3015643Z         "ruff",
+2026-11-02T06:20:15.3016278Z         "check",
+2026-11-02T06:20:15.3016484Z         "apps/api",
+2026-11-02T06:20:15.3016678Z         "tests",
+2026-11-02T06:20:15.3016870Z         "scripts"
+2026-11-02T06:20:15.3017060Z       ],
+2026-11-02T06:20:15.3017295Z       "log": "verification/backend_lint.log"
+2026-11-02T06:20:15.3017563Z     },
+2026-11-02T06:20:15.3017738Z     {
+2026-11-02T06:20:15.3017945Z       "check": "frontend_lint",
+2026-11-02T06:20:15.3018189Z       "status": "PASS",
+2026-11-02T06:20:15.3018408Z       "returncode": 0,
+2026-11-02T06:20:15.3019104Z       "command": [
+2026-11-02T06:20:15.3019423Z         "/opt/hostedtoolcache/node/22.23.4/x64/bin/npm",
+2026-11-02T06:20:15.3019725Z         "run",
+2026-11-02T06:20:15.3019914Z         "lint"
+2026-11-02T06:20:15.3020211Z       ],
+2026-11-02T06:20:15.3020488Z       "log": "verification/frontend_lint.log"
+2026-11-02T06:20:15.3020771Z     },
+2026-11-02T06:20:15.3020942Z     {
+2026-11-02T06:20:15.3021165Z       "check": "frontend_typecheck",
+2026-11-02T06:20:15.3021441Z       "status": "PASS",
+2026-11-02T06:20:15.3021661Z       "returncode": 0,
+2026-11-02T06:20:15.3021875Z       "command": [
+2026-11-02T06:20:15.3022163Z         "/opt/hostedtoolcache/node/22.23.4/x64/bin/npm",
+2026-11-02T06:20:15.3022461Z         "run",
+2026-11-02T06:20:15.3022658Z         "typecheck"
+2026-11-02T06:20:15.3022860Z       ],
+2026-11-02T06:20:15.3023791Z       "log": "verification/frontend_typecheck.log"
+2026-11-02T06:20:15.3024271Z     },
+2026-11-02T06:20:15.3024540Z     {
+2026-11-02T06:20:15.3024919Z       "check": "frontend_unit_tests",
+2026-11-02T06:20:15.3025345Z       "status": "PASS",
+2026-11-02T06:20:15.3025705Z       "returncode": 0,
+2026-11-02T06:20:15.3026074Z       "command": [
+2026-11-02T06:20:15.3026449Z         "/opt/hostedtoolcache/node/22.23.4/x64/bin/npm",
+2026-11-02T06:20:15.3026755Z         "run",
+2026-11-02T06:20:15.3026943Z         "test"
+2026-11-02T06:20:15.3027124Z       ],
+2026-11-02T06:20:15.3027376Z       "log": "verification/frontend_unit_tests.log"
+2026-11-02T06:20:15.3027674Z     },
+2026-11-02T06:20:15.3027847Z     {
+2026-11-02T06:20:15.3028063Z       "check": "frontend_build",
+2026-11-02T06:20:15.3028311Z       "status": "PASS",
+2026-11-02T06:20:15.3028530Z       "returncode": 0,
+2026-11-02T06:20:15.3028742Z       "command": [
+2026-11-02T06:20:15.3029017Z         "/opt/hostedtoolcache/node/22.23.4/x64/bin/npm",
+2026-11-02T06:20:15.3029313Z         "run",
+2026-11-02T06:20:15.3029511Z         "build"
+2026-11-02T06:20:15.3029702Z       ],
+2026-11-02T06:20:15.3029952Z       "log": "verification/frontend_build.log"
+2026-11-02T06:20:15.3030227Z     }
+2026-11-02T06:20:15.3030399Z   ],
+2026-11-02T06:20:15.3030605Z   "not_in_this_script": [
+2026-11-02T06:20:15.3030885Z     "Real provider credentials",
+2026-11-02T06:20:15.3031147Z     "Google OAuth redirects",
+2026-11-02T06:20:15.3031394Z     "Hosted deployment",
+2026-11-02T06:20:15.3031667Z     "Human-labeled financial Gold Dataset",
+2026-11-02T06:20:15.3032005Z     "Browser E2E (run Playwright separately)"
+2026-11-02T06:20:15.3032282Z   ]
+2026-11-02T06:20:15.3032465Z }
+2026-11-02T06:20:15.3109853Z ##[group]Run python scripts/verify_workspace_scope.py
+2026-11-02T06:20:15.3110282Z [36;1mpython scripts/verify_workspace_scope.py[0m
+2026-11-02T06:20:15.3134166Z shell: /usr/bin/bash -e {0}
+2026-11-02T06:20:15.3134429Z env:
+2026-11-02T06:20:15.3134708Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:20:15.3135350Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-11-02T06:20:15.3135797Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:20:15.3136255Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:20:15.3136751Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:20:15.3137139Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-02T06:20:15.3137570Z ##[endgroup]
+2026-11-02T06:20:15.4534406Z {
+2026-11-02T06:20:15.4535060Z   "scope": "signed-in customer desktop and mobile MVP",
+2026-11-02T06:20:15.4536416Z   "protected_baseline_commit": "485ad4b8a4c2c18b0c370e27abca34254356704d",
+2026-11-02T06:20:15.4537123Z   "protected_public_admin_auth_files": 90,
+2026-11-02T06:20:15.4537641Z   "retained_feature_files": 17,
+2026-11-02T06:20:15.4538094Z   "verified_customer_entry_points": 2,
+2026-11-02T06:20:15.4538901Z   "verified_customer_entry_points_baseline_commit": "7e9f0d665bdfca69c2f96a9b45e905a91a1a343a",
+2026-11-02T06:20:15.4539618Z   "status": "PASS",
+2026-11-02T06:20:15.4539951Z   "failures": []
+2026-11-02T06:20:15.4540255Z }
+2026-11-02T06:20:15.4619153Z ##[group]Run npx playwright install --with-deps chromium
+2026-11-02T06:20:15.4619598Z [36;1mnpx playwright install --with-deps chromium[0m
+2026-11-02T06:20:15.4640438Z shell: /usr/bin/bash -e {0}
+2026-11-02T06:20:15.4640686Z env:
+2026-11-02T06:20:15.4640953Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:20:15.4641385Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-11-02T06:20:15.4641824Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:20:15.4642200Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:20:15.4642583Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:20:15.4643291Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-02T06:20:15.4643633Z ##[endgroup]
+2026-11-02T06:20:16.2565911Z Installing dependencies...
+2026-11-02T06:20:16.2632666Z Switching to root user to install dependencies...
+2026-11-02T06:20:16.3755753Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-02T06:20:16.3985880Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-11-02T06:20:16.4124717Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-11-02T06:20:16.4155191Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-11-02T06:20:16.4186113Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-11-02T06:20:16.4234522Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-11-02T06:20:16.4936047Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [617 kB]
+2026-11-02T06:20:16.5112447Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [682 kB]
+2026-11-02T06:20:16.6228742Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1408 kB]
+2026-11-02T06:20:16.6292322Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [311 kB]
+2026-11-02T06:20:16.6337807Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1707 kB]
+2026-11-02T06:20:16.6392650Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [343 kB]
+2026-11-02T06:20:16.6426825Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1813 kB]
+2026-11-02T06:20:16.6505212Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [412 kB]
+2026-11-02T06:20:16.6534689Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [14.3 kB]
+2026-11-02T06:20:16.7467058Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1146 kB]
+2026-11-02T06:20:16.7545582Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [231 kB]
+2026-11-02T06:20:16.7613336Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1223 kB]
+2026-11-02T06:20:16.8142564Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [246 kB]
+2026-11-02T06:20:20.0977302Z Fetched 10.5 MB in 1s (9258 kB/s)
+2026-11-02T06:20:21.2647196Z Reading package lists...
+2026-11-02T06:20:21.3000192Z Reading package lists...
+2026-11-02T06:20:21.5611719Z Building dependency tree...
+2026-11-02T06:20:21.5619956Z Reading state information...
+2026-11-02T06:20:21.7588932Z libasound2t64 is already the newest version (1.2.11-1ubuntu0.3).
+2026-11-02T06:20:21.7590562Z libasound2t64 set to manually installed.
+2026-11-02T06:20:21.7591295Z libatk-bridge2.0-0t64 is already the newest version (2.52.0-1build1).
+2026-11-02T06:20:21.7592026Z libatk-bridge2.0-0t64 set to manually installed.
+2026-11-02T06:20:21.7592710Z libatk1.0-0t64 is already the newest version (2.52.0-1build1).
+2026-11-02T06:20:21.7593824Z libatk1.0-0t64 set to manually installed.
+2026-11-02T06:20:21.7594649Z libatspi2.0-0t64 is already the newest version (2.52.0-1build1).
+2026-11-02T06:20:21.7596011Z libatspi2.0-0t64 set to manually installed.
+2026-11-02T06:20:21.7596594Z libcairo2 is already the newest version (1.18.0-3build1).
+2026-11-02T06:20:21.7597072Z libcairo2 set to manually installed.
+2026-11-02T06:20:21.7597584Z libcups2t64 is already the newest version (2.4.7-1.2ubuntu7.14).
+2026-11-02T06:20:21.7598085Z libcups2t64 set to manually installed.
+2026-11-02T06:20:21.7598587Z libdbus-1-3 is already the newest version (1.14.10-4ubuntu4.1).
+2026-11-02T06:20:21.7599080Z libdbus-1-3 set to manually installed.
+2026-11-02T06:20:21.7599601Z libdrm2 is already the newest version (2.4.125-1ubuntu0.1~24.04.2).
+2026-11-02T06:20:21.7600094Z libdrm2 set to manually installed.
+2026-11-02T06:20:21.7600580Z libgbm1 is already the newest version (25.2.8-0ubuntu0.24.04.4).
+2026-11-02T06:20:21.7601052Z libgbm1 set to manually installed.
+2026-11-02T06:20:21.7601550Z libglib2.0-0t64 is already the newest version (2.80.0-6ubuntu3.10).
+2026-11-02T06:20:21.7602064Z libglib2.0-0t64 set to manually installed.
+2026-11-02T06:20:21.7602572Z libnspr4 is already the newest version (2:4.35-1.1build1).
+2026-11-02T06:20:21.7603292Z libnspr4 set to manually installed.
+2026-11-02T06:20:21.7603786Z libnss3 is already the newest version (2:3.98-1ubuntu0.3).
+2026-11-02T06:20:21.7604247Z libnss3 set to manually installed.
+2026-11-02T06:20:21.7604744Z libpango-1.0-0 is already the newest version (1.52.1+ds-1build1).
+2026-11-02T06:20:21.7605257Z libpango-1.0-0 set to manually installed.
+2026-11-02T06:20:21.7605770Z libx11-6 is already the newest version (2:1.8.7-1ubuntu0.1).
+2026-11-02T06:20:21.7606229Z libx11-6 set to manually installed.
+2026-11-02T06:20:21.7606669Z libxcb1 is already the newest version (1.15-1ubuntu2).
+2026-11-02T06:20:21.7607065Z libxcb1 set to manually installed.
+2026-11-02T06:20:21.7607468Z libxcomposite1 is already the newest version (1:0.4.5-1build3).
+2026-11-02T06:20:21.7607885Z libxcomposite1 set to manually installed.
+2026-11-02T06:20:21.7608308Z libxdamage1 is already the newest version (1:1.1.6-1build1).
+2026-11-02T06:20:21.7608704Z libxdamage1 set to manually installed.
+2026-11-02T06:20:21.7609086Z libxext6 is already the newest version (2:1.3.4-1build2).
+2026-11-02T06:20:21.7609445Z libxext6 set to manually installed.
+2026-11-02T06:20:21.7609830Z libxfixes3 is already the newest version (1:6.0.0-2build1).
+2026-11-02T06:20:21.7610207Z libxfixes3 set to manually installed.
+2026-11-02T06:20:21.7610594Z libxkbcommon0 is already the newest version (1.6.0-1build1).
+2026-11-02T06:20:21.7610982Z libxkbcommon0 set to manually installed.
+2026-11-02T06:20:21.7611376Z libxrandr2 is already the newest version (2:1.5.2-2build1).
+2026-11-02T06:20:21.7611747Z libxrandr2 set to manually installed.
+2026-11-02T06:20:21.7612139Z xvfb is already the newest version (2:21.1.12-1ubuntu1.9).
+2026-11-02T06:20:21.7612669Z fonts-noto-color-emoji is already the newest version (2.047-0ubuntu0.24.04.1).
+2026-11-02T06:20:21.7613416Z libfontconfig1 is already the newest version (2.15.0-1.1ubuntu2).
+2026-11-02T06:20:21.7613837Z libfontconfig1 set to manually installed.
+2026-11-02T06:20:21.7614276Z libfreetype6 is already the newest version (2.13.2+dfsg-1ubuntu0.2).
+2026-11-02T06:20:21.7614705Z libfreetype6 set to manually installed.
+2026-11-02T06:20:21.7615110Z fonts-liberation is already the newest version (1:2.1.5-3).
+2026-11-02T06:20:21.7615528Z fonts-liberation set to manually installed.
+2026-11-02T06:20:21.7615927Z The following additional packages will be installed:
+2026-11-02T06:20:21.7616283Z   xfonts-encodings xfonts-utils
+2026-11-02T06:20:21.7616765Z Recommended packages:
+2026-11-02T06:20:21.7617039Z   fonts-ipafont-mincho fonts-tlwg-loma
+2026-11-02T06:20:21.7845592Z The following NEW packages will be installed:
+2026-11-02T06:20:21.7846575Z   fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont
+2026-11-02T06:20:21.7856284Z   fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable
+2026-11-02T06:20:21.7857003Z   xfonts-utils
+2026-11-02T06:20:21.8088025Z 0 upgraded, 9 newly installed, 0 to remove and 6 not upgraded.
+2026-11-02T06:20:21.8089160Z Need to get 21.1 MB of archives.
+2026-11-02T06:20:21.8089938Z After this operation, 79.5 MB of additional disk space will be used.
+2026-11-02T06:20:21.8090811Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-02T06:20:21.8599852Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-ipafont-gothic all 00303-21ubuntu1 [3513 kB]
+2026-11-02T06:20:21.9282542Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 fonts-freefont-ttf all 20211204+svn4273-2 [5641 kB]
+2026-11-02T06:20:22.0270780Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-tlwg-loma-otf all 1:0.7.3-1 [107 kB]
+2026-11-02T06:20:22.0599066Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1 [2993 kB]
+2026-11-02T06:20:22.1217402Z Get:6 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8 [7472 kB]
+2026-11-02T06:20:22.2174797Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-encodings all 1:1.0.5-0ubuntu2 [578 kB]
+2026-11-02T06:20:22.2486165Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-utils amd64 1:7.7+6build3 [94.4 kB]
+2026-11-02T06:20:22.2777293Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1 [384 kB]
+2026-11-02T06:20:22.3086097Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3 [304 kB]
+2026-11-02T06:20:22.6001133Z Fetched 21.1 MB in 1s (41.0 MB/s)
+2026-11-02T06:20:22.6261450Z Selecting previously unselected package fonts-ipafont-gothic.
+2026-11-02T06:20:22.6589274Z (Reading database ... 
+2026-11-02T06:20:22.6589840Z (Reading database ... 5%
+2026-11-02T06:20:22.6590296Z (Reading database ... 10%
+2026-11-02T06:20:22.6590730Z (Reading database ... 15%
+2026-11-02T06:20:22.6591111Z (Reading database ... 20%
+2026-11-02T06:20:22.6591467Z (Reading database ... 25%
+2026-11-02T06:20:22.6591823Z (Reading database ... 30%
+2026-11-02T06:20:22.6592366Z (Reading database ... 35%
+2026-11-02T06:20:22.6593265Z (Reading database ... 40%
+2026-11-02T06:20:22.6593791Z (Reading database ... 45%
+2026-11-02T06:20:22.6594163Z (Reading database ... 50%
+2026-11-02T06:20:22.6643483Z (Reading database ... 55%
+2026-11-02T06:20:22.7929324Z (Reading database ... 60%
+2026-11-02T06:20:22.9891990Z (Reading database ... 65%
+2026-11-02T06:20:23.1982081Z (Reading database ... 70%
+2026-11-02T06:20:23.3914583Z (Reading database ... 75%
+2026-11-02T06:20:23.5067477Z (Reading database ... 80%
+2026-11-02T06:20:23.6053540Z (Reading database ... 85%
+2026-11-02T06:20:23.7036510Z (Reading database ... 90%
+2026-11-02T06:20:23.8164549Z (Reading database ... 95%
+2026-11-02T06:20:23.8165008Z (Reading database ... 100%
+2026-11-02T06:20:23.8165596Z (Reading database ... 215504 files and directories currently installed.)
+2026-11-02T06:20:23.8211171Z Preparing to unpack .../0-fonts-ipafont-gothic_00303-21ubuntu1_all.deb ...
+2026-11-02T06:20:23.8378918Z Unpacking fonts-ipafont-gothic (00303-21ubuntu1) ...
+2026-11-02T06:20:24.0850848Z Selecting previously unselected package fonts-freefont-ttf.
+2026-11-02T06:20:24.0999502Z Preparing to unpack .../1-fonts-freefont-ttf_20211204+svn4273-2_all.deb ...
+2026-11-02T06:20:24.1007505Z Unpacking fonts-freefont-ttf (20211204+svn4273-2) ...
+2026-11-02T06:20:24.1974790Z Selecting previously unselected package fonts-tlwg-loma-otf.
+2026-11-02T06:20:24.2121111Z Preparing to unpack .../2-fonts-tlwg-loma-otf_1%3a0.7.3-1_all.deb ...
+2026-11-02T06:20:24.2129766Z Unpacking fonts-tlwg-loma-otf (1:0.7.3-1) ...
+2026-11-02T06:20:24.2400667Z Selecting previously unselected package fonts-unifont.
+2026-11-02T06:20:24.2548306Z Preparing to unpack .../3-fonts-unifont_1%3a15.1.01-1build1_all.deb ...
+2026-11-02T06:20:24.2555502Z Unpacking fonts-unifont (1:15.1.01-1build1) ...
+2026-11-02T06:20:24.3759635Z Selecting previously unselected package fonts-wqy-zenhei.
+2026-11-02T06:20:24.3906412Z Preparing to unpack .../4-fonts-wqy-zenhei_0.9.45-8_all.deb ...
+2026-11-02T06:20:24.4031069Z Unpacking fonts-wqy-zenhei (0.9.45-8) ...
+2026-11-02T06:20:24.9014425Z Selecting previously unselected package xfonts-encodings.
+2026-11-02T06:20:24.9162231Z Preparing to unpack .../5-xfonts-encodings_1%3a1.0.5-0ubuntu2_all.deb ...
+2026-11-02T06:20:24.9170020Z Unpacking xfonts-encodings (1:1.0.5-0ubuntu2) ...
+2026-11-02T06:20:24.9507379Z Selecting previously unselected package xfonts-utils.
+2026-11-02T06:20:24.9654224Z Preparing to unpack .../6-xfonts-utils_1%3a7.7+6build3_amd64.deb ...
+2026-11-02T06:20:24.9661227Z Unpacking xfonts-utils (1:7.7+6build3) ...
+2026-11-02T06:20:25.0113600Z Selecting previously unselected package xfonts-cyrillic.
+2026-11-02T06:20:25.0261318Z Preparing to unpack .../7-xfonts-cyrillic_1%3a1.0.5+nmu1_all.deb ...
+2026-11-02T06:20:25.0268385Z Unpacking xfonts-cyrillic (1:1.0.5+nmu1) ...
+2026-11-02T06:20:25.0675781Z Selecting previously unselected package xfonts-scalable.
+2026-11-02T06:20:25.0822644Z Preparing to unpack .../8-xfonts-scalable_1%3a1.0.3-1.3_all.deb ...
+2026-11-02T06:20:25.0830438Z Unpacking xfonts-scalable (1:1.0.3-1.3) ...
+2026-11-02T06:20:25.1354523Z Setting up fonts-wqy-zenhei (0.9.45-8) ...
+2026-11-02T06:20:25.1476307Z Setting up fonts-freefont-ttf (20211204+svn4273-2) ...
+2026-11-02T06:20:25.1494972Z Setting up fonts-tlwg-loma-otf (1:0.7.3-1) ...
+2026-11-02T06:20:25.1511834Z Setting up xfonts-encodings (1:1.0.5-0ubuntu2) ...
+2026-11-02T06:20:25.1529264Z Setting up fonts-ipafont-gothic (00303-21ubuntu1) ...
+2026-11-02T06:20:25.1600383Z update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
+2026-11-02T06:20:25.1617321Z Setting up fonts-unifont (1:15.1.01-1build1) ...
+2026-11-02T06:20:25.1634307Z Setting up xfonts-utils (1:7.7+6build3) ...
+2026-11-02T06:20:25.1677535Z Setting up xfonts-cyrillic (1:1.0.5+nmu1) ...
+2026-11-02T06:20:25.1996654Z Setting up xfonts-scalable (1:1.0.3-1.3) ...
+2026-11-02T06:20:25.2317755Z Processing triggers for man-db (2.12.0-4build2) ...
+2026-11-02T06:20:25.2342871Z Not building database; man-db/auto-update is not 'true'.
+2026-11-02T06:20:25.2357386Z Processing triggers for fontconfig (2.15.0-1.1ubuntu2) ...
+2026-11-02T06:20:26.0523257Z 
+2026-11-02T06:20:26.0524306Z Running kernel seems to be up-to-date.
+2026-11-02T06:20:26.0524718Z 
+2026-11-02T06:20:26.0524919Z No services need to be restarted.
+2026-11-02T06:20:26.0525137Z 
+2026-11-02T06:20:26.0525320Z No containers need to be restarted.
+2026-11-02T06:20:26.0525575Z 
+2026-11-02T06:20:26.0525792Z No user sessions are running outdated binaries.
+2026-11-02T06:20:26.0526053Z 
+2026-11-02T06:20:26.0526402Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-11-02T06:20:27.2111923Z Downloading Chrome for Testing 153.0.8010.12 (playwright chromium v1243) from https://cdn.playwright.dev/builds/cft/153.0.8010.12/linux64/chrome-linux64.zip
+2026-11-02T06:20:27.6904704Z |                                                                                |   0% of 186.8 MiB
+2026-11-02T06:20:27.9895305Z |■■■■■■■■                                                                        |  10% of 186.8 MiB
+2026-11-02T06:20:28.0828879Z |■■■■■■■■■■■■■■■■                                                                |  20% of 186.8 MiB
+2026-11-02T06:20:28.1502354Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 186.8 MiB
+2026-11-02T06:20:28.2259297Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 186.8 MiB
+2026-11-02T06:20:28.2931187Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 186.8 MiB
+2026-11-02T06:20:28.3605435Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 186.8 MiB
+2026-11-02T06:20:28.4253643Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 186.8 MiB
+2026-11-02T06:20:28.5014834Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 186.8 MiB
+2026-11-02T06:20:28.5699118Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 186.8 MiB
+2026-11-02T06:20:28.6305609Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 186.8 MiB
+2026-11-02T06:20:31.2618747Z Chrome for Testing 153.0.8010.12 (playwright chromium v1243) downloaded to /home/runner/.cache/ms-playwright/chromium-1243
+2026-11-02T06:20:31.2623891Z Downloading FFmpeg (playwright ffmpeg v1011) from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip
+2026-11-02T06:20:31.7232410Z |                                                                                |   0% of 2.3 MiB
+2026-11-02T06:20:31.7527687Z |■■■■■■■■                                                                        |  10% of 2.3 MiB
+2026-11-02T06:20:31.7650867Z |■■■■■■■■■■■■■■■■                                                                |  20% of 2.3 MiB
+2026-11-02T06:20:31.7748370Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.3 MiB
+2026-11-02T06:20:31.7804708Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.3 MiB
+2026-11-02T06:20:31.7846347Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.3 MiB
+2026-11-02T06:20:31.7916343Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.3 MiB
+2026-11-02T06:20:31.7939057Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.3 MiB
+2026-11-02T06:20:31.7967251Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.3 MiB
+2026-11-02T06:20:31.7988396Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.3 MiB
+2026-11-02T06:20:31.8008035Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.3 MiB
+2026-11-02T06:20:31.8663560Z FFmpeg (playwright ffmpeg v1011) downloaded to /home/runner/.cache/ms-playwright/ffmpeg-1011
+2026-11-02T06:20:31.8668622Z Downloading Chrome Headless Shell 153.0.8010.12 (playwright chromium-headless-shell v1243) from https://cdn.playwright.dev/builds/cft/153.0.8010.12/linux64/chrome-headless-shell-linux64.zip
+2026-11-02T06:20:32.3330172Z |                                                                                |   0% of 114.3 MiB
+2026-11-02T06:20:32.5596319Z |■■■■■■■■                                                                        |  10% of 114.3 MiB
+2026-11-02T06:20:32.6179102Z |■■■■■■■■■■■■■■■■                                                                |  20% of 114.3 MiB
+2026-11-02T06:20:32.6705969Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 114.3 MiB
+2026-11-02T06:20:32.7261769Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 114.3 MiB
+2026-11-02T06:20:32.7762880Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 114.3 MiB
+2026-11-02T06:20:32.8304245Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 114.3 MiB
+2026-11-02T06:20:32.8853215Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 114.3 MiB
+2026-11-02T06:20:32.9387745Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 114.3 MiB
+2026-11-02T06:20:32.9928901Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 114.3 MiB
+2026-11-02T06:20:33.0470832Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 114.3 MiB
+2026-11-02T06:20:34.9507712Z Chrome Headless Shell 153.0.8010.12 (playwright chromium-headless-shell v1243) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1243
+2026-11-02T06:20:34.9818612Z ##[group]Run NEXT_PUBLIC_API_URL=/api NEXT_PUBLIC_SUPABASE_URL=https://test-project.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_isolated_fixture setsid npm run dev -- --hostname 127.0.0.1 > /tmp/signalbrief-web.log 2>&1 &
+2026-11-02T06:20:34.9820284Z [36;1mNEXT_PUBLIC_API_URL=/api NEXT_PUBLIC_SUPABASE_URL=https://test-project.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_isolated_fixture setsid npm run dev -- --hostname 127.0.0.1 > /tmp/signalbrief-web.log 2>&1 &[0m
+2026-11-02T06:20:34.9821201Z [36;1mweb_pid=$![0m
+2026-11-02T06:20:34.9821513Z [36;1mtrap 'kill -- -"$web_pid" 2>/dev/null || true' EXIT[0m
+2026-11-02T06:20:34.9821858Z [36;1mfor attempt in $(seq 1 60); do[0m
+2026-11-02T06:20:34.9822260Z [36;1m  if curl -fsS http://127.0.0.1:3000/login > /dev/null; then break; fi[0m
+2026-11-02T06:20:34.9822650Z [36;1m  sleep 1[0m
+2026-11-02T06:20:34.9822854Z [36;1mdone[0m
+2026-11-02T06:20:34.9823514Z [36;1mcurl -fsS http://127.0.0.1:3000/login > /dev/null[0m
+2026-11-02T06:20:34.9823984Z [36;1m# The former market/portfolio screen contract is retained in its specs[0m
+2026-11-02T06:20:34.9824492Z [36;1m# and legacy unit suites; it is deliberately hidden in this release.[0m
+2026-11-02T06:20:34.9824975Z [36;1m# See docs/SIGNED_IN_RELEASE_CHECKS.md for the replacement coverage.[0m
+2026-11-02T06:20:34.9826360Z [36;1mE2E_BASE_URL=http://localhost:3000 npm run test:e2e -- research-workspace.spec.ts auth-navigation.spec.ts marketing-pages.spec.ts ui-refinement.spec.ts responsive-design.spec.ts news.spec.ts career-analytics.spec.ts research.spec.ts daily-digest.spec.ts company-profile.spec.ts redesign-reliability.spec.ts[0m
+2026-11-02T06:20:34.9848821Z shell: /usr/bin/bash -e {0}
+2026-11-02T06:20:34.9849077Z env:
+2026-11-02T06:20:34.9849351Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:20:34.9849795Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-11-02T06:20:34.9850255Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:20:34.9850657Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:20:34.9851046Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:20:34.9851438Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-02T06:20:34.9851763Z ##[endgroup]
+2026-11-02T06:20:35.0049541Z curl: (7) Failed to connect to 127.0.0.1 port 3000 after 0 ms: Couldn't connect to server
+2026-11-02T06:20:39.8560028Z 
+2026-11-02T06:20:39.8561229Z > signalbrief-web@0.1.0 test:e2e
+2026-11-02T06:20:39.8564221Z > playwright test research-workspace.spec.ts auth-navigation.spec.ts marketing-pages.spec.ts ui-refinement.spec.ts responsive-design.spec.ts news.spec.ts career-analytics.spec.ts research.spec.ts daily-digest.spec.ts company-profile.spec.ts redesign-reliability.spec.ts
+2026-11-02T06:20:39.8566236Z 
+2026-11-02T06:20:41.7683694Z 
+2026-11-02T06:20:41.7684366Z Running 92 tests using 1 worker
+2026-11-02T06:20:41.7684716Z 
+2026-11-02T06:20:55.7578337Z   ✓   1 [desktop] › e2e/auth-navigation.spec.ts:17:5 › public CTAs and all five header information pages have real destinations (13.0s)
+2026-11-02T06:20:57.3510545Z   ✓   2 [desktop] › e2e/auth-navigation.spec.ts:32:5 › email signup and recovery call Auth and display the returned outcome (1.6s)
+2026-11-02T06:20:58.9369310Z   ✓   3 [desktop] › e2e/auth-navigation.spec.ts:45:5 › slow auth keeps a content skeleton and redirects anonymous visitors without a checking page (1.6s)
+2026-11-02T06:21:00.1911375Z   ✓   4 [desktop] › e2e/auth-navigation.spec.ts:52:5 › expired sessions go to login without showing protocol error toasts (1.2s)
+2026-11-02T06:21:02.8176249Z   ✓   5 [desktop] › e2e/career-analytics.spec.ts:6:7 › event detail engagement respects analytics consent=false (2.5s)
+2026-11-02T06:21:04.2554023Z   ✓   6 [desktop] › e2e/career-analytics.spec.ts:6:7 › event detail engagement respects analytics consent=true (1.4s)
+2026-11-02T06:21:06.9465595Z   ✓   7 [desktop] › e2e/company-profile.spec.ts:3:5 › Korean company profile shows verified source data and recovers from failure (2.7s)
+2026-11-02T06:21:08.6100947Z   ✓   8 [desktop] › e2e/company-profile.spec.ts:31:5 › new issuer profile, exact figures and company news populate from collected sources (1.7s)
+2026-11-02T06:21:11.1314978Z   ✓   9 [desktop] › e2e/daily-digest.spec.ts:3:5 › daily digest consent and time persist across a reload (2.5s)
+2026-11-02T06:21:25.6935558Z   ✓  10 [desktop] › e2e/marketing-pages.spec.ts:12:5 › all thirteen reference designs render semantic, responsive content without script errors (14.5s)
+2026-11-02T06:21:28.4809063Z   ✓  11 [desktop] › e2e/marketing-pages.spec.ts:27:5 › five header links and legal footer links navigate without recreating the document (2.8s)
+2026-11-02T06:21:29.8647250Z   ✓  12 [desktop] › e2e/marketing-pages.spec.ts:34:5 › the miniature dashboard has functional controls and explicitly marked sample data (1.4s)
+2026-11-02T06:21:33.1420759Z   ✓  13 [desktop] › e2e/marketing-pages.spec.ts:44:5 › feature and beta CTAs resolve to actual authentication or availability pages (3.3s)
+2026-11-02T06:21:35.2970671Z   ✓  14 [desktop] › e2e/marketing-pages.spec.ts:52:5 › privacy sections, consent controls and official source destinations remain accessible (2.1s)
+2026-11-02T06:21:37.3592678Z   ✓  15 [desktop] › e2e/marketing-pages.spec.ts:60:5 › signed-in visitors open their real workspace from a feature card (2.1s)
+2026-11-02T06:21:38.7446771Z   ✓  16 [desktop] › e2e/news.spec.ts:3:5 › Korean search is explicit, keeps source links, clears old results and retries (1.4s)
+2026-11-02T06:21:40.2696074Z   ✓  17 [desktop] › e2e/redesign-reliability.spec.ts:348:5 › home opens recent records and can recover from an intentionally empty day filter (1.5s)
+2026-11-02T06:21:41.5995599Z   ✓  18 [desktop] › e2e/redesign-reliability.spec.ts:365:5 › a dashboard request failure remains an error instead of becoming a zero count (1.3s)
+2026-11-02T06:21:43.4436280Z   ✓  19 [desktop] › e2e/redesign-reliability.spec.ts:381:5 › a new search clears a previous company and source scope and keeps its URL state (1.8s)
+2026-11-02T06:21:47.6246078Z   ✓  20 [desktop] › e2e/redesign-reliability.spec.ts:401:5 › official company discovery retries failures and opens a recoverable company detail (4.2s)
+2026-11-02T06:21:50.2177746Z   ✓  21 [desktop] › e2e/redesign-reliability.spec.ts:454:5 › company data and profile failures each offer recovery without losing the selected company (2.6s)
+2026-11-02T06:21:52.7724751Z   ✓  22 [desktop] › e2e/redesign-reliability.spec.ts:484:5 › calendar aliases use server search and monthly navigation opens the correct occurrence (2.5s)
+2026-11-02T06:21:55.0281489Z   ✓  23 [desktop] › e2e/redesign-reliability.spec.ts:513:5 › calendar collection polling fills all selected-company date ranges without reloading (2.2s)
+2026-11-02T06:22:00.1215500Z   ✓  24 [desktop] › e2e/redesign-reliability.spec.ts:579:5 › calendar collection keeps scope honest and stops polling until an explicit refresh (5.1s)
+2026-11-02T06:22:09.6437232Z   ✓  25 [desktop] › e2e/redesign-reliability.spec.ts:666:5 › calendar request errors remain visible and retry restores the month (9.5s)
+2026-11-02T06:22:12.6647401Z   ✓  26 [desktop] › e2e/redesign-reliability.spec.ts:680:5 › watchlist discovers an unregistered issuer, follows explicitly, and persists before removal (3.0s)
+2026-11-02T06:22:16.1220295Z   ✓  27 [desktop] › e2e/redesign-reliability.spec.ts:706:5 › calendar discovers an unregistered issuer and saves personal events only explicitly (3.4s)
+2026-11-02T06:22:34.5994769Z   ✓  28 [desktop] › e2e/research-workspace.spec.ts:37:5 › signed-in research journey connects company tabs, evidence, saved items and monitoring (18.4s)
+2026-11-02T06:22:38.0907772Z   ✓  29 [desktop] › e2e/research-workspace.spec.ts:196:5 › first-save discovery keeps public sources separate and persists only explicit bookmarks (3.5s)
+2026-11-02T06:22:40.8788788Z   ✓  30 [desktop] › e2e/research-workspace.spec.ts:266:5 › service errors remain distinct from empty results and offer recovery without invented totals (2.8s)
+2026-11-02T06:22:44.0331781Z   ✓  31 [desktop] › e2e/research-workspace.spec.ts:297:5 › approved content alerts can be read and stay read after reload (3.1s)
+2026-11-02T06:22:45.3687806Z   ✓  32 [desktop] › e2e/research-workspace.spec.ts:318:5 › anonymous workspace links preserve their destination when redirected to sign in (1.3s)
+2026-11-02T06:22:56.1615683Z   ✓  33 [desktop] › e2e/research.spec.ts:31:5 › nine admin pages render real empty states and responsive navigation (10.8s)
+2026-11-02T06:22:57.0988706Z   ✓  34 [desktop] › e2e/research.spec.ts:40:5 › non-admin cannot open the console or fetch admin data (928ms)
+2026-11-02T06:22:59.1207404Z   ✓  35 [desktop] › e2e/research.spec.ts:41:5 › study consent, exposure, answer, and withdrawal flow (2.0s)
+2026-11-02T06:23:00.1662701Z   ✓  36 [desktop] › e2e/research.spec.ts:42:5 › reports download current consent-checked JSON (1.0s)
+2026-11-02T06:23:01.7856426Z   ✓  37 [desktop] › e2e/responsive-design.spec.ts:6:5 › all eight feature widgets are distinct and their filters, calendar and question form work (1.6s)
+2026-11-02T06:23:02.9429721Z   ✓  38 [desktop] › e2e/responsive-design.spec.ts:15:5 › pricing matches three cards while paid plans cannot charge, and FAQ works with a keyboard (1.1s)
+2026-11-02T06:23:04.1769407Z   ✓  39 [desktop] › e2e/responsive-design.spec.ts:22:5 › the about-page walkthrough opens and closes with Escape and its close control (1.2s)
+2026-11-02T06:23:05.4697904Z   ✓  40 [desktop] › e2e/responsive-design.spec.ts:26:5 › legal table of contents navigates to expanded text without reloading the page (1.3s)
+2026-11-02T06:23:08.7238290Z   ✓  41 [desktop] › e2e/responsive-design.spec.ts:32:5 › account screens retain real forms, and desktop illustrations stay to the left of them (3.2s)
+2026-11-02T06:23:09.9159153Z   ✓  42 [desktop] › e2e/ui-refinement.spec.ts:8:5 › home is readable without authentication and its preview accepts keyboard input (1.2s)
+2026-11-02T06:23:12.1951907Z   ✓  43 [desktop] › e2e/ui-refinement.spec.ts:19:5 › mobile public menu closes on Escape and client navigation, and narrow screens fit (2.3s)
+2026-11-02T06:23:13.5127323Z   ✓  44 [desktop] › e2e/ui-refinement.spec.ts:32:5 › signup gives password feedback and sends only one pending request (1.3s)
+2026-11-02T06:23:15.5227525Z   ✓  45 [desktop] › e2e/ui-refinement.spec.ts:41:5 › recovery failure can be retried and a reset mismatch stays on the form (2.0s)
+2026-11-02T06:23:16.6945368Z   ✓  46 [desktop] › e2e/ui-refinement.spec.ts:49:5 › authenticated public header offers the workspace instead of login (1.2s)
+2026-11-02T06:23:25.3575227Z   ✓  47 [mobile] › e2e/auth-navigation.spec.ts:17:5 › public CTAs and all five header information pages have real destinations (7.7s)
+2026-11-02T06:23:26.8848181Z   ✓  48 [mobile] › e2e/auth-navigation.spec.ts:32:5 › email signup and recovery call Auth and display the returned outcome (1.5s)
+2026-11-02T06:23:28.0467236Z   ✓  49 [mobile] › e2e/auth-navigation.spec.ts:45:5 › slow auth keeps a content skeleton and redirects anonymous visitors without a checking page (1.1s)
+2026-11-02T06:23:29.2693698Z   ✓  50 [mobile] › e2e/auth-navigation.spec.ts:52:5 › expired sessions go to login without showing protocol error toasts (1.2s)
+2026-11-02T06:23:30.9132884Z   ✓  51 [mobile] › e2e/career-analytics.spec.ts:6:7 › event detail engagement respects analytics consent=false (1.5s)
+2026-11-02T06:23:32.4027354Z   ✓  52 [mobile] › e2e/career-analytics.spec.ts:6:7 › event detail engagement respects analytics consent=true (1.5s)
+2026-11-02T06:23:34.1117427Z   ✓  53 [mobile] › e2e/company-profile.spec.ts:3:5 › Korean company profile shows verified source data and recovers from failure (1.7s)
+2026-11-02T06:23:35.7707506Z   ✓  54 [mobile] › e2e/company-profile.spec.ts:31:5 › new issuer profile, exact figures and company news populate from collected sources (1.6s)
+2026-11-02T06:23:37.9758215Z   ✓  55 [mobile] › e2e/daily-digest.spec.ts:3:5 › daily digest consent and time persist across a reload (2.2s)
+2026-11-02T06:23:55.4262237Z   ✓  56 [mobile] › e2e/marketing-pages.spec.ts:12:5 › all thirteen reference designs render semantic, responsive content without script errors (17.4s)
+2026-11-02T06:23:58.0839249Z   ✓  57 [mobile] › e2e/marketing-pages.spec.ts:27:5 › five header links and legal footer links navigate without recreating the document (2.6s)
+2026-11-02T06:23:59.3752276Z   ✓  58 [mobile] › e2e/marketing-pages.spec.ts:34:5 › the miniature dashboard has functional controls and explicitly marked sample data (1.3s)
+2026-11-02T06:24:02.5488223Z   ✓  59 [mobile] › e2e/marketing-pages.spec.ts:44:5 › feature and beta CTAs resolve to actual authentication or availability pages (3.2s)
+2026-11-02T06:24:04.5976636Z   ✓  60 [mobile] › e2e/marketing-pages.spec.ts:52:5 › privacy sections, consent controls and official source destinations remain accessible (2.0s)
+2026-11-02T06:24:06.1867370Z   ✓  61 [mobile] › e2e/marketing-pages.spec.ts:60:5 › signed-in visitors open their real workspace from a feature card (1.6s)
+2026-11-02T06:24:07.2753489Z   ✓  62 [mobile] › e2e/news.spec.ts:3:5 › Korean search is explicit, keeps source links, clears old results and retries (1.1s)
+2026-11-02T06:24:08.8745402Z   ✓  63 [mobile] › e2e/redesign-reliability.spec.ts:348:5 › home opens recent records and can recover from an intentionally empty day filter (1.6s)
+2026-11-02T06:24:10.2544421Z   ✓  64 [mobile] › e2e/redesign-reliability.spec.ts:365:5 › a dashboard request failure remains an error instead of becoming a zero count (1.4s)
+2026-11-02T06:24:11.8113243Z   ✓  65 [mobile] › e2e/redesign-reliability.spec.ts:381:5 › a new search clears a previous company and source scope and keeps its URL state (1.5s)
+2026-11-02T06:24:15.8015383Z   ✓  66 [mobile] › e2e/redesign-reliability.spec.ts:401:5 › official company discovery retries failures and opens a recoverable company detail (4.0s)
+2026-11-02T06:24:20.6089484Z   ✓  67 [mobile] › e2e/redesign-reliability.spec.ts:454:5 › company data and profile failures each offer recovery without losing the selected company (4.8s)
+2026-11-02T06:24:23.9874713Z   ✓  68 [mobile] › e2e/redesign-reliability.spec.ts:484:5 › calendar aliases use server search and monthly navigation opens the correct occurrence (3.4s)
+2026-11-02T06:24:26.3685513Z   ✓  69 [mobile] › e2e/redesign-reliability.spec.ts:513:5 › calendar collection polling fills all selected-company date ranges without reloading (2.4s)
+2026-11-02T06:24:30.3377531Z   ✓  70 [mobile] › e2e/redesign-reliability.spec.ts:579:5 › calendar collection keeps scope honest and stops polling until an explicit refresh (4.0s)
+2026-11-02T06:24:39.1808486Z   ✓  71 [mobile] › e2e/redesign-reliability.spec.ts:666:5 › calendar request errors remain visible and retry restores the month (8.8s)
+2026-11-02T06:24:41.6754327Z   ✓  72 [mobile] › e2e/redesign-reliability.spec.ts:680:5 › watchlist discovers an unregistered issuer, follows explicitly, and persists before removal (2.5s)
+2026-11-02T06:24:45.0298382Z   ✓  73 [mobile] › e2e/redesign-reliability.spec.ts:706:5 › calendar discovers an unregistered issuer and saves personal events only explicitly (3.3s)
+2026-11-02T06:24:59.5759162Z   ✓  74 [mobile] › e2e/research-workspace.spec.ts:37:5 › signed-in research journey connects company tabs, evidence, saved items and monitoring (14.5s)
+2026-11-02T06:25:03.2621265Z   ✓  75 [mobile] › e2e/research-workspace.spec.ts:196:5 › first-save discovery keeps public sources separate and persists only explicit bookmarks (3.7s)
+2026-11-02T06:25:06.1204248Z   ✓  76 [mobile] › e2e/research-workspace.spec.ts:266:5 › service errors remain distinct from empty results and offer recovery without invented totals (2.8s)
+2026-11-02T06:25:08.8029206Z   ✓  77 [mobile] › e2e/research-workspace.spec.ts:297:5 › approved content alerts can be read and stay read after reload (2.7s)
+2026-11-02T06:25:10.1308408Z   ✓  78 [mobile] › e2e/research-workspace.spec.ts:318:5 › anonymous workspace links preserve their destination when redirected to sign in (1.3s)
+2026-11-02T06:25:17.9515413Z   ✓  79 [mobile] › e2e/research.spec.ts:31:5 › nine admin pages render real empty states and responsive navigation (7.8s)
+2026-11-02T06:25:18.8237210Z   ✓  80 [mobile] › e2e/research.spec.ts:40:5 › non-admin cannot open the console or fetch admin data (864ms)
+2026-11-02T06:25:20.2135635Z   ✓  81 [mobile] › e2e/research.spec.ts:41:5 › study consent, exposure, answer, and withdrawal flow (1.4s)
+2026-11-02T06:25:21.2065677Z   ✓  82 [mobile] › e2e/research.spec.ts:42:5 › reports download current consent-checked JSON (984ms)
+2026-11-02T06:25:22.6468385Z   ✓  83 [mobile] › e2e/responsive-design.spec.ts:6:5 › all eight feature widgets are distinct and their filters, calendar and question form work (1.4s)
+2026-11-02T06:25:23.7269246Z   ✓  84 [mobile] › e2e/responsive-design.spec.ts:15:5 › pricing matches three cards while paid plans cannot charge, and FAQ works with a keyboard (1.1s)
+2026-11-02T06:25:24.8475298Z   ✓  85 [mobile] › e2e/responsive-design.spec.ts:22:5 › the about-page walkthrough opens and closes with Escape and its close control (1.1s)
+2026-11-02T06:25:26.1448825Z   ✓  86 [mobile] › e2e/responsive-design.spec.ts:26:5 › legal table of contents navigates to expanded text without reloading the page (1.3s)
+2026-11-02T06:25:29.1399633Z   ✓  87 [mobile] › e2e/responsive-design.spec.ts:32:5 › account screens retain real forms, and desktop illustrations stay to the left of them (3.0s)
+2026-11-02T06:25:30.2607006Z   ✓  88 [mobile] › e2e/ui-refinement.spec.ts:8:5 › home is readable without authentication and its preview accepts keyboard input (1.1s)
+2026-11-02T06:25:32.4688059Z   ✓  89 [mobile] › e2e/ui-refinement.spec.ts:19:5 › mobile public menu closes on Escape and client navigation, and narrow screens fit (2.2s)
+2026-11-02T06:25:33.7322244Z   ✓  90 [mobile] › e2e/ui-refinement.spec.ts:32:5 › signup gives password feedback and sends only one pending request (1.3s)
+2026-11-02T06:25:35.6399601Z   ✓  91 [mobile] › e2e/ui-refinement.spec.ts:41:5 › recovery failure can be retried and a reset mismatch stays on the form (1.9s)
+2026-11-02T06:25:36.7990796Z   ✓  92 [mobile] › e2e/ui-refinement.spec.ts:49:5 › authenticated public header offers the workspace instead of login (1.1s)
+2026-11-02T06:25:37.0161640Z 
+2026-11-02T06:25:37.0168386Z   92 passed (4.9m)
+2026-11-02T06:25:37.2533327Z ##[group]Run actions/upload-artifact@v4
+2026-11-02T06:25:37.2533732Z with:
+2026-11-02T06:25:37.2534017Z   name: navigation-performance-results
+2026-11-02T06:25:37.2534465Z   path: apps/web/playwright-report/
+apps/web/test-results/
+verification/
+
+2026-11-02T06:25:37.2534925Z   if-no-files-found: warn
+2026-11-02T06:25:37.2535264Z   compression-level: 6
+2026-11-02T06:25:37.2535501Z   overwrite: false
+2026-11-02T06:25:37.2535762Z   include-hidden-files: false
+2026-11-02T06:25:37.2536068Z env:
+2026-11-02T06:25:37.2536365Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:25:37.2536847Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-11-02T06:25:37.2537292Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:25:37.2537761Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:25:37.2538217Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:25:37.2538721Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-02T06:25:37.2539166Z ##[endgroup]
+2026-11-02T06:25:37.4564667Z (node:6319) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-02T06:25:37.4566499Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-02T06:25:37.5702482Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-11-02T06:25:37.5706191Z The least common ancestor is /home/runner/work/SignalBrief/SignalBrief. This will be the root directory of the artifact
+2026-11-02T06:25:37.5707793Z With the provided path, there will be 201 files uploaded
+2026-11-02T06:25:37.5709218Z Artifact name is valid!
+2026-11-02T06:25:37.5710002Z Root directory input is valid!
+2026-11-02T06:25:37.8573353Z Beginning upload of artifact content to blob storage
+2026-11-02T06:25:38.1874865Z (node:6319) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-02T06:25:38.6872683Z Uploaded bytes 8388608
+2026-11-02T06:25:38.9565307Z Uploaded bytes 16777216
+2026-11-02T06:25:39.0766307Z Uploaded bytes 25165824
+2026-11-02T06:25:39.1447578Z Uploaded bytes 26076466
+2026-11-02T06:25:39.1952313Z Finished uploading artifact content to blob storage!
+2026-11-02T06:25:39.1956441Z SHA256 digest of uploaded artifact zip is ed456e25894320c352ef498918870e060c29fdbe46d6f92c2c4d38802e65343f
+2026-11-02T06:25:39.1958348Z Finalizing artifact upload
+2026-11-02T06:25:39.6192565Z Artifact navigation-performance-results.zip successfully finalized. Artifact ID 13120148407
+2026-11-02T06:25:39.6194514Z Artifact navigation-performance-results has been successfully uploaded! Final size is 26076466 bytes. Artifact ID is 13120148407
+2026-11-02T06:25:39.6201336Z Artifact download URL: https://github.com/JackRo682/SignalBrief/actions/runs/41398788898/artifacts/13120148407
+2026-11-02T06:25:39.6429323Z ##[group]Run actions/upload-artifact@v4
+2026-11-02T06:25:39.6429633Z with:
+2026-11-02T06:25:39.6429835Z   name: resolved-npm-lock
+2026-11-02T06:25:39.6430090Z   path: apps/web/package-lock.json
+2026-11-02T06:25:39.6430357Z   if-no-files-found: warn
+2026-11-02T06:25:39.6430598Z   compression-level: 6
+2026-11-02T06:25:39.6430813Z   overwrite: false
+2026-11-02T06:25:39.6431030Z   include-hidden-files: false
+2026-11-02T06:25:39.6431263Z env:
+2026-11-02T06:25:39.6431540Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:25:39.6432016Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-11-02T06:25:39.6432441Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:25:39.6432825Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:25:39.6433676Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-02T06:25:39.6434297Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-02T06:25:39.6434661Z ##[endgroup]
+2026-11-02T06:25:39.8172499Z (node:6349) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-02T06:25:39.8174368Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-02T06:25:39.8220600Z With the provided path, there will be 1 file uploaded
+2026-11-02T06:25:39.8228018Z Artifact name is valid!
+2026-11-02T06:25:39.8228724Z Root directory input is valid!
+2026-11-02T06:25:40.1240131Z Beginning upload of artifact content to blob storage
+2026-11-02T06:25:40.1494349Z (node:6349) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-02T06:25:40.3891030Z Uploaded bytes 63862
+2026-11-02T06:25:40.4388338Z Finished uploading artifact content to blob storage!
+2026-11-02T06:25:40.4389921Z SHA256 digest of uploaded artifact zip is 3ec1e783994b14951808ccac62f14cc9e62f6263c2f069cefed163dacb502198
+2026-11-02T06:25:40.4391290Z Finalizing artifact upload
+2026-11-02T06:25:40.8783480Z Artifact resolved-npm-lock.zip successfully finalized. Artifact ID 13120372855
+2026-11-02T06:25:40.8785329Z Artifact resolved-npm-lock has been successfully uploaded! Final size is 63862 bytes. Artifact ID is 13120372855
+2026-11-02T06:25:40.8791857Z Artifact download URL: https://github.com/JackRo682/SignalBrief/actions/runs/41398788898/artifacts/13120372855
+2026-11-02T06:25:40.8977262Z Post job cleanup.
+2026-11-02T06:25:41.0237976Z Caching is not enabled. Caching is skipped.
+2026-11-02T06:25:41.0378292Z Post job cleanup.
+2026-11-02T06:25:41.1726384Z (node:6370) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-02T06:25:41.1727425Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-02T06:25:41.1937082Z Post job cleanup.
+2026-11-02T06:25:41.3363261Z (node:6378) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-02T06:25:41.3364840Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-02T06:25:41.3630284Z Post job cleanup.
+2026-11-02T06:25:41.4654079Z [command]/usr/bin/git version
+2026-11-02T06:25:41.4702510Z git version 2.56.0
+2026-11-02T06:25:41.4744494Z Temporarily overriding HOME='/home/runner/work/_temp/a493d613-af3c-4846-9f5e-65f3861aea78' before making global git config changes
+2026-11-02T06:25:41.4746275Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-02T06:25:41.4750356Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/SignalBrief/SignalBrief
+2026-11-02T06:25:41.4792823Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-02T06:25:41.4850705Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-02T06:25:41.5117771Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-02T06:25:41.5148079Z http.https://github.com/.extraheader
+2026-11-02T06:25:41.5159300Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-02T06:25:41.5203759Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-02T06:25:41.5496667Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-02T06:25:41.5546157Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-02T06:25:41.5993937Z Cleaning up orphan processes
+2026-11-02T06:25:41.6373882Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/setup-python@v5, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

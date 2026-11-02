@@ -1,0 +1,10 @@
+{
+  "applied_version": "20261102065627",
+  "migration_name": "sec_profile_identity_fields_refresh",
+  "previous_source_filename": "20261102060524_sec_profile_identity_fields_refresh.sql",
+  "canonical_source_filename": "20261102065627_sec_profile_identity_fields_refresh.sql",
+  "sql_sha256_unchanged": "be13b53c89049018af49c4c83dfd71ee60da1e3d5dfedd791146adf1a566f27a",
+  "test_only_reference_renamed": "tests/workspace/test_company_profile_identity_fields_refresh.py",
+  "other_test_bytes_preserved": true,
+  "all_16_migration_file_hashes_match_ledger": true
+}

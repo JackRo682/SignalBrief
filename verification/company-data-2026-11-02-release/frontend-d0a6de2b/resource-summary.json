@@ -1,0 +1,18 @@
+{
+  "samples": 101,
+  "observed_max_vitest_fork_workers": 2,
+  "worker_identifier": "Process command contains /vitest/dist/workers/forks.js",
+  "sample_interval_seconds": 1,
+  "peak_sampled_memory_current_bytes": 6397591552,
+  "cpu_throttled_periods_delta": 4,
+  "cpu_throttled_microseconds_delta": 275196,
+  "memory_events_delta": {
+    "low": 0,
+    "high": 0,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "causal_limit": "These observations describe only the bounded run. The original failing test had no contemporaneous worker/resource trace, so causal oversubscription remains unproven."
+}

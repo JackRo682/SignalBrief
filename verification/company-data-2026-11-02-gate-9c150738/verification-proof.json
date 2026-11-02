@@ -1,0 +1,87 @@
+{
+  "status": "PASS",
+  "tree": "83dfd0059308766381aad2e5b1dfeb2c1c069155",
+  "published_commit_as_supplied_by_root": "9c1507383fb513c23a4a33468b564cbbeafb71e2",
+  "source_directory": "/tmp/signalbrief-nov2-final-source-83dfd00593087663",
+  "source_manifest": "/tmp/signalbrief-nov2-final-source-83dfd00593087663.json",
+  "started_at": "2026-11-02T05:46:58.837422+00:00",
+  "finished_at": "2026-11-02T05:53:19.258619+00:00",
+  "duration_seconds": 380.421,
+  "command": [
+    "python",
+    "scripts/verify.py",
+    "--full"
+  ],
+  "all_eight_stages_passed": true,
+  "backend": {
+    "tests": 1068,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "frontend": {
+    "passed": 1629,
+    "total": 1629,
+    "files_passed": 116,
+    "files_total": 116,
+    "skipped": 0,
+    "lint_errors": 0,
+    "lint_warnings": 5,
+    "typecheck": "PASS",
+    "production_build": "PASS"
+  },
+  "deno": {
+    "entrypoints": 6,
+    "status": "PASS",
+    "cached_only": true,
+    "lockfile_writes": false,
+    "logs": [
+      "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/deno-api-us-profiles-discovery.log",
+      "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/deno-collector.log",
+      "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/deno-calendar.log"
+    ]
+  },
+  "scope": {
+    "scope": "signed-in customer desktop and mobile MVP",
+    "protected_baseline_commit": "485ad4b8a4c2c18b0c370e27abca34254356704d",
+    "protected_public_admin_auth_files": 90,
+    "retained_feature_files": 17,
+    "verified_customer_entry_points": 2,
+    "verified_customer_entry_points_baseline_commit": "7e9f0d665bdfca69c2f96a9b45e905a91a1a343a",
+    "status": "PASS",
+    "failures": []
+  },
+  "source_identity": {
+    "checked_at": "2026-11-02T05:54:05.070621+00:00",
+    "tree": "83dfd0059308766381aad2e5b1dfeb2c1c069155",
+    "source_directory": "/tmp/signalbrief-nov2-final-source-83dfd00593087663",
+    "tracked_blobs_checked": 1101,
+    "hashes_and_executable_modes_match": true,
+    "failures": [],
+    "status": "PASS"
+  },
+  "historical_outputs_restored": true,
+  "protected_path_count": 12,
+  "logs": {
+    "python_compile": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/python_compile.log",
+    "backend_tests": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/backend_tests.log",
+    "openapi_export": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/openapi_export.log",
+    "backend_lint": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/backend_lint.log",
+    "frontend_lint": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/frontend_lint.log",
+    "frontend_typecheck": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/frontend_typecheck.log",
+    "frontend_unit_tests": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/frontend_unit_tests.log",
+    "frontend_build": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/frontend_build.log"
+  },
+  "capture": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/capture.json",
+  "stage_report": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/checks.json",
+  "junit": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/pytest.xml",
+  "source_identity_report": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/post-gate-source-identity.json",
+  "additional_check_report": "/tmp/signalbrief-nov2-acceptance-gate-artifacts/83dfd0059308766381aad2e5b1dfeb2c1c069155/additional-checks.json",
+  "browser": {
+    "executed_locally": false,
+    "reason": "Parent owns exact published-commit CI browser gate; no duplicate local run requested."
+  },
+  "shared_source_mutations": false,
+  "shared_git_mutations": false,
+  "production_access": false
+}

@@ -1,0 +1,188 @@
+{
+  "recorded_at": "2026-11-02T07:02:32.451Z",
+  "source_commit": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+  "source_tree": "df510f8fc1f8c9ced59781289da5e55b6b914bbe",
+  "web_deployment": "dpl_CUiCzGy5WpLRos62fMPRwPiyzQEh",
+  "web_url": "https://signalbrief.online",
+  "edge_bundles": [
+    {
+      "name": "signalbrief-us",
+      "version": 24,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "import_map": true,
+      "ezbr_sha256": "99e4fe870d679d45b79021d054cd12fcd80026d8e1b84d4957b83d4ce126759e",
+      "matched_files": [
+        "functions/signalbrief-us/index.ts",
+        "functions/signalbrief-api/us-handler.ts",
+        "functions/signalbrief-delivery/core.ts",
+        "functions/signalbrief-api/us-core.ts",
+        "functions/signalbrief-api/market-core.ts",
+        "functions/signalbrief-api/verification.ts",
+        "functions/signalbrief-api/company-financials.ts",
+        "functions/signalbrief-collector/dart-relay.ts",
+        "functions/signalbrief-api/company-financials-core.ts",
+        "functions/signalbrief-api/analysis-excerpt.ts",
+        "functions/signalbrief-api/deno.json"
+      ],
+      "type_only_omissions": []
+    },
+    {
+      "name": "signalbrief-profiles",
+      "version": 10,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "import_map": true,
+      "ezbr_sha256": "ad3a45f8a194ec1d2e8e723afc626a20c60ab1b954874f1ca7a6fd1a2c1e59a5",
+      "matched_files": [
+        "functions/signalbrief-profiles/index.ts",
+        "functions/signalbrief-collector/dart-relay.ts",
+        "functions/signalbrief-api/us-core.ts",
+        "functions/signalbrief-profiles/core.ts",
+        "functions/signalbrief-profiles/enrichment.ts",
+        "functions/signalbrief-profiles/enrichment-service.ts",
+        "functions/signalbrief-profiles/enrichment-sec.ts",
+        "functions/signalbrief-profiles/enrichment-html.ts",
+        "functions/signalbrief-profiles/enrichment-dart.ts",
+        "functions/signalbrief-collector/core.ts",
+        "functions/signalbrief-profiles/enrichment-dart-core.ts",
+        "functions/signalbrief-profiles/deno.json"
+      ],
+      "type_only_omissions": [
+        "functions/signalbrief-profiles/enrichment-types.ts"
+      ]
+    },
+    {
+      "name": "signalbrief-discovery",
+      "version": 9,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "import_map": true,
+      "ezbr_sha256": "1ee7efb7f50bf2cf90505eb0aeb4044457413243be8f89423e9466c02629da46",
+      "matched_files": [
+        "functions/signalbrief-discovery/index.ts",
+        "functions/signalbrief-discovery/core.ts",
+        "functions/signalbrief-discovery/service.ts",
+        "functions/signalbrief-api/us-core.ts",
+        "functions/signalbrief-collector/dart-relay.ts",
+        "functions/signalbrief-collector/core.ts",
+        "functions/signalbrief-profiles/core.ts",
+        "functions/signalbrief-api/company-financials.ts",
+        "functions/signalbrief-api/company-financials-core.ts",
+        "functions/signalbrief-discovery/deno.json"
+      ],
+      "type_only_omissions": []
+    },
+    {
+      "name": "signalbrief-collector",
+      "version": 19,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "import_map": true,
+      "ezbr_sha256": "7e336aa62a3150e6bf24807c8cc8519142f224e8111d89bd2a40f18257d9a64b",
+      "matched_files": [
+        "functions/signalbrief-collector/index.ts",
+        "functions/signalbrief-delivery/index.ts",
+        "functions/signalbrief-api/us-core.ts",
+        "functions/signalbrief-delivery/core.ts",
+        "functions/signalbrief-delivery/dispatch.ts",
+        "functions/signalbrief-collector/dart-document.ts",
+        "functions/signalbrief-collector/dart-parser.ts",
+        "functions/signalbrief-collector/dart-document-core.ts",
+        "functions/signalbrief-collector/dart-relay.ts",
+        "functions/signalbrief-api/us-handler.ts",
+        "functions/signalbrief-api/market-core.ts",
+        "functions/signalbrief-api/verification.ts",
+        "functions/signalbrief-api/company-financials.ts",
+        "functions/signalbrief-api/company-financials-core.ts",
+        "functions/signalbrief-api/analysis-excerpt.ts",
+        "functions/signalbrief-collector/core.ts",
+        "functions/signalbrief-collector/deno.json"
+      ],
+      "type_only_omissions": []
+    }
+  ],
+  "migration_ledger": [
+    {
+      "version": "20261102020437",
+      "name": "calendar_sec_ir_discovery",
+      "sha256": "bc16706742848f5a2ab0e831f1b8b0e9fcb182f10e049f806f0b4a2d2c79688f"
+    },
+    {
+      "version": "20261102020442",
+      "name": "company_reported_financials",
+      "sha256": "ce4965c3ed43e54410d4c111cd02fe5ff4b9d48bd38595de5b0dc82170a32730"
+    },
+    {
+      "version": "20261102020446",
+      "name": "company_search_precision",
+      "sha256": "b56e78afbc51f775fe7c4324db1429b1cbc31b21f9496a7f5d53fc677d6355d6"
+    },
+    {
+      "version": "20261102020450",
+      "name": "company_profile_source_enrichment",
+      "sha256": "3b265ba1ebbf1c3ef710bc7db4b5fa84bceb538cbfa2699ec077d2611b7c7403"
+    },
+    {
+      "version": "20261102020454",
+      "name": "dart_profile_periodic_sources",
+      "sha256": "516c05dcd496eb945cfc026e943535c544d3dec40bc54fd93d58b7e76c9f87f7"
+    },
+    {
+      "version": "20261102022052",
+      "name": "company_search_catalogue_performance",
+      "sha256": "a190c4b4abdd8a977b727d9924ffcd867f6c77785e92a220229187728f60fbe5"
+    },
+    {
+      "version": "20261102023317",
+      "name": "profile_official_source_binding",
+      "sha256": "75f74506a074c90b16947220d57fff947cafcff94219c58658555d01cbaf10f0"
+    },
+    {
+      "version": "20261102051051",
+      "name": "dart_financial_period_binding",
+      "sha256": "bf9dd2b29fc55117829430affb9f2e30d604fc0efba57566f0d860132f4e0c00"
+    },
+    {
+      "version": "20261102051053",
+      "name": "calendar_sec_filed_events",
+      "sha256": "9b2d70726141b0c48fc95af3b06f18e70cedb11a0442ae50ef399af3e7b18118"
+    },
+    {
+      "version": "20261102051056",
+      "name": "samsung_calendar_history",
+      "sha256": "74f16d2111a3378e22c7513652bb785091fa723face2a774f87e97224efee4de"
+    },
+    {
+      "version": "20261102051058",
+      "name": "calendar_ir_navigation_labels",
+      "sha256": "dc5b81412b8c4d47b40d6326a72e259d56d6799dd1d92a2996eced441663e6bf"
+    },
+    {
+      "version": "20261102052148",
+      "name": "sec_profile_section_refresh",
+      "sha256": "4018846f5ecd92f4d7823a110561f6a5d492eb6fd2c6f3b32c701faf8bfbe28e"
+    },
+    {
+      "version": "20261102052159",
+      "name": "calendar_sec_filing_ingest_lock",
+      "sha256": "5f969a8e165416d89e5f90ad8e0f28019a21a3f37c9168389f400ffecd0cdf76"
+    },
+    {
+      "version": "20261102054530",
+      "name": "calendar_drupal_event_lists",
+      "sha256": "5be047fa9ee3caf58120a91a53de35892756ef92c032adf0290cab41dfb2a056"
+    },
+    {
+      "version": "20261102060038",
+      "name": "profile_dart_rows_refresh",
+      "sha256": "6867a4da3d98a2beca00839c3234abfb1feb53433fb9866503564f92f723721f"
+    },
+    {
+      "version": "20261102065627",
+      "name": "sec_profile_identity_fields_refresh",
+      "sha256": "be13b53c89049018af49c4c83dfd71ee60da1e3d5dfedd791146adf1a566f27a"
+    }
+  ],
+  "live_profile_state": "SNDK financials returned40 contexts in actual UI; profile save failed and retained earlier verified data. Exact quote/name case mismatch independently reproduced in PostgreSQL; follow-up in progress."
+}

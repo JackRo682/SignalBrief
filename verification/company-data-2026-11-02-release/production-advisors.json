@@ -1,0 +1,1556 @@
+{
+  "observed_at": "2026-11-02T07:08:41.856Z",
+  "phase": "After all16 applied Nov2 migrations; final source-case fix adds no schema changes.",
+  "advisors": {
+    "security": {
+      "lints": [
+        {
+          "name": "rls_enabled_no_policy",
+          "title": "RLS Enabled No Policy",
+          "level": "INFO",
+          "facing": "EXTERNAL",
+          "categories": [
+            "SECURITY"
+          ],
+          "description": "Detects cases where row level security (RLS) has been enabled on a table but no RLS policies have been created.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "count": 32,
+          "findings": [
+            {
+              "detail": "Table \\`app_private.billing_events\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "billing_events",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.calendar_refresh_queue\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "calendar_refresh_queue",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.calendar_runs\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "calendar_runs",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.calendar_snapshots\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "calendar_snapshots",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.calendar_source_catalog\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "calendar_source_catalog",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.calendar_sources\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "calendar_sources",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.calendar_worker_control\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "calendar_worker_control",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.company_analysis_requests\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "company_analysis_requests",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.company_directory\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "company_directory",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.company_directory_sources\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "company_directory_sources",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.company_financial_snapshots\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "company_financial_snapshots",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.company_financial_sources\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "company_financial_sources",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.company_hydration\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "company_hydration",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.company_profile_enrichments\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "company_profile_enrichments",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.company_profile_official_sources\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "company_profile_official_sources",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.discovery_daily_limits\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "discovery_daily_limits",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.notification_tasks\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "notification_tasks",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_api_metrics\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "research_api_metrics",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_audit\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "research_audit",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_cases\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "research_cases",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_checks\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "research_checks",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_datasets\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "research_datasets",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_events\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "research_events",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_experiments\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "research_experiments",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_observations\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "research_observations",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_participants\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "research_participants",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_runs\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "research_runs",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`public.alembic_version\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "alembic_version",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`public.billing_orders\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "billing_orders",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`public.content_notifications\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "content_notifications",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`public.provider_limits\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "provider_limits",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Table \\`public.rate_buckets\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "rate_buckets",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            }
+          ]
+        },
+        {
+          "name": "anon_security_definer_function_executable",
+          "title": "Public Can Execute SECURITY DEFINER Function",
+          "level": "WARN",
+          "facing": "EXTERNAL",
+          "categories": [
+            "SECURITY"
+          ],
+          "description": "Detects `SECURITY DEFINER` functions that are callable without signing in. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if it is not meant to be public.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable",
+          "count": 6,
+          "findings": [
+            {
+              "detail": "Function `public.sb_calendar_feed(token text)` can be executed by the `anon` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_calendar_feed`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_calendar_feed",
+                "schema": "public",
+                "language": "sql",
+                "arguments": "token text",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_calendar_subscription_feed(token text)` can be executed by the `anon` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_calendar_subscription_feed`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_calendar_subscription_feed",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "token text",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_dart_relay_claim(body_text text, request_timestamp text, signature text)` can be executed by the `anon` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_dart_relay_claim`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_dart_relay_claim",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "body_text text, request_timestamp text, signature text",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_health()` can be executed by the `anon` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_health`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_health",
+                "schema": "public",
+                "language": "sql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_reference_public_stats()` can be executed by the `anon` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_reference_public_stats`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_reference_public_stats",
+                "schema": "public",
+                "language": "sql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_require_mfa()` can be executed by the `anon` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_require_mfa`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_require_mfa",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            }
+          ]
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+          "level": "WARN",
+          "facing": "EXTERNAL",
+          "categories": [
+            "SECURITY"
+          ],
+          "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+          "count": 32,
+          "findings": [
+            {
+              "detail": "Function `public.sb_admin_action(kind text, p jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_admin_action`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_admin_action",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "kind text, p jsonb",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_admin_catalog_sync(provider text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_admin_catalog_sync`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_admin_catalog_sync",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "provider text",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_billing_status()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_billing_status`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_billing_status",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_calendar_feed(token text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_calendar_feed`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_calendar_feed",
+                "schema": "public",
+                "language": "sql",
+                "arguments": "token text",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_calendar_subscription_feed(token text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_calendar_subscription_feed`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_calendar_subscription_feed",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "token text",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_checkout_reserve(is_test boolean)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_checkout_reserve`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_checkout_reserve",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "is_test boolean",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_clear_history()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_clear_history`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_clear_history",
+                "schema": "public",
+                "language": "sql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_dart_document_retry(fid uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_dart_document_retry`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_dart_document_retry",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "fid uuid",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_dart_relay_claim(body_text text, request_timestamp text, signature text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_dart_relay_claim`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_dart_relay_claim",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "body_text text, request_timestamp text, signature text",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_dart_review(fid uuid, decision text, reason text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_dart_review`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_dart_review",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "fid uuid, decision text, reason text",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_digest_preferences(p jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_digest_preferences`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_digest_preferences",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "p jsonb",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_email_preferences(enabled boolean)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_email_preferences`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_email_preferences",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "enabled boolean",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_health()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_health`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_health",
+                "schema": "public",
+                "language": "sql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_initialize_profile()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_initialize_profile`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_initialize_profile",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_mobile_onboarding(p jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_mobile_onboarding`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_mobile_onboarding",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "p jsonb",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_notification_settings(p jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_notification_settings`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_notification_settings",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "p jsonb",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_ops_dashboard()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_ops_dashboard`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_ops_dashboard",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_rate_limit()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_rate_limit`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_rate_limit",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_reference_ops(p jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_reference_ops`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_reference_ops",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "p jsonb",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_reference_preferences(p jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_reference_preferences`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_reference_preferences",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "p jsonb",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_reference_public_stats()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_reference_public_stats`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_reference_public_stats",
+                "schema": "public",
+                "language": "sql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_reference_reminders(p jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_reference_reminders`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_reference_reminders",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "p jsonb",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_reference_setup(p jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_reference_setup`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_reference_setup",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "p jsonb",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_reference_users()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_reference_users`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_reference_users",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_require_mfa()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_require_mfa`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_require_mfa",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_resolve_companies(tickers text[])` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_resolve_companies`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_resolve_companies",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "tickers text[]",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_save_answer(eid text, question text, reason text, fact_ids text[])` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_save_answer`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_save_answer",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "eid text, question text, reason text, fact_ids text[]",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_track(event_name text, properties jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_track`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_track",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "event_name text, properties jsonb",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_us_review(fid uuid, decision text, reason text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_us_review`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_us_review",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "fid uuid, decision text, reason text",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_user_action(action text, p jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_user_action`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_user_action",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "action text, p jsonb",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_workspace(action text, p jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_workspace`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_workspace",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "action text, p jsonb",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            },
+            {
+              "detail": "Function `public.sb_workspace_searches(action text, p jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/sb_workspace_searches`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "sb_workspace_searches",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "action text, p jsonb",
+                "security_definer": true
+              },
+              "observed_at": "2026-11-02T07:08:26.033Z"
+            }
+          ]
+        },
+        {
+          "name": "auth_leaked_password_protection",
+          "title": "Leaked Password Protection Disabled",
+          "level": "WARN",
+          "facing": "EXTERNAL",
+          "categories": [
+            "SECURITY"
+          ],
+          "description": "Leaked password protection is currently disabled.",
+          "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection",
+          "count": 1,
+          "findings": [
+            {
+              "detail": "Supabase Auth prevents the use of compromised passwords by checking against HaveIBeenPwned.org. Enable this feature to enhance security.",
+              "metadata": {
+                "type": "auth",
+                "entity": "Auth"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "performance": {
+      "lints": [
+        {
+          "name": "unindexed_foreign_keys",
+          "title": "Unindexed foreign keys",
+          "level": "INFO",
+          "facing": "EXTERNAL",
+          "categories": [
+            "PERFORMANCE"
+          ],
+          "description": "Identifies foreign key constraints without a covering index, which can impact database performance.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "count": 32,
+          "findings": [
+            {
+              "detail": "Table \\`app_private.billing_events\\` has a foreign key \\`billing_events_order_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "billing_events",
+                "type": "table",
+                "schema": "app_private",
+                "fkey_name": "billing_events_order_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`app_private.dart_document_retries\\` has a foreign key \\`dart_document_retries_filing_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "dart_document_retries",
+                "type": "table",
+                "schema": "app_private",
+                "fkey_name": "dart_document_retries_filing_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`app_private.dart_reviews\\` has a foreign key \\`dart_reviews_filing_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "dart_reviews",
+                "type": "table",
+                "schema": "app_private",
+                "fkey_name": "dart_reviews_filing_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_audit\\` has a foreign key \\`research_audit_actor_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "research_audit",
+                "type": "table",
+                "schema": "app_private",
+                "fkey_name": "research_audit_actor_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_cases\\` has a foreign key \\`research_cases_created_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "research_cases",
+                "type": "table",
+                "schema": "app_private",
+                "fkey_name": "research_cases_created_by_fkey",
+                "fkey_columns": [
+                  15
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_cases\\` has a foreign key \\`research_cases_filing_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "research_cases",
+                "type": "table",
+                "schema": "app_private",
+                "fkey_name": "research_cases_filing_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_cases\\` has a foreign key \\`research_cases_previous_filing_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "research_cases",
+                "type": "table",
+                "schema": "app_private",
+                "fkey_name": "research_cases_previous_filing_id_fkey",
+                "fkey_columns": [
+                  4
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_cases\\` has a foreign key \\`research_cases_reviewed_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "research_cases",
+                "type": "table",
+                "schema": "app_private",
+                "fkey_name": "research_cases_reviewed_by_fkey",
+                "fkey_columns": [
+                  16
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_checks\\` has a foreign key \\`research_checks_created_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "research_checks",
+                "type": "table",
+                "schema": "app_private",
+                "fkey_name": "research_checks_created_by_fkey",
+                "fkey_columns": [
+                  6
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_datasets\\` has a foreign key \\`research_datasets_created_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "research_datasets",
+                "type": "table",
+                "schema": "app_private",
+                "fkey_name": "research_datasets_created_by_fkey",
+                "fkey_columns": [
+                  5
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_experiments\\` has a foreign key \\`research_experiments_created_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "research_experiments",
+                "type": "table",
+                "schema": "app_private",
+                "fkey_name": "research_experiments_created_by_fkey",
+                "fkey_columns": [
+                  13
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`app_private.research_runs\\` has a foreign key \\`research_runs_created_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "research_runs",
+                "type": "table",
+                "schema": "app_private",
+                "fkey_name": "research_runs_created_by_fkey",
+                "fkey_columns": [
+                  7
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.brief_sources\\` has a foreign key \\`brief_sources_fact_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "brief_sources",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "brief_sources_fact_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.calendar_items\\` has a foreign key \\`calendar_items_chunk_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "calendar_items",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "calendar_items_chunk_id_fkey",
+                "fkey_columns": [
+                  7
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.calendar_items\\` has a foreign key \\`calendar_items_company_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "calendar_items",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "calendar_items_company_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.calendar_items\\` has a foreign key \\`calendar_items_event_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "calendar_items",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "calendar_items_event_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.calendar_reminders\\` has a foreign key \\`calendar_reminders_calendar_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "calendar_reminders",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "calendar_reminders_calendar_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.changes\\` has a foreign key \\`changes_previous_fact_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "changes",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "changes_previous_fact_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.content_notifications\\` has a foreign key \\`content_notifications_company_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "content_notifications",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "content_notifications_company_id_fkey",
+                "fkey_columns": [
+                  5
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.documents\\` has a foreign key \\`documents_raw_sha256_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "documents",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "documents_raw_sha256_fkey",
+                "fkey_columns": [
+                  14
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.event_sources\\` has a foreign key \\`event_sources_chunk_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "event_sources",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "event_sources_chunk_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.events\\` has a foreign key \\`events_duplicate_of_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "events",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "events_duplicate_of_fkey",
+                "fkey_columns": [
+                  11
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.events\\` has a foreign key \\`events_run_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "events",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "events_run_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.facts\\` has a foreign key \\`facts_chunk_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "facts",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "facts_chunk_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.feedback\\` has a foreign key \\`feedback_event_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "feedback",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "feedback_event_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.notifications\\` has a foreign key \\`notifications_event_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "notifications",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "notifications_event_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.positions\\` has a foreign key \\`positions_company_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "positions",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "positions_company_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.question_history\\` has a foreign key \\`question_history_event_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "question_history",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "question_history_event_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.ranked_events\\` has a foreign key \\`ranked_events_event_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "ranked_events",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "ranked_events_event_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.watchlist_items\\` has a foreign key \\`watchlist_items_company_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "watchlist_items",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "watchlist_items_company_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.workspace_attachments\\` has a foreign key \\`workspace_attachments_ticket_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "workspace_attachments",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "workspace_attachments_ticket_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.workspace_attachments\\` has a foreign key \\`workspace_attachments_user_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "workspace_attachments",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "workspace_attachments_user_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            }
+          ]
+        },
+        {
+          "name": "unused_index",
+          "title": "Unused Index",
+          "level": "INFO",
+          "facing": "EXTERNAL",
+          "categories": [
+            "PERFORMANCE"
+          ],
+          "description": "Detects if an index has never been used and may be a candidate for removal.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "count": 19,
+          "findings": [
+            {
+              "detail": "Index \\`research_events_user\\` on table \\`app_private.research_events\\` has not been used",
+              "metadata": {
+                "name": "research_events",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`research_participants_user\\` on table \\`app_private.research_participants\\` has not been used",
+              "metadata": {
+                "name": "research_participants",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`research_runs_dataset\\` on table \\`app_private.research_runs\\` has not been used",
+              "metadata": {
+                "name": "research_runs",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`research_cases_dataset\\` on table \\`app_private.research_cases\\` has not been used",
+              "metadata": {
+                "name": "research_cases",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`ix_job_claim\\` on table \\`public.jobs\\` has not been used",
+              "metadata": {
+                "name": "jobs",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`ix_jobs_available_at\\` on table \\`public.jobs\\` has not been used",
+              "metadata": {
+                "name": "jobs",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`ix_audit_logs_actor_id\\` on table \\`public.audit_logs\\` has not been used",
+              "metadata": {
+                "name": "audit_logs",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`ix_documents_published_at\\` on table \\`public.documents\\` has not been used",
+              "metadata": {
+                "name": "documents",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`ix_user_events_user_id\\` on table \\`public.user_events\\` has not been used",
+              "metadata": {
+                "name": "user_events",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`ix_ai_runs_user_id\\` on table \\`public.ai_runs\\` has not been used",
+              "metadata": {
+                "name": "ai_runs",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`ix_events_event_type\\` on table \\`public.events\\` has not been used",
+              "metadata": {
+                "name": "events",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`ix_events_published_at\\` on table \\`public.events\\` has not been used",
+              "metadata": {
+                "name": "events",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`ix_feedback_user_id\\` on table \\`public.feedback\\` has not been used",
+              "metadata": {
+                "name": "feedback",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`ix_ranked_events_user_id\\` on table \\`public.ranked_events\\` has not been used",
+              "metadata": {
+                "name": "ranked_events",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`email_unsubscribe_lookup\\` on table \\`app_private.email_outbox\\` has not been used",
+              "metadata": {
+                "name": "email_outbox",
+                "type": "table",
+                "schema": "app_private"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`calendar_items_snapshot\\` on table \\`public.calendar_items\\` has not been used",
+              "metadata": {
+                "name": "calendar_items",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`document_chunks_search_text\\` on table \\`public.document_chunks\\` has not been used",
+              "metadata": {
+                "name": "document_chunks",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`notifications_user_recent\\` on table \\`public.notifications\\` has not been used",
+              "metadata": {
+                "name": "notifications",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Index \\`ix_companies_name\\` on table \\`public.companies\\` has not been used",
+              "metadata": {
+                "name": "companies",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            }
+          ]
+        },
+        {
+          "name": "multiple_permissive_policies",
+          "title": "Multiple Permissive Policies",
+          "level": "WARN",
+          "facing": "EXTERNAL",
+          "categories": [
+            "PERFORMANCE"
+          ],
+          "description": "Detects if multiple permissive row level security policies are present on a table for the same \\`role\\` and \\`action\\` (e.g. insert). Multiple permissive policies are suboptimal for performance as each policy must be executed for every relevant query.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0006_multiple_permissive_policies",
+          "count": 16,
+          "findings": [
+            {
+              "detail": "Table \\`public.ai_runs\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{admin_read,published_read}\\`",
+              "metadata": {
+                "name": "ai_runs",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.brief_sources\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{admin_read,published_read}\\`",
+              "metadata": {
+                "name": "brief_sources",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.briefs\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{admin_read,published_read}\\`",
+              "metadata": {
+                "name": "briefs",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.calendar_items\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{official_ir_read,official_read,owner_select}\\`",
+              "metadata": {
+                "name": "calendar_items",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.changes\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{admin_read,published_read}\\`",
+              "metadata": {
+                "name": "changes",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.companies\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{admin_read,catalog_read}\\`",
+              "metadata": {
+                "name": "companies",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.document_chunks\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{admin_read,published_read}\\`",
+              "metadata": {
+                "name": "document_chunks",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.documents\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{admin_read,published_read}\\`",
+              "metadata": {
+                "name": "documents",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.event_sources\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{admin_read,published_read}\\`",
+              "metadata": {
+                "name": "event_sources",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.events\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{admin_read,published_read}\\`",
+              "metadata": {
+                "name": "events",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.facts\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{admin_read,published_read}\\`",
+              "metadata": {
+                "name": "facts",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.feedback\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{admin_read,owner_select}\\`",
+              "metadata": {
+                "name": "feedback",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.users\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{admin_read,owner_select}\\`",
+              "metadata": {
+                "name": "users",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.validations\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{admin_read,published_read}\\`",
+              "metadata": {
+                "name": "validations",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.workspace_attachments\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{workspace_attachment_operator,workspace_owner}\\`",
+              "metadata": {
+                "name": "workspace_attachments",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            },
+            {
+              "detail": "Table \\`public.workspace_tickets\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{workspace_owner,workspace_support_operator}\\`",
+              "metadata": {
+                "name": "workspace_tickets",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-11-02T07:08:26.590Z"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

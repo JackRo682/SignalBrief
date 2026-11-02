@@ -1,0 +1,203 @@
+{
+  "actual_source_replay": true,
+  "production": false,
+  "elapsed_ms": 261,
+  "status": "ready",
+  "counts": {
+    "business": 2,
+    "products": 2,
+    "segments": 1,
+    "leadership": 1,
+    "formation": 1,
+    "sources": 3
+  },
+  "products": [
+    "high-performance enterprise SSDs",
+    "client portable SSDs"
+  ],
+  "leadership": [
+    {
+      "name": "David V. Goeckeler",
+      "as_of": "2026-08-17",
+      "basis": "filing"
+    }
+  ],
+  "formation": [
+    {
+      "date": "2024-02-05",
+      "kind": "incorporated",
+      "precision": "day"
+    }
+  ],
+  "segments": [
+    "Single reportable operating segment"
+  ],
+  "limitations": [
+    "leadership_as_of_filing"
+  ],
+  "requests": [
+    "https://www.sec.gov/Archives/edgar/data/2023554/000162828026057406/sndk-20260703.htm",
+    "https://www.sec.gov/Archives/edgar/data/2023554/000162828026068601/sndk-20261002.htm",
+    "https://www.sec.gov/Archives/edgar/data/2023554/000119312525033433/d849281dex31.htm"
+  ],
+  "reserves": 3,
+  "archived": [
+    {
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2023554/000162828026057406/sndk-20260703.htm",
+      "source_sha256": "8b6963dfdfdca8f74c6b5f3d60a61a5182ddb7c7c29e2058cf120de217ff267c"
+    },
+    {
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2023554/000119312525033433/d849281dex31.htm",
+      "source_sha256": "820d07c43039e041adf7f5f39bda39e652bc825a1a5b0d88b4734adcc5c5d4be"
+    },
+    {
+      "source_url": "https://www.sec.gov/Archives/edgar/data/2023554/000162828026068601/sndk-20261002.htm",
+      "source_sha256": "5d900affe64cd2af6f18c94c5968893868123f34b3ffba36f11ca8f03baf5b1a"
+    }
+  ],
+  "evidence_bindings": 7,
+  "annual_normalization_unchanged": true,
+  "previous_sources": [
+    {
+      "issuer": "mastercard",
+      "form": "10-K",
+      "normalization_unchanged": true,
+      "fields_unchanged": true,
+      "counts": {
+        "business": 2,
+        "products": 8,
+        "segments": 1,
+        "leadership": 1,
+        "formation": 0
+      },
+      "products": [
+        "Consumer Payments",
+        "Commercial and New Payment Flows",
+        "Commercial",
+        "Security Solutions",
+        "Consumer Acquisition and Engagement Services",
+        "Business and Market Insights",
+        "Digital and Authentication",
+        "Other Solutions"
+      ],
+      "evidence_bindings": 12
+    },
+    {
+      "issuer": "mastercard",
+      "form": "10-Q",
+      "normalization_unchanged": true,
+      "fields_unchanged": true,
+      "counts": {
+        "business": 0,
+        "products": 0,
+        "segments": 1,
+        "leadership": 1,
+        "formation": 0
+      },
+      "products": [],
+      "evidence_bindings": 2
+    },
+    {
+      "issuer": "tesla",
+      "form": "10-K",
+      "normalization_unchanged": true,
+      "fields_unchanged": true,
+      "counts": {
+        "business": 2,
+        "products": 9,
+        "segments": 2,
+        "leadership": 1,
+        "formation": 0
+      },
+      "products": [
+        "Automotive",
+        "Energy Storage Products",
+        "Energy Generation Offerings",
+        "Service and Warranty",
+        "Service",
+        "Vehicle Limited Warranties and Extended Service Plans",
+        "Energy Generation and Storage",
+        "Financial Services",
+        "Purchase Financing and Leases"
+      ],
+      "evidence_bindings": 14
+    },
+    {
+      "issuer": "tesla",
+      "form": "10-Q",
+      "normalization_unchanged": true,
+      "fields_unchanged": true,
+      "counts": {
+        "business": 0,
+        "products": 0,
+        "segments": 2,
+        "leadership": 0,
+        "formation": 0
+      },
+      "products": [],
+      "evidence_bindings": 2
+    },
+    {
+      "issuer": "visa",
+      "form": "10-K",
+      "normalization_unchanged": true,
+      "fields_unchanged": true,
+      "counts": {
+        "business": 2,
+        "products": 10,
+        "segments": 1,
+        "leadership": 1,
+        "formation": 0
+      },
+      "products": [
+        "Credit",
+        "Debit",
+        "Prepaid",
+        "Offerings to Affluent Consumers",
+        "Commercial & Money Movement Solutions",
+        "Visa Commercial Solutions",
+        "Value-Added Services",
+        "Issuing Solutions",
+        "Acceptance Solutions",
+        "Risk and Security Solutions"
+      ],
+      "evidence_bindings": 14
+    },
+    {
+      "issuer": "visa",
+      "form": "10-Q",
+      "normalization_unchanged": true,
+      "fields_unchanged": true,
+      "counts": {
+        "business": 0,
+        "products": 0,
+        "segments": 1,
+        "leadership": 1,
+        "formation": 0
+      },
+      "products": [],
+      "evidence_bindings": 2
+    }
+  ],
+  "charter_compatibility": [
+    {
+      "issuer": "mastercard",
+      "source_sha256": "6ebb22f87fb28f7392d35e24d66a3895dc700d66747c9df224ac0feebc8186da",
+      "old": "https://www.sec.gov/Archives/edgar/data/1141391/000114139125000154/exb31-06242025.htm",
+      "current": "https://www.sec.gov/Archives/edgar/data/1141391/000114139125000154/exb31-06242025.htm",
+      "preserved": true
+    },
+    {
+      "issuer": "visa",
+      "source_sha256": "843c0cab39d63ef150d3676a32ceafb6b968fdf8514ddc4ab047c3a654680484",
+      "old": "https://www.sec.gov/Archives/edgar/data/1403161/000140316124000005/vex3201242024.htm",
+      "current": "https://www.sec.gov/Archives/edgar/data/1403161/000140316124000005/vex3201242024.htm",
+      "preserved": true
+    }
+  ],
+  "source_hashes": {
+    "sec": "431b8a6e494a242ef117c04d4b21ac169c7b14b723673293afd675349ccf3c3d",
+    "html": "ffb1726d4e980b39b26c51929370ce12b377c22781b380caa240c408d1158263"
+  },
+  "post_review_replay": true
+}

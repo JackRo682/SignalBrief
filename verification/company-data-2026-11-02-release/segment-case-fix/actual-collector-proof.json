@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "production": false,
+  "source_sha256": "0197454bb8690907195974ab8e58639984b510f2e922a992ede8a6923d6424c1",
+  "only_result_delta": "segments[0].name preserves exact source case",
+  "old_segment_name": "Single reportable operating segment",
+  "new_segment_name": "single reportable operating segment",
+  "counts": {
+    "business": 2,
+    "products": 2,
+    "segments": 1,
+    "leadership": 1,
+    "formation": 1
+  },
+  "exact_evidence_bindings": 7,
+  "archives_identical": true,
+  "archived": [
+    {
+      "path": "profiles/sec/8b6963dfdfdca8f74c6b5f3d60a61a5182ddb7c7c29e2058cf120de217ff267c.html",
+      "sha256": "8b6963dfdfdca8f74c6b5f3d60a61a5182ddb7c7c29e2058cf120de217ff267c"
+    },
+    {
+      "path": "profiles/sec/5d900affe64cd2af6f18c94c5968893868123f34b3ffba36f11ca8f03baf5b1a.html",
+      "sha256": "5d900affe64cd2af6f18c94c5968893868123f34b3ffba36f11ca8f03baf5b1a"
+    },
+    {
+      "path": "profiles/sec/820d07c43039e041adf7f5f39bda39e652bc825a1a5b0d88b4734adcc5c5d4be.html",
+      "sha256": "820d07c43039e041adf7f5f39bda39e652bc825a1a5b0d88b4734adcc5c5d4be"
+    }
+  ]
+}

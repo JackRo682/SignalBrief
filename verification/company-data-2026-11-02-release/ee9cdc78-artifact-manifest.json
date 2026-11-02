@@ -1,0 +1,227 @@
+{
+  "schema": "signalbrief.release-verification-artifacts.v1",
+  "created_at": "2026-11-02T06:34:19.593235+00:00",
+  "head_sha": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+  "source_tree": "21831a41bb205f7e4792fa8d086325a5db867ced",
+  "artifact_count": 16,
+  "total_artifact_bytes": 719415,
+  "scope": "Immutable existing CI evidence, the original failed local full gate, and one unchanged targeted diagnostic. No new test execution.",
+  "results": {
+    "ci": {
+      "status": "PASS",
+      "applicable_runs": 11,
+      "successful_jobs": 19,
+      "browser_passes_per_run": [
+        {
+          "event": "push",
+          "passed": 92,
+          "duration": "3.4m"
+        },
+        {
+          "event": "pull_request",
+          "passed": 92,
+          "duration": "4.9m"
+        }
+      ],
+      "browser_counts_not_summed": true,
+      "workspace_postgres_major": 17,
+      "workspace_tests": 355,
+      "workspace_skipped": 0,
+      "visa_scale_case_seconds": 0.781,
+      "release_qa": "Not triggered by changed paths or feature push branch; not manually triggered."
+    },
+    "local_first_attempt": {
+      "status": "FAIL",
+      "stages_passed": 7,
+      "stages_failed": 1,
+      "backend_passed": 1098,
+      "backend_failures": 1,
+      "backend_skipped": 0,
+      "failure": "Unchanged 14,500-company visa query exceeded the existing 3-second SQL statement timeout (57014) on PostgreSQL16.15."
+    },
+    "search_diagnostic": {
+      "status": "PASS_DIAGNOSTIC_ONLY",
+      "targeted_attempt_count": 1,
+      "tests": 1,
+      "failures": 0,
+      "skipped": 0,
+      "source_edits": false,
+      "settings_changed": false,
+      "assertions_changed": false,
+      "original_full_gate_remains": "FAIL"
+    },
+    "causal_environment_attribution": "Not established. Neither the isolated diagnostic pass nor PostgreSQL17 CI proves a causal environment fix for the earlier local failure.",
+    "fresh_retry_gate": "Not included in this manifest; root will archive the independently authorized fresh full gate separately after completion."
+  },
+  "credential_review": {
+    "status": "NO_LIVE_CREDENTIALS_OR_PRIVATE_USER_IDS_IDENTIFIED",
+    "checks": [
+      "private-key headers",
+      "provider token prefixes",
+      "JWTs",
+      "bearer credentials",
+      "secret assignments",
+      "signed query parameters",
+      "URL userinfo",
+      "UUID context review"
+    ],
+    "synthetic_credential_like_candidates": 4,
+    "synthetic_candidates_verified_as_literal_negative_test_inputs": true,
+    "retained_identifier_contexts": [
+      "synthetic test fixture identifiers",
+      "public GitHub workflow/job/runner metadata"
+    ],
+    "redactions": 0,
+    "original_bytes_preserved": true,
+    "opaque_build_artifacts_copied": false
+  },
+  "source_or_test_changes": false,
+  "git_stage_or_commit_actions": false,
+  "production_access": false,
+  "artifacts": [
+    {
+      "path": "ee9cdc78-ci-proof.json",
+      "category": "ci",
+      "result_context": "PASS",
+      "original_path": "/tmp/signalbrief-nov2-ee9cdc78-ci-proof.json",
+      "bytes": 20096,
+      "sha256": "fa36a4aaeffd93bed0c1dfad477c91649d7fc51a5fbaa5caf016c258911bf0b1",
+      "copied_without_modification": true
+    },
+    {
+      "path": "ee9cdc78-workspace-ci-proof.json",
+      "category": "ci",
+      "result_context": "PASS",
+      "original_path": "/tmp/signalbrief-nov2-ee9cdc78-ci-workspace-proof.json",
+      "bytes": 5667,
+      "sha256": "85865997a63d2729626029faf43f8fbac41c555879959ec62d524ddc2cc45f25",
+      "copied_without_modification": true
+    },
+    {
+      "path": "ee9cdc78-workspace-ci-junit.xml",
+      "category": "ci",
+      "result_context": "PASS",
+      "original_path": "/tmp/signalbrief-nov2-ee9cdc78-workspace-replay.xml",
+      "bytes": 59661,
+      "sha256": "02a807fc20c70142016797d12cd201c31f2f20432c4a6ed3ad32dc3f591c23fc",
+      "copied_without_modification": true
+    },
+    {
+      "path": "ee9cdc78-workspace-ci.log",
+      "category": "ci",
+      "result_context": "PASS",
+      "original_path": "/tmp/signalbrief-nov2-ee9cdc78-ci-workspace-125125831880.log",
+      "bytes": 202592,
+      "sha256": "a1b54d6798e27bce839cf72555c0a311962546e8de7018b686c8dadb46bac15b",
+      "copied_without_modification": true
+    },
+    {
+      "path": "ee9cdc78-web-push-proof.json",
+      "category": "ci",
+      "result_context": "PASS",
+      "original_path": "/tmp/signalbrief-nov2-ee9cdc78-ci-web-push-proof.json",
+      "bytes": 524,
+      "sha256": "242a3c7df065b216fef67c0021f7c2a067bfc29f9edc64c297d435ede3849448",
+      "copied_without_modification": true
+    },
+    {
+      "path": "ee9cdc78-web-pr-proof.json",
+      "category": "ci",
+      "result_context": "PASS",
+      "original_path": "/tmp/signalbrief-nov2-ee9cdc78-ci-web-pr-proof.json",
+      "bytes": 531,
+      "sha256": "5e9f874b2aa33a60183708986652cf87cf1efafea2dabc35bf8cb34c221c3d24",
+      "copied_without_modification": true
+    },
+    {
+      "path": "ee9cdc78-web-push.log",
+      "category": "ci",
+      "result_context": "PASS",
+      "original_path": "/tmp/signalbrief-nov2-ee9cdc78-ci-web-push-125125753499.log",
+      "bytes": 99510,
+      "sha256": "130114f1253b2bfacebcf76b2675107ada01760b16692522ac18489b65b6eda0",
+      "copied_without_modification": true
+    },
+    {
+      "path": "ee9cdc78-web-pr.log",
+      "category": "ci",
+      "result_context": "PASS",
+      "original_path": "/tmp/signalbrief-nov2-ee9cdc78-ci-web-pr-125125832216.log",
+      "bytes": 100354,
+      "sha256": "ff820f904fb63be391ae2cc547522ac74af9f64b7d7368224a8baa67321b1ae8",
+      "copied_without_modification": true
+    },
+    {
+      "path": "local-first-attempt/verification-proof.json",
+      "category": "local-first-attempt",
+      "result_context": "FAIL",
+      "original_path": "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/verification-proof.json",
+      "bytes": 3681,
+      "sha256": "4a4e56309d5e793788f6c83797574ae22120852b499c7837233cde1a72200a5a",
+      "copied_without_modification": true
+    },
+    {
+      "path": "local-first-attempt/checks.json",
+      "category": "local-first-attempt",
+      "result_context": "FAIL",
+      "original_path": "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/checks.json",
+      "bytes": 3666,
+      "sha256": "06079a3b1d84c1fdf0c9544c64516b8824f78732f1b1e2cb58cfd120cea0643f",
+      "copied_without_modification": true
+    },
+    {
+      "path": "local-first-attempt/backend_tests.log",
+      "category": "local-first-attempt",
+      "result_context": "FAIL",
+      "original_path": "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/backend_tests.log",
+      "bytes": 27790,
+      "sha256": "1c7ba7c6637f63573a59ed549309cd87f0a00e98876233fd16ebe5804528cd18",
+      "copied_without_modification": true
+    },
+    {
+      "path": "local-first-attempt/pytest.xml",
+      "category": "local-first-attempt",
+      "result_context": "FAIL",
+      "original_path": "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/pytest.xml",
+      "bytes": 187045,
+      "sha256": "0d1c37fb1e14c04fdb1be21cd143a35aaac420fce061a82bc575fa3d6c16ec9b",
+      "copied_without_modification": true
+    },
+    {
+      "path": "local-first-attempt/search-timeout-diagnosis.json",
+      "category": "local-first-attempt",
+      "result_context": "FAIL",
+      "original_path": "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/search-timeout-diagnosis.json",
+      "bytes": 5381,
+      "sha256": "b0416b3b37d418c005ebfa893b4fbdda59449c2f4cc2e00502ebb71e22597f09",
+      "copied_without_modification": true
+    },
+    {
+      "path": "search-diagnostic/diagnostic-run.json",
+      "category": "search-diagnostic",
+      "result_context": "PASS_DIAGNOSTIC_ONLY",
+      "original_path": "/tmp/signalbrief-nov2-search-timeout-diagnostic/diagnostic-run.json",
+      "bytes": 1106,
+      "sha256": "35a22384a43d5efb007c26dfa6c6abc803a3c0f9505dbf472d6896133657b92e",
+      "copied_without_modification": true
+    },
+    {
+      "path": "search-diagnostic/pytest.log",
+      "category": "search-diagnostic",
+      "result_context": "PASS_DIAGNOSTIC_ONLY",
+      "original_path": "/tmp/signalbrief-nov2-search-timeout-diagnostic/pytest.log",
+      "bytes": 1376,
+      "sha256": "bf4d432957e83afff72ba2ecc3458de343d749b4cf5f01bb2090ab268be1e9d4",
+      "copied_without_modification": true
+    },
+    {
+      "path": "search-diagnostic/pytest.xml",
+      "category": "search-diagnostic",
+      "result_context": "PASS_DIAGNOSTIC_ONLY",
+      "original_path": "/tmp/signalbrief-nov2-search-timeout-diagnostic/pytest.xml",
+      "bytes": 435,
+      "sha256": "aea46c33c30f7e83cd7d2f4e4487777f10530876864263030e1cb618427faab4",
+      "copied_without_modification": true
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "prior_e391": {
+    "desktop_discovery": {
+      "duration": 9792.679749,
+      "failed": false
+    },
+    "slowest_repository_files": [
+      [
+        ":tests/redesign-dashboard-sql.test.ts",
+        {
+          "duration": 27406.579852,
+          "failed": false
+        }
+      ],
+      [
+        ":tests/redesign-reminders-sql.test.ts",
+        {
+          "duration": 18815.557596000002,
+          "failed": false
+        }
+      ],
+      [
+        ":tests/company-data-sql.test.ts",
+        {
+          "duration": 10716.13042,
+          "failed": false
+        }
+      ],
+      [
+        ":tests/customer-content-sql.test.ts",
+        {
+          "duration": 10565.103413,
+          "failed": false
+        }
+      ],
+      [
+        ":tests/billing-sql.test.ts",
+        {
+          "duration": 10483.705641,
+          "failed": false
+        }
+      ],
+      [
+        ":tests/desktop-discovery.test.tsx",
+        {
+          "duration": 9792.679749,
+          "failed": false
+        }
+      ],
+      [
+        ":tests/company-picker-integration.test.tsx",
+        {
+          "duration": 9532.792465999999,
+          "failed": false
+        }
+      ],
+      [
+        ":tests/source-visibility-sql.test.ts",
+        {
+          "duration": 5954.529918,
+          "failed": false
+        }
+      ]
+    ],
+    "inherited_external_entries_excluded": 3
+  },
+  "current_d0a6": {
+    "desktop_discovery": {
+      "duration": 12837.151236,
+      "failed": true
+    },
+    "slowest_repository_files": [
+      [
+        ":tests/redesign-dashboard-sql.test.ts",
+        {
+          "duration": 29499.628906,
+          "failed": false
+        }
+      ],
+      [
+        ":tests/redesign-reminders-sql.test.ts",
+        {
+          "duration": 15149.328172,
+          "failed": false
+        }
+      ],
+      [
+        ":tests/desktop-discovery.test.tsx",
+        {
+          "duration": 12837.151236,
+          "failed": true
+        }
+      ],
+      [
+        ":tests/company-data-sql.test.ts",
+        {
+          "duration": 11222.289248000001,
+          "failed": false
+        }
+      ],
+      [
+        ":tests/company-picker-integration.test.tsx",
+        {
+          "duration": 11187.083528,
+          "failed": false
+        }
+      ],
+      [
+        ":tests/source-visibility-sql.test.ts",
+        {
+          "duration": 11121.601223,
+          "failed": false
+        }
+      ],
+      [
+        ":tests/customer-content-sql.test.ts",
+        {
+          "duration": 10902.218941000001,
+          "failed": false
+        }
+      ],
+      [
+        ":tests/billing-sql.test.ts",
+        {
+          "duration": 10498.504606,
+          "failed": false
+        }
+      ]
+    ],
+    "inherited_external_entries_excluded": 3
+  }
+}

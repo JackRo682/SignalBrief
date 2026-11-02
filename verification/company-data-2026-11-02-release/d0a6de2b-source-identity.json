@@ -1,0 +1,60 @@
+{
+  "checked_at": "2026-11-02T07:06:35.940410+00:00",
+  "status": "PASS",
+  "head_sha": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+  "source_tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+  "parent_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+  "changed_files": [
+    {
+      "path": "apps/web/tests/company-profile-sec-offerings.test.ts",
+      "status": "modified",
+      "git_blob_sha1": "9c3325d2b4daf667af41c48f5316cb52d47d8be1",
+      "previous_path": null,
+      "sha256": "1e18d6ea290d046897ff67fec86b3005040042d39db4ee3a123497ae709463ae",
+      "bytes": 11523,
+      "matches_published_blob": true
+    },
+    {
+      "path": "supabase/functions/signalbrief-profiles/enrichment-sec.ts",
+      "status": "modified",
+      "git_blob_sha1": "a0930a7ac6bae58f42d163845f723f2084c93846",
+      "previous_path": null,
+      "sha256": "0197454bb8690907195974ab8e58639984b510f2e922a992ede8a6923d6424c1",
+      "bytes": 28187,
+      "matches_published_blob": true
+    },
+    {
+      "path": "supabase/migrations/20261102065627_sec_profile_identity_fields_refresh.sql",
+      "status": "renamed",
+      "git_blob_sha1": "1fac5950565ec0779eb62981aca7a29de14e3433",
+      "previous_path": "supabase/migrations/20261102060524_sec_profile_identity_fields_refresh.sql",
+      "sha256": "be13b53c89049018af49c4c83dfd71ee60da1e3d5dfedd791146adf1a566f27a",
+      "bytes": 1402,
+      "matches_published_blob": true
+    },
+    {
+      "path": "tests/workspace/test_company_profile_identity_fields_refresh.py",
+      "status": "modified",
+      "git_blob_sha1": "bb711ab622a5e67f78dcfdbfc37ab49b881b6f91",
+      "previous_path": null,
+      "sha256": "937ac8eb39cdf143baceafec859a85e2e0fe0474c752b388278cd76ecfcb3b8d",
+      "bytes": 10397,
+      "matches_published_blob": true
+    },
+    {
+      "path": "tests/workspace/test_company_profile_segment_persistence.py",
+      "status": "added",
+      "git_blob_sha1": "d74ed5d494d2600c5cd08825deeeabdc080bcad8",
+      "previous_path": null,
+      "sha256": "6a7ba29779ddf1c8d5d09be59c7d436274584e69471c2cc46516bcc57c8879a5",
+      "bytes": 2587,
+      "matches_published_blob": true
+    }
+  ],
+  "reviewed_runtime_sha256": "0197454bb8690907195974ab8e58639984b510f2e922a992ede8a6923d6424c1",
+  "ledger_rename_bytes_unchanged": true,
+  "source": "Exact GitHub commit API blob IDs compared with reviewed frozen local bytes; migration SHA matches original approved60524 bytes.",
+  "tests_executed": false,
+  "source_edits": false,
+  "production_access": false
+}

@@ -1,0 +1,903 @@
+{
+  "bounds": {
+    "ui_past_from": "2026-08-04",
+    "ui_past_until": "2026-11-01",
+    "collection_from": "2026-08-04",
+    "collection_until": "2028-05-02",
+    "ui_upcoming_from": "2026-11-02",
+    "ui_upcoming_until": "2027-11-02"
+  },
+  "ui_day": "2026-11-02",
+  "companies": [
+    {
+      "profile": {
+        "status": null,
+        "present": false,
+        "sources": [],
+        "formation": [],
+        "checked_at": null,
+        "last_error": null,
+        "leadership": [],
+        "updated_at": null,
+        "lease_until": null,
+        "limitations": null,
+        "lease_active": false,
+        "result_error": null,
+        "product_count": 0,
+        "product_names": [],
+        "segment_count": 0,
+        "segment_names": [],
+        "business_count": 0,
+        "next_refresh_at": null,
+        "business_preview": null,
+        "identity_matches": false
+      },
+      "identity": {
+        "id": "c4037b4d-1973-4ade-bff0-113d50b19172",
+        "name": "Apple",
+        "market": "NASDAQ",
+        "ticker": "AAPL",
+        "provider": "sec",
+        "created_at": "2026-10-03T00:40:02.33883+00:00",
+        "last_ingested_at": "2026-11-02T04:15:04.694+00:00",
+        "expected_company_id": null,
+        "expected_id_matches": null,
+        "provider_company_id": "0000320193",
+        "expected_provider_id": null,
+        "expected_provider_id_matches": null
+      },
+      "financial": {
+        "status": null,
+        "error_code": null,
+        "source_url": null,
+        "lease_active": false,
+        "requested_at": null,
+        "attempt_count": null,
+        "parser_version": null,
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "latest_raw_sha256": null,
+        "source_fetched_at": null,
+        "stored_item_count": 0,
+        "snapshot_created_at": null,
+        "projectable_item_count": 0,
+        "legacy_dart_quarantined": false,
+        "projectable_duration_count": 0,
+        "source_identity_and_archive_valid": false
+      },
+      "calendar_counts": {
+        "ui_past_90d": 0,
+        "ui_upcoming_365d": 1,
+        "collection_past_90d": 0,
+        "provider_total_visible": 1,
+        "collection_upcoming_18mo": 1,
+        "confirmed_but_not_public": 0
+      },
+      "calendar_sources": [
+        {
+          "key": "sec-ir-0000320193",
+          "adapter": "sec-ir",
+          "enabled": true,
+          "attempts": 1,
+          "error_code": null,
+          "finished_at": "2026-11-02T03:01:31.380014+00:00",
+          "queue_state": "idle",
+          "lease_active": false,
+          "requested_at": "2026-11-02T03:01:26.942251+00:00",
+          "last_attempt_at": "2026-11-02T03:01:31.291438+00:00",
+          "last_success_at": "2026-11-02T03:01:31.291438+00:00",
+          "latest_snapshot": {
+            "format": "q4",
+            "schema": "signalbrief.calendar.sec-ir.v1",
+            "sha256": "f3afc487191aa0caeb4ec96c30d81ecdfb4c58876c2880271b3125e266a03b09",
+            "window": {
+              "end": "2028-05-02",
+              "start": "2026-08-04"
+            },
+            "archived": true,
+            "complete": true,
+            "coverage": null,
+            "fetched_at": "2026-11-02T03:01:31.291438+00:00"
+          },
+          "next_attempt_at": "2026-11-02T03:02:01.380014+00:00",
+          "rerun_requested": false,
+          "identity_matches": true
+        }
+      ],
+      "analysis_status_counts": {
+        "sec:needs_review": 2
+      }
+    },
+    {
+      "profile": {
+        "status": "ready",
+        "present": true,
+        "sources": [
+          {
+            "url": "https://www.sec.gov/Archives/edgar/data/1141391/000114139126000013/ma-20251231.htm",
+            "sha256": "6ebb22f87fb28f7392d35e24d66a3895dc700d66747c9df224ac0feebc8186da",
+            "provider": "SEC EDGAR",
+            "fetched_at": "2026-11-02T05:22:26.782Z",
+            "published_on": "2026-02-11",
+            "normalization": "profile-visible-text-v1",
+            "report_period": "2025-12-31"
+          },
+          {
+            "url": "https://www.sec.gov/Archives/edgar/data/1141391/000114139125000154/exb31-06242025.htm",
+            "sha256": "84e1bdd8d4580f7e12bc79a1157e4a318598bb32a03bfb15e42b4b581d2c3583",
+            "provider": "SEC EDGAR",
+            "fetched_at": "2026-11-02T05:22:27.260Z",
+            "published_on": null,
+            "normalization": "profile-visible-text-v1",
+            "report_period": null
+          },
+          {
+            "url": "https://www.sec.gov/Archives/edgar/data/1141391/000114139126000124/ma-20260930.htm",
+            "sha256": "c6ae6a65046f0fb2719e86c5996828fb2c1bd361f17a699b7d2f89d589063d21",
+            "provider": "SEC EDGAR",
+            "fetched_at": "2026-11-02T05:22:26.770Z",
+            "published_on": "2026-10-29",
+            "normalization": "profile-visible-text-v1",
+            "report_period": "2026-09-30"
+          }
+        ],
+        "formation": [
+          {
+            "date": "2001-05-09",
+            "kind": "incorporated",
+            "precision": "day",
+            "source_id": "84e1bdd8d4580f7e12bc79a1157e4a318598bb32a03bfb15e42b4b581d2c3583"
+          }
+        ],
+        "checked_at": "2026-11-02T05:22:26.619Z",
+        "last_error": null,
+        "leadership": [
+          {
+            "name": "Michael Miebach",
+            "role": "Chief Executive Officer",
+            "as_of": "2026-10-29",
+            "basis": "filing",
+            "source_id": "c6ae6a65046f0fb2719e86c5996828fb2c1bd361f17a699b7d2f89d589063d21"
+          }
+        ],
+        "updated_at": "2026-11-02T05:22:27.478877+00:00",
+        "lease_until": null,
+        "limitations": [
+          "leadership_as_of_filing"
+        ],
+        "lease_active": false,
+        "result_error": null,
+        "product_count": 8,
+        "product_names": [
+          "Consumer Payments",
+          "Commercial and New Payment Flows",
+          "Commercial",
+          "Security Solutions",
+          "Consumer Acquisition and Engagement Services",
+          "Business and Market Insights",
+          "Digital and Authentication",
+          "Other Solutions"
+        ],
+        "segment_count": 1,
+        "segment_names": [
+          "Payment Solutions"
+        ],
+        "business_count": 2,
+        "next_refresh_at": "2026-11-03T05:22:26.619+00:00",
+        "business_preview": "Mastercard is a technology company in the global payments industry. We connect consumers, financial institutions, merchants, governments, digital partners, businesses and other organizations worldwide by enabling electro",
+        "identity_matches": true
+      },
+      "identity": {
+        "id": "e2087a38-4ffc-49ab-9ecf-54fac8ca5eae",
+        "name": "Mastercard Inc",
+        "market": "NYSE",
+        "ticker": "MA",
+        "provider": "sec",
+        "created_at": "2026-11-02T02:38:03.033875+00:00",
+        "last_ingested_at": "2026-11-02T05:22:28.204+00:00",
+        "expected_company_id": "e2087a38-4ffc-49ab-9ecf-54fac8ca5eae",
+        "expected_id_matches": true,
+        "provider_company_id": "0001141391",
+        "expected_provider_id": "0001141391",
+        "expected_provider_id_matches": true
+      },
+      "financial": {
+        "status": "ready",
+        "error_code": null,
+        "source_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001141391.json",
+        "lease_active": false,
+        "requested_at": "2026-11-02T02:38:03.022725+00:00",
+        "attempt_count": 0,
+        "parser_version": "reported-financials-v1",
+        "last_attempt_at": "2026-11-02T02:38:04.433543+00:00",
+        "last_success_at": "2026-11-02T02:38:05.298503+00:00",
+        "latest_raw_sha256": "eec2f64179fe268380a6f9f4b5e3da53a9c1c5adb988aa31cc40c8372c0d8899",
+        "source_fetched_at": "2026-11-02T02:38:04.986Z",
+        "stored_item_count": 56,
+        "snapshot_created_at": "2026-11-02T02:38:05.259203+00:00",
+        "projectable_item_count": 56,
+        "legacy_dart_quarantined": false,
+        "projectable_duration_count": 36,
+        "source_identity_and_archive_valid": true
+      },
+      "calendar_counts": {
+        "ui_past_90d": 2,
+        "ui_upcoming_365d": 2,
+        "collection_past_90d": 2,
+        "provider_total_visible": 4,
+        "collection_upcoming_18mo": 2,
+        "confirmed_but_not_public": 0
+      },
+      "calendar_sources": [
+        {
+          "key": "sec-ir-0001141391",
+          "adapter": "sec-ir",
+          "enabled": true,
+          "attempts": 1,
+          "error_code": null,
+          "finished_at": "2026-11-02T05:22:25.891703+00:00",
+          "queue_state": "idle",
+          "lease_active": false,
+          "requested_at": "2026-11-02T05:22:16.93256+00:00",
+          "last_attempt_at": "2026-11-02T05:22:25.835097+00:00",
+          "last_success_at": "2026-11-02T05:22:25.835097+00:00",
+          "latest_snapshot": {
+            "format": "q4",
+            "schema": "signalbrief.calendar.sec-ir.v1",
+            "sha256": "e5aa5be986a906f5371e1c00b2143f45bc467a77abbd48a6807d38c60cc7e5e5",
+            "window": {
+              "end": "2028-05-02",
+              "start": "2026-08-04"
+            },
+            "archived": true,
+            "complete": true,
+            "coverage": null,
+            "fetched_at": "2026-11-02T05:22:25.835097+00:00"
+          },
+          "next_attempt_at": "2026-11-02T05:22:55.891703+00:00",
+          "rerun_requested": false,
+          "identity_matches": true
+        }
+      ],
+      "analysis_status_counts": {
+        "sec:needs_review": 1
+      }
+    },
+    {
+      "profile": {
+        "status": "partial",
+        "present": true,
+        "sources": [
+          {
+            "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002266",
+            "sha256": "67c68238dee08bdfc90132f3e5f0b426c692910f0da45ffcb5eae6a38bb46fad",
+            "provider": "OpenDART",
+            "fetched_at": "2026-11-02T03:00:29.529Z",
+            "published_on": "2026-08-14",
+            "normalization": "dart-periodic-recovered-text-v1",
+            "report_period": "2026-06"
+          }
+        ],
+        "formation": [],
+        "checked_at": "2026-11-02T03:00:29.530Z",
+        "last_error": null,
+        "leadership": [],
+        "updated_at": "2026-11-02T03:00:29.721704+00:00",
+        "lease_until": null,
+        "limitations": [
+          "products_not_explicitly_identified",
+          "segments_not_explicitly_identified",
+          "source_markup_recovery_requires_review"
+        ],
+        "lease_active": false,
+        "result_error": null,
+        "product_count": 0,
+        "product_names": [],
+        "segment_count": 0,
+        "segment_names": [],
+        "business_count": 2,
+        "next_refresh_at": "2026-11-03T03:00:29.53+00:00",
+        "business_preview": "'팀네이버'는 대한민국의 대표적인 IT 기업으로 끊임없는 도전과 성장을 이뤄가고 있습니다. 첨단의 기술을 일상의 서비스에 담아 사용자에게 새로운 연결의 경험을 선보이는 도전을 멈추지 않음으로써, 다양한 기회와 가능성을 열어 나가고 네이버를 둘러싼 모든 이해관계자들에게 차별화된 가치를 제공하고 있습니다.",
+        "identity_matches": true
+      },
+      "identity": {
+        "id": "d702c7c0-a307-4f81-9325-835580e5978b",
+        "name": "NAVER",
+        "market": "KOSPI",
+        "ticker": "035420",
+        "provider": "dart",
+        "created_at": "2026-11-01T06:04:57.889047+00:00",
+        "last_ingested_at": "2026-11-02T05:22:28.881+00:00",
+        "expected_company_id": "d702c7c0-a307-4f81-9325-835580e5978b",
+        "expected_id_matches": true,
+        "provider_company_id": "00266961",
+        "expected_provider_id": "00266961",
+        "expected_provider_id_matches": true
+      },
+      "financial": {
+        "status": "unavailable",
+        "error_code": "invalid_financial_source",
+        "source_url": "https://opendart.fss.or.kr/api/fnlttSinglAcnt.json?corp_code=00266961&bsns_year=2026&reprt_code=11012",
+        "lease_active": false,
+        "requested_at": "2026-11-02T05:10:51.101926+00:00",
+        "attempt_count": 2,
+        "parser_version": "reported-financials-v1",
+        "last_attempt_at": "2026-11-02T05:18:09.690505+00:00",
+        "last_success_at": "2026-11-02T03:00:26.505568+00:00",
+        "latest_raw_sha256": "c673aebd0defca11fcda93a100da04b08d62e94587041754aa7103afdd847281",
+        "source_fetched_at": "2026-11-02T03:00:26.458Z",
+        "stored_item_count": 24,
+        "snapshot_created_at": "2026-11-02T03:00:26.500775+00:00",
+        "projectable_item_count": 12,
+        "legacy_dart_quarantined": true,
+        "projectable_duration_count": 0,
+        "source_identity_and_archive_valid": true
+      },
+      "calendar_counts": {
+        "ui_past_90d": 2,
+        "ui_upcoming_365d": 1,
+        "collection_past_90d": 2,
+        "provider_total_visible": 3,
+        "collection_upcoming_18mo": 1,
+        "confirmed_but_not_public": 0
+      },
+      "calendar_sources": [
+        {
+          "key": "dart-ir-00266961",
+          "adapter": "dart-ir",
+          "enabled": true,
+          "attempts": 1,
+          "error_code": null,
+          "finished_at": "2026-11-01T18:17:08.863662+00:00",
+          "queue_state": "idle",
+          "lease_active": false,
+          "requested_at": "2026-11-01T18:17:00.022066+00:00",
+          "last_attempt_at": "2026-11-01T18:17:08.836349+00:00",
+          "last_success_at": "2026-11-01T18:17:08.836349+00:00",
+          "latest_snapshot": {
+            "format": null,
+            "schema": "signalbrief.calendar.dart-ir.v2",
+            "sha256": "361a605f21eaaa21e67a15ea7e1cf8b6b5d38ea08836a9815e6c6338062c19b1",
+            "window": {
+              "end": "2028-05-02",
+              "start": "2026-08-04"
+            },
+            "archived": true,
+            "complete": true,
+            "coverage": null,
+            "fetched_at": "2026-11-01T18:17:08.836349+00:00"
+          },
+          "next_attempt_at": "2026-11-01T18:17:38.863662+00:00",
+          "rerun_requested": false,
+          "identity_matches": true
+        }
+      ],
+      "analysis_status_counts": {
+        "dart:needs_review": 13
+      }
+    },
+    {
+      "profile": {
+        "status": null,
+        "present": false,
+        "sources": [],
+        "formation": [],
+        "checked_at": null,
+        "last_error": null,
+        "leadership": [],
+        "updated_at": null,
+        "lease_until": null,
+        "limitations": null,
+        "lease_active": false,
+        "result_error": null,
+        "product_count": 0,
+        "product_names": [],
+        "segment_count": 0,
+        "segment_names": [],
+        "business_count": 0,
+        "next_refresh_at": null,
+        "business_preview": null,
+        "identity_matches": false
+      },
+      "identity": {
+        "id": "14bd9d95-4fbb-4a16-ad5f-3eb43f3ce1e8",
+        "name": "삼성전자",
+        "market": "KOSPI",
+        "ticker": "005930",
+        "provider": "dart",
+        "created_at": "2026-10-03T00:40:02.33883+00:00",
+        "last_ingested_at": "2026-11-02T05:20:07.647+00:00",
+        "expected_company_id": null,
+        "expected_id_matches": null,
+        "provider_company_id": "00126380",
+        "expected_provider_id": "00126380",
+        "expected_provider_id_matches": true
+      },
+      "financial": {
+        "status": null,
+        "error_code": null,
+        "source_url": null,
+        "lease_active": false,
+        "requested_at": null,
+        "attempt_count": null,
+        "parser_version": null,
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "latest_raw_sha256": null,
+        "source_fetched_at": null,
+        "stored_item_count": 0,
+        "snapshot_created_at": null,
+        "projectable_item_count": 0,
+        "legacy_dart_quarantined": false,
+        "projectable_duration_count": 0,
+        "source_identity_and_archive_valid": false
+      },
+      "calendar_counts": {
+        "ui_past_90d": 13,
+        "ui_upcoming_365d": 0,
+        "collection_past_90d": 13,
+        "provider_total_visible": 13,
+        "collection_upcoming_18mo": 0,
+        "confirmed_but_not_public": 0
+      },
+      "calendar_sources": [
+        {
+          "key": "samsung-ir",
+          "adapter": "samsung",
+          "enabled": true,
+          "attempts": 1,
+          "error_code": null,
+          "finished_at": "2026-11-02T05:22:26.795522+00:00",
+          "queue_state": "idle",
+          "lease_active": false,
+          "requested_at": "2026-11-02T05:22:16.93256+00:00",
+          "last_attempt_at": "2026-11-02T05:22:26.734207+00:00",
+          "last_success_at": "2026-11-02T05:22:26.734207+00:00",
+          "latest_snapshot": {
+            "format": null,
+            "schema": "signalbrief.calendar.samsung.v1",
+            "sha256": "226ce36a59ac2080eaeb954212eadcb40e7ad01e631d45a22de2aa9f14c9cdbb",
+            "window": null,
+            "archived": true,
+            "complete": false,
+            "coverage": "current-month-upcoming-and-recent-history",
+            "fetched_at": "2026-11-02T05:22:26.734207+00:00"
+          },
+          "next_attempt_at": "2026-11-02T05:22:56.795522+00:00",
+          "rerun_requested": false,
+          "identity_matches": true
+        }
+      ],
+      "analysis_status_counts": {
+        "dart:approved": 5,
+        "dart:needs_review": 15
+      }
+    },
+    {
+      "profile": {
+        "status": null,
+        "present": false,
+        "sources": [],
+        "formation": [],
+        "checked_at": null,
+        "last_error": null,
+        "leadership": [],
+        "updated_at": null,
+        "lease_until": null,
+        "limitations": null,
+        "lease_active": false,
+        "result_error": null,
+        "product_count": 0,
+        "product_names": [],
+        "segment_count": 0,
+        "segment_names": [],
+        "business_count": 0,
+        "next_refresh_at": null,
+        "business_preview": null,
+        "identity_matches": false
+      },
+      "identity": {
+        "id": "99c24832-cdd5-44c9-9f1e-dc7e50c7ac15",
+        "name": "Sandisk Corp",
+        "market": "NASDAQ",
+        "ticker": "SNDK",
+        "provider": "sec",
+        "created_at": "2026-11-01T06:43:36.148783+00:00",
+        "last_ingested_at": "2026-11-02T04:45:04.574+00:00",
+        "expected_company_id": null,
+        "expected_id_matches": null,
+        "provider_company_id": "0002023554",
+        "expected_provider_id": null,
+        "expected_provider_id_matches": null
+      },
+      "financial": {
+        "status": null,
+        "error_code": null,
+        "source_url": null,
+        "lease_active": false,
+        "requested_at": null,
+        "attempt_count": null,
+        "parser_version": null,
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "latest_raw_sha256": null,
+        "source_fetched_at": null,
+        "stored_item_count": 0,
+        "snapshot_created_at": null,
+        "projectable_item_count": 0,
+        "legacy_dart_quarantined": false,
+        "projectable_duration_count": 0,
+        "source_identity_and_archive_valid": false
+      },
+      "calendar_counts": {
+        "ui_past_90d": 0,
+        "ui_upcoming_365d": 0,
+        "collection_past_90d": 0,
+        "provider_total_visible": 0,
+        "collection_upcoming_18mo": 0,
+        "confirmed_but_not_public": 0
+      },
+      "calendar_sources": [
+        {
+          "key": "sec-ir-0002023554",
+          "adapter": "sec-ir",
+          "enabled": true,
+          "attempts": 3,
+          "error_code": "official_calendar_format_unsupported",
+          "finished_at": "2026-11-02T05:25:05.053474+00:00",
+          "queue_state": "failed",
+          "lease_active": false,
+          "requested_at": "2026-11-02T05:22:16.93256+00:00",
+          "last_attempt_at": "2026-11-02T05:25:05.002051+00:00",
+          "last_success_at": null,
+          "latest_snapshot": null,
+          "next_attempt_at": "2026-11-02T05:27:05.053474+00:00",
+          "rerun_requested": false,
+          "identity_matches": true
+        }
+      ],
+      "analysis_status_counts": {
+        "sec:needs_review": 6
+      }
+    },
+    {
+      "profile": {
+        "status": null,
+        "present": false,
+        "sources": [],
+        "formation": [],
+        "checked_at": null,
+        "last_error": null,
+        "leadership": [],
+        "updated_at": null,
+        "lease_until": null,
+        "limitations": null,
+        "lease_active": false,
+        "result_error": null,
+        "product_count": 0,
+        "product_names": [],
+        "segment_count": 0,
+        "segment_names": [],
+        "business_count": 0,
+        "next_refresh_at": null,
+        "business_preview": null,
+        "identity_matches": false
+      },
+      "identity": {
+        "id": "422ed3db-e337-4be0-995d-f46a5cce9453",
+        "name": "Tesla",
+        "market": "NASDAQ",
+        "ticker": "TSLA",
+        "provider": "sec",
+        "created_at": "2026-10-03T00:40:02.33883+00:00",
+        "last_ingested_at": "2026-11-02T05:00:05.934+00:00",
+        "expected_company_id": null,
+        "expected_id_matches": null,
+        "provider_company_id": "0001318605",
+        "expected_provider_id": "0001318605",
+        "expected_provider_id_matches": true
+      },
+      "financial": {
+        "status": null,
+        "error_code": null,
+        "source_url": null,
+        "lease_active": false,
+        "requested_at": null,
+        "attempt_count": null,
+        "parser_version": null,
+        "last_attempt_at": null,
+        "last_success_at": null,
+        "latest_raw_sha256": null,
+        "source_fetched_at": null,
+        "stored_item_count": 0,
+        "snapshot_created_at": null,
+        "projectable_item_count": 0,
+        "legacy_dart_quarantined": false,
+        "projectable_duration_count": 0,
+        "source_identity_and_archive_valid": false
+      },
+      "calendar_counts": {
+        "ui_past_90d": 1,
+        "ui_upcoming_365d": 0,
+        "collection_past_90d": 1,
+        "provider_total_visible": 1,
+        "collection_upcoming_18mo": 0,
+        "confirmed_but_not_public": 0
+      },
+      "calendar_sources": [
+        {
+          "key": "sec-ir-0001318605",
+          "adapter": "sec-ir",
+          "enabled": true,
+          "attempts": 1,
+          "error_code": null,
+          "finished_at": "2026-11-02T05:22:21.497364+00:00",
+          "queue_state": "idle",
+          "lease_active": false,
+          "requested_at": "2026-11-02T05:22:16.93256+00:00",
+          "last_attempt_at": "2026-11-02T05:22:21.415173+00:00",
+          "last_success_at": "2026-11-02T05:22:21.415173+00:00",
+          "latest_snapshot": {
+            "format": "sec-filing",
+            "schema": "signalbrief.calendar.sec-filing.v1",
+            "sha256": "af0e4f0aa28f03aaf04d3df8a6f2d42f63eaac39c468bec4058d54ef3fbb1dd0",
+            "window": {
+              "end": "2028-05-02",
+              "start": "2026-08-04"
+            },
+            "archived": true,
+            "complete": false,
+            "coverage": "explicit-sec-announcement",
+            "fetched_at": "2026-11-02T05:22:21.415173+00:00"
+          },
+          "next_attempt_at": "2026-11-02T05:22:51.497364+00:00",
+          "rerun_requested": false,
+          "identity_matches": true
+        }
+      ],
+      "analysis_status_counts": {
+        "sec:approved": 3
+      }
+    },
+    {
+      "profile": {
+        "status": "ready",
+        "present": true,
+        "sources": [
+          {
+            "url": "https://www.sec.gov/Archives/edgar/data/1403161/000140316125000089/v-20250930.htm",
+            "sha256": "843c0cab39d63ef150d3676a32ceafb6b968fdf8514ddc4ab047c3a654680484",
+            "provider": "SEC EDGAR",
+            "fetched_at": "2026-11-02T02:50:22.107Z",
+            "published_on": "2025-11-06",
+            "normalization": "profile-visible-text-v1",
+            "report_period": "2025-09-30"
+          },
+          {
+            "url": "https://www.sec.gov/Archives/edgar/data/1403161/000140316124000005/vex3201242024.htm",
+            "sha256": "a6e99e11241f4cbc15b5ebf6b51310d4a87acef15b102072e1ba7784b1272bd4",
+            "provider": "SEC EDGAR",
+            "fetched_at": "2026-11-02T02:50:22.538Z",
+            "published_on": null,
+            "normalization": "profile-visible-text-v1",
+            "report_period": null
+          },
+          {
+            "url": "https://www.sec.gov/Archives/edgar/data/1403161/000140316126000104/v-20260630.htm",
+            "sha256": "721f029137c5a0fb666162d0b73e5f5ec3f638847bfa94ba5f5b188db66d2e45",
+            "provider": "SEC EDGAR",
+            "fetched_at": "2026-11-02T02:50:22.114Z",
+            "published_on": "2026-07-29",
+            "normalization": "profile-visible-text-v1",
+            "report_period": "2026-06-30"
+          },
+          {
+            "url": "https://investor.visa.com/investor-relations/corporate-governance/board-of-directors/Person-Details/",
+            "sha256": "d290fb3501eb5d6a4bf794c31c985a6f0de6122472d9a77722585a29eb1a2779",
+            "provider": "Official company",
+            "fetched_at": "2026-11-02T02:50:22.438Z",
+            "published_on": null,
+            "normalization": "profile-visible-text-v1",
+            "report_period": null
+          }
+        ],
+        "formation": [
+          {
+            "date": "2007-05-25",
+            "kind": "incorporated",
+            "precision": "day",
+            "source_id": "a6e99e11241f4cbc15b5ebf6b51310d4a87acef15b102072e1ba7784b1272bd4"
+          }
+        ],
+        "checked_at": "2026-11-02T02:50:21.823Z",
+        "last_error": null,
+        "leadership": [
+          {
+            "name": "Ryan McInerney",
+            "role": "Chief Executive Officer",
+            "as_of": "2026-11-02",
+            "basis": "official_page",
+            "source_id": "d290fb3501eb5d6a4bf794c31c985a6f0de6122472d9a77722585a29eb1a2779"
+          }
+        ],
+        "updated_at": "2026-11-02T02:50:22.856501+00:00",
+        "lease_until": null,
+        "limitations": [],
+        "lease_active": false,
+        "result_error": null,
+        "product_count": 10,
+        "product_names": [
+          "Credit",
+          "Debit",
+          "Prepaid",
+          "Offerings to Affluent Consumers",
+          "Commercial & Money Movement Solutions",
+          "Visa Commercial Solutions",
+          "Value-Added Services",
+          "Issuing Solutions",
+          "Acceptance Solutions",
+          "Advisory and Other Services"
+        ],
+        "segment_count": 1,
+        "segment_names": [
+          "Payment Services"
+        ],
+        "business_count": 2,
+        "next_refresh_at": "2026-11-02T05:21:48.272366+00:00",
+        "business_preview": "•We offer a wide range of Visa-branded payment products that our clients, including nearly 14,500 financial institutions, use to develop and offer payment solutions or services, including credit, debit, prepaid and cash ",
+        "identity_matches": true
+      },
+      "identity": {
+        "id": "36cdabc1-272b-41bb-9b01-d63946dc499a",
+        "name": "VISA INC.",
+        "market": "NYSE",
+        "ticker": "V",
+        "provider": "sec",
+        "created_at": "2026-11-02T00:41:37.984438+00:00",
+        "last_ingested_at": "2026-11-02T05:15:04.297+00:00",
+        "expected_company_id": "36cdabc1-272b-41bb-9b01-d63946dc499a",
+        "expected_id_matches": true,
+        "provider_company_id": "0001403161",
+        "expected_provider_id": "0001403161",
+        "expected_provider_id_matches": true
+      },
+      "financial": {
+        "status": "ready",
+        "error_code": null,
+        "source_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001403161.json",
+        "lease_active": false,
+        "requested_at": "2026-11-02T02:31:08.076677+00:00",
+        "attempt_count": 0,
+        "parser_version": "reported-financials-v1",
+        "last_attempt_at": "2026-11-02T02:31:08.16056+00:00",
+        "last_success_at": "2026-11-02T02:31:09.378186+00:00",
+        "latest_raw_sha256": "df3caf7c5667296569fc3074ce2ff13629c9a555184a06c5ea9925b43e63971d",
+        "source_fetched_at": "2026-11-02T02:31:09.146Z",
+        "stored_item_count": 44,
+        "snapshot_created_at": "2026-11-02T02:31:09.369928+00:00",
+        "projectable_item_count": 44,
+        "legacy_dart_quarantined": false,
+        "projectable_duration_count": 24,
+        "source_identity_and_archive_valid": true
+      },
+      "calendar_counts": {
+        "ui_past_90d": 2,
+        "ui_upcoming_365d": 5,
+        "collection_past_90d": 2,
+        "provider_total_visible": 7,
+        "collection_upcoming_18mo": 5,
+        "confirmed_but_not_public": 0
+      },
+      "calendar_sources": [
+        {
+          "key": "sec-ir-0001403161",
+          "adapter": "sec-ir",
+          "enabled": true,
+          "attempts": 1,
+          "error_code": null,
+          "finished_at": "2026-11-02T02:25:17.968433+00:00",
+          "queue_state": "idle",
+          "lease_active": false,
+          "requested_at": "2026-11-02T02:04:37.561669+00:00",
+          "last_attempt_at": "2026-11-02T02:25:17.862165+00:00",
+          "last_success_at": "2026-11-02T02:25:17.862165+00:00",
+          "latest_snapshot": {
+            "format": "q4",
+            "schema": "signalbrief.calendar.sec-ir.v1",
+            "sha256": "ac805a9924f0806787c21adaa8783d2f5dcb5a3bd9aa2756b3df746636cab4f0",
+            "window": {
+              "end": "2028-05-02",
+              "start": "2026-08-04"
+            },
+            "archived": true,
+            "complete": true,
+            "coverage": null,
+            "fetched_at": "2026-11-02T02:25:17.862165+00:00"
+          },
+          "next_attempt_at": "2026-11-02T02:25:47.968433+00:00",
+          "rerun_requested": false,
+          "identity_matches": true
+        }
+      ],
+      "analysis_status_counts": {
+        "sec:needs_review": 3
+      }
+    }
+  ],
+  "ui_row_cap": 500,
+  "observed_at": "2026-11-02T05:25:43.776542+00:00",
+  "tesla_oct21": [
+    {
+      "id": "9be05fee-dd63-4535-b021-baf8bf0a874a",
+      "title": "TSLA 2026 Q3 earnings",
+      "schema": "signalbrief.calendar.sec-filing.v1",
+      "complete": false,
+      "coverage": "explicit-sec-announcement",
+      "occurs_on": "2026-10-21",
+      "source_key": "sec-ir-0001318605",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066738/exhibit9914.htm",
+      "verified_at": "2026-11-02T05:22:21.415173+00:00",
+      "snapshot_sha256": "af0e4f0aa28f03aaf04d3df8a6f2d42f63eaac39c468bec4058d54ef3fbb1dd0",
+      "source_timezone": null,
+      "provider_visible": true,
+      "source_event_key": "quarter:2026:Q3"
+    }
+  ],
+  "ui_timezone": "Asia/Seoul",
+  "database_date": "2026-11-02",
+  "target_matches": [
+    {
+      "label": "Apple",
+      "ticker": "AAPL",
+      "provider": "sec",
+      "matched_count": 1
+    },
+    {
+      "label": "Mastercard",
+      "ticker": "MA",
+      "provider": "sec",
+      "matched_count": 1
+    },
+    {
+      "label": "NAVER",
+      "ticker": "035420",
+      "provider": "dart",
+      "matched_count": 1
+    },
+    {
+      "label": "Samsung",
+      "ticker": "005930",
+      "provider": "dart",
+      "matched_count": 1
+    },
+    {
+      "label": "Sandisk",
+      "ticker": "SNDK",
+      "provider": "sec",
+      "matched_count": 1
+    },
+    {
+      "label": "Tesla",
+      "ticker": "TSLA",
+      "provider": "sec",
+      "matched_count": 1
+    },
+    {
+      "label": "Visa",
+      "ticker": "V",
+      "provider": "sec",
+      "matched_count": 1
+    }
+  ],
+  "naver_archived_versions": [
+    {
+      "archived": true,
+      "created_at": "2026-11-02T03:00:26.500775+00:00",
+      "item_count": 24,
+      "raw_sha256": "c673aebd0defca11fcda93a100da04b08d62e94587041754aa7103afdd847281",
+      "parser_version": "reported-financials-v1",
+      "snapshot_fingerprint": "87a77ef83963c1858409733245256c3d10f4ddf0c9167a460b499bfa85e33b25"
+    }
+  ],
+  "naver_projectable_revenue": []
+}

@@ -236,7 +236,7 @@
     }
   },
   "deployment": {
-    "migration": "20261102010020_calendar_sec_ir_discovery.sql",
+    "migration": "20261102020437_calendar_sec_ir_discovery.sql",
     "order": [
       "Deploy the web Node /api/internal/calendar-source bridge using existing DART_RELAY_SECRET and Supabase public configuration; confirm it is available.",
       "Apply additive calendar migration; new SEC work stays pending behind sec_ir_ready=false.",
@@ -267,5 +267,6 @@
     "Original third-party bytes remain in a temporary private replay archive and are not committed as synthetic fixtures.",
     "Authenticated production collection and frontend acceptance remain separate root-owned release gates.",
     "The local native-DNS live transport attempt failed before downloading SEC bytes. Synthetic pinning/security tests passed; production network acceptance remains pending."
-  ]
+  ],
+  "historical_scope_note": "This file records the initial local replay phase only. Subsequent production deployment and broader calendar adapters are recorded in company-data-2026-11-02.json and its linked final proofs."
 }

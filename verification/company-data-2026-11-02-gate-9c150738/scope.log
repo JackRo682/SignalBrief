@@ -1,0 +1,10 @@
+{
+  "scope": "signed-in customer desktop and mobile MVP",
+  "protected_baseline_commit": "485ad4b8a4c2c18b0c370e27abca34254356704d",
+  "protected_public_admin_auth_files": 90,
+  "retained_feature_files": 17,
+  "verified_customer_entry_points": 2,
+  "verified_customer_entry_points_baseline_commit": "7e9f0d665bdfca69c2f96a9b45e905a91a1a343a",
+  "status": "PASS",
+  "failures": []
+}

@@ -1,0 +1,9 @@
+
+ RUN  v4.1.12 /workspace/scratch/dad3be52d7a5/signalbrief/apps/web
+
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  15:43:33
+   Duration  3.15s (transform 781ms, setup 94ms, import 1.12s, tests 1.12s, environment 613ms)
+

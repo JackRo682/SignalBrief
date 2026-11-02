@@ -1,0 +1,56 @@
+{
+  "status": "frozen",
+  "recorded_at": "2026-11-02T06:07:57.234205+00:00",
+  "files": {
+    "supabase/migrations/20261102060524_sec_profile_identity_fields_refresh.sql": "be13b53c89049018af49c4c83dfd71ee60da1e3d5dfedd791146adf1a566f27a",
+    "tests/workspace/test_company_profile_identity_fields_refresh.py": "636ef6ec5098187bd228412c31aca04049e21c1859869aea5246a702e70dc4d0"
+  },
+  "tests": {
+    "postgres_passed": 31,
+    "skipped": 0,
+    "duration_seconds": 2.32,
+    "ruff": "PASS",
+    "diff_check": "PASS",
+    "log": "/tmp/signalbrief-sec-profile-identity-refresh-pg.log"
+  },
+  "selection": {
+    "provider": "sec",
+    "schema": "signalbrief.company-profile.v1",
+    "status": "partial",
+    "leadership": [],
+    "row_last_error": null,
+    "result_last_error": null,
+    "source_provider": "SEC EDGAR",
+    "normalization": "profile-visible-text-v1",
+    "forms": [
+      "10-K",
+      "10-K/A",
+      "10-Q",
+      "10-Q/A",
+      "20-F",
+      "20-F/A",
+      "40-F",
+      "40-F/A"
+    ]
+  },
+  "preserves": [
+    "all profile fields and exact quotes",
+    "source archives and storage objects",
+    "checked_at",
+    "updated_at",
+    "error details and failed cooldowns",
+    "expired lease until normal worker claims",
+    "non-SEC providers",
+    "profiles with existing leadership",
+    "ready/unavailable/unrecognized states"
+  ],
+  "guard": "table SHARE ROW EXCLUSIVE lock and abort on any active SEC lease",
+  "timestamp": "same instant in row and JSON, explicit UTC Z in JSON",
+  "deployment_order": "Deploy corrected profiles parser, wait for no active SEC leases, then apply this additive migration",
+  "database_postflight": {
+    "port": 55434,
+    "public_users": null,
+    "active_other_sessions": 0
+  },
+  "production_actions": false
+}

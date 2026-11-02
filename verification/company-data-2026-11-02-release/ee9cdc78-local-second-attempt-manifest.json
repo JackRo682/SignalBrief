@@ -1,0 +1,142 @@
+{
+  "schema": "signalbrief.release-verification-artifacts.v1",
+  "created_at": "2026-11-02T06:43:32.672358+00:00",
+  "head_sha": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+  "source_tree": "21831a41bb205f7e4792fa8d086325a5db867ced",
+  "scope": "Separate immutable extension for the second full local attempt on the same source; the first CI/local-history manifest remains unchanged.",
+  "prior_manifest": {
+    "path": "ee9cdc78-artifact-manifest.json",
+    "bytes": 8902,
+    "sha256": "b0edb60d8ec60ee2349521b5c457b9fd774a188ce87b026a4934f10babe2917b",
+    "unchanged": true
+  },
+  "status": "FAIL",
+  "stages_passed": 7,
+  "stages_failed": 1,
+  "backend": {
+    "passed": 1099,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "frontend": {
+    "passed": 1677,
+    "failures": 1,
+    "files_passed": 116,
+    "files_failed": 1
+  },
+  "failure": "Existing mobile-search-company test used a global alert selector while independent company-profile and holdings-dialog errors were both visible.",
+  "failure_case": "tests/mobile-search-company.test.tsx > mobile company persisted actions > blocks saving when existing holdings cannot be loaded, and retries the read",
+  "source_identity": {
+    "status": "PASS",
+    "tracked_blobs_checked": 1104,
+    "hashes_and_executable_modes_match": true
+  },
+  "causal_environment_attribution": "Not established. The backend pass is recorded without attributing the original SQL timeout to a proven environment cause.",
+  "fresh_test_only_commit_or_future_gate": "Not included; this archive preserves the original second attempt before the separate selector correction.",
+  "artifact_count": 11,
+  "total_artifact_bytes": 645600,
+  "credential_review": {
+    "status": "NO_LIVE_CREDENTIALS_OR_PRIVATE_USER_IDS_IDENTIFIED",
+    "synthetic_credential_like_candidates": 4,
+    "synthetic_candidates_verified_as_literal_negative_test_inputs": true,
+    "redactions": 0,
+    "original_bytes_preserved": true,
+    "database_urls": "Loopback disposable test databases without passwords",
+    "opaque_build_artifacts_copied": false
+  },
+  "tests_executed_for_archival": false,
+  "source_or_test_edits": false,
+  "git_stage_or_commit_actions": false,
+  "production_access": false,
+  "artifacts": [
+    {
+      "source": "/tmp/signalbrief-nov2-final-retry-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/checks.json",
+      "path": "local-second-attempt/checks.json",
+      "bytes": 3639,
+      "sha256": "98a0c6b22a384f15f337467c80e092eaa98f18ecd670a383c1c88efa019acd7a",
+      "copied_without_modification": true,
+      "result_context": "FAIL_SECOND_FULL_ATTEMPT"
+    },
+    {
+      "source": "/tmp/signalbrief-nov2-final-retry-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/frontend_unit_tests.log",
+      "path": "local-second-attempt/frontend_unit_tests.log",
+      "bytes": 17543,
+      "sha256": "c564eff32c4b18c8075010677a6357622c405729a840a0bfebe6cac8753c3e07",
+      "copied_without_modification": true,
+      "result_context": "FAIL_SECOND_FULL_ATTEMPT"
+    },
+    {
+      "source": "/tmp/signalbrief-nov2-final-retry-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/backend_tests.log",
+      "path": "local-second-attempt/backend_tests.log",
+      "bytes": 2348,
+      "sha256": "cc28c653ad0ceef03dea37b5223c4cfaac02fcc4dfb14918798010902502af04",
+      "copied_without_modification": true,
+      "result_context": "FAIL_SECOND_FULL_ATTEMPT"
+    },
+    {
+      "source": "/tmp/signalbrief-nov2-final-retry-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/pytest.xml",
+      "path": "local-second-attempt/pytest.xml",
+      "bytes": 161361,
+      "sha256": "bd5188f27934e9f6316065735c363b4cf99f3ec03af88c104b2adc521d5077cf",
+      "copied_without_modification": true,
+      "result_context": "FAIL_SECOND_FULL_ATTEMPT"
+    },
+    {
+      "source": "/tmp/signalbrief-nov2-final-retry-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/capture.json",
+      "path": "local-second-attempt/capture.json",
+      "bytes": 2545,
+      "sha256": "c4264d074b94bcf0e16c966eaeaf4d142b74a802a8809859d6d29d9b684a0413",
+      "copied_without_modification": true,
+      "result_context": "FAIL_SECOND_FULL_ATTEMPT"
+    },
+    {
+      "source": "/tmp/signalbrief-nov2-final-retry-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/prior-evidence-references.json",
+      "path": "local-second-attempt/prior-evidence-references.json",
+      "bytes": 990,
+      "sha256": "8fe6028e78717f81a3ea70744e93ad78983964ce982fb2941f4047d6819af79b",
+      "copied_without_modification": true,
+      "result_context": "FAIL_SECOND_FULL_ATTEMPT"
+    },
+    {
+      "source": "/tmp/signalbrief-nov2-isolated-final-retry-environment.json",
+      "path": "local-second-attempt/database-environment-settings.json",
+      "bytes": 189610,
+      "sha256": "c6f0f80cf846e5ac5f9e21d14efef2df59e48057051a412da82a6a8ea73f5723",
+      "copied_without_modification": true,
+      "result_context": "FAIL_SECOND_FULL_ATTEMPT"
+    },
+    {
+      "source": "/tmp/signalbrief-nov2-search-timeout-settings-comparison.json",
+      "path": "local-second-attempt/settings-comparison.json",
+      "bytes": 95872,
+      "sha256": "ce8d2ba87ddb3c7d7977d8d5e1a49ff48640cd489ffdf9d7a128cb80199ea6b7",
+      "copied_without_modification": true,
+      "result_context": "FAIL_SECOND_FULL_ATTEMPT"
+    },
+    {
+      "source": "/tmp/signalbrief-nov2-final-source-21831a41bb205f7e.json",
+      "path": "local-second-attempt/source-snapshot-manifest.json",
+      "bytes": 168029,
+      "sha256": "2c7f810b4c4cee27f8d06a55d685d3b401fa139cbdb2414a12db97d72f7b25c6",
+      "copied_without_modification": true,
+      "result_context": "FAIL_SECOND_FULL_ATTEMPT"
+    },
+    {
+      "source": "/tmp/signalbrief-nov2-final-retry-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/verification-proof.json",
+      "path": "local-second-attempt/verification-proof.json",
+      "bytes": 3336,
+      "sha256": "a3f048d42f75c26dbf8aed4eacf4d483fdaa66163cd865f5319a7c58cf43b01f",
+      "copied_without_modification": true,
+      "result_context": "FAIL_SECOND_FULL_ATTEMPT"
+    },
+    {
+      "source": "/tmp/signalbrief-nov2-final-retry-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/post-gate-source-identity.json",
+      "path": "local-second-attempt/post-gate-source-identity.json",
+      "bytes": 327,
+      "sha256": "3198bc0afe4c77b66c5b31032b64e24e382f0eb00aee9cf3049e81d94d8f64d3",
+      "copied_without_modification": true,
+      "result_context": "FAIL_SECOND_FULL_ATTEMPT"
+    }
+  ]
+}

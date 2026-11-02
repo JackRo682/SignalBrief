@@ -1,0 +1,81 @@
+{
+  "recorded_at": "2026-11-02T06:42:35.710483+00:00",
+  "source_commit": "ee9cdc7813bee865de8c18ae61fc44489ce84632",
+  "source_tree": "21831a41bb205f7e4792fa8d086325a5db867ced",
+  "status": "FAIL",
+  "returncode": 1,
+  "started_at": "2026-11-02T06:31:01.869824+00:00",
+  "finished_at": "2026-11-02T06:37:02.075816+00:00",
+  "stage_counts": {
+    "passed": 7,
+    "failed": 1,
+    "total": 8
+  },
+  "stages": {
+    "python_compile": "PASS",
+    "backend_tests": "PASS",
+    "openapi_export": "PASS",
+    "backend_lint": "PASS",
+    "frontend_lint": "PASS",
+    "frontend_typecheck": "PASS",
+    "frontend_unit_tests": "FAIL",
+    "frontend_build": "PASS"
+  },
+  "backend": {
+    "passed": 1099,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "elapsed_seconds": 235.14,
+    "junit": "/tmp/signalbrief-nov2-final-retry-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/pytest.xml"
+  },
+  "frontend": {
+    "passed": 1677,
+    "failed": 1,
+    "total": 1678,
+    "files_passed": 116,
+    "files_failed": 1,
+    "files_total": 117,
+    "elapsed_seconds": 37.96,
+    "log": "/tmp/signalbrief-nov2-final-retry-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/frontend_unit_tests.log"
+  },
+  "failure": {
+    "file": "apps/web/tests/mobile-search-company.test.tsx",
+    "test": "blocks saving when existing holdings cannot be loaded, and retries the read",
+    "line": 113,
+    "error": "TestingLibraryElementError: Found multiple elements with the role \"alert\"",
+    "matching_errors": [
+      "기업정보를 불러오지 못했습니다.",
+      "보유 정보를 불러오지 못했습니다."
+    ],
+    "finding": "The page-global alert query is ambiguous when independent company-profile and holdings-dialog errors are both visible. The expected holdings error was rendered. This failure is not an observed timeout or missing product error.",
+    "runtime_source_changed": false,
+    "correction_status": "Separate test-only correction authorized; not included in this immutable failed run."
+  },
+  "lint": {
+    "errors": 0,
+    "existing_warnings": 5
+  },
+  "historical_outputs_restored": true,
+  "protected_paths": [
+    "verification/checks.json",
+    "verification/pytest.xml",
+    "verification/python_compile.log",
+    "verification/backend_tests.log",
+    "verification/openapi_export.log",
+    "verification/backend_lint.log",
+    "verification/frontend_lint.log",
+    "verification/frontend_typecheck.log",
+    "verification/frontend_unit_tests.log",
+    "verification/frontend_build.log",
+    "packages/shared/openapi.json",
+    "apps/web/next-env.d.ts"
+  ],
+  "source_identity": "/tmp/signalbrief-nov2-final-retry-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/post-gate-source-identity.json",
+  "settings": "/tmp/signalbrief-nov2-isolated-final-retry-environment.json",
+  "same_tree_deno_and_scope_evidence": "/tmp/signalbrief-nov2-final-retry-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/prior-evidence-references.json",
+  "earlier_failure_retained": "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/verification-proof.json",
+  "sql_timeout_root_cause": "Not established; separate unchanged targeted diagnostic and all backend tests in this attempt passed.",
+  "production_access": false,
+  "shared_source_or_git_mutation": false
+}

@@ -1,0 +1,286 @@
+{
+  "schema": "signalbrief.release-verification-artifacts.v1",
+  "created_at": "2026-11-02T07:01:31.064141+00:00",
+  "head_sha": "e391f352112a2dd6ffc60e6c488db0c57b814bf4",
+  "source_tree": "df510f8fc1f8c9ced59781289da5e55b6b914bbe",
+  "status": "PASS",
+  "scope": "Exact-byte archive of the final immutable local eight-stage gate; prior failures are retained separately. Production profile acceptance is outside this local gate.",
+  "artifact_count": 29,
+  "total_artifact_bytes": 841663,
+  "results": {
+    "stages_passed": 8,
+    "backend_passed": 1099,
+    "backend_failures": 0,
+    "backend_errors": 0,
+    "backend_skipped": 0,
+    "frontend_passed": 1678,
+    "frontend_files": 117,
+    "lint_errors": 0,
+    "existing_lint_warnings": 5,
+    "source_blobs_and_modes_verified": 1104,
+    "generated_paths_restored": 12,
+    "scope_and_six_deno": "Copied prior evidence from byte-identical runtime; explicitly not new executions.",
+    "browser": "Exact-head CI is recorded separately; no local browser rerun for this test-only delta."
+  },
+  "live_profile_acceptance": "Not certified by this gate; production SNDK profile_persistence_unavailable was still under investigation at archival handoff.",
+  "prior_failure_manifests": [
+    {
+      "path": "ee9cdc78-artifact-manifest.json",
+      "sha256": "b0edb60d8ec60ee2349521b5c457b9fd774a188ce87b026a4934f10babe2917b",
+      "unchanged": true
+    },
+    {
+      "path": "ee9cdc78-local-second-attempt-manifest.json",
+      "sha256": "fa5eaccabccf0cabd314f1573853f91e69fd4ad8181dae8c0613ce224a436dc4",
+      "unchanged": true
+    }
+  ],
+  "protected_root_outputs_unchanged": true,
+  "credential_review": {
+    "live_credentials_identified": 0,
+    "synthetic_credential_like_candidates": 2,
+    "synthetic_candidates_verified_as_literal_negative_test_inputs": true,
+    "redactions": 0,
+    "original_bytes_preserved": true,
+    "database_urls": "Loopback disposable test databases without passwords",
+    "opaque_build_artifacts_copied": false
+  },
+  "tests_executed_for_archival": false,
+  "runtime_or_test_source_edits": false,
+  "git_stage_or_commit_actions": false,
+  "production_access": false,
+  "artifacts": [
+    {
+      "path": "backend_lint.log",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/backend_lint.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "backend_tests.log",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/backend_tests.log",
+      "bytes": 2348,
+      "sha256": "42a4dfb4115990144edae70f887010f9bb3ab498256f50cd06120ed62562d859",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "capture.json",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/capture.json",
+      "bytes": 2550,
+      "sha256": "54e3990ea693948998847a5071cd28f79315f204eda3e2c788c75d273bc46095",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "checks.json",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/checks.json",
+      "bytes": 3648,
+      "sha256": "e37a79f9682e689e6075d739443947f5dd4b36fd881ec82275624417ad8ecb22",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "checks.raw.json",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/checks.raw.json",
+      "bytes": 2830,
+      "sha256": "88a667ccee46abab2796e503f05a6dac055f2d040a6bef07f76db72cbec78546",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "frontend_build.log",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/frontend_build.log",
+      "bytes": 2376,
+      "sha256": "50a3d6c5f6e04755e7bbd68fc3846b8f5ed196877c12b0beee02c8a737451ca7",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "frontend_lint.log",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/frontend_lint.log",
+      "bytes": 2176,
+      "sha256": "f1e8c1fc9a93d3492e2bdccdef81091178576acc4680138c8c820e7858e75d4c",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "frontend_typecheck.log",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/frontend_typecheck.log",
+      "bytes": 150,
+      "sha256": "0de20295514b336741fa40b90fd006465011076fe0551be02d7fcbc6503e8a61",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "frontend_unit_tests.log",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/frontend_unit_tests.log",
+      "bytes": 408,
+      "sha256": "c2c8e11a499be5ddec938f07208c7091de048ece9758c3db1e331bd46a67fb66",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "generated/apps/web/next-env.d.ts",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/generated/apps/web/next-env.d.ts",
+      "bytes": 288,
+      "sha256": "1862ac4bbbc5192d4bf562161df66ea547ed3e67173100656ab606ae9797db2b",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "generated/packages/shared/openapi.json",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/generated/packages/shared/openapi.json",
+      "bytes": 85416,
+      "sha256": "f1659c1db42cf0d748bda463d9100d2cf41a6642a63a6f09fa606489e2f45a71",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "openapi_export.log",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/openapi_export.log",
+      "bytes": 54,
+      "sha256": "72fca25b046a70d4fcb6815f85b53f06daec9aae2727be815c3f5b2305960b48",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "post-gate-source-identity.json",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/post-gate-source-identity.json",
+      "bytes": 383,
+      "sha256": "624777cb33e531e87f22596270747942dcb43f82e2496b7b597fe7ed83cd2d76",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "prior-evidence-references.json",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/prior-evidence-references.json",
+      "bytes": 1308,
+      "sha256": "82bdd586c6e534e4c585dfcc76a97249573778951805923f923bb553a5f04b82",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "pytest.xml",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/pytest.xml",
+      "bytes": 161361,
+      "sha256": "d73ef4a38bdd489e8bf799b3be701f1e805dc8ec432ff40baa4d60fda1812b83",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "python_compile.log",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/python_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "verification-proof.json",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/verification-proof.json",
+      "bytes": 6483,
+      "sha256": "a7c3b4a5de3f67d978cc820c913601b23fb2300df1358f1d44a03983a4cc385f",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "verifier-console.log",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-gate-artifacts/df510f8fc1f8c9ced59781289da5e55b6b914bbe/verifier-console.log",
+      "bytes": 2831,
+      "sha256": "02d73671652ba242c496634a7ce2e6ac3aca31f9ae80d0f1585f68f4fbe66b7f",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_PASS"
+    },
+    {
+      "path": "source-snapshot-manifest.json",
+      "original_path": "/tmp/signalbrief-nov2-final-source-df510f8fc1f8c9ce.json",
+      "bytes": 168029,
+      "sha256": "04f03c3a77d43211931024b21d48f4605d4cbdf944de525f05c2350c06d0632f",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_SETUP"
+    },
+    {
+      "path": "source-equivalence.json",
+      "original_path": "/tmp/signalbrief-nov2-selector-fix-source-equivalence.json",
+      "bytes": 1310,
+      "sha256": "a54bb30e0910c6b640779e047b899d762358a52e21161c98598bf6e70f260e87",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_SETUP"
+    },
+    {
+      "path": "database-environment-settings.json",
+      "original_path": "/tmp/signalbrief-nov2-isolated-selector-fix-environment.json",
+      "bytes": 189634,
+      "sha256": "6cd24a5dc9fd6609f1388f420030982553bc7f8debc317f8daa62a44f466ba33",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_SETUP"
+    },
+    {
+      "path": "database-preparation.log",
+      "original_path": "/tmp/signalbrief-nov2-isolated-selector-fix-prepare.log",
+      "bytes": 189895,
+      "sha256": "ce547ccbc1822509d649f57ca5766c1215709dc602cce946fc426d1456f5c848",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_SETUP"
+    },
+    {
+      "path": "harness/prepare-pg.py",
+      "original_path": "/tmp/signalbrief-nov2-isolated-selector-fix-prepare-pg.py",
+      "bytes": 6099,
+      "sha256": "494fa2c141ebfe02e08fcf9ebbe7ffdb9000bda63ab879f59aa57d4a43f489ec",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_SETUP"
+    },
+    {
+      "path": "harness/full-gate.py",
+      "original_path": "/tmp/signalbrief-nov2-isolated-selector-fix-full-gate.py",
+      "bytes": 9995,
+      "sha256": "3b88b0317e3ecb1aa95a6701165f11cf0238a88c8966697f49635ca9d3ff2885",
+      "copied_without_modification": true,
+      "result_context": "FINAL_E391_FULL_GATE_SETUP"
+    },
+    {
+      "path": "runtime-identical-checks/additional-checks.json",
+      "original_path": "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/additional-checks.json",
+      "bytes": 1369,
+      "sha256": "f22a29574bd1572c805fc456730df10ef0be5e47b76ba3cc1e19a06a6cc6836d",
+      "copied_without_modification": true,
+      "result_context": "PRIOR_EE9_RUNTIME_IDENTICAL_CHECK_NOT_RERUN"
+    },
+    {
+      "path": "runtime-identical-checks/deno-api-us-profiles-discovery.log",
+      "original_path": "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/deno-api-us-profiles-discovery.log",
+      "bytes": 210,
+      "sha256": "c3e90b3f107587a1fdb4ad46d0b82fcb7e31304b46ae3ece9baae7e1f9939e38",
+      "copied_without_modification": true,
+      "result_context": "PRIOR_EE9_RUNTIME_IDENTICAL_CHECK_NOT_RERUN"
+    },
+    {
+      "path": "runtime-identical-checks/deno-collector.log",
+      "original_path": "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/deno-collector.log",
+      "bytes": 56,
+      "sha256": "adf9851562e8f073788a3abf01532abfd1e1a9d0ca749fb82d03e8dd786545c0",
+      "copied_without_modification": true,
+      "result_context": "PRIOR_EE9_RUNTIME_IDENTICAL_CHECK_NOT_RERUN"
+    },
+    {
+      "path": "runtime-identical-checks/deno-calendar.log",
+      "original_path": "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/deno-calendar.log",
+      "bytes": 55,
+      "sha256": "d97885a55226ac7a8921fbb3fc541b772ed0698c90a16220f8aac800cc5b4fc9",
+      "copied_without_modification": true,
+      "result_context": "PRIOR_EE9_RUNTIME_IDENTICAL_CHECK_NOT_RERUN"
+    },
+    {
+      "path": "runtime-identical-checks/scope.log",
+      "original_path": "/tmp/signalbrief-nov2-final-followup-gate-artifacts/21831a41bb205f7e4792fa8d086325a5db867ced/scope.log",
+      "bytes": 382,
+      "sha256": "ab06517cbce8ecfe11643f36041e97e57516ba509d3b12619d22bac25596ca06",
+      "copied_without_modification": true,
+      "result_context": "PRIOR_EE9_RUNTIME_IDENTICAL_CHECK_NOT_RERUN"
+    }
+  ]
+}

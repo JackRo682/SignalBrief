@@ -1,0 +1,124 @@
+{
+  "schema": "signalbrief.release-verification-artifacts.v1",
+  "created_at": "2026-11-02T07:34:05.655731+00:00",
+  "head_sha": "d0a6de2b031896619b3cbafda55be403f0a7ddd0",
+  "source_tree": "8dc572e4731c3d3346c4be8609abe77bd47f1007",
+  "status": "PASS_CI_ONLY",
+  "applicable_workflows": 9,
+  "successful_jobs": 17,
+  "browser_passes_per_run": [
+    {
+      "event": "push",
+      "passed": 92,
+      "duration": "5.1m"
+    },
+    {
+      "event": "pull_request",
+      "passed": 92,
+      "duration": "4.1m"
+    }
+  ],
+  "browser_counts_not_summed": true,
+  "workspace": {
+    "passed": 360,
+    "skipped": 0,
+    "segment_case_regressions_passed": 5,
+    "sec_cache_refresh_cases_passed": 31,
+    "search_performance_cases_passed": 20
+  },
+  "qualification": "CI and reviewed published-source identity evidence only. Earlier failed local attempts remain preserved. Live deployment/profile acceptance is root-owned and is not inferred from these artifacts.",
+  "artifact_count": 9,
+  "total_artifact_bytes": 515321,
+  "publication_privacy_review": {
+    "status": "NO_LIVE_CREDENTIALS_OR_PRIVATE_ACCOUNT_DATA_IDENTIFIED",
+    "scope": "The nine copied JSON/log/XML evidence files. No screenshot/image file was selected.",
+    "checked": [
+      "private-key headers",
+      "provider token prefixes",
+      "JWTs",
+      "bearer/basic authorization",
+      "secret assignments",
+      "signed query parameters",
+      "URL passwords",
+      "UUID contexts",
+      "embedded image data"
+    ],
+    "retained_identifiers": [
+      "synthetic test-fixture company/filing identifiers",
+      "public ephemeral GitHub runner and workflow/job identifiers"
+    ],
+    "redactions": 0,
+    "all_copied_bytes_original": true,
+    "private_account_screenshots_copied": false,
+    "opaque_build_artifacts_copied": false
+  },
+  "tests_executed_for_archival": false,
+  "source_or_test_changes": false,
+  "git_stage_or_commit_actions": false,
+  "production_access": false,
+  "artifacts": [
+    {
+      "path": "d0a6de2b-ci-proof.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6de2b-ci-proof.json",
+      "bytes": 32746,
+      "sha256": "400dcc2fd64d3ec301785a787f4d9ad8bd07cbb74516805aa8ed6b39f310e818",
+      "copied_without_modification": true
+    },
+    {
+      "path": "d0a6de2b-source-identity.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6de2b-source-identity.json",
+      "bytes": 2503,
+      "sha256": "bcb3c6b343f5c37b14393ecc6e6ebe084f9fffe8fc9a0b2fd6e7c0a5269d931f",
+      "copied_without_modification": true
+    },
+    {
+      "path": "d0a6de2b-workspace-ci-proof.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6de2b-ci-workspace-proof.json",
+      "bytes": 14725,
+      "sha256": "ec3bae1302cd00eff1edc635357dc12fc4e2a7b783389fbd4a3ea2950a4bb478",
+      "copied_without_modification": true
+    },
+    {
+      "path": "d0a6de2b-workspace-ci-junit.xml",
+      "original_path": "/tmp/signalbrief-nov2-d0a6de2b-workspace-replay.xml",
+      "bytes": 60683,
+      "sha256": "b46f19f0dc8e9ed1f6c2aed2622095b6b1d3b57971d06b8df22a4e7c7cfa2a3b",
+      "copied_without_modification": true
+    },
+    {
+      "path": "d0a6de2b-workspace-ci.log",
+      "original_path": "/tmp/signalbrief-nov2-d0a6de2b-ci-workspace-125141491860.log",
+      "bytes": 203756,
+      "sha256": "7adce423a789d019fef6db853a2fc35f2697f6b1c74ae896f90c7af107852b18",
+      "copied_without_modification": true
+    },
+    {
+      "path": "d0a6de2b-web-push-proof.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6de2b-ci-web-push-proof.json",
+      "bytes": 525,
+      "sha256": "8617a2ab957fefe5afa373b43dda6dba22ebd98b670478d29dfa429c53d25763",
+      "copied_without_modification": true
+    },
+    {
+      "path": "d0a6de2b-web-pr-proof.json",
+      "original_path": "/tmp/signalbrief-nov2-d0a6de2b-ci-web-pr-proof.json",
+      "bytes": 532,
+      "sha256": "467a6ab54c886102714cbcb4396f2d27fb45d15ae6a8f2629f42ba50c04de781",
+      "copied_without_modification": true
+    },
+    {
+      "path": "d0a6de2b-web-push.log",
+      "original_path": "/tmp/signalbrief-nov2-d0a6de2b-ci-web-push-125141449176.log",
+      "bytes": 99493,
+      "sha256": "c313b08f39ba436aa0ea55097274933d90cfb947f1ac9a12ebfda305ffd7152b",
+      "copied_without_modification": true
+    },
+    {
+      "path": "d0a6de2b-web-pr.log",
+      "original_path": "/tmp/signalbrief-nov2-d0a6de2b-ci-web-pr-125141492185.log",
+      "bytes": 100358,
+      "sha256": "1aa46a4d6aab4668763e3341ac58b7961c87841c607eefb49f21ecb0fc3773a5",
+      "copied_without_modification": true
+    }
+  ]
+}
