@@ -64,9 +64,15 @@ function metadata(raw:string,id:string,sha:string,fetchedAt:string,provider:'sec
  if(new TextEncoder().encode(raw).length>(provider==='sec'?12_000_000:2_000_000))fail('financial_source_too_large');
  let parsed:unknown;try{parsed=JSON.parse(raw);}catch{return fail('invalid_json');}return obj(parsed);
 }
+// SEC emits CIK as either a JSON integer or a decimal string, sometimes padded.
+// Normalize only that representation; objects, signs and nondecimal strings are invalid.
+function canonicalSecCik(value:unknown):string|null{
+ const digits=typeof value==='number'&&Number.isSafeInteger(value)&&value>0?String(value):typeof value==='string'?value:'';
+ return /^[0-9]{1,10}$/.test(digits)&&/[1-9]/.test(digits)?digits.padStart(10,'0'):null;
+}
 
 export function parseSecFinancials(raw:string,cik:string,sha:string,fetchedAt:string):FinancialSnapshot{
- const root=metadata(raw,cik,sha,fetchedAt,'sec');if(String(root.cik)!==String(Number(cik)))fail('financial_identity_mismatch');
+ const root=metadata(raw,cik,sha,fetchedAt,'sec');if(canonicalSecCik(root.cik)!==cik)fail('financial_identity_mismatch');
  if(!str(root.entityName)||!root.facts||Array.isArray(root.facts)||typeof root.facts!=='object')fail('invalid_companyfacts');
  const source_url=`https://data.sec.gov/api/xbrl/companyfacts/CIK${cik}.json`,today=fetchedAt.slice(0,10),facts:FinancialFact[]=[];
  objects(raw,p=>p.length===6&&p[0]==='facts'&&['us-gaap','ifrs-full'].includes(p[1])&&Object.hasOwn(secConcepts,p[2])&&p[3]==='units', (p,quote)=>{

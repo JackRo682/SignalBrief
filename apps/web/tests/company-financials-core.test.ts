@@ -35,6 +35,21 @@ describe('exact official SEC financial contexts',()=>{
  it('rejects contradictory same-date facts rather than silently choosing one',()=>expect(()=>parseSecFinancials(sec([record,{...record,val:999}]),cik,sha,stamp)).toThrow('conflicting_reported_facts'));
  it('distinguishes IFRS taxonomy and leaves entity scope honest',()=>expect(parseSecFinancials(sec([record],'EUR','ifrs-full','Revenue'),cik,sha,stamp).items[0]).toMatchObject({accounting_standard:'IFRS',unit:'EUR',scope:'entity'}));
  it('preserves per-share unit in the JSON pointer',()=>expect(parseSecFinancials(sec([record],'USD/shares','us-gaap','EarningsPerShareBasic'),cik,sha,stamp).items[0].location).toContain('/USD~1shares/'));
+ it.each([42,'42','0000000042'])('accepts the same exact issuer as numeric or decimal-string CIK %j without changing reported facts',sourceCIK=>{
+  const raw=JSON.stringify({...JSON.parse(sec()),cik:sourceCIK});
+  const value=parseSecFinancials(raw,cik,sha,stamp);
+  expect(value).toEqual(parseSecFinancials(sec(),cik,sha,stamp));
+  expect(value.provider_company_id).toBe(cik);
+  expect(value.source_url).toBe('https://data.sec.gov/api/xbrl/companyfacts/CIK0000000042.json');
+  expect(raw).toContain(value.items[0].source_quote);
+ });
+ it.each([7,'7','0000000007'])('still rejects a different issuer represented as %j',sourceCIK=>{
+  expect(()=>parseSecFinancials(JSON.stringify({...JSON.parse(sec()),cik:sourceCIK}),cik,sha,stamp)).toThrow('financial_identity_mismatch');
+ });
+ it.each([null,undefined,true,false,[42],{value:42},' 42','42 ','+42','-42','4.2e1','42.0','00000000042','0042x','',0,'0000000000',42.5,10_000_000_000].map(sourceCIK=>({sourceCIK})))
+ ('rejects malformed or coercible source CIK $sourceCIK',({sourceCIK})=>{
+  expect(()=>parseSecFinancials(JSON.stringify({...JSON.parse(sec()),cik:sourceCIK}),cik,sha,stamp)).toThrow('financial_identity_mismatch');
+ });
  it.each([{cik:7}, {entityName:''}, {facts:null}])('rejects mismatched or incomplete issuer source %j',patch=>expect(()=>parseSecFinancials(JSON.stringify({...JSON.parse(sec()),...patch}),cik,sha,stamp)).toThrow());
  it('rejects duplicate JSON keys even when JSON.parse would silently overwrite them',()=>expect(()=>parseSecFinancials(sec().replace('"cik":42','"cik":7,"cik":42'),cik,sha,stamp)).toThrow('duplicate_source_key'));
  it.each([{end:'2026-02-30'},{end:'2026-12-31'},{filed:'2027-01-01'},{start:null},{form:'S-1'},{val:null}])('does not publish unsupported or invalid contexts %j',patch=>expect(parseSecFinancials(sec([{...record,...patch}]),cik,sha,stamp).items).toEqual([]));

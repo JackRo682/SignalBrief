@@ -14,7 +14,7 @@ from test_company_profile_dart import payload, prepare
 from test_company_profile_enrichment import LEASE, C, admin
 
 pytestmark = pytest.mark.postgres
-MIGRATION = Path(__file__).resolve().parents[2] / 'supabase/migrations/20261102054123_profile_dart_rows_refresh.sql'
+MIGRATION = Path(__file__).resolve().parents[2] / 'supabase/migrations/20261102060038_profile_dart_rows_refresh.sql'
 SEC_COMPANY = '20000000-0000-4000-8000-000000000099'
 
 

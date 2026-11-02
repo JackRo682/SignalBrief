@@ -2,15 +2,15 @@ import {Parser} from 'npm:htmlparser2@10.0.0';
 import {ProfileError} from './core.ts';
 
 export type ProfileBlock={text:string;start:number;end:number;heading:boolean};
-export type ProfileHTML={text:string;blocks:ProfileBlock[];links:{href:string;text:string}[];ciks:string[];registrants:string[];document_types:string[];report_periods:string[];amendments:string[];title:string;person_names:string[];person_roles:string[]};
+export type ProfileHTML={text:string;blocks:ProfileBlock[];links:{href:string;text:string}[];link_rows?:{text:string;links:{href:string;text:string}[]}[];ciks:string[];registrants:string[];document_types:string[];report_periods:string[];amendments:string[];title:string;person_names:string[];person_roles:string[]};
 const clean=(value:string)=>value.replace(/\s+/g,' ').trim();
 const blockTags=new Set(['div','p','li','tr','h1','h2','h3','h4','h5','h6','section','article']);
 
 /** Streaming, bounded visible-text normalization. Scripts/styles/hidden XBRL are never executed or displayed. */
 export function parseProfileHTML(html:string):ProfileHTML{
  if(new TextEncoder().encode(html).length>6_000_000)throw new ProfileError('profile_source_too_large');
- const result:ProfileHTML={text:'',blocks:[],links:[],ciks:[],registrants:[],document_types:[],report_periods:[],amendments:[],title:'',person_names:[],person_roles:[]};
- const stack:{name:string;hidden:boolean;bold:boolean;capture?:'cik'|'registrant'|'form'|'period'|'amendment'|'name'|'role'|'title';value:string}[]=[];
+ const result:ProfileHTML={text:'',blocks:[],links:[],link_rows:[],ciks:[],registrants:[],document_types:[],report_periods:[],amendments:[],title:'',person_names:[],person_roles:[]};
+ const stack:{name:string;hidden:boolean;bold:boolean;capture?:'cik'|'registrant'|'form'|'period'|'amendment'|'name'|'role'|'title';value:string;row?:{text:string;links:{href:string;text:string}[];nested:boolean}}[]=[];
  let value='',boldLength=0,nodes=0,visibleLength=0;
  let anchor:{href:string;text:string}|null=null;
  const flush=()=>{
@@ -25,17 +25,20 @@ export function parseProfileHTML(html:string):ProfileHTML{
   onopentag(name,attrs){
    if(++nodes>200_000||stack.length>=160)throw new ProfileError('profile_source_too_large');
    const parent=stack.at(-1),hidden=Boolean(parent?.hidden)||['head','script','style','noscript','ix:header'].includes(name)||'hidden' in attrs||attrs['aria-hidden']==='true'||/(?:display\s*:\s*none|visibility\s*:\s*hidden)/i.test(attrs.style??'');
+   const parentRow=stack.findLast(entry=>entry.row)?.row;
+   if(!hidden&&parentRow){if(name==='tr')parentRow.nested=true;if(blockTags.has(name)||['br','td','th'].includes(name))parentRow.text+=' ';}
    if(!hidden&&(blockTags.has(name)||name==='br'))flush();
    const classes=(attrs.class??'').split(/\s+/);
    const concept=(attrs.name??'').toLowerCase();
    const capture=name==='ix:nonnumeric'&&concept==='dei:entitycentralindexkey'?'cik':name==='ix:nonnumeric'&&concept==='dei:entityregistrantname'?'registrant':name==='ix:nonnumeric'&&concept==='dei:documenttype'?'form':name==='ix:nonnumeric'&&concept==='dei:documentperiodenddate'?'period':name==='ix:nonnumeric'&&concept==='dei:amendmentflag'?'amendment':classes.includes('PersonName')?'name':classes.includes('PersonTitleText')?'role':name==='title'?'title':undefined;
-   stack.push({name,hidden,bold:Boolean(parent?.bold)||['b','strong','h1','h2','h3','h4','h5','h6'].includes(name)||/font-weight\s*:\s*(?:bold|[6-9]00)/i.test(attrs.style??''),capture,value:''});
+   stack.push({name,hidden,bold:Boolean(parent?.bold)||['b','strong','h1','h2','h3','h4','h5','h6'].includes(name)||/font-weight\s*:\s*(?:bold|[6-9]00)/i.test(attrs.style??''),capture,value:'',...(!hidden&&name==='tr'?{row:{text:'',links:[],nested:false}}:{})});
    if(name==='a'&&!hidden)anchor={href:attrs.href??'',text:''};
    if(!hidden&&['td','th'].includes(name))value+=' ';
   },
   ontext(text){
    for(const entry of stack)if(entry.capture)entry.value+=text;
    if(stack.at(-1)?.hidden)return;
+   const row=stack.findLast(entry=>entry.row)?.row;if(row&&row.text.length<=10000)row.text+=text.slice(0,10001-row.text.length);
    visibleLength+=text.length;if(visibleLength>2_000_000)throw new ProfileError('profile_source_too_large');
    value+=text;if(stack.at(-1)?.bold)boldLength+=text.replace(/\s/g,'').length;
    if(anchor)anchor.text+=text;
@@ -44,7 +47,7 @@ export function parseProfileHTML(html:string):ProfileHTML{
    const entry=stack.at(-1);
    if(entry?.name!==name)throw new ProfileError('profile_source_format_changed');
    if(!entry.hidden&&(blockTags.has(name)||name==='br'))flush();
-   if(name==='a'&&anchor){result.links.push({href:anchor.href,text:clean(anchor.text)});anchor=null;}
+   if(name==='a'&&anchor){const link={href:anchor.href,text:clean(anchor.text)};result.links.push(link);stack.findLast(item=>item.row)?.row?.links.push(link);anchor=null;}
    if(entry.capture){
     const text=clean(entry.value);
     if(entry.capture==='cik')result.ciks.push(text);
@@ -57,6 +60,8 @@ export function parseProfileHTML(html:string):ProfileHTML{
     if(entry.capture==='title')result.title=text;
    }
    if(!entry.hidden&&['td','th'].includes(name))value+=' ';
+   if(entry.row&&!entry.row.nested&&entry.row.text.length<=10000&&entry.row.links.length>0&&entry.row.links.length<=20)result.link_rows!.push({text:clean(entry.row.text),links:entry.row.links});
+   const row=stack.findLast(item=>item.row)?.row;if(!entry.hidden&&row&&(blockTags.has(name)||['td','th'].includes(name)))row.text+=' ';
    stack.pop();
   },
   onerror(){throw new ProfileError('profile_source_format_changed');},

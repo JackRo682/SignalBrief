@@ -136,7 +136,7 @@ function extractBusiness(parsed:ProfileHTML,source:ProfileArchivedSource,result:
   result.business.push(...excerpts(source,block,'Item 1. Business').slice(0,2-result.business.length));
   if(result.business.length===2)break;
  }
- let productSection=false;
+ let productSection=false,proseOfferings=false;
  for(let index=0;index<blocks.length&&result.products.length<10;index++){
   const block=blocks[index];
   if(block.heading){
@@ -145,9 +145,16 @@ function extractBusiness(parsed:ProfileHTML,source:ProfileArchivedSource,result:
    else if(/^(?:technology|sales and marketing|manufacturing|supply chain|government(?:al)?|regulations?|competition|intellectual property|human capital|our strategy|our strategic priorities|key enablers|brand|looking ahead|benefiting|innovating)\b/i.test(block.text))productSection=false;
    if(!productSection)continue;
    const next=blocks.slice(index+1,index+5).find(candidate=>!candidate.heading&&candidate.text.length>=65&&!/^\(?\d+\)?(?:\s|$)/.test(candidate.text));
-   const generic=/^(?:(?:our|core|principal|main|key)\s+)?(?:products?(?:\s+and\s+(?:services?|applications?))?|services?\s+and\s+other\s+solutions?)$|^our\s+.*\bproducts?\s+and\s+(?:services?|applications?)$|^(?:enabling|benefiting|innovating|key\s+[0-9]{4}\s+developments)\b/i.test(block.text);
+   const generic=/^(?:(?:our|core|principal|main|key)\s+)?(?:products?(?:\s+and\s+(?:services?|applications?))?|services?\s+and\s+other\s+solutions?)$|^our\s+(?:[a-z]+\s+){0,3}(?:products?|services?|solutions?|offerings?)$|^our\s+.*\bproducts?\s+and\s+(?:services?|applications?)$|^(?:enabling|benefiting|innovating|key\s+[0-9]{4}\s+developments)\b/i.test(block.text);
+   proseOfferings=generic;
    const explicit=productHeading||next&&/^(?:we\s+(?:currently\s+)?(?:offer|provide|sell|manufacture|design|develop|operate)|our\s+\w[\w\s-]{0,55}\s+(?:include|provide|enable))/i.test(next.text);
-   if(next&&explicit&&next.text.length<=1300&&!generic&&block.text.length<=100&&!result.products.some(item=>item.name.toLowerCase()===block.text.toLowerCase())){
+   const warrantyOnly=/\bwarrant(?:y|ies)\b/i.test(block.text)&&next&&![...new Intl.Segmenter('en',{granularity:'sentence'}).segment(next.text)].some(({segment})=>{
+    const offering=segment.trim().match(/^we\s+(?:(?:also|currently)\s+)*(?:provide|offer|sell|operate)\s+(.+)$/i);if(!offering)return false;
+    const target=offering[1].replace(/^(?:(?:our|the)\s+)?[A-Za-z -]{0,60}(?:customers|clients)\s+with\s+/i,'');
+    const object=target.split(/\s+(?:on|for|at|through|that|which|with|to|after|under)\s+/i,1)[0];
+    return !/\bwarrant(?:y|ies)\b/i.test(object);
+   });
+   if(next&&explicit&&!warrantyOnly&&next.text.length<=1300&&!generic&&block.text.length<=100&&!result.products.some(item=>item.name.toLowerCase()===block.text.toLowerCase())){
     const quote=source.normalized_text.slice(block.start,next.end);
     if(quote.length<=1600)result.products.push({name:block.text,description:next.text,evidence:profileEvidence(source,block.start,next.end,'Item 1. Business — products/services')});
    }
@@ -156,10 +163,21 @@ function extractBusiness(parsed:ProfileHTML,source:ProfileArchivedSource,result:
   if(!productSection||block.text.length>1600)continue;
   const named=block.text.match(/^([\p{L}\p{N}][\p{L}\p{N}\s&+®™(),/-]{1,85}):\s+(.{45,})$/u);
   if(named&&!/^(?:our|we|the company|this|these|such)\b|\b(?:strategy|revenue|income|expenses?|risks?|areas of focus)\b/i.test(named[1])&&!result.products.some(item=>item.name===named[1]))result.products.push({name:named[1],description:named[2],evidence:evidenceForBlock(source,block,'Item 1. Business — products/services')});
+  // A generic section title is not an offering. Retain only an issuer's
+  // explicit, unsplit direct object, with the whole supporting sentence.
+  if(proseOfferings&&!named)for(const sentence of new Intl.Segmenter('en',{granularity:'sentence'}).segment(block.text)){
+   const text=sentence.segment.trim(),match=text.match(/^We\s+(?:currently\s+)?(?:offer|sell|manufacture|design|develop)\s+(?:an?\s+|our\s+)?([A-Za-z][A-Za-z0-9 -]{2,99}?)\s+(?:with|for|that|to)\s+.+[.]$/)
+    ??text.match(/^We provide (?:the )?[A-Za-z -]{1,65}(?:market|customers|clients) with (?:an? (?:array|portfolio|range) of )?([A-Za-z][A-Za-z0-9 -]{2,99})[.]$/);
+   const name=match?.[1];if(!name||/\band\b|^(?:(?:new|various|numerous|different|other)\s+)?(?:products?|services?|solutions?|offerings?|equipment)$|^(?:a |an |the |our )/i.test(name)||result.products.some(item=>item.name.toLowerCase()===name.toLowerCase()))continue;
+   const start=block.start+sentence.index+sentence.segment.length-sentence.segment.trimStart().length;
+   result.products.push({name,description:text,evidence:profileEvidence(source,start,start+text.length,'Item 1. Business — products/services')});
+   if(result.products.length===10)break;
+  }
  }
 }
 
 function extractSegments(parsed:ProfileHTML,source:ProfileArchivedSource,result:ExtractedProfile):void{
+ let unnamedSegment:ProfileEvidence|null=null;
  for(let index=0;index<parsed.blocks.length&&result.segments.length<12;index++){
   const block=parsed.blocks[index];
   if(!/\b(?:reportable(?:\s+operating)?|operating(?:\s+and\s+reportable)?) segments?\b/i.test(block.text)||block.text.length>1600)continue;
@@ -170,6 +188,8 @@ function extractSegments(parsed:ProfileHTML,source:ProfileArchivedSource,result:
    if(proof&&!result.segments.some(item=>item.name===single[1].trim()))result.segments.push({name:single[1].trim(),description:proof.quote,evidence:proof});
    continue;
   }
+  const unnamed=paragraphSentence(source,block,/^\s*The Company manages and reports its business operations under a single reportable operating segment[.]\s*$/i,'Reportable segment disclosure');
+  if(unnamed){unnamedSegment=unnamed;continue;}
   const enumerated=block.text.match(/\b(?:reportable|operating)\s+segments?(?:\s+(?:are|include|consist of)\s*[:—-]?\s*|\s*[:—-]\s*)([^.;]{4,250})[.;]/i);
   if(enumerated){
    const numbered=/^\((?:i|1)\)\s+/i.test(enumerated[1]);
@@ -179,6 +199,7 @@ function extractSegments(parsed:ProfileHTML,source:ProfileArchivedSource,result:
    if(proof)for(const name of names)if(!result.segments.some(item=>item.name===name))result.segments.push({name,description:proof.quote,evidence:proof});
   }
  }
+ if(!result.segments.length&&unnamedSegment)result.segments.push({name:'Single reportable operating segment',description:unnamedSegment.quote,evidence:unnamedSegment});
 }
 
 function extractLeadership(parsed:ProfileHTML,source:ProfileArchivedSource,result:ExtractedProfile):void{
@@ -206,7 +227,7 @@ function extractLeadership(parsed:ProfileHTML,source:ProfileArchivedSource,resul
   const previousRole=blocks.findLastIndex((candidate,i)=>{
    if(i>=signedIndex)return false;
    const roles=candidate.text.replace(/^Title:\s*/i,'').split(/\s*(?:,|;|\band\b|&|\(|\))\s*/i).filter(Boolean);
-   return roles.length>0&&roles.every(role=>/^(?:(?:chief|principal) (?:executive|financial|accounting) officer|president|chairman|chairwoman|chairperson|director)$/i.test(role));
+   return roles.length>0&&roles.every(role=>/^(?:(?:chief|principal) (?:executive|financial|accounting) officer|(?:(?:executive|senior) )?vice president|president|chairman|chairwoman|chairperson|director)$/i.test(role));
   });
   const unresolved=blocks.slice(previousRole+1,signedIndex+1).map(candidate=>signatureName(candidate.text)).filter((name):name is string=>name!==null);
   if(new Set(unresolved.map(nameKey)).size!==1)continue;
@@ -267,7 +288,17 @@ export function parseSecProfileFiling(html:string,source:ProfileArchivedSource,c
 
 /** Follow only an explicit same-issuer SEC exhibit link from the verified annual report. */
 export function profileCharterLink(parsed:ProfileHTML,sourceURL:string,cik:string):string|null{
- const links=parsed.links.filter(link=>/certificate of incorporation/i.test(link.text)&&!/amendment to/i.test(link.text));
+ const explicit=(text:string)=>/certificate of incorporation/i.test(text)&&!/amendment to/i.test(text);
+ const links=parsed.links.filter(link=>explicit(link.text));
+ // Preserve the existing strong, explicitly named link selection. Row context
+ // is only a fallback for numbered anchors, not a new veto on strong evidence.
+ if(!links.length)for(const row of parsed.link_rows??[]){
+  if(row.text.length>2500||!explicit(row.text))continue;
+  // A numbered exhibit is meaningful only inside its own description row.
+  // Multiple links in that row are ambiguous even if just one is same-issuer.
+  if(row.links.length!==1)return null;
+  const link=row.links[0];if(/^\d+(?:\.\d+)?$/.test(link.text))links.push(link);
+ }
  const urls=[...new Set(links.flatMap(link=>{try{return [secProfileURL(new URL(link.href,sourceURL).href,cik).href];}catch{return [];}}))];
  return urls.length===1?urls[0]:null;
 }
