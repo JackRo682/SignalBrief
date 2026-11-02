@@ -4,6 +4,8 @@ import {collectQ4} from './micron-q4.ts';
 import {collectDartIR,type DartIRSource} from './dart-ir.ts';
 import {dartRelay} from '../signalbrief-collector/dart-relay.ts';
 import {koreaDate} from '../signalbrief-collector/core.ts';
+import {collectSecIR,type SecIRSource} from './sec-ir.ts';
+import {createCalendarSourceFetch} from './source-relay.ts';
 export async function handleCalendar(req:Request):Promise<Response>{
  const reply=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});
  if(req.method!=='POST')return reply({error:'method_not_allowed'},405);
@@ -12,11 +14,12 @@ export async function handleCalendar(req:Request):Promise<Response>{
  // Leave nine seconds for failure recording and queue handoff inside pg_net's 60s request.
  const started=Date.now();let cleanup=false;
  const remaining=()=>Math.max(1,(cleanup?53000:44000)-(Date.now()-started));
- const boundedFetch:typeof fetch=(input,init={})=>{
+ const deadlineFetch=(input:RequestInfo|URL,init:RequestInit={},requestMs=10000)=>{
   if(Date.now()-started>=(cleanup?53000:44000))throw new CalendarError('calendar_deadline_exceeded');
-  const signal=AbortSignal.timeout(Math.min(10000,remaining()));
+  const signal=AbortSignal.timeout(Math.min(requestMs,remaining()));
   return fetch(input,{...init,signal:init.signal?AbortSignal.any([init.signal,signal]):signal});
  };
+ const boundedFetch:typeof fetch=(input,init={})=>deadlineFetch(input,init);
  const db=createClient(Deno.env.get('SUPABASE_URL')??'',Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')??'',{auth:{persistSession:false,autoRefreshToken:false},global:{fetch:boundedFetch}});
  const rpc=async(name:string,args:Record<string,unknown>={})=>{const r=await db.rpc(name,args);if(r.error)throw new CalendarError('database_operation_failed');return r.data;};
  const h=await sha256(new TextEncoder().encode(token));let claimed=false;
@@ -30,6 +33,16 @@ export async function handleCalendar(req:Request):Promise<Response>{
   };
   for(const source of sources){
    try{
+    if(source.adapter==='sec-ir'){
+     const secrets=await rpc('sb_us_secrets') as Record<string,unknown>;
+     const contact=Deno.env.get('SEC_CONTACT_EMAIL')||String(secrets?.SEC_CONTACT_EMAIL??'');
+     const relaySecret=Deno.env.get('DART_RELAY_SECRET')||String(secrets?.DART_RELAY_SECRET??'');
+     const officialFetch=createCalendarSourceFetch(relaySecret,(input,init={})=>deadlineFetch(input,init,12000));
+     const snapshot=await collectSecIR(source as SecIRSource,new Date().toISOString().slice(0,10),contact,archive,boundedFetch,
+      officialFetch);
+     const count=await rpc('sb_calendar_ingest_sec_ir',{source:source.key,raw_sha:snapshot.raw_sha,object_key:snapshot.object_key,manifest_text:snapshot.manifest_text});
+     results.push({source:source.key,status:'verified',items:count});continue;
+    }
     if(source.adapter==='micron-q4'||source.adapter==='q4-events'){
      const snapshot=await collectQ4(source,new Date().toISOString().slice(0,10),archive,boundedFetch);
      const count=await rpc('sb_calendar_ingest_q4',{source:source.key,raw_sha:snapshot.raw_sha,object_key:snapshot.object_key,manifest_text:snapshot.manifest_text});

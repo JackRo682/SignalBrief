@@ -1,6 +1,6 @@
 import {createClient} from '@supabase/supabase-js';
 import {z} from 'zod';
-import {newsTopic,companyNewsQueries,newsQuery} from '@/lib/news-contract';
+import {newsTopic,companyNewsQuery,newsQuery} from '@/lib/news-contract';
 import {loadNaverNews, NewsError} from '@/lib/naver-news';
 
 export const runtime = 'nodejs';
@@ -27,10 +27,10 @@ export async function GET(request:Request) {
       const user=await db.auth.getUser();if(user.error||!user.data.user)return fail(401,'invalid_or_expired_session');
       const response=await db.rpc('sb_workspace',{action:'resource',p:{kind:'company',id:companyId}});
       if(response.error){if(response.error.code==='PT403')return fail(403,'mfa_required');return fail(response.error.code==='PT404'?404:502,'company_lookup_failed');}
-      const company=z.object({id:z.string().uuid(),kind:z.literal('company'),ticker:z.string()}).safeParse(response.data);
+      const company=z.object({id:z.string().uuid(),kind:z.literal('company'),ticker:z.string(),company_name:z.string().nullable().optional(),title:z.string().optional()}).safeParse(response.data);
       if(!company.success||company.data.id!==companyId)return fail(404,'company_not_found');
-      const query=companyNewsQueries[company.data.ticker.toUpperCase() as keyof typeof companyNewsQueries];
-      if(!query)return fail(422,'company_news_not_supported');
+      const query=companyNewsQuery(company.data.ticker,company.data.company_name||company.data.title);
+      if(!query)return fail(422,'company_news_identity_unavailable');
       selectedQuery=query;
     }catch{return fail(502,'company_lookup_unavailable');}
   }else{

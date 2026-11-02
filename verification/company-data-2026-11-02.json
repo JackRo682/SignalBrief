@@ -1,0 +1,126 @@
+{
+  "status": "implementation_verified_release_in_progress",
+  "production_url": "https://signalbrief.online",
+  "baseline_runtime": "1541494637d89b46e2b2c53b15186c0e51f3ec62",
+  "source_branch": "fix/company-data-coverage-20261102",
+  "bridge": {
+    "commit": "07d6f0d8558eab84c09cbd801b6f4dc694c9e59c",
+    "tree": "f83ade5a29d16310ef708fce68833dcd374b22e9",
+    "branch": "fix/company-source-bridge-20261102",
+    "changed_files": 18,
+    "isolated_focused_tests": 148,
+    "isolated_build": "PASS",
+    "exact_remote_blob_match": true,
+    "ci": "SUCCESS",
+    "preview_deployment": "dpl_Go4fh8FndPn385SyW7SKjTEUceJM",
+    "production_deployment": "dpl_8mcUGeud1h97miwf2dYWGzqKu79B",
+    "ci_verification_run": 41374579803,
+    "ci_browser_passed": 90,
+    "ci_completed_at": "2026-11-02T02:00:24Z",
+    "production_status": "READY",
+    "production_alias": "https://signalbrief.online",
+    "production_branch": "07d6f0d8558eab84c09cbd801b6f4dc694c9e59c",
+    "public_release_check": {
+      "http_status": 200,
+      "commit": "07d6f0d8558eab84c09cbd801b6f4dc694c9e59c",
+      "internal_routes_unauthenticated_status": 401
+    }
+  },
+  "local": {
+    "browser_tests": {
+      "passed": 92,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "fixture_scope": "isolated synthetic; unexpected external requests fail"
+    },
+    "initial_full_gate": {
+      "backend_passed": 829,
+      "backend_skipped": 0,
+      "frontend_passed": 1474,
+      "frontend_files": 111,
+      "build": "failed on outside-app imports; monorepo root fixed and targeted production build passed"
+    },
+    "repeat_gate": {
+      "result": "failed",
+      "causes": [
+        "hosted schema test reused a database that must be empty",
+        "real-time debounce assertion exceeded wall-clock deadline under load",
+        "generated Turbopack cache could not reopen after root change"
+      ],
+      "corrections": [
+        "fresh loopback-only hosted cluster",
+        "deterministic timer and controlled response test synchronization",
+        "clean generated build cache"
+      ]
+    },
+    "final_full_gate": {
+      "status": "PASS",
+      "checked_at": "2026-11-02T01:59:37.142843+00:00",
+      "stages": 8,
+      "backend_passed": 829,
+      "backend_skipped": 0,
+      "frontend_passed": 1474,
+      "frontend_files": 111,
+      "hosted_test_environment": "fresh loopback cluster on55436"
+    },
+    "scope_guard": "PASS",
+    "deno_entrypoints_checked": 6,
+    "ledger_aligned_postgres": {
+      "passed": 169,
+      "skipped": 0
+    }
+  },
+  "actual_source_replays": {
+    "calendar_evidence": "verification/company-data-2026-11-02-calendar.json",
+    "visa_profile": "source-backed enrichment replay passed",
+    "visa_companyfacts_contexts": 44,
+    "naver_profile": "pending production acquisition",
+    "pinned_live_transport": "local DNS EAI_AGAIN; production acceptance pending"
+  },
+  "production": {
+    "migrations": [
+      {
+        "name": "calendar_sec_ir_discovery",
+        "version": "20261102020437",
+        "path": "supabase/migrations/20261102020437_calendar_sec_ir_discovery.sql",
+        "sha256": "bc16706742848f5a2ab0e831f1b8b0e9fcb182f10e049f806f0b4a2d2c79688f"
+      },
+      {
+        "name": "company_reported_financials",
+        "version": "20261102020442",
+        "path": "supabase/migrations/20261102020442_company_reported_financials.sql",
+        "sha256": "ce4965c3ed43e54410d4c111cd02fe5ff4b9d48bd38595de5b0dc82170a32730"
+      },
+      {
+        "name": "company_search_precision",
+        "version": "20261102020446",
+        "path": "supabase/migrations/20261102020446_company_search_precision.sql",
+        "sha256": "b56e78afbc51f775fe7c4324db1429b1cbc31b21f9496a7f5d53fc677d6355d6"
+      },
+      {
+        "name": "company_profile_source_enrichment",
+        "version": "20261102020450",
+        "path": "supabase/migrations/20261102020450_company_profile_source_enrichment.sql",
+        "sha256": "3b265ba1ebbf1c3ef710bc7db4b5fa84bceb538cbfa2699ec077d2611b7c7403"
+      },
+      {
+        "name": "dart_profile_periodic_sources",
+        "version": "20261102020454",
+        "path": "supabase/migrations/20261102020454_dart_profile_periodic_sources.sql",
+        "sha256": "516c05dcd496eb945cfc026e943535c544d3dec40bc54fd93d58b7e76c9f87f7"
+      }
+    ],
+    "edge_versions": {},
+    "ui_commit": null,
+    "live_acceptance": [],
+    "migration_ledger_sha256_match": true
+  },
+  "limits": [
+    "Official sources may not publish every field or an upcoming event.",
+    "Unapproved model analyses remain in review.",
+    "No synthetic figures, profiles, events, or bookmarks are inserted into production.",
+    "This release does not certify exhaustive issuer coverage or zero defects globally."
+  ]
+}

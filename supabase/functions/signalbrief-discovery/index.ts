@@ -2,6 +2,7 @@ import {createClient} from 'npm:@supabase/supabase-js@2.117.2';
 import {DiscoveryError,parseSelection} from './core.ts';
 import {discoveryRpc,discoverySecrets,refreshDirectory,hydrateCompany} from './service.ts';
 import {obj} from '../signalbrief-api/us-core.ts';
+import {requestCompanyFinancials} from '../signalbrief-api/company-financials.ts';
 const env=(k:string)=>Deno.env.get(k)??'';
 const headers={'Content-Type':'application/json','Cache-Control':'private, no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'};
 const reply=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers});
@@ -30,7 +31,8 @@ export async function handleDiscovery(req:Request):Promise<Response>{
   const bytes=new Uint8Array(size);let offset=0;for(const part of parts){bytes.set(part,offset);offset+=part.length;}
   let value:unknown;try{value=JSON.parse(new TextDecoder().decode(bytes));}catch{throw new DiscoveryError('invalid_json',422);}
   const selection=parseSelection(value),company=obj(await discoveryRpc(db,'activate',{...selection,actor:actor.data.user.id}));
-  const result=await hydrateCompany(db,await discoverySecrets(db),company);
+  const secrets=await discoverySecrets(db),result=await hydrateCompany(db,secrets,company);
+  const financials=requestCompanyFinancials(db,secrets,company);
   let calendar_refresh:{status:'pending'|'unsupported'|'not_pending'|'unavailable'}={status:'unavailable'};
   try{
    const requested=await db.rpc('sb_calendar_request_company',{company_id:company.id}).abortSignal(AbortSignal.timeout(2500));
@@ -39,7 +41,7 @@ export async function handleDiscovery(req:Request):Promise<Response>{
     calendar_refresh={status:state.pending?'pending':state.supported?'not_pending':'unsupported'};
    }
   }catch{/* The company is already persisted; calendar scheduling has its own outcome and durable trigger. */}
-  return reply({...result,calendar_refresh});
+  return reply({...result,calendar_refresh,financials_refresh:await financials});
  }catch(error){return reply({error:{code:error instanceof DiscoveryError?error.code:'discovery_unavailable'}},error instanceof DiscoveryError?error.status:502);}
 }
 Deno.serve(handleDiscovery);

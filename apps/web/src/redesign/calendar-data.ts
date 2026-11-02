@@ -39,17 +39,17 @@ const coverageSchema = z.object({
 });
 
 /** Coverage is independent of date reads: a provider outage never erases verified dates. */
-export function useCalendarCoverage(companyId: string | null) {
+export function useCalendarCoverage(companyId: string | null, enabled = true) {
   const { token } = useAuth();
   const [revision, setRevision] = useState(0);
   const [collectionRevision, setCollectionRevision] = useState(0);
   const [state, setState] = useState<{
     key: string; data: z.infer<typeof coverageSchema> | null; error: string; polling: boolean;
   }>({ key: "", data: null, error: "", polling: false });
-  const key = JSON.stringify([token, companyId, revision]);
+  const key = JSON.stringify([token, companyId, revision, enabled]);
   const reload = useCallback(() => setRevision((value) => value + 1), []);
   useEffect(() => {
-    if (!token) return;
+    if (!token || !enabled) return;
     let alive = true;
     const controller = new AbortController();
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -85,12 +85,12 @@ export function useCalendarCoverage(companyId: string | null) {
       }
     })();
     return () => { alive = false; clearTimeout(timer); controller.abort(); };
-  }, [token, companyId, revision, key]);
+  }, [token, companyId, revision, key, enabled]);
   const current = state.key === key;
   return {
     data: current ? state.data : null,
     error: current ? state.error : "",
-    loading: Boolean(token && !current),
+    loading: Boolean(enabled && token && !current),
     polling: current && state.polling,
     collectionRevision,
     reload,

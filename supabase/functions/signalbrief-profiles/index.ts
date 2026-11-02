@@ -2,10 +2,12 @@ import {createClient} from 'npm:@supabase/supabase-js@2.117.2';
 import {dartRelay} from '../signalbrief-collector/dart-relay.ts';
 import {parseProfile,parseSecProfile,ProfileError,type CompanyIdentity} from './core.ts';
 import {providerFetch} from '../signalbrief-api/us-core.ts';
+import {loadProfileEnrichment} from './enrichment.ts';
 const env=(k:string)=>Deno.env.get(k)??'';
 const sha=async(bytes:Uint8Array)=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new Uint8Array(bytes)))].map(b=>b.toString(16).padStart(2,'0')).join('');
 const reply=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'private, no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'}});
 export async function handleProfiles(req:Request):Promise<Response>{
+ const deadline=AbortSignal.timeout(36000);
  const db=createClient(env('SUPABASE_URL'),env('SUPABASE_SERVICE_ROLE_KEY'),{auth:{persistSession:false,autoRefreshToken:false}});
  const rpc=async(name:string,args:Record<string,unknown>={})=>{const r=await db.rpc(name,args);if(r.error)throw new ProfileError('database_request_failed',500);return r.data;};
  try{
@@ -39,7 +41,7 @@ export async function handleProfiles(req:Request):Promise<Response>{
   if(result.data.provider==='sec'){
    if(!/^\d{1,10}$/.test(company.provider_company_id)||!(/^[A-Z0-9][A-Z0-9.-]{0,14}$/).test(company.ticker))throw new ProfileError('invalid_company_mapping',409);
    const cacheKey=`profile:sec:v1:${id}:${company.provider_company_id}:${company.ticker}`;
-   const cached=await rpc('sb_us_cache',{k:cacheKey});if(cached)return reply(cached);
+   const cached=await rpc('sb_us_cache',{k:cacheKey});if(cached)return reply({...cached,enrichment:await loadProfileEnrichment(db,company,'sec',cached,undefined,{contact:env('SEC_CONTACT_EMAIL'),signal:deadline})});
    const secrets=await rpc('sb_us_secrets'),contact=env('SEC_CONTACT_EMAIL')||secrets.SEC_CONTACT_EMAIL;
    if(typeof contact!=='string'||!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/).test(contact))throw new ProfileError('sec_contact_required',503);
    const reserved=await db.rpc('sb_us_reserve',{p:'sec',amount:0,smoke:false});if(reserved.error)throw new ProfileError('provider_quota_exceeded',429);
@@ -47,21 +49,21 @@ export async function handleProfiles(req:Request):Promise<Response>{
    const bytes=new TextEncoder().encode(raw),digest=await sha(bytes),profile=parseSecProfile(raw,company,new Date().toISOString(),digest);
    const archive=await db.storage.from('signalbrief-raw').upload(`us/sec/submissions/${digest}.json`,bytes,{contentType:'application/json',upsert:false});
    if(archive.error&&!/already exists|duplicate/i.test(archive.error.message))throw new ProfileError('archive_failed',500);
-   await rpc('sb_us_cache',{k:cacheKey,v:profile,ttl:86400});return reply(profile);
+   await rpc('sb_us_cache',{k:cacheKey,v:profile,ttl:86400});return reply({...profile,enrichment:await loadProfileEnrichment(db,company,'sec',profile,raw,{contact,signal:deadline})});
   }
   if(!/^\d{8}$/.test(company.provider_company_id)||!/^[A-Z0-9]{6}$/.test(company.ticker))throw new ProfileError('invalid_company_mapping',409);
   const cacheKey=`profile:dart:v1:${id}:${company.provider_company_id}:${company.ticker}`;
-  const cached=await rpc('sb_us_cache',{k:cacheKey});if(cached)return reply(cached);
+  const cached=await rpc('sb_us_cache',{k:cacheKey});if(cached)return reply({...cached,enrichment:await loadProfileEnrichment(db,company,'dart',cached,undefined,{signal:deadline})});
   const secrets=await rpc('sb_us_secrets');const key=env('DART_API_KEY')||secrets.DART_API_KEY;
   if(!/^[a-f0-9]{40}$/i.test(key??''))throw new ProfileError('provider_not_configured',503);
   const reserved=await db.rpc('sb_us_reserve',{p:'dart',amount:0,smoke:false});if(reserved.error)throw new ProfileError('provider_quota_exceeded',429);
-  const bytes=await dartRelay({kind:'company',key,corp_code:company.provider_company_id},secrets.DART_RELAY_SECRET||env('DART_RELAY_SECRET'));
+  const bytes=await dartRelay({kind:'company',key,corp_code:company.provider_company_id},secrets.DART_RELAY_SECRET||env('DART_RELAY_SECRET'),15000,deadline);
   if(bytes.length>128_000)throw new ProfileError('provider_response_too_large');
   const digest=await sha(bytes),fetchedAt=new Date().toISOString(),profile=parseProfile(new TextDecoder().decode(bytes),company,fetchedAt,digest);
   const archive=await db.storage.from('signalbrief-raw').upload(`dart/profiles/${digest}.json`,bytes,{contentType:'application/json',upsert:false});
   if(archive.error&&!/already exists|duplicate/i.test(archive.error.message))throw new ProfileError('archive_failed',500);
   await rpc('sb_us_cache',{k:cacheKey,v:profile,ttl:profile.status==='verified'?86400:600});
-  return reply(profile);
+  return reply({...profile,enrichment:await loadProfileEnrichment(db,company,'dart',profile,new TextDecoder().decode(bytes),{signal:deadline})});
  }catch(error){
   // Only fixed transport codes are surfaced; never an exception message or URL.
   const relayCodes=new Set(['relay_not_configured','relay_unauthorized','relay_upstream_failed','relay_network_failed','empty_response','response_too_large']);

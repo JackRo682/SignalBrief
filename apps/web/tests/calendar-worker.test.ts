@@ -4,9 +4,11 @@ import {runInNewContext} from 'node:vm';
 import ts from 'typescript';
 import {describe,expect,it,vi} from 'vitest';
 import {CalendarError,sha256,type Source} from '../../../supabase/functions/signalbrief-calendar/core';
+import {createCalendarSourceFetch} from '../../../supabase/functions/signalbrief-calendar/source-relay';
 
 const q4:Source={key:'nvidia-ir',ticker:'NVDA',market:'NASDAQ',adapter:'q4-events',url:'https://investor.nvidia.com/events-and-presentations/events-and-presentations/default.aspx',feed_url:'https://investor.nvidia.com/feed/Event.svc/GetEventList',company_id:'10000000-0000-4000-8000-000000000093',provider:'sec',provider_company_id:'0001045810'};
 const dart:Source={key:'dart-ir-00999991',ticker:'099991',market:'KOSPI',adapter:'dart-ir',url:'https://dart.fss.or.kr/',company_id:'10000000-0000-4000-8000-000000000094',provider:'dart',provider_company_id:'00999991'};
+const sec:Source={key:'sec-ir-0000000996',ticker:'SYN',market:'NASDAQ',adapter:'sec-ir',url:'https://www.sec.gov/edgar/browse/?CIK=0000000996',company_id:'10000000-0000-4000-8000-000000000096',provider:'sec',provider_company_id:'0000000996'};
 const snapshot={raw_sha:'b'.repeat(64),object_key:'calendar/synthetic/manifest.json',manifest_text:'{"complete":true}'};
 
 function fixture(sources:Source[],secrets:Record<string,string>={}){
@@ -15,13 +17,14 @@ function fixture(sources:Source[],secrets:Record<string,string>={}){
  const fetcher=vi.fn<typeof fetch>().mockImplementation(async()=>new Response('{}'));
  const collectQ4=vi.fn<(source:Source,today:string,archive:unknown,fetcher:typeof fetch)=>Promise<typeof snapshot>>().mockResolvedValue(snapshot);
  const collectDartIR=vi.fn<(source:Source,today:string,archive:unknown,listPage:unknown,fetcher:typeof fetch)=>Promise<typeof snapshot>>().mockResolvedValue(snapshot);
+ const collectSecIR=vi.fn<(source:Source,today:string,contact:string,archive:unknown,fetcher:typeof fetch,resolve:unknown)=>Promise<typeof snapshot>>().mockResolvedValue(snapshot);
  const dartRelay=vi.fn(async()=>new TextEncoder().encode('{}'));
  const rpc=vi.fn(async(name:string,args:Record<string,unknown>={})=>({error:null,data:name==='sb_calendar_task_sources'?sources:name==='sb_us_secrets'?secrets:name.startsWith('sb_calendar_ingest')?1:name==='sb_calendar_claim'?true:args}));
  const upload=vi.fn(async()=>({error:null}));
  const createClient=vi.fn(()=>({rpc,storage:{from:()=>({upload})}}));
  const code=readFileSync(new URL('../../../supabase/functions/signalbrief-calendar/index.ts',import.meta.url),'utf8').replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'');
- runInNewContext(ts.transpileModule(code,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None}}).outputText,{createClient,CalendarError,sha256,collectQ4,collectDartIR,dartRelay,koreaDate:()=> '20281102',fetchSource:vi.fn(),parseSource:vi.fn(),Response,Request,Headers,TextEncoder,TextDecoder,AbortSignal,fetch:fetcher,Date:Clock,Deno:{env:{get:()=> ''},serve:(fn:typeof handler)=>{handler=fn;}}});
- return {rpc,collectQ4,collectDartIR,dartRelay,fetcher,createClient,setClock:(value:number)=>{clock=value;},call:()=>handler(new Request('https://fixture.invalid/calendar',{method:'POST',headers:{'x-signalbrief-task':'a'.repeat(64)}}))};
+ runInNewContext(ts.transpileModule(code,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None}}).outputText,{createClient,CalendarError,sha256,collectQ4,collectDartIR,collectSecIR,createCalendarSourceFetch,dartRelay,koreaDate:()=> '20281102',fetchSource:vi.fn(),parseSource:vi.fn(),Response,Request,Headers,TextEncoder,TextDecoder,AbortSignal,fetch:fetcher,Date:Clock,Deno:{env:{get:()=> ''},serve:(fn:typeof handler)=>{handler=fn;}}});
+ return {rpc,collectQ4,collectDartIR,collectSecIR,dartRelay,fetcher,createClient,setClock:(value:number)=>{clock=value;},call:()=>handler(new Request('https://fixture.invalid/calendar',{method:'POST',headers:{'x-signalbrief-task':'a'.repeat(64)}}))};
 }
 
 describe('one-source calendar worker handoff',()=>{
@@ -45,6 +48,21 @@ describe('one-source calendar worker handoff',()=>{
   expect((await f.call()).status).toBe(200);
   expect(f.collectDartIR).toHaveBeenCalledWith(dart,'2028-11-02',expect.any(Function),expect.any(Function),expect.any(Function));
   expect(f.rpc).toHaveBeenCalledWith('sb_calendar_ingest_dart_ir',{source:dart.key,...snapshot});
+ });
+ it('runs a canonical SEC discovery source with server contact and ingests only its archived manifest',async()=>{
+  const f=fixture([sec],{SEC_CONTACT_EMAIL:'synthetic@example.invalid',DART_RELAY_SECRET:'d'.repeat(64)});
+  expect(await(await f.call()).json()).toEqual({results:[{source:sec.key,status:'verified',items:1}]});
+  expect(f.collectSecIR).toHaveBeenCalledWith(sec,expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),'synthetic@example.invalid',expect.any(Function),expect.any(Function),expect.any(Function));
+  expect(f.rpc).toHaveBeenCalledWith('sb_calendar_ingest_sec_ir',{source:sec.key,...snapshot});
+  expect(f.rpc.mock.calls.map(([name])=>name)).toEqual(['sb_calendar_claim','sb_calendar_task_sources','sb_us_secrets','sb_calendar_ingest_sec_ir','sb_calendar_finish']);
+  expect(f.collectQ4).not.toHaveBeenCalled();expect(f.collectDartIR).not.toHaveBeenCalled();
+ });
+ it('records an unsupported SEC format without ingesting or blocking the existing queue handoff',async()=>{
+  const f=fixture([sec],{SEC_CONTACT_EMAIL:'synthetic@example.invalid',DART_RELAY_SECRET:'d'.repeat(64)});
+  f.collectSecIR.mockRejectedValueOnce(new CalendarError('official_calendar_format_unsupported'));
+  expect(await(await f.call()).json()).toEqual({results:[{source:sec.key,status:'failed',code:'official_calendar_format_unsupported'}]});
+  expect(f.rpc.mock.calls.some(([name])=>name.startsWith('sb_calendar_ingest'))).toBe(false);
+  expect(f.rpc.mock.calls.map(([name])=>name)).toEqual(['sb_calendar_claim','sb_calendar_task_sources','sb_us_secrets','sb_calendar_source_error','sb_calendar_finish']);
  });
  it('stops provider work at 44 seconds while retaining bounded cleanup time for failure and queue handoff',async()=>{
   const f=fixture([q4]);

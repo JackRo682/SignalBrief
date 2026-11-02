@@ -42,6 +42,19 @@ describe('authenticated company news resolution',()=>{
   expect((await GET(new Request(`https://example.com/api/news?company_id=${id}`,{headers:auth}))).status).toBe(422);
   expect(fetch).not.toHaveBeenCalled();
  });
+ it.each([['ACME','Acme Example Corporation','Acme Example'],['YUM','Yum! Brands, Inc.','Yum Brands'],['123456','합성기업','합성기업']])('supports canonical unlisted company %s without accepting client search text',async(ticker,company_name,query)=>{
+  mocks.rpc.mockResolvedValueOnce({data:{id,kind:'company',ticker,company_name},error:null});
+  const {GET}=await import('../src/app/api/news/route');
+  const response=await GET(new Request(`https://example.com/api/news?company_id=${id}`,{headers:auth}));
+  expect(response.status).toBe(200);expect(await response.json()).toMatchObject({query});
+  expect((vi.mocked(fetch).mock.calls[0][0] as URL).searchParams.get('query')).toBe(query);
+ });
+ it.each(['https://attacker.test','Acme\nprivate-input','<script>','x'.repeat(241)])('rejects malformed canonical identities: %s',async(company_name)=>{
+  mocks.rpc.mockResolvedValueOnce({data:{id,kind:'company',ticker:'ACME',company_name},error:null});
+  const {GET}=await import('../src/app/api/news/route');
+  const response=await GET(new Request(`https://example.com/api/news?company_id=${id}`,{headers:auth}));
+  expect(response.status).toBe(422);expect(fetch).not.toHaveBeenCalled();
+ });
  it('preserves MFA denial and distinguishes provider failure from no matches',async()=>{
   const {GET}=await import('../src/app/api/news/route');
   mocks.rpc.mockResolvedValueOnce({data:null,error:{code:'PT403',message:'mfa_required'}});

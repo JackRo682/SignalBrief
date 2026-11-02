@@ -8,6 +8,7 @@ type Page={url:string;page_number:number;raw_sha256:string;object_key:string;cou
 export type Q4Manifest={
  schema:'signalbrief.calendar.q4.v1';source_key:string;source_url:string;adapter:string;
  company_id?:string;provider?:string;provider_company_id?:string;ticker?:string;
+ tag_policy?:'official-events';
  complete:true;page_size:number;window:{start:string;end:string};pages:Page[];entries:Entry[];
 };
 const record=(value:unknown):value is Record<string,unknown>=>typeof value==='object'&&value!==null&&!Array.isArray(value);
@@ -39,7 +40,7 @@ function sourceDate(value:unknown):{day:string;local:string}{
  return {day,local:`${day}T${match[4]}:${match[5]}:${match[6]}`};
 }
 
-export function parseMicronPage(bytes:Uint8Array,page:number,window:{start:string;end:string}):{ids:string[];entries:Entry[];count:number}{
+export function parseMicronPage(bytes:Uint8Array,page:number,window:{start:string;end:string},policy:'webcast'|'official-events'='webcast'):{ids:string[];entries:Entry[];count:number}{
  let data:unknown;
  try{data=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}catch{throw new CalendarError('source_format_changed');}
  if(!record(data)||!Array.isArray(data.GetEventListResult)||data.GetEventListResult.length>PAGE_SIZE)throw new CalendarError('source_format_changed');
@@ -48,7 +49,8 @@ export function parseMicronPage(bytes:Uint8Array,page:number,window:{start:strin
   if(!record(row)||!Number.isSafeInteger(row.EventId)||Number(row.EventId)<=0||!Array.isArray(row.TagsList)||row.TagsList.some(tag=>typeof tag!=='string'))throw new CalendarError('source_format_changed');
   const id=String(row.EventId);ids.push(id);
   // The issuer's own event classification is required. Publication-only risk-factor rows are not calendar events.
-  if(!row.TagsList.includes('webcast')||row.TagsList.includes('risk-factor'))continue;
+  if(row.TagsList.includes('risk-factor')||policy==='webcast'&&!row.TagsList.includes('webcast'))continue;
+  if(policy==='official-events'&&(typeof row.LinkToDetailPage!=='string'||!/^\/[^/]/.test(row.LinkToDetailPage)||row.LinkToDetailPage.length>1000))throw new CalendarError('invalid_event');
   if(typeof row.Title!=='string')throw new CalendarError('invalid_event');
   const title=row.Title.trim();
   if(title.length===0||title.length>200||/[\u0000-\u001f]/.test(title))throw new CalendarError('invalid_event');
@@ -79,7 +81,7 @@ export async function collectMicronQ4(source:Source,today:string,archive:Calenda
 }
 
 /** Source/issuer binding comes only from the private reviewed registry, never a request URL. */
-export async function collectQ4(source:Source,today:string,archive:CalendarArchive,fetcher:typeof fetch=fetch):Promise<{raw_sha:string;object_key:string;manifest_text:string;manifest:Q4Manifest}>{
+export async function collectQ4(source:Source,today:string,archive:CalendarArchive,fetcher:typeof fetch=fetch,policy:'webcast'|'official-events'='webcast'):Promise<{raw_sha:string;object_key:string;manifest_text:string;manifest:Q4Manifest}>{
  let feed:URL,origin:URL;
  try{feed=new URL(source.feed_url??'');origin=new URL(source.url);}catch{throw new CalendarError('invalid_source_url');}
  if(!['micron-q4','q4-events'].includes(source.adapter)||feed.protocol!=='https:'||feed.origin!==origin.origin||origin.protocol!=='https:'
@@ -95,7 +97,7 @@ export async function collectQ4(source:Source,today:string,archive:CalendarArchi
   const hash=await sha256(bytes),path=`calendar/${source.key}/pages/${hash}.json`;
   // Keep exact original bytes, including the terminal empty page. Failure here must prevent ingestion/withdrawal.
   await archive(path,bytes,'application/json');
-  const parsed=parseMicronPage(bytes,page,window);
+  const parsed=parseMicronPage(bytes,page,window,policy);
   // This all-years feed contains published history. An empty catalog is a source anomaly,
   // unlike a nonempty historical catalog with no eligible events in our current window.
   if(page===0&&parsed.count===0)throw new CalendarError('unexpected_empty_catalog');
@@ -107,7 +109,7 @@ export async function collectQ4(source:Source,today:string,archive:CalendarArchi
   shortPage=parsed.count<PAGE_SIZE;
  }
  if(!complete)throw new CalendarError('incomplete_pagination');
- const manifest:Q4Manifest={schema:'signalbrief.calendar.q4.v1',source_key:source.key,source_url:source.url,adapter:source.adapter,company_id:source.company_id,provider:source.provider,provider_company_id:source.provider_company_id,ticker:source.ticker,complete:true,page_size:PAGE_SIZE,window,pages,entries};
+ const manifest:Q4Manifest={schema:'signalbrief.calendar.q4.v1',source_key:source.key,source_url:source.url,adapter:source.adapter,company_id:source.company_id,provider:source.provider,provider_company_id:source.provider_company_id,ticker:source.ticker,...(policy==='official-events'?{tag_policy:policy}:{}),complete:true,page_size:PAGE_SIZE,window,pages,entries};
  const manifest_text=JSON.stringify(manifest),bytes=new TextEncoder().encode(manifest_text),raw_sha=await sha256(bytes),object_key=`calendar/${source.key}/${raw_sha}.json`;
  await archive(object_key,bytes,'application/json');
  return {raw_sha,object_key,manifest_text,manifest};

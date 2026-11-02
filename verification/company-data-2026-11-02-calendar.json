@@ -1,0 +1,271 @@
+{
+  "task": "SEC-filed official calendar discovery and automatic issuer onboarding",
+  "date": "2026-11-02",
+  "baseline_runtime": "1541494637d89b46e2b2c53b15186c0e51f3ec62",
+  "scope": "Exact public-source archive/issuer/parser replay, local PostgreSQL contract acceptance, and synthetic real Edge-to-Node transport integration. Not production acceptance or deployment.",
+  "sources": [
+    {
+      "ticker": "TSLA",
+      "provider": "sec",
+      "provider_company_id": "0001318605",
+      "captured_at": "2026-11-02T01:13:28.080903+00:00",
+      "manifest_sha256": "ba0aedc29ae88db0266805d9bf2d0202328be2f22943815230faade1c3287042",
+      "format": "structured-html",
+      "official_binding": {
+        "url": "https://ir.tesla.com/",
+        "document_url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066738/exhibit9914.htm",
+        "location": "normalized-text/explicit-investor-relations-url"
+      },
+      "documents": [
+        {
+          "role": "submissions",
+          "url": "https://data.sec.gov/submissions/CIK0001318605.json",
+          "raw_sha256": "739acb4d54a0d5a3660847a550dd8a3e0fb427015c6f6e23e67908b82cf30e3b"
+        },
+        {
+          "role": "primary",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066738/tsla-20261021.htm",
+          "raw_sha256": "fbd920ef3dc11e94bec376cd220740586ba2d9dcac5e5f85a29ff5a43a5a9b17"
+        },
+        {
+          "role": "exhibit",
+          "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066738/exhibit9914.htm",
+          "raw_sha256": "1a117af80658fc72463d6e65ad04fb360d90a53a2ab90f7a1cd2541aa6f46036"
+        },
+        {
+          "role": "ir",
+          "url": "https://ir.tesla.com/",
+          "raw_sha256": "916c85fd0ef681000320ae7d25f4da6330b24a274f0afb39029ddf82a4d7d035"
+        }
+      ],
+      "pages": [],
+      "events": [
+        {
+          "key": "quarter:2026:Q3",
+          "occurs_on": "2026-10-21",
+          "source_url": "https://ir.tesla.com/",
+          "timezone": null,
+          "raw_sha256": "916c85fd0ef681000320ae7d25f4da6330b24a274f0afb39029ddf82a4d7d035",
+          "location": "tables[0].rows[1].earnings-date"
+        }
+      ],
+      "counts_at_2026_11_02": {
+        "past": 1,
+        "future": 0
+      },
+      "real_local_postgres_confirmed_rows": 1,
+      "original_objects_hash_verified": 5,
+      "issuer_name": "Tesla, Inc.",
+      "issuer_evidence": [
+        {
+          "source_url": "https://ir.tesla.com/",
+          "raw_sha256": "916c85fd0ef681000320ae7d25f4da6330b24a274f0afb39029ddf82a4d7d035",
+          "label": "Tesla Investor Relations",
+          "location": "title[0]"
+        }
+      ],
+      "issuer_verified_manifest_archived_at": "2026-11-02T01:29:23.396357+00:00",
+      "replay_transport": "Public-source Deno replay before final Node IP-pinned transport; final parser, issuer binding and SQL contract validated against these exact archived bytes."
+    },
+    {
+      "ticker": "V",
+      "provider": "sec",
+      "provider_company_id": "0001403161",
+      "captured_at": "2026-11-02T01:13:33.197654+00:00",
+      "manifest_sha256": "b1cc742450c84e87d6a5ee7fc602a820002a7b7b13527733b09b1b0bbab65b67",
+      "format": "q4",
+      "official_binding": {
+        "url": "https://investor.visa.com/",
+        "document_url": "https://www.sec.gov/Archives/edgar/data/1403161/000140316126000126/q42026earningsrelease.htm",
+        "location": "normalized-text/explicit-investor-relations-url"
+      },
+      "documents": [
+        {
+          "role": "submissions",
+          "url": "https://data.sec.gov/submissions/CIK0001403161.json",
+          "raw_sha256": "4e69674ea5c59cdafbd8a0c651c8c32de8e443eb525874502bcfec1b0ce14c22"
+        },
+        {
+          "role": "primary",
+          "url": "https://www.sec.gov/Archives/edgar/data/1403161/000140316126000126/v-20261027.htm",
+          "raw_sha256": "c67e047738c8f4d9fa1382904e617386b36c4a6a21d928a6f7af859a440e4af0"
+        },
+        {
+          "role": "exhibit",
+          "url": "https://www.sec.gov/Archives/edgar/data/1403161/000140316126000126/q42026earningsrelease.htm",
+          "raw_sha256": "8a3529834236b348bdd82dcb25f1a4cbf9930501ba8ba62cc27c5cb63bc45dd9"
+        },
+        {
+          "role": "ir",
+          "url": "https://investor.visa.com/",
+          "raw_sha256": "7f43c4c26e8ba546691525733f4ac2888ca14acb52e194da928d4ce66ec5a2ed"
+        },
+        {
+          "role": "events",
+          "url": "https://investor.visa.com/events-calendar/default.aspx",
+          "raw_sha256": "ae1988c7efbc21cebd4fda742ff2554e5b33ba58de563212a8e65fdf3592a3d8"
+        }
+      ],
+      "pages": [
+        {
+          "url": "https://investor.visa.com/feed/Event.svc/GetEventList?LanguageId=1&eventSelection=3&eventDateFilter=3&includeFinancialReports=false&includePresentations=false&includePressReleases=false&sortOperator=1&pageSize=100&pageNumber=0&tagList=&includeTags=true&year=-1&excludeSelection=1",
+          "page_number": 0,
+          "count": 100,
+          "raw_sha256": "0cfc97be0ebddc68957a2c0f9a6d59d388b1cc11d8e01e14c9ca54d8e0c47d1a"
+        },
+        {
+          "url": "https://investor.visa.com/feed/Event.svc/GetEventList?LanguageId=1&eventSelection=3&eventDateFilter=3&includeFinancialReports=false&includePresentations=false&includePressReleases=false&sortOperator=1&pageSize=100&pageNumber=1&tagList=&includeTags=true&year=-1&excludeSelection=1",
+          "page_number": 1,
+          "count": 100,
+          "raw_sha256": "41cc412e979583ba1863bef8c9cb3f03e7b93952c137a5788ca53e1b266b3933"
+        },
+        {
+          "url": "https://investor.visa.com/feed/Event.svc/GetEventList?LanguageId=1&eventSelection=3&eventDateFilter=3&includeFinancialReports=false&includePresentations=false&includePressReleases=false&sortOperator=1&pageSize=100&pageNumber=2&tagList=&includeTags=true&year=-1&excludeSelection=1",
+          "page_number": 2,
+          "count": 99,
+          "raw_sha256": "f8f09ddf8c8e1a5eede7d2a4d186a245ab540fe5458ace6cc665a4e585620233"
+        },
+        {
+          "url": "https://investor.visa.com/feed/Event.svc/GetEventList?LanguageId=1&eventSelection=3&eventDateFilter=3&includeFinancialReports=false&includePresentations=false&includePressReleases=false&sortOperator=1&pageSize=100&pageNumber=3&tagList=&includeTags=true&year=-1&excludeSelection=1",
+          "page_number": 3,
+          "count": 0,
+          "raw_sha256": "4484ebcb5a5e5095e5e283fe0e986de5de71db7fef11747998505402dad1f8bb"
+        }
+      ],
+      "events": [
+        {
+          "key": "q4:2543",
+          "occurs_on": "2027-01-26",
+          "source_url": "https://investor.visa.com/events-calendar/default.aspx",
+          "timezone": "America/Los_Angeles",
+          "raw_sha256": "0cfc97be0ebddc68957a2c0f9a6d59d388b1cc11d8e01e14c9ca54d8e0c47d1a",
+          "location": "pages[0].GetEventListResult[0]"
+        },
+        {
+          "key": "q4:2536",
+          "occurs_on": "2026-12-08",
+          "source_url": "https://investor.visa.com/events-calendar/default.aspx",
+          "timezone": "America/Los_Angeles",
+          "raw_sha256": "0cfc97be0ebddc68957a2c0f9a6d59d388b1cc11d8e01e14c9ca54d8e0c47d1a",
+          "location": "pages[0].GetEventListResult[1]"
+        },
+        {
+          "key": "q4:2537",
+          "occurs_on": "2026-12-01",
+          "source_url": "https://investor.visa.com/events-calendar/default.aspx",
+          "timezone": "America/Denver",
+          "raw_sha256": "0cfc97be0ebddc68957a2c0f9a6d59d388b1cc11d8e01e14c9ca54d8e0c47d1a",
+          "location": "pages[0].GetEventListResult[2]"
+        },
+        {
+          "key": "q4:2535",
+          "occurs_on": "2026-11-10",
+          "source_url": "https://investor.visa.com/events-calendar/default.aspx",
+          "timezone": "America/New_York",
+          "raw_sha256": "0cfc97be0ebddc68957a2c0f9a6d59d388b1cc11d8e01e14c9ca54d8e0c47d1a",
+          "location": "pages[0].GetEventListResult[3]"
+        },
+        {
+          "key": "q4:2539",
+          "occurs_on": "2026-11-09",
+          "source_url": "https://investor.visa.com/events-calendar/default.aspx",
+          "timezone": "America/New_York",
+          "raw_sha256": "0cfc97be0ebddc68957a2c0f9a6d59d388b1cc11d8e01e14c9ca54d8e0c47d1a",
+          "location": "pages[0].GetEventListResult[4]"
+        },
+        {
+          "key": "q4:2542",
+          "occurs_on": "2026-10-27",
+          "source_url": "https://investor.visa.com/events-calendar/default.aspx",
+          "timezone": "America/New_York",
+          "raw_sha256": "0cfc97be0ebddc68957a2c0f9a6d59d388b1cc11d8e01e14c9ca54d8e0c47d1a",
+          "location": "pages[0].GetEventListResult[5]"
+        },
+        {
+          "key": "q4:2516",
+          "occurs_on": "2026-09-08",
+          "source_url": "https://investor.visa.com/events-calendar/default.aspx",
+          "timezone": "America/Los_Angeles",
+          "raw_sha256": "0cfc97be0ebddc68957a2c0f9a6d59d388b1cc11d8e01e14c9ca54d8e0c47d1a",
+          "location": "pages[0].GetEventListResult[6]"
+        }
+      ],
+      "counts_at_2026_11_02": {
+        "past": 2,
+        "future": 5
+      },
+      "real_local_postgres_confirmed_rows": 7,
+      "original_objects_hash_verified": 11,
+      "issuer_name": "VISA INC.",
+      "issuer_evidence": [
+        {
+          "source_url": "https://investor.visa.com/",
+          "raw_sha256": "7f43c4c26e8ba546691525733f4ac2888ca14acb52e194da928d4ce66ec5a2ed",
+          "label": "Visa - Investor Relations",
+          "location": "title[0]"
+        },
+        {
+          "source_url": "https://investor.visa.com/events-calendar/default.aspx",
+          "raw_sha256": "ae1988c7efbc21cebd4fda742ff2554e5b33ba58de563212a8e65fdf3592a3d8",
+          "label": "Visa - Events Calendar",
+          "location": "title[0]"
+        }
+      ],
+      "issuer_verified_manifest_archived_at": "2026-11-02T01:29:25.183153+00:00",
+      "replay_transport": "Public-source Deno replay before final Node IP-pinned transport; final parser, issuer binding and SQL contract validated against these exact archived bytes."
+    }
+  ],
+  "checks": {
+    "calendar_edge_collector_integration_typescript_tests": 137,
+    "calendar_node_transport_and_route_tests": 53,
+    "calendar_new_postgres_tests": 43,
+    "postgres_skips": 0,
+    "actual_archived_manifest_postgres_replays": 2,
+    "independent_dart_profile_postgres_tests": 44,
+    "typescript": "passed; explicit exit 0",
+    "deno_calendar": "passed",
+    "focused_web_eslint": "passed; Edge source files are outside the web ESLint base and covered separately by Deno",
+    "focused_ruff": "passed",
+    "diff_check": "passed",
+    "synthetic_transport_integration": "Actual Edge collector and HMAC signer invoke the real Node route, nonce claim boundary, and pinned HTTPS downloader with deterministic DNS/socket fixtures.",
+    "actual_pinned_transport_replay": {
+      "status": "blocked_by_local_network",
+      "error": "EAI_AGAIN data.sec.gov",
+      "stage": "First direct SEC submissions request, before IR transport or parser",
+      "production_acceptance": "Required after Node bridge and Edge deployment; no fallback to unpinned fetch."
+    }
+  },
+  "deployment": {
+    "migration": "20261102010020_calendar_sec_ir_discovery.sql",
+    "order": [
+      "Deploy the web Node /api/internal/calendar-source bridge using existing DART_RELAY_SECRET and Supabase public configuration; confirm it is available.",
+      "Apply additive calendar migration; new SEC work stays pending behind sec_ir_ready=false.",
+      "Deploy updated signalbrief-calendar Edge with all imported local dependency files.",
+      "Call service-only SELECT public.sb_calendar_sec_ir_ready('sec-ir-v1');",
+      "Verify source queue success and exact archived originals, then signed-in Visa/Tesla calendar and event details."
+    ],
+    "performed_by_this_agent": false,
+    "new_environment_variables": [],
+    "edge_local_files": [
+      "signalbrief-calendar/index.ts",
+      "signalbrief-calendar/core.ts",
+      "signalbrief-calendar/micron-q4.ts",
+      "signalbrief-calendar/dart-ir.ts",
+      "signalbrief-calendar/sec-ir.ts",
+      "signalbrief-calendar/public-source.ts",
+      "signalbrief-calendar/source-relay.ts",
+      "signalbrief-collector/core.ts",
+      "signalbrief-collector/dart-relay.ts",
+      "signalbrief-api/us-core.ts"
+    ]
+  },
+  "limits": [
+    "Tesla has one published recent date in the supported official table; no future date was inferred.",
+    "Generic discovery requires SEC-provided investorWebsite or an explicit IR link in one of the latest three 8-K/6-K filings and bounded linked exhibits.",
+    "Every dynamically discovered IR and events page must match canonical SEC issuer name through its own title/OG/Organization evidence; a link in an SEC filing alone is insufficient.",
+    "Supported calendar formats are official Q4 feeds, explicitly labeled earnings-date tables, and same-origin JSON-LD Event records; unrecognized layouts remain a recorded source failure.",
+    "Original third-party bytes remain in a temporary private replay archive and are not committed as synthetic fixtures.",
+    "Authenticated production collection and frontend acceptance remain separate root-owned release gates.",
+    "The local native-DNS live transport attempt failed before downloading SEC bytes. Synthetic pinning/security tests passed; production network acceptance remains pending."
+  ]
+}

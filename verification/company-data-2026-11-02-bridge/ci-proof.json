@@ -1,0 +1,132 @@
+{
+  "verified_at": "2026-11-02T02:00:54.746Z",
+  "commit": "07d6f0d8558eab84c09cbd801b6f4dc694c9e59c",
+  "branch": "fix/company-source-bridge-20261102",
+  "published_identity": {
+    "commit": "07d6f0d8558eab84c09cbd801b6f4dc694c9e59c",
+    "tree": "f83ade5a29d16310ef708fce68833dcd374b22e9",
+    "count": 18,
+    "truncated": false,
+    "mismatches": []
+  },
+  "workflows": [
+    {
+      "id": 41374650277,
+      "name": "Production health",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "07d6f0d8558eab84c09cbd801b6f4dc694c9e59c",
+      "created_at": "2026-11-02T01:51:36Z",
+      "updated_at": "2026-11-02T01:51:37Z",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41374650277",
+      "jobs": []
+    },
+    {
+      "id": 41374579802,
+      "name": "Collector Edge verification",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "07d6f0d8558eab84c09cbd801b6f4dc694c9e59c",
+      "created_at": "2026-11-02T01:50:45Z",
+      "updated_at": "2026-11-02T01:50:59Z",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41374579802",
+      "jobs": [
+        {
+          "id": 125051945372,
+          "name": "edge",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 41374579800,
+      "name": "official-calendar-verification",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "07d6f0d8558eab84c09cbd801b6f4dc694c9e59c",
+      "created_at": "2026-11-02T01:50:45Z",
+      "updated_at": "2026-11-02T01:51:46Z",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41374579800",
+      "jobs": [
+        {
+          "id": 125051945095,
+          "name": "calendar",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 41374579886,
+      "name": "Financial evidence benchmark",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "07d6f0d8558eab84c09cbd801b6f4dc694c9e59c",
+      "created_at": "2026-11-02T01:50:45Z",
+      "updated_at": "2026-11-02T01:52:24Z",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41374579886",
+      "jobs": [
+        {
+          "id": 125051945103,
+          "name": "study-browser",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 125051945269,
+          "name": "offline-benchmark",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 41374579803,
+      "name": "signalbrief-verification",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "07d6f0d8558eab84c09cbd801b6f4dc694c9e59c",
+      "created_at": "2026-11-02T01:50:45Z",
+      "updated_at": "2026-11-02T02:00:24Z",
+      "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41374579803",
+      "jobs": [
+        {
+          "id": 125051945073,
+          "name": "python-audit",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 125051945205,
+          "name": "web",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 125051945230,
+          "name": "postgres",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 125051945275,
+          "name": "backend",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "browser": {
+    "job_id": 125051945205,
+    "passed": 90,
+    "duration": "4.9m",
+    "result_at": "2026-11-02T02:00:16.9921870Z",
+    "url": "https://github.com/JackRo682/SignalBrief/actions/runs/41374579803/job/125051945205"
+  },
+  "production_health_skip_expected": true,
+  "local_reruns": false,
+  "production_mutations": false,
+  "source_mutations": false
+}

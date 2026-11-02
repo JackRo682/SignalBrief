@@ -1,14 +1,16 @@
 import {sendNotification} from '../signalbrief-delivery/core.ts';
 import {kisToken,kisQuote,fmpIndex,indexSymbols,fmpEquityQuote} from './market-core.ts';
 import {verificationPlan,runVerification} from './verification.ts';
+import {requestCompanyFinancials} from './company-financials.ts';
+import {selectAnalysisExcerpt} from './analysis-excerpt.ts';
 import {createClient, type SupabaseClient} from 'npm:@supabase/supabase-js@2.117.2';
 import {ProviderError,obj,arr,str,providerFetch,jsonFetch,websitePermission,usSymbol,fmpQuote,fmpHistory,frankfurter,secSubmissions,validateFilingURL,normalizeFiling,analyzeEvidence,analysisReservation,openaiSmoke,resendDomains,sendVerifiedEmail,gnewsSearch,type Row} from './us-core.ts';
 const env=(k:string)=>Deno.env.get(k)??'';
 const admin=()=>createClient(env('SUPABASE_URL'),env('SUPABASE_SERVICE_ROLE_KEY'),{auth:{persistSession:false,autoRefreshToken:false}});
-async function rpc(db:SupabaseClient,name:string,args:Row={}){const {data,error}=await db.rpc(name,args);if(error)throw new ProviderError('database',/^PT/.test(error.code)&&/^[a-z_]+$/.test(error.message)?error.message:'operation_failed',500);return data;}
+async function rpc(db:SupabaseClient,name:string,args:Row={}){const {data,error}=await db.rpc(name,args);if(error)throw new ProviderError('database',/^PT/.test(error.code)&&/^[a-z_]+$/.test(error.message)?error.message:'operation_failed',/^PT\d{3}$/.test(error.code)?Number(error.code.slice(2)):500);return data;}
 const reply=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'}});
 const hash=async(text:string)=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text)))].map(b=>b.toString(16).padStart(2,'0')).join('');
-async function settings(db:SupabaseClient){const s=obj(await rpc(db,'sb_us_secrets'));for(const k of ['OPENAI_API_KEY','FMP_API_KEY','RESEND_API_KEY','GNEWS_API_KEY','SEC_CONTACT_EMAIL','DART_API_KEY','KIS_APP_KEY','KIS_APP_SECRET'])if(env(k))s[k]=env(k);return s;}
+async function settings(db:SupabaseClient){const s=obj(await rpc(db,'sb_us_secrets'));for(const k of ['OPENAI_API_KEY','FMP_API_KEY','RESEND_API_KEY','GNEWS_API_KEY','SEC_CONTACT_EMAIL','DART_API_KEY','DART_RELAY_SECRET','KIS_APP_KEY','KIS_APP_SECRET'])if(env(k))s[k]=env(k);return s;}
 async function recordCheck(db:SupabaseClient,provider:string,action:()=>Promise<Row>){let result:Row;try{result={status:'verified',detail:await action()};}catch(e){result={status:'blocked',detail:{code:e instanceof ProviderError?e.code:'operation_failed'}};}await db.from('us_provider_checks').upsert({provider,...result,checked_at:new Date().toISOString()});return result;}
 async function reserve(db:SupabaseClient,p:string,amount=0){await rpc(db,'sb_us_reserve',{p,amount,smoke:false});}
 async function cached(db:SupabaseClient,k:string,fn:()=>Promise<unknown>,ttl=900){const stored=await rpc(db,'sb_us_cache',{k});if(stored!==null)return stored;const v=await fn();await rpc(db,'sb_us_cache',{k,v,ttl});return v;}
@@ -34,12 +36,12 @@ async function analyzeClaimed(db:SupabaseClient,s:Row,id:string){
  const {data:f,error}=await db.from('us_filings').select('*').eq('id',id).maybeSingle();if(error||!f)throw new ProviderError('sec','filing_not_found',404);
  const old=await db.from('us_analyses').select('status').eq('filing_id',id).maybeSingle();if(old.data)return {status:old.data.status,cached:true};
  const contact=str(s.SEC_CONTACT_EMAIL);if(!contact)throw new ProviderError('sec','contact_email_required',503);
- await reserve(db,'sec');const raw=await providerFetch(validateFilingURL(f.document_url),'sec',{headers:{'User-Agent':`SignalBrief/0.2 ${contact}`}},fetch,3_000_000),normalized=normalizeFiling(raw),source=normalized.slice(0,12000),sha=await hash(raw);
+ await reserve(db,'sec');const raw=await providerFetch(validateFilingURL(f.document_url),'sec',{headers:{'User-Agent':`SignalBrief/0.2 ${contact}`}},fetch,8_000_000),normalized=normalizeFiling(raw),sha=await hash(raw);
  // Reserve a conservative bound for UTF-8 input bytes plus capped output; no automatic retries.
- const amount=analysisReservation(source);
  const archive=await db.storage.from('signalbrief-raw').upload(`us/sec/filings/${sha}.html`,raw,{contentType:'text/html',upsert:false});if(archive.error&&!/already exists|duplicate/i.test(archive.error.message))throw new ProviderError('storage','archive_failed');
+ const excerpt=selectAnalysisExcerpt(normalized),source=excerpt.text,amount=analysisReservation(source);
  await reserve(db,'openai',amount);const answer=await analyzeEvidence(source,str(s.OPENAI_API_KEY));
- const saved=await db.from('us_analyses').insert({filing_id:id,status:'needs_review',model:answer.model,source_sha256:sha,result:{...answer,source_url:f.document_url,normalized_excerpt:source},input_tokens:obj(answer.usage).prompt_tokens,output_tokens:obj(answer.usage).completion_tokens});if(saved.error)throw new ProviderError('database','analysis_save_failed');
+ const saved=await db.from('us_analyses').insert({filing_id:id,status:'needs_review',model:answer.model,source_sha256:sha,result:{...answer,source_url:f.document_url,normalized_excerpt:source,normalized_source_length:normalized.length,normalized_excerpt_start:excerpt.start,normalized_excerpt_end:excerpt.end,excerpt_selection:excerpt.selection},input_tokens:obj(answer.usage).prompt_tokens,output_tokens:obj(answer.usage).completion_tokens});if(saved.error)throw new ProviderError('database','analysis_save_failed');
  return {status:'needs_review',filing_id:id,usage:answer.usage,requires_human_review:true};
 }
 async function user(req:Request){const token=req.headers.get('authorization')??'';if(!/^Bearer [A-Za-z0-9._-]{20,8192}$/.test(token))throw new ProviderError('auth','authentication_required',401);
@@ -73,6 +75,17 @@ export async function handleUS(req:Request):Promise<Response>{
   },300));}
   if(path==='/reference-rate'&&req.method==='GET')return reply(await cached(db,'fx:USD:KRW',async()=>{await reserve(db,'fx');return frankfurter('USD','KRW');},21600));
   const actor=await user(req),config=obj(await rpc(db,'sb_us_config'));
+  if(path==='/company-financials'&&['GET','POST'].includes(req.method)){
+   const p=req.method==='POST'?await body(req):{},id=req.method==='POST'?str(p.company_id):url.searchParams.get('company_id')??'';
+   if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(id)||req.method==='POST'&&Object.keys(p).some(k=>k!=='company_id'))throw new ProviderError('api','invalid_company_id',422);
+   // The authenticated projection enforces verified identity, MFA and company visibility.
+   const current=await rpc(actor.db,'sb_company_financials',{company_id:id});
+   if(req.method==='GET')return reply(current);
+   const company=await db.from('companies').select('id,provider,provider_company_id,ticker').eq('id',id).eq('is_demo',false).maybeSingle();
+   if(company.error||!company.data)throw new ProviderError('api','company_not_found',404);
+   await requestCompanyFinancials(db,await settings(db),company.data);
+   return reply(await rpc(actor.db,'sb_company_financials',{company_id:id}));
+  }
   if(path==='/email-preferences'&&req.method==='GET')return reply(await rpc(actor.db,'sb_email_preferences'));
   if(path==='/email-preferences'&&req.method==='POST'){const p=await body(req);if(typeof p.enabled!=='boolean'||Object.keys(p).length!==1)throw new ProviderError('api','invalid_preferences',422);return reply(await rpc(actor.db,'sb_email_preferences',{enabled:p.enabled}));}
   if(path==='/dart-analysis'&&req.method==='GET'){

@@ -7,6 +7,10 @@ import { z } from "zod";
 import { useAuth } from "@/components/auth";
 import { Icon, type IconName } from "@/components/icons";
 import CompanyProfile from "@/components/company-profile";
+import { useOfficialCompanyProfile } from "@/components/use-company-profile";
+import { CompanyProfileEvidence } from "@/components/company-profile-evidence";
+import { useCompanyFinancials } from "@/components/use-company-financials";
+import { CompanyFinancials, CompanyAnalysisStatus } from "@/components/company-financials";
 import { CompanyIntroduction } from "@/components/company-introduction";
 import { CompanyNews } from "@/components/company-news";
 import { body, emptySchema, request } from "@/lib/api";
@@ -25,6 +29,7 @@ import { usePrefs } from "@/workspace/preferences";
 import { DataState, Notice, useData, useMutation } from "@/workspace/ui";
 import "./detail.css";
 import { isSelectedTicker } from "./company-search";
+import { useCalendarCoverage } from "./calendar-data";
 
 const tabs = [
   ["overview", "개요", "Overview"],
@@ -233,6 +238,21 @@ function CompanyContent({ id }: { id: string }) {
     : undefined;
   const locale = value.locale === "en" ? 1 : 0;
   const introduction = company ? companyIntroduction(company, locale) : null;
+  const officialProfile = useOfficialCompanyProfile(id, company?.ticker ?? "", profileRevision, Boolean(company));
+  const enrichment = officialProfile.data?.enrichment;
+  const financials = useCompanyFinancials(id, Boolean(company), profileRevision);
+  const analysisRefresh = useRef("");
+  const approvedCount = financials.data?.analysis.approved ?? 0;
+  const shownAnalysisCount = (data?.analyses.length ?? 0) + (data?.events.length ?? 0);
+  const reloadCompany = result.reload;
+  useEffect(() => {
+    const key = JSON.stringify([token, id, approvedCount]);
+    if (approvedCount > shownAnalysisCount && analysisRefresh.current !== key) {
+      analysisRefresh.current = key;
+      reloadCompany();
+    }
+  }, [token, id, approvedCount, shownAnalysisCount, reloadCompany]);
+  const calendarCoverage = useCalendarCoverage(id, tab === "events" && Boolean(company));
   const events = useData(
     tab === "events"
       ? {
@@ -242,6 +262,10 @@ function CompanyContent({ id }: { id: string }) {
       : null,
     sourceOverviewSchema,
   );
+  const reloadEvents = events.reload;
+  useEffect(() => {
+    if (tab === "events" && calendarCoverage.collectionRevision > 0) reloadEvents();
+  }, [tab, calendarCoverage.collectionRevision, reloadEvents]);
 
   useEffect(() => {
     collectionActive.current = true;
@@ -295,7 +319,7 @@ function CompanyContent({ id }: { id: string }) {
     else url.searchParams.set("collection", updated.hydration_status);
     window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
     result.reload();
-    if (tab === "events") events.reload();
+    if (tab === "events") { events.reload(); calendarCoverage.reload(); }
   }
 
   function changeTab(next: Tab) {
@@ -449,13 +473,18 @@ function CompanyContent({ id }: { id: string }) {
             {tab === "overview" && (
               <div className="rd-detail-overview-grid">
                 {!profile && <div className="rd-detail-profile-wrap">
-                  <CompanyProfile key={profileRevision} id={id} ticker={company.ticker} />
+                  <CompanyProfile id={id} ticker={company.ticker} remote={officialProfile} />
                 </div>}
                 <DetailPanel
                   title={!profile && introduction ? t("공식 기업 소개", "Official company introduction") : t("사업 소개", "Business overview")}
                   className="rd-detail-introduction"
                 >
-                  {profile ? (
+                  {enrichment && enrichment.business.length > 0 ? (
+                    <>{enrichment.business.map((entry, index) => <div key={`${entry.evidence.source_id}:${index}`}>
+                      <p className="rd-detail-prose">{entry.text}</p>
+                      <CompanyProfileEvidence enrichment={enrichment} evidence={entry.evidence} />
+                    </div>)}</>
+                  ) : profile ? (
                     <>
                       <p className="rd-detail-prose">
                         {profile.description[locale]}
@@ -479,7 +508,12 @@ function CompanyContent({ id }: { id: string }) {
                   )}
                 </DetailPanel>
                 <DetailPanel title={t("제품/서비스", "Products and services")}>
-                  {profile ? (
+                  {enrichment && enrichment.products.length > 0 ? (
+                    <div>{enrichment.products.map((entry, index) => <article className="sb-sourced-business-item" key={`${entry.name}:${index}`}>
+                      <h3>{entry.name}</h3>{entry.description && <p>{entry.description}</p>}
+                      <CompanyProfileEvidence enrichment={enrichment} evidence={entry.evidence} />
+                    </article>)}</div>
+                  ) : profile ? (
                     <>
                       <div className="rd-detail-products">
                         {profile.products[locale].map((product, index) => (
@@ -510,7 +544,7 @@ function CompanyContent({ id }: { id: string }) {
                     </>
                   ) : (
                     <p className="rd-detail-empty">
-                      {t(
+                      {officialProfile.loading ? t("공식 제품 정보를 확인하고 있습니다.", "Checking official product information.") : t(
                         "출처가 확인된 제품 정보가 없습니다.",
                         "No sourced product information is available.",
                       )}
@@ -518,7 +552,12 @@ function CompanyContent({ id }: { id: string }) {
                   )}
                 </DetailPanel>
                 <DetailPanel title={t("사업 영역", "Business areas")}>
-                  {profile ? (
+                  {enrichment && enrichment.segments.length > 0 ? (
+                    <div>{enrichment.segments.map((entry, index) => <article className="sb-sourced-business-item" key={`${entry.name}:${index}`}>
+                      <h3>{entry.name}</h3>{entry.description && <p>{entry.description}</p>}
+                      <CompanyProfileEvidence enrichment={enrichment} evidence={entry.evidence} />
+                    </article>)}</div>
+                  ) : profile ? (
                     <>
                       <div className="rd-detail-areas">
                         {profile.areas[locale].map((area, index) => (
@@ -555,17 +594,18 @@ function CompanyContent({ id }: { id: string }) {
                   ) : (
                     <p className="rd-detail-empty">
                       {t(
-                        "검토된 사업 영역 정보가 없습니다.",
+                        "공식 자료에서 별도로 구분한 사업 영역을 아직 확인하지 못했습니다.",
                         "No reviewed business-area information is available.",
                       )}
                     </p>
                   )}
                 </DetailPanel>
                 {profile && <div className="rd-detail-profile-wrap">
-                  <CompanyProfile key={profileRevision} id={id} ticker={company.ticker} />
+                  <CompanyProfile id={id} ticker={company.ticker} remote={officialProfile} />
                 </div>}
                 <DetailPanel title={t("주요 수치 정보", "Verified figures")}>
-                  {facts.length ? (
+                  <CompanyFinancials remote={financials} />
+                  {!financials.data?.items.length && facts.length > 0 ? (
                     <div className="rd-detail-table-scroll">
                       <table className="rd-detail-fact-table">
                         <caption className="rd-detail-sr-only">
@@ -603,14 +643,7 @@ function CompanyContent({ id }: { id: string }) {
                         </tbody>
                       </table>
                     </div>
-                  ) : (
-                    <p className="rd-detail-empty">
-                      {t(
-                        "기간·단위·회계 기준·인용 근거가 확인된 공개 수치가 없습니다.",
-                        "No published figures with a verified period, unit, accounting basis and quotation are available.",
-                      )}
-                    </p>
-                  )}
+                  ) : null}
                 </DetailPanel>
                 {(data.numeric_evidence ?? []).length > 0 && <DetailPanel title={t("승인 분석의 수치 근거", "Numeric evidence from approved analyses")}>
                   <p className="rd-detail-muted">{t("숫자가 포함된 승인 분석의 원문 인용입니다. 단위·기간·회계 기준을 갖춘 비교 가능한 지표로 정규화된 자료는 아닙니다.", "These are exact source quotations from approved analyses. They have not been normalized into comparable metrics with verified units, periods and accounting bases.")}</p>
@@ -682,19 +715,20 @@ function CompanyContent({ id }: { id: string }) {
                     </Link>
                   }
                 >
-                  <p className="rd-detail-muted">
+                  <CompanyAnalysisStatus remote={financials} hasApproved={data.analyses.length > 0 || data.events.length > 0} />
+                  {data.analyses.length > 0 && <p className="rd-detail-muted">
                     {t(
                       "원문의 일부를 검토한 발췌 요약입니다. 전체 보고서 분석을 의미하지 않습니다.",
                       "These are reviewed source-excerpt summaries, not analyses of the complete reports.",
                     )}
-                  </p>
-                  <DetailRows
+                  </p>}
+                  {data.analyses.length > 0 && <DetailRows
                     items={data.analyses}
                     empty={t(
                       "승인된 분석이 아직 없습니다.",
                       "No approved analyses are available yet.",
                     )}
-                  />
+                  />}
                 </DetailPanel>
                 {data.events.length > 0 && (
                   <DetailPanel
@@ -715,6 +749,9 @@ function CompanyContent({ id }: { id: string }) {
             )}
             {tab === "events" && (
               <div className="rd-detail-stack">
+                {calendarCoverage.data?.selected?.pending && <p className="rd-detail-callout" role="status">{t("공식 일정을 수집하고 있습니다. 완료되면 일정 목록을 갱신합니다.", "Collecting official events. The lists will refresh when collection completes.")}</p>}
+                {calendarCoverage.data?.selected?.has_error && <p className="rd-detail-callout" role="status">{t("공식 일정의 최근 수집을 완료하지 못했습니다. 이전에 확인된 일정은 계속 표시합니다.", "The latest event refresh did not complete. Previously verified dates remain visible.")}</p>}
+                {calendarCoverage.error && <p role="alert">{t("일정 수집 상태를 확인하지 못했습니다.", "Event collection status could not be loaded.")} <button type="button" onClick={calendarCoverage.reload}>{t("상태 다시 확인", "Retry status")}</button></p>}
                 <DataState {...events} retry={events.reload} />
                 {events.data && (
                   <>

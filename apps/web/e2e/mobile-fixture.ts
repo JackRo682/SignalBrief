@@ -100,6 +100,15 @@ export async function mobileFixture(page: Page, options: Options = {}) {
   });
   await page.route('**/api/auth-config', route => route.fulfill({json: {url: 'https://test-project.supabase.co', publishableKey: 'sb_publishable_isolated_fixture'}}));
   await page.route('**/api/company-profile?**',route=>route.fulfill({json:{status:'not_available',profile:null}}));
+  await page.route('**/api/us/company-financials**',async route=>{
+    const request=route.request();
+    const id=request.method()==='POST'?request.postDataJSON().company_id:new URL(request.url()).searchParams.get('company_id');
+    if(!['GET','POST'].includes(request.method())||request.headers().authorization!=='Bearer '+token||typeof id!=='string'){
+      await unknown(route,'invalid company-financials request');return;
+    }
+    await route.fulfill({json:{company_id:id,provider:'sec',status:'ready',last_success_at:fixtureNow,error_code:null,source:null,items:[],
+      analysis:{status:'not_collected',approved:0,pending_review:0,error_code:null}}});
+  });
   // The current calendar/event pages use authenticated PostgREST reads. Keep
   // these synthetic boundaries explicit; unrelated requests still fail closed.
   await page.route('https://test-project.supabase.co/rest/v1/calendar_items?**',async route=>{

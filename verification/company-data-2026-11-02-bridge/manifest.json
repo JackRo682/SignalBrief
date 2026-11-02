@@ -1,0 +1,160 @@
+{
+  "base_commit": "1541494637d89b46e2b2c53b15186c0e51f3ec62",
+  "bridge_directory": "/tmp/signalbrief-nov2-bridge",
+  "files": [
+    {
+      "path": "apps/web/package.json",
+      "status": "modified",
+      "bytes": 1121,
+      "sha256": "c93d431fd5a4f9c0dfaaea423bd4d4125cb0024417a85cc6433f5a4df60a74ae",
+      "base_sha256": "5370c0145bdda833a28adf08198c245ef37f01d8a97e709acb0e2a2c0e04d5cf"
+    },
+    {
+      "path": "apps/web/package-lock.json",
+      "status": "modified",
+      "bytes": 291233,
+      "sha256": "4d5b81bdd2f857705a751066b7da666c5ba6364f896a12bef4dc785a344039c5",
+      "base_sha256": "6be678b971cc01c49022f024ee715bca6b569cf8ceb4c651ca99550aa52c16d4"
+    },
+    {
+      "path": "apps/web/src/app/api/internal/calendar-source/route.ts",
+      "status": "added",
+      "bytes": 2536,
+      "sha256": "4b2f1ea17c787e62abfded9d47860cb9673b83eeb69c59114aaaacf93162cdf6",
+      "base_sha256": null
+    },
+    {
+      "path": "apps/web/src/server/calendar-source.ts",
+      "status": "added",
+      "bytes": 6530,
+      "sha256": "fd4cd9201d64dc716a295f53a77e3afc6c2400dad2212f62717189f485fe519d",
+      "base_sha256": null
+    },
+    {
+      "path": "apps/web/src/app/api/internal/dart/route.ts",
+      "status": "modified",
+      "bytes": 3496,
+      "sha256": "ca2cd2059a8f7c694bd5553dd61e8c1b1c029d7b47782977098d90ae26a5a214",
+      "base_sha256": "51420adc837114407869691baebf28162957baac81b2d4e45b826273f91feb67"
+    },
+    {
+      "path": "apps/web/src/server/dart-relay.ts",
+      "status": "modified",
+      "bytes": 6321,
+      "sha256": "1024ec146f6cb1ec71fb37fc2b2290a5f8e88c25fd23cefc1330e689125bf5c0",
+      "base_sha256": "bd177bdd6155a9ad3745894dce2cb547c76bdd87c4fe8621f7a5ab96da4a6c1d"
+    },
+    {
+      "path": "apps/web/src/server/dart-profile-archive.ts",
+      "status": "added",
+      "bytes": 9135,
+      "sha256": "701768cf2724427f96d4902d9a1061375220090aa5b76e513099cbfaa7a8030b",
+      "base_sha256": null
+    },
+    {
+      "path": "supabase/functions/signalbrief-calendar/public-source.ts",
+      "status": "added",
+      "bytes": 1545,
+      "sha256": "16f03449e19dbedb5fab1eac94cbb396538514e589751b949c73c3fd51c68e1f",
+      "base_sha256": null
+    },
+    {
+      "path": "supabase/functions/signalbrief-profiles/enrichment-dart-core.ts",
+      "status": "added",
+      "bytes": 7963,
+      "sha256": "91ba83277390b87c151eb80e805442e9de51e0975af848839d58305352648c9c",
+      "base_sha256": null
+    },
+    {
+      "path": "supabase/functions/signalbrief-profiles/enrichment-types.ts",
+      "status": "added",
+      "bytes": 2586,
+      "sha256": "e4772aa26af5ff03146c5e5551a508c607bda1f408d5d2e3e93c9e8fa17eb6b6",
+      "base_sha256": null
+    },
+    {
+      "path": "apps/web/tests/calendar-source.test.ts",
+      "status": "added",
+      "bytes": 9546,
+      "sha256": "03c5f0d7ff75e527da62d823967d067665f6b1e7b9cb4cfc6aa2e6916ec08ea9",
+      "base_sha256": null
+    },
+    {
+      "path": "apps/web/tests/calendar-source-route.test.ts",
+      "status": "added",
+      "bytes": 4866,
+      "sha256": "cf507c92d4fed537e8c41689cc81b3c1133f8abcb10d8123ce311d3bcee27c7c",
+      "base_sha256": null
+    },
+    {
+      "path": "apps/web/tests/dart-profile-archive.test.ts",
+      "status": "added",
+      "bytes": 7963,
+      "sha256": "9a9ba7a06fe7b3c56ff5f7e71a12762f050ac83daf811a088b2666cbbf9fa39a",
+      "base_sha256": null
+    },
+    {
+      "path": "apps/web/tests/dart-profile-fixture.ts",
+      "status": "added",
+      "bytes": 2203,
+      "sha256": "0d967fe6d888cd0ded39c685e70c3e462304c5e78445a71a050aa4e806172f79",
+      "base_sha256": null
+    },
+    {
+      "path": "apps/web/tests/dart-relay.test.ts",
+      "status": "modified",
+      "bytes": 2868,
+      "sha256": "775a211a7cdb063d456da1771da0e5ca537d04fa042040d724a81e40eecf82b9",
+      "base_sha256": "fa813d2cc05e6450705a600d3481df7ed7e8a3546328785643bacddc9dcda595"
+    },
+    {
+      "path": "apps/web/tests/dart-relay-route.test.ts",
+      "status": "modified",
+      "bytes": 8430,
+      "sha256": "493eb3ca6fe4d09cd959528df46697fd3a59ffe8a231e9622a30ab7ed30a7952",
+      "base_sha256": "ccda5325c39dfd2958cbffe1171e13668f3f17763d463ca8820571636b8dbe2f"
+    },
+    {
+      "path": "apps/web/next.config.ts",
+      "status": "modified",
+      "bytes": 2214,
+      "sha256": "17483a64ce34e5b249a7b9ad6c151fe570a539d1ce8ed9f40d04744574875632",
+      "base_sha256": "ef21764d5aa08a10522d8758be86e280be6ff305c686219951bef911566cd1b1"
+    },
+    {
+      "path": "apps/web/Dockerfile",
+      "status": "modified",
+      "bytes": 1038,
+      "sha256": "33fd967fdedd1a0acaa41727400710062c943b7038c6c6c85ec4a01aa626692b",
+      "base_sha256": "91418fa0d543a034b2013247eef1b08cafec9c28f93c834783556ff09a48d197"
+    }
+  ],
+  "unchanged_dependency_leaves": [
+    {
+      "path": "supabase/functions/signalbrief-calendar/core.ts",
+      "sha256": "579bbb2c65ade86b47f45f184d489bd68113f8e9c3e0212358718aa1556dda7a"
+    },
+    {
+      "path": "supabase/functions/signalbrief-profiles/core.ts",
+      "sha256": "77f7b190ddd8dd92ef2f650b61e057e90bee7b7e87c0e2e05fd34b43ac8cc622"
+    },
+    {
+      "path": "apps/web/src/server/dart-directory-archive.ts",
+      "sha256": "3e98ea8ce7fec227001df320ea515e37efa70d37e63b6394faf2a4b597bd6e17"
+    },
+    {
+      "path": "apps/web/src/server/dart-directory.ts",
+      "sha256": "d37a45b944a3585f25f2829e17a1417a3f7bbd13a906f65529606218c4284bf2"
+    },
+    {
+      "path": "apps/web/tests/dart-directory-fixture.ts",
+      "sha256": "b31cd93fe118315ea349d830dc419d4f431aa7013796dc5802b627308ae7b9ee"
+    },
+    {
+      "path": "supabase/functions/signalbrief-discovery/core.ts",
+      "sha256": "e0dbd5217d8f90cfbb41513f14674057dcf1e473f77c491a0958935ae515d5b9"
+    }
+  ],
+  "production_writes": false,
+  "git_ref_changes": false
+}

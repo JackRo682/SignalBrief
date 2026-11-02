@@ -1,0 +1,22 @@
+{
+  "verified_at": "2026-11-02T01:48:47.867239+00:00",
+  "base_commit": "1541494637d89b46e2b2c53b15186c0e51f3ec62",
+  "expected_delta_count": 18,
+  "actual_delta_count": 18,
+  "exact_manifest_match": true,
+  "manifest_shared_hash_mismatches": [],
+  "unexpected_delta": [],
+  "missing_delta": [],
+  "build_id": "lJFBL1u9TynaRbO06Oxg9",
+  "standalone_server": "apps/web/.next/standalone/apps/web/server.js",
+  "standalone_server_exists": true,
+  "focused_test_files": 6,
+  "focused_tests_passed": 148,
+  "typecheck": "passed",
+  "lint": "passed",
+  "production_build": "passed",
+  "build_log": "/tmp/signalbrief-nov2-bridge-logs/build-final.log",
+  "production_writes": false,
+  "git_ref_changes": false,
+  "shared_source_changes": false
+}

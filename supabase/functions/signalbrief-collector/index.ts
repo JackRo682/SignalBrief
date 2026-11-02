@@ -2,6 +2,7 @@ import {dispatchEmail} from '../signalbrief-delivery/index.ts';
 import {processDartDocument} from './dart-document.ts';
 import {createClient} from 'npm:@supabase/supabase-js@2.117.2';
 import {ingest,analyze} from '../signalbrief-api/us-handler.ts';
+import {collectCompanyFinancials} from '../signalbrief-api/company-financials.ts';
 import {ProviderError,obj,str,type Row} from '../signalbrief-api/us-core.ts';
 import {taskToken,dartList,dartPage} from './core.ts';
 const env=(key:string)=>Deno.env.get(key)??'';
@@ -58,6 +59,8 @@ export async function handleCollector(req:Request):Promise<Response>{
     result[provider]={status:'verified',...detail};await check(provider,'verified',detail);
    }catch(error){result[provider]={status:'blocked',code:code(error)};await check(provider,'blocked',{code:code(error)});}
   }
+  const financialCompany=obj(await rpc('sb_financial_collection_pick'));
+  if(financialCompany.id)result.financials=await collectCompanyFinancials(db,secrets,financialCompany);
   if(Number(config.ai_daily_budget_usd)>0&&secrets.OPENAI_API_KEY){
    const filing=await rpc('sb_collector_analysis_pick');
    if(filing)try{

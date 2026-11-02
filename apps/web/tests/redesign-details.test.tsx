@@ -38,6 +38,15 @@ vi.mock("@/workspace/preferences", () => ({
 vi.mock("@/components/company-profile", () => ({
   default: () => <section>Canonical profile endpoint</section>,
 }));
+vi.mock("@/components/use-company-profile", () => ({
+  useOfficialCompanyProfile: () => ({ data: null, error: false, loading: false, status: 200, retry: vi.fn() }),
+}));
+vi.mock("@/components/use-company-financials", () => ({
+  useCompanyFinancials: () => ({ data: null, error: false, loading: false, polling: false, retry: vi.fn() }),
+}));
+vi.mock("@/redesign/calendar-data", () => ({
+  useCalendarCoverage: () => ({ data: null, error: '', loading: false, polling: false, collectionRevision: 0, reload: vi.fn() }),
+}));
 vi.mock("@/components/company-news", () => ({
   CompanyNews: () => <section>Canonical news endpoint</section>,
 }));

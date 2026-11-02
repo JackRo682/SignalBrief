@@ -1,8 +1,16 @@
 // Server-side route adapter. Never forwards cookies or arbitrary destinations.
-const methods:Record<string,string[]>={health:['GET'],status:['GET'],'reference-rate':['GET'],verify:['POST'],'auth-diagnostic':['GET'],filings:['GET'],indices:['GET'],'email-preferences':['GET','POST'],'dart-analysis':['GET'],'dart-review':['POST'],'dart-retry':['POST'],'dart-filings':['GET'],analysis:['GET'],quotes:['GET'],fx:['GET'],news:['GET'],ingest:['POST'],analyze:['POST'],review:['POST'],'email-test':['POST']};
+import {z} from 'zod';
+const financialsInput=z.object({company_id:z.string().uuid()}).strict();
+const methods:Record<string,string[]>={health:['GET'],status:['GET'],'reference-rate':['GET'],verify:['POST'],'auth-diagnostic':['GET'],filings:['GET'],indices:['GET'],'email-preferences':['GET','POST'],'dart-analysis':['GET'],'dart-review':['POST'],'dart-retry':['POST'],'dart-filings':['GET'],analysis:['GET'],quotes:['GET'],fx:['GET'],news:['GET'],ingest:['POST'],analyze:['POST'],review:['POST'],'email-test':['POST'],'company-financials':['GET','POST']};
 export async function proxyUS(req:Request,path:string):Promise<Response>{
  const fail=(code:string,status:number)=>Response.json({error:{code}},{status,headers:{'Cache-Control':'no-store'}});
  if(!methods[path]?.includes(req.method))return fail('route_not_found',404);
+ const requestUrl=new URL(req.url);
+ if(path==='company-financials'){
+  if(req.headers.get('sec-fetch-site')==='cross-site'||(req.headers.get('origin')&&req.headers.get('origin')!==requestUrl.origin))return fail('origin_not_allowed',403);
+  if(req.method==='GET'&&(!financialsInput.safeParse(Object.fromEntries(requestUrl.searchParams)).success||requestUrl.searchParams.getAll('company_id').length!==1))return fail('invalid_company_query',400);
+  if(req.method==='POST'&&requestUrl.search)return fail('invalid_company_query',400);
+ }
  const publicRoute=['health','status','auth-diagnostic','reference-rate'].includes(path),authorization=req.headers.get('authorization');if(!publicRoute&&!authorization)return fail('authentication_required',401);
  const base=process.env.NEXT_PUBLIC_SUPABASE_URL||process.env.SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY||process.env.SUPABASE_PUBLISHABLE_KEY;
  if(!base||!key)return fail('supabase_configuration_missing',503);
@@ -15,6 +23,10 @@ export async function proxyUS(req:Request,path:string):Promise<Response>{
    if(Number(req.headers.get('content-length')??0)>4096)return fail('body_too_large',413);
    const reader=req.body?.getReader(),chunks:Uint8Array[]=[];let size=0;if(reader)while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>4096){await reader.cancel();return fail('body_too_large',413);}chunks.push(value);}
    const bytes=new Uint8Array(size);let p=0;for(const c of chunks){bytes.set(c,p);p+=c.length;}payload=new TextDecoder().decode(bytes);
+   if(path==='company-financials'){
+    let input:unknown;try{input=JSON.parse(payload);}catch{return fail('invalid_json',400);}
+    if(!financialsInput.safeParse(input).success)return fail('invalid_company_query',400);
+   }
   }
   const r=await fetch(target,{method:req.method,redirect:'error',cache:'no-store',headers:{apikey:key,...(authorization?{Authorization:authorization}:{}),...(payload?{'Content-Type':'application/json'}:{})},body:payload,signal:AbortSignal.timeout(50000)});
   return new Response(r.body,{status:r.status,headers:{'Content-Type':'application/json','Cache-Control':'private, no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'}});

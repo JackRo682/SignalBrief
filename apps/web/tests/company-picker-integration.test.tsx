@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom/vitest";
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Watchlist from "../src/redesign/watchlist";
 import Calendar from "../src/redesign/calendar";
@@ -125,10 +125,23 @@ describe("official company selection in each product surface", () => {
   });
 
   it.each(["LS", "micron"])("finds %s in the calendar and selects its scope without creating an event or follow", async query => {
-    render(<Calendar />);
-    fireEvent.change(screen.getByLabelText("기업명 또는 티커 검색"), { target: { value: query } });
     const issuer = query === "LS" ? issuers[0] : issuers[1], id = query === "LS" ? lsId : muId;
-    const choose = await screen.findByRole("button", { name: `${issuer.name} 일정 조회 기업으로 선택` });
+    let resolveDirectory!: (response: Response) => void;
+    const directory = new Promise<Response>(resolve => { resolveDirectory = resolve; });
+    vi.mocked(fetch).mockImplementationOnce(() => directory);
+    // Drive the intentional debounce and the directory response independently of
+    // Testing Library's wall-clock deadline under parallel build/test load.
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    try {
+      render(<Calendar />);
+      fireEvent.change(screen.getByLabelText("기업명 또는 티커 검색"), { target: { value: query } });
+      expect(fetch).not.toHaveBeenCalled();
+      await act(async () => { await vi.advanceTimersByTimeAsync(250); });
+      expect(fetch).toHaveBeenCalledWith(`/api/company-discovery?q=${query}`, expect.any(Object));
+      expect(screen.getByText("공식 기업목록을 검색하고 있습니다.")).toBeVisible();
+      await act(async () => { resolveDirectory(Response.json({ items: [issuer], total: 1, source_status: "ready" })); });
+    } finally { vi.useRealTimers(); }
+    const choose = screen.getByRole("button", { name: `${issuer.name} 일정 조회 기업으로 선택` });
     expect(writes()).toHaveLength(0); expect(mocks.coverage).not.toHaveBeenCalledWith(id);
     fireEvent.click(choose);
     expect(await screen.findByRole("checkbox", { name: `${issuer.name} (${issuer.ticker})` })).toBeChecked();

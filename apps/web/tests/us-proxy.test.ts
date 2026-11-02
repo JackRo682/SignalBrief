@@ -39,3 +39,31 @@ describe('DART retry proxy boundary',()=>{
   expect((await proxyUS(new Request('https://signalbrief.test/api/us/dart-retry'),'dart-retry')).status).toBe(404);expect(fetcher).not.toHaveBeenCalled();
  });
 });
+
+describe('company financials proxy boundary',()=>{
+ const id='20000000-0000-4000-8000-000000000001';
+ const headers={Authorization:'Bearer synthetic-token','Content-Type':'application/json',Cookie:'private-cookie'};
+ const setup=()=>{
+  vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL','https://synthetic-project.supabase.co');vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY','synthetic-public');
+  const fetcher=vi.fn().mockResolvedValue(Response.json({company_id:id}));vi.stubGlobal('fetch',fetcher);return fetcher;
+ };
+ it.each(['GET','POST'])('accepts only the canonical company id for %s',async(method)=>{
+  const fn=setup(),suffix=method==='GET'?`?company_id=${id}`:'';
+  const response=await proxyUS(new Request(`https://signalbrief.test/api/us/company-financials${suffix}`,{method,headers,...(method==='POST'?{body:JSON.stringify({company_id:id})}:{})}),'company-financials');
+  expect(response.status).toBe(200);
+  const [url,init]=fn.mock.calls[0];expect(url.href).toBe(`https://synthetic-project.supabase.co/functions/v1/signalbrief-us/company-financials${suffix}`);
+  expect(init.headers.Cookie).toBeUndefined();expect(init.redirect).toBe('error');expect(init.cache).toBe('no-store');
+ });
+ it('rejects anonymous, duplicate, arbitrary-target, malformed and cross-origin requests before forwarding',async()=>{
+  const fn=setup();
+  const cases:[Request,number][]=[
+   [new Request(`https://signalbrief.test/api/us/company-financials?company_id=${id}`),401],
+   [new Request(`https://signalbrief.test/api/us/company-financials?company_id=${id}&company_id=${id}`,{headers}),400],
+   [new Request(`https://signalbrief.test/api/us/company-financials?company_id=${id}&url=https://attacker.test`,{headers}),400],
+   [new Request('https://signalbrief.test/api/us/company-financials',{method:'POST',headers,body:JSON.stringify({company_id:id,ticker:'OTHER'})}),400],
+   [new Request('https://signalbrief.test/api/us/company-financials',{method:'POST',headers:{...headers,Origin:'https://attacker.test'},body:JSON.stringify({company_id:id})}),403],
+  ];
+  for(const [request,status] of cases)expect((await proxyUS(request,'company-financials')).status).toBe(status);
+  expect(fn).not.toHaveBeenCalled();
+ });
+});

@@ -1,0 +1,100 @@
+
+> signalbrief-web@0.1.0 build
+> next build
+
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config.ts took 61ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 6.0s
+  Running TypeScript ...
+  Finished TypeScript in 27.9s ...
+  Collecting page data using 8 workers ...
+  Generating static pages using 8 workers (0/45) ...
+  Generating static pages using 8 workers (11/45)
+  Generating static pages using 8 workers (22/45)
+  Generating static pages using 8 workers (33/45)
+✓ Generating static pages using 8 workers (45/45) in 898ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /about
+├ ○ /alerts
+├ ƒ /api/[...path]
+├ ƒ /api/auth-config
+├ ƒ /api/billing/checkout
+├ ƒ /api/billing/export
+├ ƒ /api/billing/status
+├ ƒ /api/billing/webhook
+├ ƒ /api/company-discovery
+├ ƒ /api/company-profile
+├ ƒ /api/internal/calendar-source
+├ ƒ /api/internal/dart
+├ ƒ /api/market
+├ ƒ /api/news
+├ ƒ /api/public-stats
+├ ƒ /api/release
+├ ƒ /api/research
+├ ƒ /api/us/[...path]
+├ ƒ /api/workspace
+├ ○ /auth/callback
+├ ○ /billing
+├ ○ /calendar
+├ ƒ /companies/[id]
+├ ƒ /companies/[id]/timeline
+├ ○ /customers
+├ ○ /disclaimer
+├ ƒ /documents/[id]
+├ ƒ /email/unsubscribe
+├ ƒ /events/[id]
+├ ○ /explore
+├ ○ /features
+├ ○ /forgot-password
+├ ƒ /help
+├ ○ /login
+├ ○ /more
+├ ○ /news
+├ ○ /onboarding
+├ ○ /ops
+├ ○ /ops/analytics
+├ ƒ /ops/documents/[id]
+├ ○ /ops/evaluations
+├ ƒ /ops/evaluations/datasets/[id]
+├ ƒ /ops/evaluations/runs/[id]
+├ ○ /ops/experiments
+├ ƒ /ops/experiments/[id]
+├ ○ /ops/quality
+├ ○ /ops/reliability
+├ ○ /ops/reports
+├ ƒ /ops/runs/[id]
+├ ○ /portfolio
+├ ○ /pricing
+├ ○ /privacy
+├ ƒ /questions
+├ ○ /reset-password
+├ ○ /saved
+├ ƒ /search
+├ ○ /settings
+├ ○ /settings/account
+├ ○ /settings/appearance
+├ ○ /settings/notifications
+├ ○ /settings/security
+├ ○ /signup
+├ ○ /sources
+├ ○ /status
+├ ƒ /study/[id]
+├ ○ /terms
+├ ○ /timeline
+├ ○ /today
+├ ○ /us
+└ ○ /watchlist
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.

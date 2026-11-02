@@ -1,0 +1,59 @@
+[
+  {
+    "package": "<root>",
+    "changed_fields": [
+      "dependencies",
+      "devDependencies"
+    ],
+    "version": "0.1.0"
+  },
+  {
+    "package": "node_modules/dom-serializer",
+    "changed_fields": [
+      "dev"
+    ],
+    "version": "2.0.0"
+  },
+  {
+    "package": "node_modules/dom-serializer/node_modules/entities",
+    "changed_fields": [
+      "dev"
+    ],
+    "version": "4.5.0"
+  },
+  {
+    "package": "node_modules/domelementtype",
+    "changed_fields": [
+      "dev"
+    ],
+    "version": "2.3.0"
+  },
+  {
+    "package": "node_modules/domhandler",
+    "changed_fields": [
+      "dev"
+    ],
+    "version": "5.0.3"
+  },
+  {
+    "package": "node_modules/domutils",
+    "changed_fields": [
+      "dev"
+    ],
+    "version": "3.2.2"
+  },
+  {
+    "package": "node_modules/entities",
+    "changed_fields": [
+      "dev"
+    ],
+    "version": "6.0.1"
+  },
+  {
+    "package": "node_modules/htmlparser2",
+    "changed_fields": [
+      "dev"
+    ],
+    "version": "10.0.0"
+  }
+]
