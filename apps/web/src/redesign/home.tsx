@@ -1,25 +1,24 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useAuth } from "@/components/auth";
 import { Icon, type IconName } from "@/components/icons";
+import { useResource } from "@/components/ui";
+import { watchlistSchema } from "@/lib/contracts";
 import { companyNewsQueries, newsResponse, type NewsResponse } from "@/lib/news-contract";
-import { catalogSchema } from "@/workspace/contracts";
+import { catalogSchema, sourceOverviewSchema } from "@/workspace/contracts";
 import { DataState, useData } from "@/workspace/ui";
+import { useCalendarData } from "./calendar-data";
+import { addDays, calendarHref } from "./calendar-utils";
+import { dashboardSchema, koreaDate, rangeStart, validRange } from "./dashboard-contract";
 import {
-  dashboardSchema,
-  koreaDate,
-  rangeStart,
-  validRange,
-} from "./dashboard-contract";
-import {
-  Heading,
-  More,
-  Panel,
-  ResourceRows,
-  SearchForm,
-  formatSourceDate,
-} from "./ui";
+  activityDay, activityLabels, activityWhen, calendarActivity, combineActivities,
+  followedUpcoming, followingActivities, newsActivities, resourceActivity,
+  type ActivityKind, type HomeActivity,
+} from "./home-data";
+import BriefingIllustration from "./home-illustration";
+import { CompanyLogo, Heading, More, Panel, SearchForm, formatSourceDate } from "./ui";
+import "./home.css";
 
 function useNews(company: string) {
   const { token } = useAuth(),
@@ -71,368 +70,258 @@ function useNews(company: string) {
     reload: () => setSeq((x) => x + 1),
   };
 }
+const tabs = [
+  ["all", "전체"], ["document", "공시"], ["analysis", "분석"],
+  ["news", "뉴스"], ["calendar", "일정"],
+] as const;
+type ActivityTab = "all" | ActivityKind;
+
+function ActivityLink({ item, children, className, label }: {
+  item: HomeActivity; children: ReactNode; className?: string; label?: string;
+}) {
+  return item.external ? (
+    <a href={item.href} className={className} target="_blank" rel="noopener noreferrer"
+      aria-label={label ? `${label} · 새 탭에서 열기` : undefined}>{children}</a>
+  ) : <Link href={item.href} className={className} aria-label={label}>{children}</Link>;
+}
+function Badge({ kind }: { kind: ActivityKind }) {
+  return <span className="rd-home-badge" data-kind={kind}>{activityLabels[kind]}</span>;
+}
+
 export default function Home() {
-  const [today] = useState(() => koreaDate()),
+  const [now] = useState(() => new Date()),
+    [today] = useState(() => koreaDate(now)),
     [company, setCompany] = useState(""),
     [range, setRange] = useState({ start: rangeStart(today, 30), end: today }),
     [draft, setDraft] = useState(range),
-    [rangeError, setRangeError] = useState("");
+    [rangeError, setRangeError] = useState(""),
+    [tab, setTab] = useState<ActivityTab>("all"),
+    [filtersOpen, setFiltersOpen] = useState(false);
   const directory = useData(
-    { action: "catalog", p: { kind: "company", limit: 50 } },
-    catalogSchema,
+    { action: "catalog", p: { kind: "company", limit: 50 } }, catalogSchema,
   );
-  const data = useData(
-    {
-      action: "design_dashboard",
-      p: { start_date: range.start, end_date: range.end, company_id: company },
-    },
-    dashboardSchema,
+  const data = useData({ action: "design_dashboard", p: {
+    start_date: range.start, end_date: range.end, company_id: company,
+  } }, dashboardSchema);
+  const watchlist = useResource("/v1/watchlist", watchlistSchema);
+  const followed = watchlist.data && !watchlist.error ? watchlist.data.items : [];
+  const overview = useData(
+    followed.length ? { action: "source_overview", p: { scope: "following", days: 0 } } : null,
+    sourceOverviewSchema,
   );
-  const selected = company
-    ? directory.data?.items.find((c) => c.id === company)
-    : directory.data?.items.find((c) =>
-        Object.hasOwn(companyNewsQueries, c.ticker.toUpperCase()),
-      );
+  const until = addDays(today, 30);
+  const upcoming = useCalendarData(watchlist.data && !watchlist.error ? {
+    from: today, until, companyIds: followed.map((item) => item.id).sort(), includePersonal: false,
+  } : null);
+  const catalog = directory.error ? [] : directory.data?.items ?? [];
+  const selected = company ? catalog.find((item) => item.id === company) :
+    catalog.find((item) => followed.some((follow) => follow.id === item.id) &&
+      Object.hasOwn(companyNewsQueries, item.ticker.toUpperCase())) ??
+    catalog.find((item) => Object.hasOwn(companyNewsQueries, item.ticker.toUpperCase()));
   const news = useNews(selected?.id ?? "");
-  const metrics: {
-    title: string;
-    count: number | null;
-    icon: IconName;
-    href: string;
-    error: string;
-    loading: boolean;
-  }[] = [
-    {
-      title: "기간 내 공개 공시",
-      count: data.data?.filing_count ?? null,
-      icon: "file",
-      href: "#disclosures",
-      error: data.error,
-      loading: data.loading,
-    },
-    {
-      title: "기간 내 승인 분석",
-      count: data.data?.analysis_count ?? null,
-      icon: "file",
-      href: "#analyses",
-      error: data.error,
-      loading: data.loading,
-    },
-    {
-      title: "기간 내 확정 일정",
-      count: data.data?.event_count ?? null,
-      icon: "calendar",
-      href: "#calendar",
-      error: data.error,
-      loading: data.loading,
-    },
-    {
-      title: selected ? `${selected.company_name} 뉴스` : "최신 뉴스 검색결과",
-      count: news.data?.items.length ?? null,
-      icon: "timeline",
-      href: "#news",
-      error: news.error,
-      loading: news.loading,
-    },
+  const includesFollowingNews = !!selected && followed.some((item) => item.id === selected.id);
+  const newsItems = newsActivities(news.error ? null : news.data, selected);
+  const updates = followingActivities(overview.error ? [] : overview.data?.monitoring ?? [], followed, newsItems);
+  const upcomingItems = followedUpcoming(upcoming.error ? [] : upcoming.data?.items ?? [], followed, today, until);
+  const recent = combineActivities(
+    data.error ? [] : data.data?.filings.map((item) => resourceActivity(item, "document")) ?? [],
+    data.error ? [] : data.data?.analyses.map((item) => resourceActivity(item, "analysis")) ?? [],
+    data.error ? [] : data.data?.events.map(calendarActivity) ?? [],
+    newsItems,
+  ).filter((item) => tab === "all" || item.kind === tab);
+  const visibleRecent = recent.slice(0, tab === "news" ? 5 : 3);
+  const companyQuery = company ? `&company_id=${encodeURIComponent(company)}` : "";
+  const moreHref = tab === "calendar" ? "/calendar" : tab === "news" && selected
+    ? `/companies/${encodeURIComponent(selected.id)}?tab=news`
+    : `/search?sort=newest${tab === "document" || tab === "analysis" ? `&kind=${tab}` : ""}${companyQuery}`;
+  const recentLoading = (tab !== "news" && data.loading) || ((tab === "all" || tab === "news") && news.loading);
+  const recentError = (tab !== "news" && data.error) || ((tab === "all" || tab === "news") && news.error);
+  const recentReady = tab === "news" ? Boolean(news.data) : Boolean(data.data);
+  const metrics: { title: string; count: number | null; icon: IconName; tab: ActivityKind; error: string; loading: boolean }[] = [
+    { title: "기간 내 공개 공시", count: data.data?.filing_count ?? null, icon: "file", tab: "document", error: data.error, loading: data.loading },
+    { title: "기간 내 승인 분석", count: data.data?.analysis_count ?? null, icon: "file", tab: "analysis", error: data.error, loading: data.loading },
+    { title: "기간 내 확정 일정", count: data.data?.event_count ?? null, icon: "calendar", tab: "calendar", error: data.error, loading: data.loading },
+    { title: selected ? `${selected.company_name} 뉴스` : "최신 뉴스 검색결과", count: news.data?.items.length ?? null, icon: "timeline", tab: "news", error: news.error, loading: news.loading },
   ];
-  const companyQuery = company
-    ? `&company_id=${encodeURIComponent(company)}`
-    : "";
+  const briefingTitle = watchlist.error ? "관심 기업의 소식을 불러오지 못했습니다." :
+    watchlist.loading || !watchlist.data ? "관심 기업의 주요 소식을 확인하세요." :
+    followed.length ? `관심 기업 ${followed.length.toLocaleString("ko-KR")}곳의 주요 소식을 모았습니다.` : "첫 관심 기업을 추가해 보세요.";
+  const dateHeading = tab === "analysis" ? "승인일" : tab === "calendar" ? "개최일" : tab === "all" ? "공개·승인·개최일" : "공개일";
+
   return (
-    <div data-screen="redesign-home">
-      <Heading
-        title="홈"
-        description="공시, 분석, 일정, 뉴스를 한눈에 확인합니다."
-      />
-      <SearchForm />
-      <div className="rd-kpis">
-        {metrics.map((m) => (
-          <Link className="rd-kpi" href={m.href} key={m.title}>
-            <span className="rd-kpi-icon">
-              <Icon name={m.icon} size={28} />
-            </span>
-            <div>
-              <div className="rd-kpi-title">{m.title}</div>
-              <strong
-                className={
-                  m.error || m.loading || m.count === null
-                    ? "rd-kpi-status"
-                    : ""
-                }
-              >
-                {m.error ? (
-                  "조회 불가"
-                ) : m.loading ? (
-                  "불러오는 중"
-                ) : m.count === null ? (
-                  "미제공"
-                ) : (
-                  <>
-                    {m.count.toLocaleString("ko-KR")}
-                    <small>건</small>
-                  </>
-                )}
-              </strong>
-            </div>
-            <span aria-hidden="true">›</span>
-          </Link>
-        ))}
-      </div>
-      <div className="rd-filterbar">
-        <label>
-          기업 필터
-          <select value={company} onChange={(e) => setCompany(e.target.value)}>
-            <option value="">전체 기업</option>
-            {directory.data?.items.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.company_name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <div className="rd-range">
-          <strong>날짜 필터</strong>
-          {[
-            [1, "오늘"],
-            [3, "최근 3일"],
-            [7, "최근 1주"],
-            [30, "최근 1개월"],
-          ].map(([days, label]) => (
-            <button
-              key={days}
-              type="button"
-              aria-pressed={
-                range.start === rangeStart(today, Number(days)) &&
-                range.end === today
-              }
-              onClick={() => {
-                const next = {
-                  start: rangeStart(today, Number(days)),
-                  end: today,
-                };
-                setDraft(next);
-                setRange(next);
-                setRangeError("");
-              }}
-            >
-              {label}
-            </button>
-          ))}
-          <input
-            type="date"
-            aria-label="시작일"
-            value={draft.start}
-            max={draft.end}
-            onChange={(e) => setDraft({ ...draft, start: e.target.value })}
-          />
-          <span>~</span>
-          <input
-            type="date"
-            aria-label="종료일"
-            value={draft.end}
-            min={draft.start}
-            onChange={(e) => setDraft({ ...draft, end: e.target.value })}
-          />
-          <button
-            type="button"
-            onClick={() => {
-              if (!validRange(draft.start, draft.end)) {
-                setRangeError(
-                  "시작일과 종료일을 확인해 주세요. 최대 366일까지 조회할 수 있습니다.",
-                );
-                return;
-              }
-              setRange(draft);
-              setRangeError("");
-            }}
-          >
-            적용
-          </button>
-        </div>
-      </div>
-      {rangeError && (
-        <p role="alert" className="rd-note">
-          {rangeError}
-        </p>
-      )}
-      <DataState {...directory} retry={directory.reload} />
-      <DataState {...data} retry={data.reload} />
-      {data.data && !data.error &&
-        data.data.filing_count === 0 &&
-        data.data.analysis_count === 0 &&
-        data.data.event_count === 0 && (
-          <div className="rd-note" role="status">
-            <p>
-              {range.start} ~ {range.end} 기간에 선택한 기업의 공개 자료가 없습니다.
-              날짜나 기업 필터를 바꾸거나 전체 이력을 확인해 주세요.
-            </p>
-            <button
-              className="rd-more"
-              type="button"
-              onClick={() => {
-                const recent = { start: rangeStart(today, 30), end: today };
-                setRange(recent);
-                setDraft(recent);
-                setCompany("");
-                setRangeError("");
-              }}
-            >
-              전체 기업의 최근 1개월 보기
-            </button>{" "}
-            <Link className="rd-more" href={`/search?sort=newest${companyQuery}`}>
-              전체 이력 보기
+    <div className="rd-home" data-screen="redesign-home">
+      <Heading title="홈" description="관심 기업의 최신 공시, 분석, 일정, 뉴스를 한눈에 확인합니다." />
+      <div className="rd-home-search"><SearchForm /></div>
+      <div className="rd-home-overview">
+        <section className="rd-home-briefing" aria-labelledby="home-briefing-title">
+          <div className="rd-home-briefing-copy">
+            <span className="rd-home-eyebrow">오늘의 브리프</span>
+            <h2 id="home-briefing-title">{briefingTitle}</h2>
+            <p>{watchlist.error ? "잠시 후 다시 시도해 주세요." : "최신 공시와 승인된 분석, 다가오는 일정을 확인해 보세요."}</p>
+            <Link className="rd-btn rd-primary" href="/watchlist">
+              {watchlist.data && !watchlist.error && !followed.length ? "관심 기업 추가" : "업데이트 전체 보기"}
+              <span aria-hidden="true">›</span>
             </Link>
           </div>
-        )}
-      <div className="rd-grid-two">
-        <div id="disclosures">
-          <Panel
-            title="최근 공시"
-            action={
-              <More href={`/search?kind=document&sort=newest${companyQuery}`} label="전체 이력" />
-            }
-          >
-            {data.data && <ResourceRows items={data.data.filings} />}
-          </Panel>
-        </div>
-        <div id="analyses">
-          <Panel
-            title="최근 승인 분석"
-            action={
-              <More href={`/search?kind=analysis&sort=newest${companyQuery}`} label="전체 이력" />
-            }
-          >
-            {data.data && (
-              <ResourceRows items={data.data.analyses} reviewDate />
-            )}
-          </Panel>
-        </div>
-        <div id="calendar">
-          <Panel title="확정 일정" action={<More href="/calendar" />}>
-            {data.data?.events.length ? (
-              <div className="rd-table-scroll rd-calendar-rows">
-                <table className="rd-table">
-                  <thead>
-                    <tr>
-                      <th>날짜</th>
-                      <th>기업명</th>
-                      <th>제목</th>
-                      <th>
-                        <span className="rd-sr">열기</span>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.data.events.map((e) => (
-                      <tr key={e.id}>
-                        <td>{formatSourceDate(e.occurs_on)}</td>
-                        <td>{e.company_name}</td>
-                        <td>
-                          <Link
-                            href={`/events/${encodeURIComponent(e.id)}?kind=calendar`}
-                          >
-                            {e.title}
-                          </Link>
-                        </td>
-                        <td>
-                          <Link
-                            href={`/events/${encodeURIComponent(e.id)}?kind=calendar`}
-                            aria-label={`${e.title} 열기`}
-                          >
-                            ›
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              data.data && (
-                <p className="rd-empty">
-                  선택한 기간에 확인된 일정이 없습니다.
-                </p>
-              )
-            )}
-          </Panel>
-        </div>
-        <div id="news">
-          <Panel
-            title="기업 뉴스"
-            action={
-              selected ? (
-                <span className="rd-muted">
-                  {selected.company_name} · 최신 검색
-                </span>
-              ) : null
-            }
-          >
-            <div className="rd-home-news">
-              <DataState {...news} retry={news.reload} />
-              {news.data && (
-                <>
-                  <div className="rd-table-scroll">
-                    <table className="rd-table">
-                      <thead>
-                        <tr>
-                          <th>공개일</th>
-                          <th>제목</th>
-                          <th>출처</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {news.data.items.slice(0, 5).map((n, i) => (
-                          <tr key={`${n.link}:${i}`}>
-                            <td>{formatSourceDate(n.publishedAt)}</td>
-                            <td>
-                              <a
-                                href={n.originalLink ?? n.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {n.title}
-                              </a>
-                            </td>
-                            <td>
-                              <a
-                                href={n.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                NAVER
-                              </a>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <footer>
-                    선택 기업의 최신 검색결과 {news.data.items.length}건입니다.
-                    공시 날짜 필터와 별도로 제공합니다.{" "}
-                    <a
-                      href="https://www.ncloud.com/product/applicationService/NAVERAPIHUB"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      NAVER™ API HUB
-                    </a>
-                  </footer>
-                  <button className="rd-more rd-icon" onClick={news.reload}>
-                    새로고침
-                  </button>
-                </>
-              )}
-              {!selected && !directory.loading && (
-                <p className="rd-empty">뉴스 검색이 연결된 기업이 없습니다.</p>
-              )}
-            </div>
-          </Panel>
+          <BriefingIllustration />
+        </section>
+        <div className="rd-kpis" aria-label="조회 기간 요약">
+          {metrics.map((metric) => <Link className="rd-kpi" href="#recent-activity" key={metric.tab}
+            onClick={() => setTab(metric.tab)}>
+            <span className="rd-kpi-icon"><Icon name={metric.icon} size={28} /></span>
+            <div>
+              <div className="rd-kpi-title">{metric.title}</div>
+              <strong className={metric.error || metric.loading || metric.count === null ? "rd-kpi-status" : ""}>
+                {metric.error ? "조회 불가" : metric.loading ? "불러오는 중" : metric.count === null ? "미제공" :
+                  <>{metric.count.toLocaleString("ko-KR")}<small>건</small></>}
+              </strong>
+            </div><span aria-hidden="true">›</span>
+          </Link>)}
         </div>
       </div>
-      <p className="rd-muted" style={{ marginTop: 18 }}>
-        공시는 원문 공개일, 분석은 승인일, 일정은 개최일 기준입니다. 시간 기준:
-        한국시간.
+
+      <div className="rd-home-panels">
+        <Panel title="관심 기업 업데이트" className="rd-home-following" action={<More href="/watchlist" label="전체 보기" />}>
+          <DataState loading={watchlist.loading} error={watchlist.error ?? ""} retry={watchlist.reload} />
+          <DataState {...overview} retry={overview.reload} />
+          {includesFollowingNews && <DataState {...news} retry={news.reload} />}
+          {!!updates.length && <div className="rd-home-updates">
+            {updates.slice(0, 3).map((item) => <ActivityLink item={item} key={item.key} className="rd-home-update"
+              label={`${item.companyName} ${activityLabels[item.kind]} ${item.title}`}>
+              <CompanyLogo ticker={item.ticker} />
+              <strong className="rd-home-company">{item.companyName}</strong>
+              <Badge kind={item.kind} />
+              <span className="rd-home-title">{item.title}</span>
+              <time className="rd-home-date" dateTime={item.date ?? undefined}>{activityWhen(item, now)}</time>
+            </ActivityLink>)}
+          </div>}
+          {!updates.length && !watchlist.loading && !watchlist.error && !overview.loading && !overview.error && watchlist.data &&
+            (!includesFollowingNews || (!news.loading && !news.error)) &&
+            <p className="rd-empty">{followed.length ? "아직 수집된 최신 소식이 없습니다." : "관심 기업을 추가하면 최신 소식을 확인할 수 있습니다."}</p>}
+        </Panel>
+        <Panel title="다가오는 일정" className="rd-home-upcoming" action={<More href="/calendar" label="전체 보기" />}>
+          <DataState loading={watchlist.loading || upcoming.loading} error={watchlist.error || upcoming.error}
+            retry={watchlist.error ? watchlist.reload : upcoming.reload} />
+          {!!upcomingItems.length && <div className="rd-home-events">
+            {upcomingItems.slice(0, 3).map((item) => <Link className="rd-home-event" href={calendarHref(item)} key={item.id}>
+              <time className="rd-home-day" dateTime={item.occurs_on} aria-label={formatSourceDate(item.occurs_on)}>
+                <span>{new Intl.DateTimeFormat("ko-KR", { weekday: "short", timeZone: "UTC" }).format(new Date(`${item.occurs_on}T00:00:00Z`))}</span>
+                <strong>{item.occurs_on.slice(5).replace("-", ".")}</strong>
+              </time>
+              <strong className="rd-home-company">{followed.find((c) => c.id === item.company_id)?.name}</strong>
+              <span className="rd-home-title">{item.title}</span>
+              <span className="rd-home-event-meta">날짜 확정</span>
+            </Link>)}
+          </div>}
+          {!upcomingItems.length && watchlist.data && !watchlist.loading && !watchlist.error && upcoming.data && !upcoming.loading && !upcoming.error &&
+            <p className="rd-empty">{followed.length ? "앞으로 30일간 확인된 관심 기업 일정이 없습니다." : "관심 기업을 추가하면 다가오는 일정을 확인할 수 있습니다."}</p>}
+          {upcoming.data?.truncated && <p className="rd-home-recent-note">일정이 많아 가장 가까운 일정부터 표시합니다. 캘린더에서 조회 범위를 좁혀 확인하세요.</p>}
+        </Panel>
+      </div>
+
+      <section className="rd-panel rd-home-recent" id="recent-activity" aria-labelledby="home-recent-title">
+        <header className="rd-panel-head">
+          <h2 id="home-recent-title">최근 소식</h2>
+          <div className="rd-home-tabs" role="tablist" aria-label="최근 소식 종류">
+            {tabs.map(([key, label], index) => <button type="button" key={key} role="tab" id={`home-tab-${key}`}
+              aria-controls="home-activity-panel" aria-selected={tab === key} tabIndex={tab === key ? 0 : -1}
+              onClick={() => setTab(key)} onKeyDown={(event) => {
+                if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+                event.preventDefault();
+                const next = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 :
+                  (index + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+                setTab(tabs[next][0]);
+                document.getElementById(`home-tab-${tabs[next][0]}`)?.focus();
+              }}>{label}</button>)}
+          </div>
+          <div className="rd-home-recent-actions">
+            <button type="button" className="rd-home-filter-toggle" aria-expanded={filtersOpen}
+              aria-controls="home-filters" onClick={() => setFiltersOpen((open) => !open)}>
+              <Icon name="settings" size={16} /><span>조회 설정</span>
+            </button>
+            <More href={moreHref} label="전체 보기" />
+          </div>
+        </header>
+        <div id="home-filters" className="rd-home-controls" hidden={!filtersOpen}>
+          <div className="rd-filterbar">
+            <label>기업 필터
+              <select value={company} onChange={(event) => setCompany(event.target.value)}>
+                <option value="">전체 기업</option>
+                {catalog.map((item) => <option key={item.id} value={item.id}>{item.company_name}</option>)}
+              </select>
+            </label>
+            <div className="rd-range">
+              <strong>날짜 필터</strong>
+              {([[1, "오늘"], [3, "최근 3일"], [7, "최근 1주"], [30, "최근 1개월"]] as const).map(([days, label]) =>
+                <button key={days} type="button" aria-pressed={range.start === rangeStart(today, days) && range.end === today}
+                  onClick={() => {
+                    const next = { start: rangeStart(today, days), end: today };
+                    setDraft(next); setRange(next); setRangeError("");
+                  }}>{label}</button>)}
+              <input type="date" aria-label="시작일" value={draft.start} max={draft.end}
+                onChange={(event) => setDraft({ ...draft, start: event.target.value })} />
+              <span>~</span>
+              <input type="date" aria-label="종료일" value={draft.end} min={draft.start}
+                onChange={(event) => setDraft({ ...draft, end: event.target.value })} />
+              <button type="button" onClick={() => {
+                if (!validRange(draft.start, draft.end)) {
+                  setRangeError("시작일과 종료일을 확인해 주세요. 최대 366일까지 조회할 수 있습니다."); return;
+                }
+                setRange({ ...draft }); setRangeError("");
+              }}>적용</button>
+            </div>
+          </div>
+          {rangeError && <p role="alert" className="rd-note">{rangeError}</p>}
+        </div>
+        <DataState {...directory} retry={directory.reload} />
+        <div role="tabpanel" id="home-activity-panel" aria-labelledby={`home-tab-${tab}`} tabIndex={0}>
+          {tab !== "news" && <DataState {...data} retry={data.reload} />}
+          {(tab === "all" || tab === "news") && <div id="news"><DataState {...news} retry={news.reload} /></div>}
+          {!!visibleRecent.length && <div className="rd-home-table-wrap">
+            <table className="rd-table rd-home-table" role="table">
+              <thead role="rowgroup"><tr role="row">
+                <th className="rd-home-col-date" scope="col" role="columnheader">{dateHeading}</th>
+                <th className="rd-home-col-company" scope="col" role="columnheader">기업명</th>
+                <th className="rd-home-col-kind" scope="col" role="columnheader">구분</th>
+                <th className="rd-home-col-title" scope="col" role="columnheader">제목</th>
+                <th className="rd-home-col-open" scope="col" role="columnheader"><span className="rd-sr">열기</span></th>
+              </tr></thead>
+              <tbody role="rowgroup">{visibleRecent.map((item) => <tr key={item.key} role="row">
+                <td className="rd-home-col-date" role="cell"><time dateTime={item.date ?? undefined}
+                  title={item.kind === "analysis" ? "분석 승인일" : item.kind === "calendar" ? "일정 개최일" : "원문 공개일"}>
+                  {formatSourceDate(activityDay(item))}</time></td>
+                <td className="rd-home-col-company" role="cell"><Link href={`/companies/${encodeURIComponent(item.companyId)}`}>{item.companyName}</Link></td>
+                <td className="rd-home-col-kind" role="cell"><Badge kind={item.kind} /></td>
+                <td className="rd-home-col-title" role="cell"><ActivityLink item={item}>{item.title}</ActivityLink></td>
+                <td className="rd-home-col-open" role="cell"><ActivityLink item={item} label={`${item.title} 열기`}><span aria-hidden="true">›</span></ActivityLink></td>
+              </tr>)}</tbody>
+            </table>
+          </div>}
+          {!visibleRecent.length && !recentLoading && !recentError && recentReady && <p className="rd-empty">조건에 맞는 자료가 없습니다.</p>}
+          {(tab === "all" || tab === "news") && selected && <div className="rd-home-recent-note">
+            <span>{selected.company_name} · 최신 검색</span>
+            {news.data && !news.error && <>
+              <span>선택 기업의 최신 검색결과 {news.data.items.length}건입니다. 공시 날짜 필터와 별도로 제공합니다.</span>
+              <a href="https://www.ncloud.com/product/applicationService/NAVERAPIHUB" target="_blank" rel="noopener noreferrer">NAVER™ API HUB</a>
+              <button className="rd-more rd-icon" type="button" onClick={news.reload}>새로고침</button>
+            </>}
+          </div>}
+          {(tab === "all" || tab === "news") && !selected && !directory.loading && !directory.error && <p className="rd-home-recent-note">뉴스 검색이 연결된 기업이 없습니다.</p>}
+        </div>
+      </section>
+      {data.data && !data.error && data.data.filing_count === 0 && data.data.analysis_count === 0 && data.data.event_count === 0 &&
+        <div className="rd-note" role="status">
+          <p>{range.start} ~ {range.end} 기간에 선택한 기업의 공개 자료가 없습니다. 날짜나 기업 필터를 바꾸거나 전체 이력을 확인해 주세요.</p>
+          <button className="rd-more" type="button" onClick={() => {
+            const next = { start: rangeStart(today, 30), end: today };
+            setRange(next); setDraft(next); setCompany(""); setRangeError("");
+          }}>전체 기업의 최근 1개월 보기</button>{" "}
+          <Link className="rd-more" href={`/search?sort=newest${companyQuery}`}>전체 이력 보기</Link>
+        </div>}
+      <p className="rd-home-footnote">
+        요약·최근 소식: {company ? catalog.find((item) => item.id === company)?.company_name ?? "선택 기업" : "전체 기업"} · {formatSourceDate(range.start)} ~ {formatSourceDate(range.end)}.
+        공시는 원문 공개일, 분석은 승인일, 일정은 개최일 기준입니다. 시간 기준: 한국시간.
+        다가오는 일정은 관심 기업의 향후 30일이며, 확인된 날짜만 표시합니다.
       </p>
     </div>
   );

@@ -349,16 +349,19 @@ test('home opens recent records and can recover from an intentionally empty day 
   const fixture = await reliabilityFixture(page);
   await page.goto('/today');
   const main = page.locator('main');
+  await main.getByRole('button', { name: '조회 설정', exact: true }).click();
   await expect(main.getByRole('button', { name: '최근 1개월', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(main.getByLabel('시작일', { exact: true })).toHaveValue('2026-09-07');
   await expect(main.getByLabel('종료일', { exact: true })).toHaveValue('2026-10-06');
-  await expect(main.locator('#disclosures').getByRole('link', { name: filing.title, exact: true })).toBeVisible();
+  await main.getByRole('tab', { name: '공시', exact: true }).click();
+  const activity = main.locator('#home-activity-panel');
+  await expect(activity.getByRole('link', { name: filing.title, exact: true })).toBeVisible();
   await expect(main.getByRole('link', { name: /기간 내 공개 공시/ })).toContainText('1건');
   await main.getByRole('button', { name: '오늘', exact: true }).click();
   await expect(main.getByRole('link', { name: /기간 내 공개 공시/ })).toContainText('0건');
-  await expect(main.locator('#disclosures').getByRole('link', { name: filing.title, exact: true })).toHaveCount(0);
+  await expect(activity.getByRole('link', { name: filing.title, exact: true })).toHaveCount(0);
   await main.getByRole('button', { name: '최근 1개월', exact: true }).click();
-  await expect(main.locator('#disclosures').getByRole('link', { name: filing.title, exact: true })).toBeVisible();
+  await expect(activity.getByRole('link', { name: filing.title, exact: true })).toBeVisible();
   await finish(page, info, fixture);
 });
 
