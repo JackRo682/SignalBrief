@@ -38,11 +38,11 @@ function Activity({ icon, tone, label, item, empty, loading, error }: {
     <div className="rd-w-activity-body">
       <div className="rd-w-activity-top">
         <strong>{label}</strong>
-        {available && <time dateTime={updatedAt ?? undefined}>{date(updatedAt ?? null, precision)}</time>}
       </div>
       <p title={available ? description : undefined}>
         {error ? "자료를 불러오지 못했습니다." : loading ? "확인 중…" : item ? description : empty}
       </p>
+      {available && <time dateTime={updatedAt ?? undefined}>{date(updatedAt ?? null, precision)}</time>}
     </div>
   </>;
   return available
@@ -169,11 +169,10 @@ export default function Watchlist() {
             const eventContents = <>
               <span className="rd-w-tile green"><Icon name="calendar" size={18} /></span>
               <div className="rd-w-activity-body">
-                <div className="rd-w-activity-top"><strong>다음 일정</strong>
-                  {next && <time dateTime={next.occurs_on}>{prefs.date(next.occurs_on, "date")}</time>}
-                </div>
+                <div className="rd-w-activity-top"><strong>다음 일정</strong></div>
                 <p title={next?.title}>{eventsLoading ? "확인 중…" : eventsError ? "일정을 불러오지 못했습니다." :
                   next?.title ?? (calendar.data?.truncated ? "표시 범위 내 예정 일정이 없습니다." : "향후 1년간 확인된 예정 일정이 없습니다.")}</p>
+                {next && <time dateTime={next.occurs_on}>{prefs.date(next.occurs_on, "date")}</time>}
               </div>
             </>;
             return <article className="rd-w-card" key={company.id} aria-label={`${company.name} 관심 기업`}>
