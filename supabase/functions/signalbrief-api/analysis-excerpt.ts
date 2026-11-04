@@ -1,10 +1,14 @@
-import {ProviderError} from './us-core.ts';
+import {isSecFundReport,ProviderError} from './us-core.ts';
 
 /** Select a declared excerpt from the entire normalized original, not its cover page. */
-export function selectAnalysisExcerpt(source:string){
+export function selectAnalysisExcerpt(source:string,form=''){
  const limit=12000;
  if(source.length<=limit)return {text:source,start:0,end:source.length,selection:'complete_normalized_document'};
- const headings=/(?:condensed\s+)?consolidated\s+(?:statements?\s+of\s+(?:income|operations|earnings|cash\s+flows|profit|financial\s+position)|balance\s+sheets)|results\s+of\s+operations\s+and\s+financial\s+condition|financial\s+highlights/gi;
+ const corporate=/(?:condensed\s+)?consolidated\s+(?:statements?\s+of\s+(?:income|operations|earnings|cash\s+flows|profit|financial\s+position)|balance\s+sheets)|results\s+of\s+operations\s+and\s+financial\s+condition|financial\s+highlights/;
+ // Fund reports often have no consolidated heading. Do not broaden corporate
+ // report selection to unrelated subsidiary or unconsolidated statements.
+ const fund=/statements?\s+of\s+(?:assets\s+and\s+liabilities|operations|changes\s+in\s+net\s+assets|cash\s+flows)/;
+ const headings=new RegExp(corporate.source+(isSecFundReport(form)?'|'+fund.source:''),'gi');
  let best:{start:number;end:number;score:number}|undefined,count=0;
  for(const match of source.matchAll(headings)){
   if(++count>120)break;

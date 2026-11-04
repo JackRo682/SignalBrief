@@ -39,7 +39,7 @@ async function analyzeClaimed(db:SupabaseClient,s:Row,id:string){
  await reserve(db,'sec');const raw=await providerFetch(validateFilingURL(f.document_url),'sec',{headers:{'User-Agent':`SignalBrief/0.2 ${contact}`}},fetch,8_000_000),normalized=normalizeFiling(raw),sha=await hash(raw);
  // Reserve a conservative bound for UTF-8 input bytes plus capped output; no automatic retries.
  const archive=await db.storage.from('signalbrief-raw').upload(`us/sec/filings/${sha}.html`,raw,{contentType:'text/html',upsert:false});if(archive.error&&!/already exists|duplicate/i.test(archive.error.message))throw new ProviderError('storage','archive_failed');
- const excerpt=selectAnalysisExcerpt(normalized),source=excerpt.text,amount=analysisReservation(source);
+ const excerpt=selectAnalysisExcerpt(normalized,str(f.form)),source=excerpt.text,amount=analysisReservation(source);
  await reserve(db,'openai',amount);const answer=await analyzeEvidence(source,str(s.OPENAI_API_KEY));
  const saved=await db.from('us_analyses').insert({filing_id:id,status:'needs_review',model:answer.model,source_sha256:sha,result:{...answer,source_url:f.document_url,normalized_excerpt:source,normalized_source_length:normalized.length,normalized_excerpt_start:excerpt.start,normalized_excerpt_end:excerpt.end,excerpt_selection:excerpt.selection},input_tokens:obj(answer.usage).prompt_tokens,output_tokens:obj(answer.usage).completion_tokens});if(saved.error)throw new ProviderError('database','analysis_save_failed');
  return {status:'needs_review',filing_id:id,usage:answer.usage,requires_human_review:true};

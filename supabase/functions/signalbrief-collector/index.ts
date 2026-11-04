@@ -71,7 +71,7 @@ export async function handleCollector(req:Request):Promise<Response>{
     result.openai={status:'blocked',code:code(error)};
     await rpc('sb_collector_analysis_finish',{fid:filing,result_status:'blocked',result_code:code(error)});
     await check('openai','blocked',{code:code(error)});
-   }else result.openai={status:'idle',reason:'no_unattempted_filings_in_90_day_window'};
+   }else result.openai={status:'idle',reason:'no_eligible_analysis_under_current_limits'};
   }else {result.openai={status:'blocked',code:secrets.OPENAI_API_KEY?'ai_budget_not_approved':'missing_key'};}
   result.dart_documents=await processDartDocument(db,secrets,config);
   result.email=await dispatchEmail(db,secrets,config);
