@@ -116,6 +116,10 @@
   .reference-auth.v-account .public-info-brand {
     padding: 0;
   }
+  .v-public-design .public-info-mark,
+  .reference-auth.v-account .public-info-mark {
+    margin: 0;
+  }
   .v-public-design .public-info-header .public-info-button,
   .reference-auth.v-account .public-info-header .public-info-button {
     min-height: 40px;
@@ -415,6 +419,10 @@
     font-size: 14px;
     line-height: 1.65;
     margin-block: 12px;
+  }
+  .v-public-design .v-page .v-small-note {
+    font-size: 13px !important;
+    line-height: 1.6 !important;
   }
 
   /* Full-size public copy is distinct from the miniature product examples. */

@@ -58,7 +58,7 @@ tests and the CI gate remain unchanged.
 | Reviewed source | Normalized SHA-256 |
 | --- | --- |
 | Production stylesheet before this revision | `f422f98b7881846d975faafc7ebb4cfdbaa5946b335106836ccfa6d147663d44` |
-| Reviewed public desktop stylesheet | `52938892d2ddca18cc03dc694ece8fe09896677df5016c5f803ce831262f0bae` |
+| Reviewed public desktop stylesheet | `49b3e20f813e456253dde9f272a6307472ee43cf00daf9ef820f2f779e60953a` |
 
 Normalization converts CRLF to LF, exactly as the scope guard does. The before
 hash was computed from the production Git object, not from an earlier working
@@ -74,7 +74,7 @@ Validation status for this public-only revision:
 
 - Source preservation against production: **PASS**, as described above.
 - Public CSS isolation audit: **PASS**. A PostCSS parse of the appended rules
-  found three desktop media queries, 121 rules and 237 selectors, all under the
+  found three desktop media queries, 123 rules and 240 selectors, all under the
   two public roots. The production stylesheet remains an identical prefix.
 - Unchanged workspace scope guard: **PASS**, preserving all 90 protected files,
   17 retained implementations and two verified customer entry points.
@@ -93,6 +93,10 @@ Validation status for this public-only revision:
   results for this public stylesheet.
 - Public desktop/mobile browser checks and public-to-workspace CSS isolation:
   **pending**. Existing navigation, authentication and mobile assertions remain.
+- Preview visual acceptance: landing, features, sources, pricing, login and signup
+  inspected in an anonymous browser. A measured 17px public logo inset was then
+  removed and added to the desktop geometry regression; public footnotes are now
+  13px. The final exact-commit CI reruns all release and browser checks.
 - Exact-commit CI and production deployment: **pending / not deployed**.
 
 The relevant existing browser suites are `marketing-pages.spec.ts`,

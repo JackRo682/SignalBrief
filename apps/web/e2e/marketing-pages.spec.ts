@@ -49,7 +49,7 @@ test('public desktop content aligns with its header and keeps explanatory text r
      const element=document.querySelector(selector);if(!element)throw new Error(`Missing public layout element: ${selector}`);
      const box=element.getBoundingClientRect();return {left:box.left,right:box.right,top:box.top,bottom:box.bottom,height:box.height};
     };
-    return {header:bounds('.public-info-header'),inner:bounds('.public-info-header>.public-info-container'),
+    return {header:bounds('.public-info-header'),inner:bounds('.public-info-header>.public-info-container'),brand:bounds('.public-info-header .public-info-mark'),
      content:selectors.map(selector=>({selector,...bounds(selector)})),
      navigation:Array.from(document.querySelectorAll('.public-info-nav a'),element=>parseFloat(getComputedStyle(element).fontSize)),
      overflow:document.documentElement.scrollWidth-innerWidth};
@@ -57,6 +57,7 @@ test('public desktop content aligns with its header and keeps explanatory text r
    expect(layout.inner.height,'Header content fits inside its visible background').toBeLessThanOrEqual(layout.header.height+1);
    expect(layout.inner.top).toBeGreaterThanOrEqual(layout.header.top-1);
    expect(layout.inner.bottom).toBeLessThanOrEqual(layout.header.bottom+1);
+   expect(Math.abs(layout.brand.left-layout.inner.left),'Public logo aligns with the content edge').toBeLessThanOrEqual(1);
    for(const content of layout.content){
     expect(Math.abs(content.left-layout.inner.left),`${content.selector} left edge`).toBeLessThanOrEqual(1);
     expect(Math.abs(content.right-layout.inner.right),`${content.selector} right edge`).toBeLessThanOrEqual(1);
