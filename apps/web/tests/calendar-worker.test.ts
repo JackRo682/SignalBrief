@@ -21,11 +21,11 @@ function fixture(sources:Source[],secrets:Record<string,string>={}){
  const collectSecIR=vi.fn<(source:Source,today:string,contact:string,archive:unknown,fetcher:typeof fetch,resolve:unknown)=>Promise<typeof snapshot>>().mockResolvedValue(snapshot);
  const archiveNotice=vi.fn<(...args:unknown[])=>Promise<({completed:false}&typeof snapshot)|{completed:true;count:number}>>().mockResolvedValue({completed:false,...snapshot});
  const dartRelay=vi.fn(async()=>new TextEncoder().encode('{}'));
- const rpc=vi.fn(async(name:string,args:Record<string,unknown>={})=>({error:null,data:name==='sb_calendar_task_sources'?sources:name==='sb_us_secrets'?secrets:name.startsWith('sb_calendar_ingest')?1:name==='sb_calendar_claim'?true:args}));
+ const rpc=vi.fn<(name:string,args?:Record<string,unknown>)=>Promise<{error:{code:string;message:string}|null;data:unknown}>>(async(name:string,args:Record<string,unknown>={})=>({error:null,data:name==='sb_calendar_task_sources'?sources:name==='sb_us_secrets'?secrets:name.startsWith('sb_calendar_ingest')?1:name==='sb_calendar_claim'?true:args}));
  const upload=vi.fn(async()=>({error:null}));
  const createClient=vi.fn(()=>({rpc,storage:{from:()=>({upload})}}));
  const code=readFileSync(new URL('../../../supabase/functions/signalbrief-calendar/index.ts',import.meta.url),'utf8').replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'');
- runInNewContext(ts.transpileModule(code,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None}}).outputText,{createClient,CalendarError,sha256,collectQ4,collectDartIR,collectSecIR,archiveNotice,createCalendarSourceFetch,dartRelay,koreaDate:()=> '20281102',fetchSource:vi.fn(),parseSource:vi.fn(),Response,Request,Headers,TextEncoder,TextDecoder,AbortSignal,fetch:fetcher,Date:Clock,Deno:{env:{get:()=> ''},serve:(fn:typeof handler)=>{handler=fn;}}});
+ runInNewContext(ts.transpileModule(code,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.None}}).outputText,{createClient,CalendarError,sha256,collectQ4,collectDartIR,collectSecIR,archiveNotice,createCalendarSourceFetch,dartRelay,koreaDate:()=> '20281102',fetchSource:vi.fn(),parseSource:vi.fn(),Response,Request,Headers,URL,TextEncoder,TextDecoder,AbortSignal,fetch:fetcher,Date:Clock,Deno:{env:{get:()=> ''},serve:(fn:typeof handler)=>{handler=fn;}}});
  return {rpc,collectQ4,collectDartIR,collectSecIR,archiveNotice,dartRelay,fetcher,createClient,setClock:(value:number)=>{clock=value;},call:()=>handler(new Request('https://fixture.invalid/calendar',{method:'POST',headers:{'x-signalbrief-task':'a'.repeat(64)}}))};
 }
 
@@ -95,5 +95,37 @@ describe('one-source calendar worker handoff',()=>{
   const f=fixture([notice]);f.archiveNotice.mockResolvedValueOnce({completed:true,count:3});
   expect(await(await f.call()).json()).toEqual({results:[{source:notice.key,status:'verified',items:3}]});
   expect(f.rpc.mock.calls.some(([name])=>name==='sb_calendar_ingest_notice')).toBe(false);expect(f.fetcher).not.toHaveBeenCalled();
+ });
+ it('reserves each regulator request and does not charge first-party storage or third-party IR transport',async()=>{
+  const f=fixture([sec],{SEC_CONTACT_EMAIL:'synthetic@example.invalid',DART_RELAY_SECRET:'d'.repeat(64)});
+  f.collectSecIR.mockImplementation(async(_source,_day,_contact,_archive,fetcher)=>{
+   await fetcher('https://data.sec.gov/submissions/CIK0000000996.json');
+   await fetcher('https://www.sec.gov/Archives/edgar/data/996/report.htm');
+   await fetcher('https://investors.synthetic.invalid/events');return snapshot;
+  });
+  expect((await f.call()).status).toBe(200);
+  expect(f.rpc.mock.calls.filter(([name])=>name==='sb_calendar_provider_reserve')).toEqual([
+   ['sb_calendar_provider_reserve',{p:'sec'}],['sb_calendar_provider_reserve',{p:'sec'}],
+  ]);
+  expect(f.fetcher).toHaveBeenCalledTimes(3);
+ });
+ it('stops before regulator I/O and preserves the quota error for next-day queue deferral',async()=>{
+  const f=fixture([sec],{SEC_CONTACT_EMAIL:'synthetic@example.invalid',DART_RELAY_SECRET:'d'.repeat(64)}),normal=f.rpc.getMockImplementation()!;
+  f.rpc.mockImplementation(async(name,args)=>name==='sb_calendar_provider_reserve'?{error:{code:'PT429',message:'daily_request_limit'},data:null}:normal(name,args));
+  f.collectSecIR.mockImplementation(async(_source,_day,_contact,_archive,fetcher)=>{await fetcher('https://data.sec.gov/submissions/CIK0000000996.json');return snapshot;});
+  expect(await(await f.call()).json()).toEqual({results:[{source:sec.key,status:'failed',code:'daily_request_limit'}]});
+  expect(f.fetcher).not.toHaveBeenCalled();
+  expect(f.rpc).toHaveBeenCalledWith('sb_calendar_finish',expect.objectContaining({summary:[{source:sec.key,status:'failed',code:'daily_request_limit'}]}));
+  expect(f.rpc.mock.calls.some(([name])=>name.startsWith('sb_calendar_ingest'))).toBe(false);
+ });
+ it('charges the DART relay list and each DART HTML request exactly once',async()=>{
+  const f=fixture([dart],{DART_API_KEY:'c'.repeat(40),DART_RELAY_SECRET:'d'.repeat(64)});
+  f.collectDartIR.mockImplementation(async(_source,_day,_archive,listPage,fetcher)=>{
+   await (listPage as (corp:string,page:number,start:string,end:string,signal:AbortSignal)=>Promise<Uint8Array>)('00999991',1,'2028-08-01','2028-11-02',new AbortController().signal);
+   await fetcher('https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20281101000001');return snapshot;
+  });
+  expect((await f.call()).status).toBe(200);
+  expect(f.rpc.mock.calls.filter(([name])=>name==='sb_calendar_provider_reserve')).toHaveLength(2);
+  expect(f.dartRelay).toHaveBeenCalledTimes(1);expect(f.fetcher).toHaveBeenCalledTimes(1);
  });
 });

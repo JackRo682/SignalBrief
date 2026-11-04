@@ -19,7 +19,7 @@ export function marketCategory(value: string): Exclude<MarketGroup, "all"> {
   const market = value.trim().toUpperCase();
   if (["KOSPI", "코스피", "KRX:KOSPI"].includes(market)) return "kospi";
   if (["KOSDAQ", "코스닥", "KRX:KOSDAQ"].includes(market)) return "kosdaq";
-  if (["US", "NASDAQ", "NYSE", "AMEX", "NYSEARCA", "NYSE ARCA", "NYSEAMERICAN", "CBOE", "OTC", "LSE", "TSE", "HKEX"].includes(market))
+  if (["US", "NASDAQ", "NYSE", "AMEX", "NYSEARCA", "NYSE ARCA", "NYSE_ARCA", "NYSEAMERICAN", "NYSE_AMERICAN", "NYSE_TEXAS", "TXSE", "IEX", "CBOE", "OTC", "LSE", "TSE", "HKEX"].includes(market))
     return "overseas";
   return "unclassified";
 }

@@ -13,7 +13,7 @@ type Filing={receipt:string;receipt_date:string;company_name:string;report_name:
 type ListPage={items:Filing[];count:number;total_count:number;total_page:number};
 type Page={page_number:number;count:number;total_count:number;total_page:number;url:string;raw_sha256:string;object_key:string};
 type Family={root_receipt_no:string;latest_receipt_no:string;receipt_nos:string[]};
-type Lineage={root_receipt_no:string;corrected:boolean;family_receipts:string[]};
+type Lineage={root_receipt_no:string;corrected:boolean;family_receipts:string[];template_id?:'70050'};
 type Document=Lineage&{receipt_no:string;main_url:string;main_sha256:string;main_object_key:string;body_url:string;body_sha256:string;body_object_key:string};
 export type DartIRManifest={
  schema:'signalbrief.calendar.dart-ir.v2';adapter:'dart-ir';source_key:string;source_url:string;
@@ -127,9 +127,13 @@ export function parseDartIRMain(html:string,source:DartIRSource,filing:Filing):L
  const parsed=htmlParts(html),ids=new Set(parsed.issuer_ids);
  if(ids.size!==1||!ids.has(source.provider_company_id))throw new CalendarError('company_identity_mismatch');
  if(parsed.family_selects!==1||/철회/.test(parsed.title))throw new CalendarError('ambiguous_correction');
- if(!parsed.title.startsWith(filing.company_name+'/')||!compact(parsed.title).includes('기업설명회(IR)개최(안내공시)')||!parsed.title.includes(filing.receipt_date.replaceAll('-','.')))throw new CalendarError('filing_identity_mismatch');
  const scripts=parsed.scripts.join('\n');
- if(!/\balertJungJung\(\s*['"][A-Z]['"]\s*,\s*['"]99664['"]\s*\)/.test(scripts))throw new CalendarError('unsupported_ir_template');
+ const kosdaq=/\balertJungJung\(\s*['"][A-Z]['"]\s*,\s*['"]70050['"]\s*\)/.test(scripts);
+ if(kosdaq){
+  if(source.market!=='KOSDAQ'||[...scripts.matchAll(/\balertJungJung\(\s*['"]/g)].length!==1||!/\balertJungJung\(\s*['"]K['"]\s*,\s*['"]70050['"]\s*\)/.test(scripts))throw new CalendarError('unsupported_ir_template');
+ }
+ if(!parsed.title.startsWith(filing.company_name+'/')||!compact(parsed.title).includes(kosdaq?'기업설명회(IR)개최/':'기업설명회(IR)개최(안내공시)')||!parsed.title.includes(filing.receipt_date.replaceAll('-','.')))throw new CalendarError('filing_identity_mismatch');
+ if(!kosdaq&&!/\balertJungJung\(\s*['"][A-Z]['"]\s*,\s*['"]99664['"]\s*\)/.test(scripts))throw new CalendarError('unsupported_ir_template');
  const calls=[...scripts.matchAll(/\bviewDoc\(\s*['"](\d{14})['"]\s*,\s*['"]([1-9]\d{0,11})['"]\s*,\s*['"]0['"]\s*,\s*['"]0['"]\s*,\s*['"]0['"]\s*,\s*['"]HTML['"]\s*,\s*['"]['"]\s*\)/g)];
  if([...scripts.matchAll(/\bviewDoc\(\s*['"]/g)].length!==1||calls.length!==1||calls[0][1]!==filing.receipt)throw new CalendarError('ambiguous_document');
  const members=parsed.families.filter(option=>option.value!=='null').map(option=>{
@@ -143,16 +147,59 @@ export function parseDartIRMain(html:string,source:DartIRSource,filing:Filing):L
   ||members.filter(member=>member.selected).length!==1||members.find(member=>member.selected)?.receipt!==filing.receipt
   ||members.at(-1)?.corrected||members.slice(0,-1).some(member=>!member.corrected))throw new CalendarError('ambiguous_correction');
  const root_receipt_no=members.at(-1)!.receipt,corrected=members.find(member=>member.receipt===filing.receipt)!.corrected;
- const proofs=[...scripts.matchAll(/\balertInvestNotice\(\s*['"](\d{14})['"]\s*,\s*['"]([1-9]\d{0,11})['"]\s*,\s*['"](\d{14})['"]\s*,\s*['"]([01])['"]\s*,\s*['"]99664['"]\s*,\s*['"]HTML['"]\s*\)/g)];
+ const proofs=[...scripts.matchAll(kosdaq?/\balertInvestNotice\(\s*['"](\d{14})['"]\s*,\s*['"]([1-9]\d{0,11})['"]\s*,\s*['"](\d{14})['"]\s*,\s*['"]([01])['"]\s*,\s*['"]70050['"]\s*,\s*['"]HTML['"]\s*\)/g:/\balertInvestNotice\(\s*['"](\d{14})['"]\s*,\s*['"]([1-9]\d{0,11})['"]\s*,\s*['"](\d{14})['"]\s*,\s*['"]([01])['"]\s*,\s*['"]99664['"]\s*,\s*['"]HTML['"]\s*\)/g)];
  if([...scripts.matchAll(/\balertInvestNotice\(\s*['"]/g)].length!==1||proofs.length!==1||proofs[0][1]!==filing.receipt||proofs[0][2]!==calls[0][2]||proofs[0][3]!==root_receipt_no||proofs[0][4]!==String(Number(corrected)))throw new CalendarError('ambiguous_correction');
  const report=compact(filing.report_name),expected=report.replace(/^\[(?:기재정정|정정)\]/,'');
  if(!['기업설명회(IR)개최(안내공시)','기업설명회(IR)개최'].includes(expected)||corrected!==(report!==expected)||/[철]/.test(filing.remarks)||(/정/.test(filing.remarks)&&members.length===1))throw new CalendarError('ambiguous_correction');
+ if(kosdaq&&(expected!=='기업설명회(IR)개최'||parsed.families.filter(option=>option.value!=='null').some(option=>compact(option.title)!=='기업설명회(IR)개최')))throw new CalendarError('unsupported_ir_template');
  const url=new URL('/report/viewer.do',DART_IR_SOURCE_URL);
  url.search=new URLSearchParams({rcpNo:filing.receipt,dcmNo:calls[0][2],eleId:'0',offset:'0',length:'0',dtd:'HTML'}).toString();
- return {body_url:url.href,root_receipt_no,corrected,family_receipts:members.map(member=>member.receipt).reverse()};
+ return {body_url:url.href,root_receipt_no,corrected,family_receipts:members.map(member=>member.receipt).reverse(),...(kosdaq?{template_id:'70050' as const}:{})};
 }
 
-export function parseDartIRBody(html:string,filing:Filing,lineage?:Lineage):{title:string;occurs_on:string;quote:string;location:string}{
+/** KOSDAQ 70050 publishes an explicit start/end matrix. Local clock times do not establish a timezone. */
+function parseKosdaqIRBody(html:string,filing:Filing,lineage:Lineage):{title:string;occurs_on:string;quote:string;location:string;ends_on?:string}{
+ const parsed=htmlParts(html,true);
+ if(!/<\/html>\s*$/i.test(html))throw new CalendarError('incomplete_document');
+ if(!parsed.title.startsWith(filing.company_name+'/')||!compact(parsed.title).includes('기업설명회(IR)개최/')||!parsed.title.includes(filing.receipt_date.replaceAll('-','.')))throw new CalendarError('filing_identity_mismatch');
+ if(/철회/.test(parsed.title))throw new CalendarError('ambiguous_correction');
+ const schedules=parsed.tables.filter(table=>table.rows.some(({cells})=>cells.map(compact).join('|')==='1.일시|행사일|시간(현지시간)'));
+ if(schedules.length!==1)throw new CalendarError('ambiguous_date');
+ const schedule=schedules[0],rows=schedule.rows.map(row=>row.cells),correctionMarkers=parsed.rows.some(row=>row.some(value=>/정정전|정정후|정정사항/.test(compact(value))));
+ if(lineage.corrected){
+  const corrections=parsed.tables.filter(table=>table.rows.some(({cells})=>compact(cells[0]??'')==='1.정정관련공시서류'));
+  const dates=parsed.rows.filter(cells=>compact(cells[0]??'')==='정정일자');
+  if(corrections.length!==1||parsed.tables.indexOf(corrections[0])>=parsed.tables.indexOf(schedule)||dates.length!==1||dates[0].length!==2||dates[0][1]!==filing.receipt_date)throw new CalendarError('ambiguous_correction');
+  const correction=corrections[0].rows.map(row=>row.cells),value=(label:string)=>correction.filter(cells=>compact(cells[0]??'')===label);
+  const report=value('1.정정관련공시서류'),submitted=value('2.정정관련공시서류제출일'),reason=value('3.정정사유'),changes=value('4.정정사항');
+  const headers=correction.filter(cells=>cells.map(compact).join('|')==='정정항목|정정전|정정후');
+  if(report.length!==1||report[0].length!==2||compact(report[0][1])!=='기업설명회(IR)개최'
+   ||submitted.length!==1||submitted[0].length!==2||submitted[0][1]!==iso(lineage.root_receipt_no.slice(0,8))
+   ||reason.length!==1||reason[0].length!==2||!reason[0][1]||/취소|철회/.test(reason[0][1])||changes.length!==1||headers.length!==1
+   ||!correction.some(cells=>cells.length===3&&cells!==headers[0]&&cells.every(Boolean)))throw new CalendarError('ambiguous_correction');
+ }else if(correctionMarkers||/정정/.test(parsed.title))throw new CalendarError('ambiguous_correction');
+ if(rows.some(cells=>cells.some(value=>/정정전|정정후|정정사항/.test(compact(value)))))throw new CalendarError('ambiguous_correction');
+ for(const label of ['2.장소','3.대상자','4.실시목적','5.실시방법','6.주요내용','7.후원기관','8.개최확정일','9.담당자','10.IR자료게재']){
+  if(rows.filter(cells=>compact(cells[0]??'')===label).length!==1)throw new CalendarError('incomplete_document');
+ }
+ const heads=schedule.rows.filter(({cells})=>cells.map(compact).join('|')==='1.일시|행사일|시간(현지시간)');
+ if(heads.length!==1)throw new CalendarError('ambiguous_date');
+ const offset=schedule.rows.indexOf(heads[0]),sub=schedule.rows[offset+1],values=schedule.rows[offset+2];
+ if(!sub||!values||sub.cells.map(compact).join('|')!=='시작일|종료일|시작시간|종료시간'||values.cells.length!==4)throw new CalendarError('ambiguous_date');
+ const start=dateOnly(values.cells[0]),end=dateOnly(values.cells[1]);
+ if(end<start||Date.parse(end+'T00:00:00Z')-Date.parse(start+'T00:00:00Z')>31*86400000
+  ||values.cells.slice(2).some(value=>!/^(?:(?:[01]\d|2[0-3]):[0-5]\d|--:--|-)?$/.test(value)))throw new CalendarError('ambiguous_date');
+ const purposes=rows.filter(cells=>compact(cells[0]??'')==='4.실시목적');
+ if(purposes.length!==1||purposes[0].length!==2)throw new CalendarError('ambiguous_date');
+ const purpose=purposes[0][1],title=`${filing.company_name} · ${purpose}${end>start?` · 기간 시작 (${start}–${end})`:''}`;
+ if(!purpose||title.length>200||/[\u0000-\u001f]/.test(title)||/취소|철회/.test(purpose))throw new CalendarError('invalid_event');
+ const quote=[heads[0].cells,sub.cells,values.cells].flat().join(' ');
+ if(!parsed.visible.includes(quote))throw new CalendarError('quote_not_found');
+ return {title,occurs_on:start,quote,location:`70050/table/tr[${values.index}]/시작일`,...(end>start?{ends_on:end}:{})};
+}
+
+export function parseDartIRBody(html:string,filing:Filing,lineage?:Lineage):{title:string;occurs_on:string;quote:string;location:string;ends_on?:string}{
+ if(lineage?.template_id==='70050')return parseKosdaqIRBody(html,filing,lineage);
  const parsed=htmlParts(html,true);
  if(!/<\/html>\s*$/i.test(html))throw new CalendarError('incomplete_document');
  if(!parsed.title.startsWith(filing.company_name+'/')||!compact(parsed.title).includes('기업설명회(IR)개최(안내공시)')||!parsed.title.includes(filing.receipt_date.replaceAll('-','.')))throw new CalendarError('filing_identity_mismatch');
@@ -284,7 +331,7 @@ export async function collectDartIR(source:DartIRSource,today:string,archive:Dar
     const receipt_date=iso(receipt.slice(0,8));
     // A member inside the scan cannot be silently missing from a complete list.
     if(receipt_date>=receipt_window.start)throw new CalendarError('incomplete_correction_family');
-    missing.set(receipt,{receipt,receipt_date,company_name:filing.company_name,report_name:(receipt===root?'':'[기재정정]')+'기업설명회(IR)개최(안내공시)',remarks:''});
+    missing.set(receipt,{receipt,receipt_date,company_name:filing.company_name,report_name:(receipt===root?'':'[기재정정]')+(document.template_id==='70050'?'기업설명회(IR)개최':'기업설명회(IR)개최(안내공시)'),remarks:''});
    }
   }
  }

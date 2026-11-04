@@ -28,4 +28,4 @@ jobs:
       - name: Official calendar ingestion and RLS regression
         env:
           SB_TEST_CALENDAR_POSTGRES_URL: postgresql://postgres:test-only@localhost:5432/calendar_ci_test
-        run: pytest -q tests/test_calendar_ingestion.py tests/test_micron_calendar_ingestion.py tests/test_calendar_onboarding.py tests/test_calendar_dart_ingestion.py tests/test_calendar_dart_corrections.py tests/test_calendar_sec_ir.py tests/test_calendar_sec_filing.py tests/test_calendar_samsung.py tests/test_calendar_ir_navigation.py tests/test_calendar_sec_filing_lock.py tests/test_calendar_drupal_events.py tests/test_calendar_curated_notices.py
+        run: pytest -q tests/test_calendar_ingestion.py tests/test_micron_calendar_ingestion.py tests/test_calendar_onboarding.py tests/test_calendar_dart_ingestion.py tests/test_calendar_dart_corrections.py tests/test_calendar_dart_kosdaq.py tests/test_calendar_sec_ir.py tests/test_calendar_sec_filing.py tests/test_calendar_samsung.py tests/test_calendar_ir_navigation.py tests/test_calendar_sec_filing_lock.py tests/test_calendar_drupal_events.py tests/test_calendar_curated_notices.py
