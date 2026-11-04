@@ -376,6 +376,12 @@
     margin-inline: 0;
     padding-block: 32px;
   }
+  .v-public-design .v-cases > .v-grid > .v-case {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 2;
+    row-gap: 0;
+  }
   .v-public-design .v-case > header,
   .v-public-design .v-case-body {
     padding: 20px;
@@ -423,6 +429,12 @@
   .v-public-design .v-page .v-small-note {
     font-size: 13px !important;
     line-height: 1.6 !important;
+  }
+  .v-public-design .v-privacy-hero > .v-handnote {
+    right: 16px;
+  }
+  .v-public-design .v-privacy-hero > .v-security-picture {
+    right: 200px;
   }
 
   /* Full-size public copy is distinct from the miniature product examples. */

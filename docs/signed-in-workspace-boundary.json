@@ -14,7 +14,7 @@
       "reviewed_files": {
         "apps/web/src/components/marketing/screenshot-design.css": {
           "before_sha256": "f422f98b7881846d975faafc7ebb4cfdbaa5946b335106836ccfa6d147663d44",
-          "after_sha256": "49b3e20f813e456253dde9f272a6307472ee43cf00daf9ef820f2f779e60953a",
+          "after_sha256": "f9ecf9f877076798b117381ec8b0c621558c7d3c26f0a96e425bcd9eeb9355d5",
           "normalization": "CRLF to LF, matching scripts/verify_workspace_scope.py",
           "scope": "Appended desktop overrides at min-width 901px, positively scoped to .v-public-design or .reference-auth.v-account. Original stylesheet bytes are retained."
         }
@@ -28,7 +28,7 @@
         "description": "All tracked apps/web/src files were compared byte-for-byte with the production baseline. Only the reviewed public stylesheet differs; signed-in routes, redesign/desktop/mobile/workspace implementations, globals, AuthProvider, shared clients and administrative sources remain identical."
       },
       "evidence": "docs/SIGNED_IN_RELEASE_CHECKS.md#november-4-public-only-desktop-presentation-revision",
-      "release_status": "Full local verification and the unchanged scope guard passed. Preview visual checks passed on public landing/features/sources/pricing/login/signup; the observed 17px public logo inset was corrected afterward. Final exact-commit browser and PostgreSQL CI are pending. Not deployed."
+      "release_status": "Full local verification and the unchanged scope guard passed. Preview visual checks passed on public landing/features/sources/pricing/login/signup/terms; the observed 17px public logo inset was corrected and visually verified. Follow-up customer header alignment and privacy decoration containment fixes await final preview and exact-commit CI. Final exact-commit browser and PostgreSQL CI are pending. Not deployed."
     }
   ],
   "protected_paths": [
@@ -130,7 +130,7 @@
     "apps/web/src/components/marketing/refinement.css": "e7ad5d708c03d4d69324bf2f9637e05ed09f413396dce7b94af73486c591c053",
     "apps/web/src/components/marketing/responsive-design.css": "a44b90cc9c3a7c1aeeeece9cb22533f0ba100aeaf3a6b275ec412863b764d117",
     "apps/web/src/components/marketing/screenshot-accessibility.css": "311f457009f56da6c96f0280eaec747716c89493d8b7cea770f5c255156aad2c",
-    "apps/web/src/components/marketing/screenshot-design.css": "49b3e20f813e456253dde9f272a6307472ee43cf00daf9ef820f2f779e60953a",
+    "apps/web/src/components/marketing/screenshot-design.css": "f9ecf9f877076798b117381ec8b0c621558c7d3c26f0a96e425bcd9eeb9355d5",
     "apps/web/src/components/marketing/screenshot-preview.tsx": "71459ea352be49ac2fc48f1b311709aff3ae8708527154a0be4e057a7f99a12a",
     "apps/web/src/components/mfa-challenge.css": "c18698c432954eae605e73f5a30eb1cdd7f0915ea5b10658158e0e6cf4ac0e80",
     "apps/web/src/components/mfa-challenge.tsx": "cd870c74965b039359578c306690700cbfceb0dadc6680ec4ddb0bff6b2497e6",

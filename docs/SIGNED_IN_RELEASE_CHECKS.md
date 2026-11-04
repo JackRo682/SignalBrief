@@ -58,7 +58,7 @@ tests and the CI gate remain unchanged.
 | Reviewed source | Normalized SHA-256 |
 | --- | --- |
 | Production stylesheet before this revision | `f422f98b7881846d975faafc7ebb4cfdbaa5946b335106836ccfa6d147663d44` |
-| Reviewed public desktop stylesheet | `49b3e20f813e456253dde9f272a6307472ee43cf00daf9ef820f2f779e60953a` |
+| Reviewed public desktop stylesheet | `f9ecf9f877076798b117381ec8b0c621558c7d3c26f0a96e425bcd9eeb9355d5` |
 
 Normalization converts CRLF to LF, exactly as the scope guard does. The before
 hash was computed from the production Git object, not from an earlier working
@@ -74,7 +74,7 @@ Validation status for this public-only revision:
 
 - Source preservation against production: **PASS**, as described above.
 - Public CSS isolation audit: **PASS**. A PostCSS parse of the appended rules
-  found three desktop media queries, 123 rules and 240 selectors, all under the
+  found three desktop media queries, 126 rules and 243 selectors, all under the
   two public roots. The production stylesheet remains an identical prefix.
 - Unchanged workspace scope guard: **PASS**, preserving all 90 protected files,
   17 retained implementations and two verified customer entry points.
@@ -96,7 +96,11 @@ Validation status for this public-only revision:
 - Preview visual acceptance: landing, features, sources, pricing, login and signup
   inspected in an anonymous browser. A measured 17px public logo inset was then
   removed and added to the desktop geometry regression; public footnotes are now
-  13px. The final exact-commit CI reruns all release and browser checks.
+  13px. A subsequent full-page review of Customers and Privacy identified unequal
+  customer header heights and a clipped decorative note. Shared card rows and
+  contained privacy artwork now address both issues, with focused geometry
+  assertions at 1024/1280/1440/1920px. Terms layout also passed visual review.
+  The final exact-commit CI reruns all release and browser checks.
 - Exact-commit CI and production deployment: **pending / not deployed**.
 
 The relevant existing browser suites are `marketing-pages.spec.ts`,

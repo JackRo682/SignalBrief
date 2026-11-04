@@ -74,6 +74,38 @@ test('public desktop content aligns with its header and keeps explanatory text r
   });
  }
 });
+test('desktop customer card headers align and privacy artwork stays inside the content',async({page},testInfo)=>{
+ test.skip(testInfo.project.name!=='desktop','Desktop card and artwork regression.');
+ await anonymous(page);
+ for(const width of [1024,1280,1440,1920]){
+  await page.setViewportSize({width,height:1080});await page.goto('/customers');
+  await expect(page.locator('.v-case')).toHaveCount(4);await page.evaluate(async()=>{await document.fonts.ready;});
+  const cards=await page.locator('.v-case').evaluateAll(elements=>elements.map(element=>{
+   const card=element.getBoundingClientRect(),header=element.querySelector('header')!.getBoundingClientRect(),body=element.querySelector('.v-case-body')!.getBoundingClientRect();
+   return {top:card.top,bottom:card.bottom,headerBottom:header.bottom,bodyTop:body.top};
+  }));
+  for(const card of cards){
+   const peers=cards.filter(other=>Math.abs(other.top-card.top)<=1);
+   expect(peers).toHaveLength(width<=1250?2:4);
+   for(const peer of peers){
+    expect(Math.abs(peer.headerBottom-card.headerBottom),`Customer header bottoms align at ${width}px`).toBeLessThanOrEqual(1);
+    expect(Math.abs(peer.bodyTop-card.bodyTop),`Customer body starts align at ${width}px`).toBeLessThanOrEqual(1);
+    expect(Math.abs(peer.bottom-card.bottom),`Customer cards have equal height at ${width}px`).toBeLessThanOrEqual(1);
+   }
+  }
+  await page.goto('/privacy');await expect(page.locator('.v-privacy-hero')).toBeVisible();
+  await page.evaluate(async()=>{await document.fonts.ready;});
+  const artwork=await page.evaluate(()=>{
+   const hero=document.querySelector('.v-privacy-hero')!.getBoundingClientRect(),note=document.querySelector('.v-privacy-hero>.v-handnote')!,shield=document.querySelector('.v-privacy-hero>.v-security-picture')!.getBoundingClientRect();
+   const box=note.getBoundingClientRect();return {visible:getComputedStyle(note).display!=='none',left:box.left,right:box.right,heroLeft:hero.left,heroRight:hero.right,shieldRight:shield.right};
+  });
+  if(artwork.visible){
+   expect(artwork.left,'Privacy note clears the shield').toBeGreaterThanOrEqual(artwork.shieldRight);
+   expect(artwork.left).toBeGreaterThanOrEqual(artwork.heroLeft);
+   expect(artwork.right,'Privacy note is not clipped at the right edge').toBeLessThanOrEqual(artwork.heroRight+1);
+  }
+ }
+});
 test('five header links and legal footer links navigate without recreating the document',async({page})=>{
  await anonymous(page);await page.goto('/');await page.evaluate(()=>{(window as Window&{__publicMarker?:string}).__publicMarker='retained';});
  for(const [path,label] of navPages){await openPublicMenu(page);await page.locator('.public-info-nav').getByRole('link',{name:label,exact:true}).click();await expect(page).toHaveURL(new RegExp('/'+path+'$'));}
