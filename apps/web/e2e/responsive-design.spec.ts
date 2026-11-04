@@ -42,3 +42,50 @@ test('account screens retain real forms, and desktop illustrations stay to the l
   }
  }
 });
+test('public desktop account fields and guidance remain readable and aligned',async({page},testInfo)=>{
+ test.skip(testInfo.project.name!=='desktop','Desktop typography regression; existing tests cover mobile forms.');
+ await anonymous(page);await page.goto('/login');
+ await page.evaluate(()=>{(window as Window&{__accountLayoutMarker?:string}).__accountLayoutMarker='retained';});
+ for(const path of ['/login','/signup','/forgot-password','/reset-password']){
+  if(path==='/signup')await page.locator('.v-auth-header').getByRole('link',{name:'회원가입',exact:true}).click();
+  if(path==='/forgot-password'){
+   await page.locator('.v-auth-header').getByRole('link',{name:'로그인',exact:true}).click();
+   await page.getByRole('link',{name:'비밀번호 찾기',exact:true}).click();
+  }
+  // The recovery-email destination is opened directly; no account requests are submitted.
+  if(path==='/reset-password')await page.goto(path);
+  await expect(page).toHaveURL(new RegExp(path+'$'));
+  await expect(page.locator('.reference-auth.v-account .login-box')).toBeVisible();
+  if(path!=='/reset-password')expect(await page.evaluate(()=>(window as Window&{__accountLayoutMarker?:string}).__accountLayoutMarker)).toBe('retained');
+  for(const width of [1280,1440,1920])await test.step(`${path} at ${width}px`,async()=>{
+   await page.setViewportSize({width,height:1080});await page.evaluate(async()=>{await document.fonts.ready;});
+   for(const [selector,minimum] of [
+    ['.field input:not([type="checkbox"]),.field>label,.field>span,.button',16],
+    ['.password-requirement,.d-signup-ack>label,.d-forgot-link,.auth-links>*,.v-password-guide p,.v-password-guide small,.v-reset-note',14],
+   ] as const){
+    const sizes=await page.locator('.reference-auth.v-account .login-box').locator(selector).evaluateAll(elements=>elements.map(element=>parseFloat(getComputedStyle(element).fontSize)));
+    expect(sizes.length,`${selector} is present`).toBeGreaterThan(0);
+    for(const size of sizes)expect(size,`${path} readable form text`).toBeGreaterThanOrEqual(minimum);
+   }
+   const geometry=await page.locator('.reference-auth.v-account').evaluate(root=>{
+    const bounds=(element:Element)=>{const box=element.getBoundingClientRect();return {left:box.left,right:box.right,top:box.top,bottom:box.bottom,height:box.height};};
+    const submit=root.querySelector('.login-box .button.primary')!,header=root.querySelector('.v-auth-header,.public-info-header')!;
+    const inner=header.querySelector('.v-container,.public-info-container')!,story=root.querySelector('.reference-auth-story')!;
+    return {submit:bounds(submit),fields:Array.from(root.querySelectorAll('.login-box .field input:not([type="checkbox"])'),bounds),
+     header:bounds(header),inner:bounds(inner),form:bounds(root.querySelector('.v-auth-form-column')!),
+     story:getComputedStyle(story).display==='none'?null:bounds(story),overflow:document.documentElement.scrollWidth-innerWidth};
+   });
+   expect(geometry.fields.length).toBeGreaterThan(0);
+   for(const field of geometry.fields){
+    expect(Math.abs(field.left-geometry.submit.left),'Input and submit left edges align').toBeLessThanOrEqual(1);
+    expect(Math.abs(field.right-geometry.submit.right),'Input and submit right edges align').toBeLessThanOrEqual(1);
+    expect(field.height,'Input target remains usable').toBeGreaterThanOrEqual(44);
+   }
+   expect(geometry.submit.height).toBeGreaterThanOrEqual(44);
+   expect(geometry.inner.top).toBeGreaterThanOrEqual(geometry.header.top-1);
+   expect(geometry.inner.bottom).toBeLessThanOrEqual(geometry.header.bottom+1);
+   if(geometry.story)expect(geometry.story.right,'Story and real form do not overlap').toBeLessThanOrEqual(geometry.form.left+1);
+   expect(geometry.overflow,'No horizontal document overflow').toBeLessThanOrEqual(1);
+  });
+ }
+});
