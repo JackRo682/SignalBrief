@@ -1,5 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
-import { companies, companyId } from './mobile-fixture';
+import { companies, companyId, fixtureNow } from './mobile-fixture';
 import {
   approved, filing, historical, researchWorkspaceFixture, sourceId, upcoming,
   type ResearchFixture,
@@ -8,7 +8,8 @@ import { resourceSchema, sourceOverviewSchema, workspaceRequest } from '../src/w
 import { calendarEntrySchema } from '../src/redesign/calendar-utils';
 
 // Synthetic browser fixtures only: no real account, provider, or production writes.
-const homeNow = '2026-11-04T08:00:00.000Z';
+// Keep the fixed authenticated fixture clock: moving it forward expires its JWT.
+const homeNow = fixtureNow;
 const otherCompany = companies[1];
 const otherFiling = resourceSchema.parse({
   ...filing, id: '40000000-0000-4000-8000-000000000901',
@@ -21,16 +22,16 @@ const otherAnalysis = resourceSchema.parse({
   title: 'Synthetic unrelated company approved excerpt', reviewed_at: homeNow,
 });
 const noisyCalendar = [
-  { ...upcoming, event_id: null, origin: 'official_ir', quote: 'Synthetic confirmed event.' },
+  { ...upcoming, occurs_on: '2026-10-14', event_id: null, origin: 'official_ir', quote: 'Synthetic confirmed event.' },
   { ...historical, event_id: null, origin: 'official_ir', quote: 'Synthetic past event.' },
   { ...upcoming, id: '80000000-0000-4000-8000-000000000903', company_id: otherCompany.id,
-    title: 'Synthetic unrelated upcoming event', occurs_on: '2026-11-05',
+    title: 'Synthetic unrelated upcoming event', occurs_on: '2026-10-07',
     event_id: null, origin: 'official_ir', quote: 'Synthetic other-company event.' },
   { ...upcoming, id: '80000000-0000-4000-8000-000000000904',
-    title: 'Synthetic personal reminder', occurs_on: '2026-11-06',
+    title: 'Synthetic personal reminder', occurs_on: '2026-10-08',
     event_id: null, origin: 'user', quote: null },
   { ...upcoming, id: '80000000-0000-4000-8000-000000000905',
-    title: 'Synthetic event beyond the home window', occurs_on: '2026-12-05',
+    title: 'Synthetic event beyond the home window', occurs_on: '2026-11-06',
     event_id: null, origin: 'official_ir', quote: 'Synthetic later event.' },
 ].map(item => calendarEntrySchema.parse(item));
 
@@ -92,7 +93,7 @@ test('home keeps monitoring and upcoming events within the actual watchlist even
     expect(url.searchParams.get('calendar_status')).toBe('eq.confirmed');
     expect(url.searchParams.get('company_id')).toBe(`in.(${companyId})`);
     expect(url.searchParams.get('origin')).toBe('neq.user');
-    expect(url.searchParams.getAll('occurs_on')).toEqual(['gte.2026-11-04', 'lte.2026-12-04']);
+    expect(url.searchParams.getAll('occurs_on')).toEqual(['gte.2026-10-06', 'lte.2026-11-05']);
     // Deliberately overbroad fixture data also exercises the homepage's final
     // date/company/origin guard without changing the existing query contract.
     await route.fulfill({ headers, json: noisyCalendar });
@@ -122,7 +123,7 @@ test('home keeps monitoring and upcoming events within the actual watchlist even
   await expect(dates.locator('.rd-home-event')).toHaveCount(1);
   await expect(dates.getByRole('link', { name: new RegExp(upcoming.title) }))
     .toHaveAttribute('href', `/events/${upcoming.id}?kind=calendar`);
-  await expect(dates.locator('time')).toHaveAttribute('datetime', upcoming.occurs_on);
+  await expect(dates.locator('time')).toHaveAttribute('datetime', noisyCalendar[0].occurs_on);
   await expect(dates.locator('.rd-home-event-meta')).toHaveText('날짜 확정');
   for (const excluded of noisyCalendar.slice(1)) await expect(dates).not.toContainText(excluded.title);
   await expect(dates).not.toContainText(/\b\d{1,2}:\d{2}\b|종일/);
