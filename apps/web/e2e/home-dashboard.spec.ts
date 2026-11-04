@@ -1,10 +1,10 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
-import { companies, companyId, fixtureNow } from './mobile-fixture';
+import { companies, companyId, companyResources, fixtureNow } from './mobile-fixture';
 import {
   approved, filing, historical, researchWorkspaceFixture, sourceId, upcoming,
   type ResearchFixture,
 } from './research-workspace-fixture';
-import { resourceSchema, sourceOverviewSchema, workspaceRequest } from '../src/workspace/contracts';
+import { catalogSchema, resourceSchema, sourceOverviewSchema, workspaceRequest } from '../src/workspace/contracts';
 import { calendarEntrySchema } from '../src/redesign/calendar-utils';
 
 // Synthetic browser fixtures only: no real account, provider, or production writes.
@@ -304,5 +304,141 @@ test('the 320px home keeps filters, keyboard tabs, and source links usable witho
   await expect(activity.getByRole('link', { name: approved.title, exact: true })).toBeVisible();
   await expectViewportFit(page);
   await page.screenshot({ path: info.outputPath('home-320px.png'), fullPage: true, animations: 'disabled' });
+  expectClean(fixture);
+});
+
+test('desktop Home and Companies share the navigation edges without shrinking activity text', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop', 'Desktop layout regression; mobile behavior has its own case above.');
+  const fixture = await researchWorkspaceFixture(page, { following: true });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/today');
+  const nav = page.getByRole('navigation', { name: '주 메뉴', exact: true });
+
+  async function expectShellEdges(screen: string) {
+    await expectViewportFit(page);
+    const edges = await page.evaluate(() => {
+      const brand = document.querySelector('.rd-brand')!.getBoundingClientRect();
+      const tools = document.querySelector('.rd-header-tools')!.getBoundingClientRect();
+      const heading = document.querySelector('.rd-main h1')!.getBoundingClientRect();
+      const main = document.querySelector('.rd-main')!;
+      const box = main.getBoundingClientRect();
+      return {
+        left: Math.abs(brand.left - heading.left),
+        right: Math.abs(tools.right - (box.right - parseFloat(getComputedStyle(main).paddingRight))),
+      };
+    });
+    expect(edges.left, `${screen}: page title and brand share a left edge`).toBeLessThanOrEqual(1);
+    expect(edges.right, `${screen}: content and header controls share a right edge`).toBeLessThanOrEqual(1);
+  }
+
+  for (const width of [1280, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    if (width !== 1280) await nav.getByRole('link', { name: '홈', exact: true }).click();
+    await expect(page.locator('.rd-home-following .rd-home-update')).toHaveCount(3);
+    await page.evaluate(() => document.fonts.ready.then(() => undefined));
+    await expectShellEdges(`Home at ${width}px`);
+    const tops = await page.locator('.rd-home-overview').evaluate(element => [
+      element.querySelector('.rd-home-briefing')!.getBoundingClientRect().top,
+      element.querySelector('.rd-kpis')!.getBoundingClientRect().top,
+    ]);
+    expect(Math.abs(tops[0] - tops[1]), 'The briefing and metric cards start on the same row').toBeLessThanOrEqual(1);
+    const textSizes = await page.locator('.rd-home-update').evaluateAll(rows => rows.map(row => ({
+      title: parseFloat(getComputedStyle(row.querySelector('.rd-home-title')!).fontSize),
+      date: parseFloat(getComputedStyle(row.querySelector('.rd-home-date')!).fontSize),
+    })));
+    for (const sizes of textSizes) {
+      expect(sizes.title, `Activity titles remain readable at ${width}px`).toBeGreaterThanOrEqual(16);
+      expect(sizes.date, `Activity dates remain readable at ${width}px`).toBeGreaterThanOrEqual(14);
+    }
+    await nav.getByRole('link', { name: '기업', exact: true }).click();
+    await expect(page.locator('.rd-company-card')).toHaveCount(companies.length);
+    await expectShellEdges(`Companies at ${width}px`);
+  }
+  expectClean(fixture);
+});
+
+test('desktop directory actions stay aligned and official introductions keep their appearance after a detail visit', async ({ page }, info) => {
+  test.skip(info.project.name !== 'desktop', 'Desktop multi-column and retained-stylesheet regression.');
+  const fixture = await researchWorkspaceFixture(page, { following: true });
+  fixture.state.preferences.history_enabled = false;
+  // Deliberately unequal text lengths and mixed dated/empty footers reproduce
+  // the production layout without borrowing any real company data.
+  const names = ['Synthetic Alpha', 'Synthetic Meridian Technical Services Group', 'Synthetic Registry Issuer', 'Synthetic Delta'];
+  const summaries = [
+    'Short synthetic description.',
+    'A longer synthetic company description covering several independent services, regional operations, and technical products. This text must wrap without moving the action links out of alignment with the neighbouring cards.',
+    '',
+    'Synthetic information with a different length for checking the fourth card in a wide desktop row.',
+  ];
+  const directory = companyResources.slice(0, 4).map((company, index) => resourceSchema.parse({
+    ...company, title: names[index], company_name: names[index], ticker: `SYN${index + 1}`, summary: summaries[index],
+    official_overview: index === 2 ? {
+      kind: 'profile', provider: 'SEC EDGAR', company_id: company.id,
+      provider_company_id: '0000099999', ticker: 'SYN3', name: names[index], english_name: null,
+      industry_description: 'Synthetic technical services used only for layout verification',
+      industry_code: '9999', established_on: null, ceo: null, website: null,
+      source_url: 'https://www.sec.gov/Archives/edgar/data/99999/synthetic-layout.htm',
+      source_sha256: 'a'.repeat(64), fetched_at: fixtureNow,
+    } : null,
+  }));
+  await page.route('**/api/workspace', async route => {
+    const payload = workspaceRequest.parse(route.request().postDataJSON());
+    if (payload.action !== 'design_directory') { await route.fallback(); return; }
+    expect(route.request().headers().authorization).toMatch(/^Bearer /);
+    fixture.state.calls.push(payload);
+    await route.fulfill({ json: catalogSchema.parse({
+      items: directory, total: directory.length, counts: { company: directory.length },
+      markets: ['NASDAQ'], next_offset: null,
+    }) });
+  });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/explore');
+  await expect(page.locator('.rd-company-card')).toHaveCount(directory.length);
+  await expect(page.locator('.rd-company-foot').first()).not.toContainText('확인 중');
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+
+  for (const width of [1280, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expectViewportFit(page);
+    const cards = await page.locator('.rd-company-card').evaluateAll(elements => elements.map(element => {
+      const card = element.getBoundingClientRect();
+      const footer = element.querySelector('.rd-company-foot')!.getBoundingClientRect();
+      return {
+        top: card.top, bottom: card.bottom, footerTop: footer.top, footerBottom: footer.bottom,
+        actionTops: [...element.querySelectorAll('.rd-company-links a')].map(link => link.getBoundingClientRect().top),
+      };
+    }));
+    for (const card of cards) {
+      expect(card.actionTops).toHaveLength(2);
+      expect(Math.abs(card.bottom - card.footerBottom), 'No browser-default gap below the card footer').toBeLessThanOrEqual(1);
+      const sameRow = cards.filter(other => Math.abs(other.top - card.top) <= 1);
+      for (const neighbour of sameRow) {
+        expect(Math.abs(card.footerTop - neighbour.footerTop), `Footers align at ${width}px`).toBeLessThanOrEqual(1);
+        for (let action = 0; action < card.actionTops.length; action++) {
+          expect(Math.abs(card.actionTops[action] - neighbour.actionTops[action]), `Matching actions align at ${width}px`).toBeLessThanOrEqual(1);
+        }
+      }
+    }
+  }
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const introduction = page.locator('.rd-company-official-introduction');
+  await expect(introduction.locator('p')).toHaveCount(2);
+  const appearance = () => introduction.locator('p').evaluateAll(elements => elements.map(element => {
+    const style = getComputedStyle(element);
+    return { fontSize: style.fontSize, lineHeight: style.lineHeight, color: style.color,
+      marginTop: style.marginTop, marginBottom: style.marginBottom };
+  }));
+  const before = await appearance();
+  expect(parseFloat(before[0].fontSize)).toBeGreaterThanOrEqual(16);
+  expect(parseFloat(before[1].fontSize)).toBeGreaterThanOrEqual(13);
+  const timeOrigin = await page.evaluate(() => performance.timeOrigin);
+  await page.locator('.rd-company-name').first().click();
+  await expect(page.locator('.rd-detail-company-identity h1')).toBeVisible();
+  await page.getByRole('navigation', { name: '주 메뉴', exact: true }).getByRole('link', { name: '기업', exact: true }).click();
+  await expect(page.locator('.rd-company-card')).toHaveCount(directory.length);
+  expect(await page.evaluate(() => performance.timeOrigin), 'The test uses client navigation, retaining route CSS').toBe(timeOrigin);
+  expect(await appearance(), 'A detail visit must not restyle the directory introduction').toEqual(before);
+  await expectViewportFit(page);
   expectClean(fixture);
 });

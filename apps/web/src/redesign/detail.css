@@ -965,3 +965,166 @@
     padding: 14px 16px;
   }
 }
+
+/* Desktop detail text shares a readable scale without changing mobile layouts. */
+@media (min-width: 681px) {
+  .sb-redesign .rd-detail-overview-grid {
+    gap: 20px;
+  }
+
+  .sb-redesign .rd-detail-panel,
+  .sb-redesign .rd-detail-profile-wrap .sb-company-profile {
+    padding: 22px 24px;
+  }
+
+  .sb-redesign .rd-detail-panel > header {
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 14px;
+    margin-bottom: 16px;
+  }
+
+  .sb-redesign .rd-detail-panel > header > a,
+  .sb-redesign .rd-detail-text-button,
+  .sb-redesign .rd-detail-save {
+    font-size: 14px;
+  }
+
+  .sb-redesign .rd-detail-save {
+    min-height: 42px;
+  }
+
+  .sb-redesign .rd-detail-callout,
+  .sb-redesign .rd-detail-muted,
+  .sb-redesign .rd-detail-fact-table,
+  .sb-redesign .rd-detail-profile-wrap .sb-company-profile dt,
+  .sb-redesign .rd-detail-profile-wrap .sb-company-profile dd,
+  .sb-redesign .rd-detail-meta-table > div {
+    font-size: 14px;
+  }
+
+  .sb-redesign .rd-detail-footnote,
+  .sb-redesign .rd-detail-profile-wrap .sb-company-profile-source,
+  .sb-redesign .rd-detail-profile-wrap .sb-profile-evidence,
+  .sb-redesign .rd-detail-profile-wrap .sb-profile-evidence summary,
+  .sb-redesign .rd-detail-fact-table small,
+  .sb-redesign .rd-detail-row-copy small,
+  .sb-redesign .rd-detail-rows time,
+  .sb-redesign .rd-detail-article-meta time,
+  .sb-redesign .rd-detail-provenance,
+  .sb-redesign .rd-detail-provenance summary,
+  .sb-redesign .rd-detail-source-section summary > small {
+    font-size: 13px;
+    line-height: 1.65;
+    color: #667085;
+    overflow-wrap: anywhere;
+  }
+
+  .sb-redesign .rd-detail-profile-wrap .sb-company-profile-source {
+    opacity: 1;
+  }
+
+  .sb-redesign .rd-detail-fact-table a,
+  .sb-redesign .rd-detail-breadcrumbs,
+  .sb-redesign .rd-detail-badge,
+  .sb-redesign .rd-detail-citation a {
+    font-size: 13px;
+  }
+
+  .sb-redesign .rd-detail-fact-table a {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .sb-redesign .rd-detail-fact-table th,
+  .sb-redesign .rd-detail-fact-table td {
+    padding: 12px 10px;
+  }
+
+  .sb-redesign .rd-detail-profile-wrap .sb-company-profile dl > div {
+    padding: 10px 7px;
+  }
+
+  .sb-redesign .rd-detail-rows li > a {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 14px 0;
+  }
+
+  .sb-redesign .rd-detail-row-copy {
+    flex-basis: 240px;
+  }
+
+  .sb-redesign .rd-detail-row-copy strong {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .sb-redesign .rd-detail-article-aside .rd-detail-row-copy strong {
+    font-size: 15px;
+  }
+
+  .sb-redesign .rd-detail-rows time {
+    max-width: 160px;
+    white-space: normal;
+  }
+
+  .sb-redesign .rd-detail-rows li > a > span:last-child {
+    margin-left: auto;
+    flex: none;
+  }
+
+  .sb-redesign .rd-detail-empty {
+    font-size: 15px;
+    color: #667085;
+  }
+
+  .sb-redesign .rd-detail-calendar-rows > li {
+    flex-wrap: wrap;
+    gap: 12px 16px;
+    padding: 20px 0;
+  }
+
+  .sb-redesign .rd-detail-calendar-rows > li > div {
+    min-width: 0;
+    flex-basis: 240px;
+  }
+
+  .sb-redesign .rd-detail-calendar-rows h3 {
+    font-size: 17px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  .sb-redesign .rd-detail-calendar-rows p,
+  .sb-redesign .rd-detail-calendar-rows a {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+
+  .sb-redesign .rd-detail-calendar-rows > li > small {
+    max-width: 220px;
+    margin-left: auto;
+    font-size: 13px;
+    color: #667085;
+    overflow-wrap: anywhere;
+  }
+
+  .sb-redesign .rd-detail-article-actions,
+  .sb-redesign .rd-detail-source-facts p,
+  .sb-redesign .rd-detail-source-facts a {
+    font-size: 14px;
+  }
+
+  .sb-redesign .rd-detail-takeaways li {
+    font-size: 16px;
+  }
+
+  .sb-redesign .rd-detail-citation blockquote,
+  .sb-redesign .rd-detail-source-facts blockquote,
+  .sb-redesign .rd-detail-source-section summary,
+  .sb-redesign .rd-detail-source-section > div {
+    font-size: 15px;
+  }
+}

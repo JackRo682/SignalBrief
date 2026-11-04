@@ -1138,3 +1138,195 @@
     padding: 8px 10px 18px;
   }
 }
+
+/* Desktop readability: retain the existing mobile layout and calendar behavior. */
+@media (min-width: 681px) {
+  .sb-redesign .rd-calendar-card:not(.rd-calendar-grid-card) {
+    padding: 20px;
+  }
+
+  .sb-redesign .rd-calendar-card h2 {
+    font-size: 20px;
+  }
+
+  .sb-redesign .rd-calendar-section-head {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin-bottom: 14px;
+  }
+
+  .sb-redesign .rd-calendar-section-head h2 {
+    font-size: 19px;
+  }
+
+  .sb-redesign .rd-calendar-scope label,
+  .sb-redesign .rd-calendar-company-list label,
+  .sb-redesign .rd-calendar-search input {
+    font-size: 15px;
+  }
+
+  .sb-redesign .rd-calendar-search {
+    min-height: 44px;
+    padding: 0 12px;
+    gap: 10px;
+  }
+
+  .sb-redesign .rd-calendar-search input {
+    height: 42px;
+    min-height: 42px;
+    padding: 0;
+  }
+
+  .sb-redesign .rd-calendar-list-row {
+    padding: 16px 0;
+  }
+
+  .sb-redesign .rd-calendar-list-row > div {
+    min-width: 0;
+  }
+
+  .sb-redesign .rd-calendar-list-row > .rd-date-tile {
+    min-width: 0;
+    min-height: 76px;
+  }
+
+  .sb-redesign .rd-date-tile > span,
+  .sb-redesign .rd-date-tile > small {
+    font-size: 13px;
+  }
+
+  .sb-redesign .rd-calendar-list-row > div > strong,
+  .sb-redesign .rd-calendar-list-row > div > b {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .sb-redesign .rd-calendar-list-row > div > b {
+    margin-top: 4px;
+    font-weight: 550;
+  }
+
+  .sb-redesign .rd-calendar-list-row > div > p,
+  .sb-redesign .rd-calendar-note,
+  .sb-redesign .rd-personal-calendar p,
+  .sb-redesign .rd-personal-calendar label,
+  .sb-redesign .rd-calendar-integrations p {
+    color: #667085;
+    font-size: 13px;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+  }
+
+  .sb-redesign .rd-calendar-empty {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #667085;
+  }
+
+  .sb-redesign .rd-calendar-toolbar {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 4px 8px 16px;
+  }
+
+  .sb-redesign .rd-calendar-period > button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .sb-redesign .rd-calendar-view > button,
+  .sb-redesign .rd-calendar-view > div > button {
+    min-width: 42px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .sb-redesign .rd-calendar-button,
+  .sb-redesign .rd-calendar-integrations > div > button,
+  .sb-redesign .rd-calendar-refresh {
+    min-height: 44px;
+    font-size: 14px;
+  }
+
+  .sb-redesign .rd-calendar-section-head > a,
+  .sb-redesign .rd-calendar-section-head > button,
+  .sb-redesign .rd-calendar-weekday {
+    font-size: 13px;
+  }
+
+  .sb-redesign .rd-calendar-day {
+    min-height: 120px;
+    padding: 8px 6px 12px;
+  }
+
+  .sb-redesign .rd-calendar-day-number {
+    font-size: 14px;
+  }
+
+  .sb-redesign .rd-calendar-chip,
+  .sb-redesign .rd-calendar-chip strong,
+  .sb-redesign .rd-calendar-overflow {
+    font-size: 12px;
+  }
+
+  .sb-redesign .rd-event-type,
+  .sb-redesign .rd-event-breadcrumb,
+  .sb-redesign .rd-event-source-link,
+  .sb-redesign .rd-event-resources time,
+  .sb-redesign .rd-event-related-date > div > span {
+    font-size: 13px;
+  }
+
+  .sb-redesign .rd-event-meta,
+  .sb-redesign .rd-event-resources p,
+  .sb-redesign .rd-event-company p,
+  .sb-redesign .rd-event-snapshot dt,
+  .sb-redesign .rd-event-related-date p,
+  .sb-redesign .rd-event-actions p,
+  .sb-redesign .rd-event-agenda-table > div {
+    font-size: 14px;
+    color: #667085;
+  }
+
+  .sb-redesign .rd-event-overview,
+  .sb-redesign .rd-event-source-document,
+  .sb-redesign .rd-event-company-summary,
+  .sb-redesign .rd-event-snapshot dd,
+  .sb-redesign .rd-event-agenda-table p,
+  .sb-redesign .rd-event-evidence,
+  .sb-redesign .rd-event-evidence summary,
+  .sb-redesign .rd-event-evidence blockquote {
+    font-size: 15px;
+    overflow-wrap: anywhere;
+  }
+
+  .sb-redesign .rd-event-resources strong,
+  .sb-redesign .rd-event-related-date > div > strong {
+    font-size: 16px;
+    overflow-wrap: anywhere;
+  }
+
+  .sb-redesign .rd-event-resources > a {
+    flex-wrap: wrap;
+    padding: 14px 0;
+  }
+
+  .sb-redesign .rd-event-resources > a > div {
+    flex-basis: 200px;
+  }
+
+  .sb-redesign .rd-event-resources time {
+    margin-left: auto;
+    color: #667085;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Keep readable list and month cells within the shared desktop content width. */
+@media (min-width: 1271px) {
+  .sb-redesign .rd-calendar-columns {
+    grid-template-columns: minmax(220px, 0.67fr) minmax(320px, 1.08fr) minmax(540px, 1.9fr);
+    gap: 20px;
+  }
+}

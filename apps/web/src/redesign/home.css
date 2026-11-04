@@ -1,9 +1,4 @@
-/* The dashboard owns these styles; shared navigation and other screens are unchanged. */
-.sb-redesign .rd-main:has(> .rd-home) {
-  max-width: 1840px;
-  padding: 24px clamp(24px, 2.85vw, 52px) 42px;
-}
-
+/* The dashboard shares the shell's page width and horizontal gutters. */
 .sb-redesign .rd-home {
   --rd-blue: #415dff;
   --rd-ink: #0c1224;
@@ -39,7 +34,7 @@
 .sb-redesign .rd-home-overview {
   display: grid;
   grid-template-columns: minmax(0, 40%) minmax(0, 1fr);
-  align-items: start;
+  align-items: stretch;
   gap: 16px;
   margin-bottom: 20px;
 }
@@ -118,7 +113,7 @@
 .sb-redesign .rd-home .rd-kpis {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
-  margin: 10px 0 0;
+  margin: 0;
   min-width: 0;
 }
 
@@ -220,12 +215,12 @@
   flex-wrap: wrap;
   padding: 8px 17px;
   color: var(--rd-muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .sb-redesign .rd-home-calendar-scope button {
-  min-height: 32px;
-  padding: 5px 10px;
+  min-height: 36px;
+  padding: 6px 12px;
   border: 1px solid var(--rd-line);
   border-radius: 6px;
   background: #fff;
@@ -263,17 +258,20 @@
 
 .sb-redesign .rd-home-update {
   display: grid;
-  grid-template-columns: 36px minmax(92px, 138px) 60px minmax(0, 1fr) 94px;
+  grid-template-columns: 36px minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 24px;
-  min-height: 49px;
-  padding: 7px 24px;
+  gap: 6px 12px;
+  min-height: 84px;
+  padding: 14px 18px;
   border-top: 1px solid #edf0f6;
   font-size: 16px;
   line-height: 1.4;
 }
 
 .sb-redesign .rd-home-update .rd-logo {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  align-self: start;
   width: 32px;
   height: 32px;
   font-size: 11px;
@@ -300,7 +298,9 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
   letter-spacing: -0.25px;
 }
 
@@ -341,15 +341,32 @@
   font-size: 14px;
   white-space: nowrap;
   text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.sb-redesign .rd-home-update .rd-home-company {
+  grid-column: 2;
+  grid-row: 1;
+}
+.sb-redesign .rd-home-update .rd-home-badge {
+  grid-column: 3;
+  grid-row: 1;
+}
+.sb-redesign .rd-home-update .rd-home-title {
+  grid-column: 2 / -1;
+  grid-row: 2;
+}
+.sb-redesign .rd-home-update .rd-home-date {
+  grid-column: 4;
+  grid-row: 1;
 }
 
 .sb-redesign .rd-home-event {
   display: grid;
-  grid-template-columns: 100px minmax(96px, 136px) minmax(0, 1fr) 72px;
+  grid-template-columns: 96px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 26px;
-  min-height: 49px;
-  padding: 7px 22px;
+  gap: 6px 14px;
+  min-height: 84px;
+  padding: 14px 18px;
   border-top: 1px solid #edf0f6;
   font-size: 16px;
   line-height: 1.4;
@@ -357,6 +374,9 @@
 
 .sb-redesign .rd-home-day {
   display: grid;
+  grid-column: 1;
+  grid-row: 1 / 3;
+  align-self: start;
   grid-template-columns: 28px 1fr;
   align-items: center;
   gap: 5px;
@@ -380,10 +400,20 @@
 }
 
 .sb-redesign .rd-home-event-meta {
+  grid-column: 3;
+  grid-row: 1;
   color: var(--rd-muted);
-  font-size: 13px;
+  font-size: 14px;
   text-align: right;
   white-space: nowrap;
+}
+.sb-redesign .rd-home-event .rd-home-company {
+  grid-column: 2;
+  grid-row: 1;
+}
+.sb-redesign .rd-home-event .rd-home-title {
+  grid-column: 2 / -1;
+  grid-row: 2;
 }
 
 .sb-redesign .rd-home-recent > .rd-panel-head {
@@ -627,27 +657,6 @@
   }
 
   .sb-redesign .rd-home .rd-kpi-title {
-    font-size: 13px;
-  }
-
-  .sb-redesign .rd-home-update {
-    grid-template-columns: 32px minmax(80px, 108px) 54px minmax(0, 1fr) 88px;
-    gap: 13px;
-    padding-left: 18px;
-    padding-right: 18px;
-    font-size: 14px;
-  }
-
-  .sb-redesign .rd-home-update .rd-home-badge {
-    min-width: 54px;
-    font-size: 14px;
-  }
-
-  .sb-redesign .rd-home-event {
-    grid-template-columns: 92px minmax(82px, 112px) minmax(0, 1fr) 66px;
-    gap: 14px;
-    padding-left: 18px;
-    padding-right: 18px;
     font-size: 14px;
   }
 }
@@ -704,34 +713,6 @@
     gap: 20px;
   }
 
-  .sb-redesign .rd-home-update {
-    grid-template-columns: 30px minmax(68px, 88px) 48px minmax(0, 1fr) 78px;
-    gap: 10px;
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-
-  .sb-redesign .rd-home-update .rd-home-badge {
-    min-width: 48px;
-    padding-left: 7px;
-    padding-right: 7px;
-  }
-
-  .sb-redesign .rd-home-update .rd-home-date {
-    font-size: 12px;
-  }
-
-  .sb-redesign .rd-home-event {
-    grid-template-columns: 86px minmax(75px, 92px) minmax(0, 1fr) 60px;
-    gap: 10px;
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-
-  .sb-redesign .rd-home-event-meta {
-    font-size: 12px;
-  }
-
   .sb-redesign .rd-home-recent > .rd-panel-head {
     gap: 18px;
   }
@@ -781,7 +762,7 @@
   }
 
   .sb-redesign .rd-home .rd-kpi-title {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .sb-redesign .rd-home .rd-kpi strong {
@@ -794,31 +775,6 @@
 
   .sb-redesign .rd-home-panels {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .sb-redesign .rd-home-update {
-    grid-template-columns: 36px minmax(92px, 138px) 60px minmax(0, 1fr) 94px;
-    gap: 20px;
-    padding-left: 20px;
-    padding-right: 20px;
-    font-size: 16px;
-  }
-
-  .sb-redesign .rd-home-update .rd-home-badge {
-    min-width: 60px;
-    font-size: 15px;
-  }
-
-  .sb-redesign .rd-home-update .rd-home-date {
-    font-size: 14px;
-  }
-
-  .sb-redesign .rd-home-event {
-    grid-template-columns: 100px minmax(96px, 136px) minmax(0, 1fr) 72px;
-    gap: 20px;
-    padding-left: 20px;
-    padding-right: 20px;
-    font-size: 16px;
   }
 
   .sb-redesign .rd-home-recent > .rd-panel-head {
@@ -857,10 +813,6 @@
 }
 
 @media (max-width: 680px) {
-  .sb-redesign .rd-main:has(> .rd-home) {
-    padding: 22px 16px 32px;
-  }
-
   .sb-redesign .rd-home .rd-heading {
     margin-bottom: 18px;
   }
