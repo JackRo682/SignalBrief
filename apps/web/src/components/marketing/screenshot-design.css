@@ -56,3 +56,610 @@
 @media(min-width:901px){.v-account.is-login .v-auth-form-column{align-self:start}.v-account.is-login .login-box{padding-bottom:54px}.v-hero-about .v-about-stock{padding-top:10px;padding-bottom:12px}.v-hero-about .v-about-stock>.v-chart{height:105px}.v-hero-about .v-company-event{padding-top:12px;padding-bottom:12px}.v-hero-about .v-metrics p{padding-top:7px;padding-bottom:7px}}
 @media(max-width:900px){.v-account .login-box input:not([type=checkbox]){font-size:16px}}
 .v-account .login-box .field>label{font-size:16px;font-weight:650;color:#142341}.v-account.is-signup .login-box .field>label{font-size:14px}
+
+/* Public desktop readability. Keep every override inside a public page root:
+   these styles can remain loaded after client navigation into the workspace. */
+@media (min-width: 901px) {
+  .v-public-design,
+  .reference-auth.v-account {
+    --public-content-width: 1280px;
+    --public-content-gutters: 96px;
+  }
+
+  .v-public-design .public-info-header > .public-info-container,
+  .v-public-design .v-container,
+  .v-public-design .v-feature-cards,
+  .v-public-design .v-feature-flow,
+  .v-public-design .v-sources-list .v-container,
+  .v-public-design .v-sources-process .v-container,
+  .v-public-design .v-source-bottom,
+  .v-public-design .v-cases,
+  .v-public-design .v-customer-process .v-container,
+  .v-public-design .v-legal-grid,
+  .v-public-design .v-privacy-grid,
+  .v-public-design .v-disclaimer-content,
+  .v-public-design .v-support-band .v-container,
+  .v-public-design .v-cta,
+  .reference-auth.v-account .public-info-header > .public-info-container,
+  .reference-auth.v-account .v-auth-header > .v-container,
+  .reference-auth.v-account .reference-auth-grid,
+  .reference-auth.v-account .v-footer > .v-container {
+    width: calc(100% - var(--public-content-gutters));
+    max-width: var(--public-content-width);
+    margin-inline: auto;
+  }
+
+  /* Reset the inherited 80px inner minimum as well as the old 50px height. */
+  .v-public-design .public-info-header,
+  .v-public-design .public-info-header > .public-info-container,
+  .reference-auth.v-account .public-info-header,
+  .reference-auth.v-account .public-info-header > .public-info-container,
+  .reference-auth.v-account .v-auth-header {
+    height: 72px;
+    min-height: 72px;
+  }
+  .v-public-design .public-info-header > .public-info-container,
+  .reference-auth.v-account .public-info-header > .public-info-container {
+    gap: 36px;
+  }
+  .v-public-design .public-info-header .public-info-nav,
+  .reference-auth.v-account .public-info-header .public-info-nav {
+    height: 72px;
+    gap: clamp(18px, 2vw, 30px);
+  }
+  .v-public-design .public-info-nav a,
+  .reference-auth.v-account .public-info-nav a {
+    height: 72px;
+    font-size: 15px;
+  }
+  .v-public-design .public-info-brand,
+  .reference-auth.v-account .public-info-brand {
+    padding: 0;
+  }
+  .v-public-design .public-info-mark,
+  .reference-auth.v-account .public-info-mark {
+    margin: 0;
+  }
+  .v-public-design .public-info-header .public-info-button,
+  .reference-auth.v-account .public-info-header .public-info-button {
+    min-height: 40px;
+    padding: 9px 16px;
+    font-size: 14px;
+  }
+
+  .v-public-design .v-hero {
+    padding: 44px 0 48px;
+  }
+  .v-public-design .v-hero .v-hero-grid {
+    grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr);
+    gap: 40px;
+    min-height: 0;
+  }
+  .v-public-design .v-hero h1,
+  .v-public-design .v-feature-title h1 {
+    font-size: clamp(42px, 3.5vw, 52px);
+    line-height: 1.22;
+    letter-spacing: -1.7px;
+    margin-block: 14px 22px;
+  }
+  .v-public-design .v-page .v-lead {
+    font-size: 18px;
+    line-height: 1.7;
+  }
+  .v-public-design .v-hero .v-handnote {
+    top: 10px;
+    right: max(24px, calc((100% - var(--public-content-width)) / 2));
+    font-size: 12px;
+  }
+  .v-public-design .v-actions {
+    flex-wrap: wrap;
+    margin-block: 28px 24px;
+  }
+  .v-public-design .v-actions .public-info-button {
+    min-height: 48px;
+    font-size: 16px;
+  }
+  .v-public-design .v-trust {
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .v-public-design .v-strip {
+    padding-block: 32px;
+  }
+  .v-public-design .v-strip .v-strip-grid {
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 32px;
+  }
+  .v-public-design .v-strip-title {
+    padding-top: 0;
+  }
+  .v-public-design .v-strip-title h2,
+  .v-public-design .v-source-bottom h2,
+  .v-public-design .v-section-top h2 {
+    font-size: 26px;
+    line-height: 1.35;
+  }
+  .v-public-design .v-strip-title p,
+  .v-public-design .v-card p,
+  .v-public-design .v-feature-card > header p {
+    font-size: 15px;
+    line-height: 1.65;
+    color: #506783;
+  }
+  .v-public-design .v-card h3 {
+    font-size: 18px;
+    line-height: 1.4;
+  }
+  .v-public-design .v-grid {
+    gap: 16px;
+  }
+  .v-public-design .v-home-features {
+    padding-top: 52px;
+  }
+  .v-public-design .v-home-features .v-grid {
+    padding-top: 0;
+  }
+  .v-public-design .v-home-features .v-card,
+  .v-public-design .v-about-problems .v-card {
+    padding: 22px;
+    min-height: 0;
+  }
+  .v-public-design .v-strip-more {
+    top: -30px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .v-public-design .v-source-compact .v-card {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px;
+  }
+  .v-public-design .v-source-compact .v-card h3 {
+    font-size: 16px;
+  }
+  .v-public-design .v-source-compact .v-card p {
+    font-size: 14px;
+    min-height: 0;
+  }
+  .v-public-design .v-home-plans .v-strip-grid {
+    padding-top: 32px;
+  }
+  .v-public-design .v-plan {
+    min-height: 0;
+    padding: 28px;
+  }
+  .v-public-design .v-plan p,
+  .v-public-design .v-plan li,
+  .v-public-design .v-plan .v-plan-state {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .v-public-design .v-plan .v-plan-state {
+    min-height: 0;
+    margin-top: 8px;
+  }
+  .v-public-design .v-plan-benefits > small,
+  .v-public-design .v-plan-ribbon {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .v-public-design .v-plans-compact .v-plan {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 24px;
+  }
+  .v-public-design .v-plans-compact .v-plan h2 {
+    font-size: 22px;
+  }
+  .v-public-design .v-plans-compact .v-plan-price {
+    font-size: 28px;
+  }
+  .v-public-design .v-plan .public-info-button {
+    min-height: 44px;
+    font-size: 15px;
+    padding: 10px 16px;
+  }
+
+  .v-public-design .v-feature-title,
+  .v-public-design .v-pricing-title,
+  .v-public-design .v-legal-hero {
+    padding-block: 36px;
+  }
+  .v-public-design .v-feature-title .v-handnote {
+    right: 0;
+  }
+  .v-public-design .v-feature-cards {
+    gap: 20px;
+  }
+  .v-public-design .v-feature-card {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+  .v-public-design .v-feature-card > header {
+    gap: 14px;
+    min-height: 128px;
+  }
+  .v-public-design .v-feature-card h2 {
+    font-size: 21px;
+    margin-top: 4px;
+  }
+  .v-public-design .v-feature-card > header .v-icon {
+    width: 42px;
+    height: 42px;
+  }
+  .v-public-design .v-feature-card .v-widget {
+    height: auto;
+    min-height: 260px;
+    flex: 1;
+    overflow: visible;
+  }
+  .v-public-design .v-feature-card .v-timeline li {
+    white-space: normal;
+  }
+  .v-public-design .v-feature-card .v-timeline time {
+    flex-shrink: 0;
+  }
+  .v-public-design .v-feature-flow,
+  .v-public-design .v-sources-process .v-container {
+    padding: 28px;
+  }
+  .v-public-design .v-feature-flow .v-container {
+    width: 100%;
+  }
+  .v-public-design .v-feature-flow .v-strip-grid,
+  .v-public-design .v-sources-list .v-strip-grid,
+  .v-public-design .v-sources-process .v-strip-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .v-public-design .v-sources-process .v-strip-title {
+    padding-left: 0;
+  }
+  .v-public-design .v-source-seven {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .v-public-design .v-source-seven .v-card {
+    padding: 24px;
+    min-height: 0;
+  }
+  .v-public-design .v-source-seven h3,
+  .v-public-design .v-process-sources h3 {
+    white-space: normal;
+  }
+  .v-public-design .v-source-seven p {
+    min-height: 0;
+  }
+  .v-public-design .v-source-bottom {
+    gap: 20px;
+    margin-block: 12px 24px;
+  }
+  .v-public-design .v-source-bottom > .v-card {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 24px;
+  }
+  .v-public-design .v-update-grid b,
+  .v-public-design .v-update-grid small,
+  .v-public-design .v-check-list,
+  .v-public-design .v-process-card p {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .v-public-design .v-process-card h3 {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  .v-public-design .v-process-card {
+    align-items: flex-start;
+  }
+  .v-public-design .v-process-features .v-icon {
+    width: 40px;
+    height: 40px;
+  }
+  .v-public-design .v-process-customers {
+    gap: 32px;
+  }
+  .v-public-design .v-process-customers .v-process-arrow {
+    right: -25px;
+  }
+  .v-public-design .v-link,
+  .v-public-design .v-source-seven .v-link {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .v-public-design .v-customer-process {
+    margin-inline: 0;
+    padding-block: 32px;
+  }
+  .v-public-design .v-cases > .v-grid > .v-case {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 2;
+    row-gap: 0;
+  }
+  .v-public-design .v-case > header,
+  .v-public-design .v-case-body {
+    padding: 20px;
+  }
+  .v-public-design .v-case h3 {
+    font-size: 17px;
+  }
+  .v-public-design .v-case-body h4,
+  .v-public-design .v-case-body p,
+  .v-public-design .v-quote p {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .v-public-design .v-persona-label,
+  .v-public-design .v-case header small,
+  .v-public-design .v-quote small,
+  .v-public-design .v-section-top > span {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .v-public-design .v-cta {
+    padding: 28px 32px;
+    margin-block: 24px;
+  }
+  .v-public-design .v-cta h2 {
+    font-size: 24px;
+    line-height: 1.45;
+  }
+  .v-public-design .v-table-wrap table,
+  .v-public-design .v-faq-column summary,
+  .v-public-design .v-faq-column p {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .v-public-design .v-table-wrap th,
+  .v-public-design .v-table-wrap td,
+  .v-public-design .v-faq-column details {
+    padding-block: 12px;
+  }
+  .v-public-design .v-page .v-availability {
+    font-size: 14px;
+    line-height: 1.65;
+    margin-block: 12px;
+  }
+  .v-public-design .v-page .v-small-note {
+    font-size: 13px !important;
+    line-height: 1.6 !important;
+  }
+  .v-public-design .v-privacy-hero > .v-handnote {
+    right: 16px;
+  }
+  .v-public-design .v-privacy-hero > .v-security-picture {
+    right: 200px;
+  }
+
+  /* Full-size public copy is distinct from the miniature product examples. */
+  .v-public-design .v-browser .v-browser-top > span,
+  .v-public-design .v-browser .v-demo-sidebar button,
+  .v-public-design .v-browser .v-demo-toolbar,
+  .v-public-design .v-browser .v-demo-toolbar > a,
+  .v-public-design .v-browser small,
+  .v-public-design .v-browser .v-count small,
+  .v-public-design .v-browser .v-widget-compact .v-stock-row,
+  .v-public-design .v-browser .v-widget-compact .v-stock-row em,
+  .v-public-design .v-browser .v-widget-compact .v-watch-row,
+  .v-public-design .v-browser .v-widget-compact .v-watch-row em,
+  .v-public-design .v-browser .v-widget-compact .v-watch-row small,
+  .v-public-design .v-browser .v-widget-compact .v-portfolio-total span,
+  .v-public-design .v-browser .v-widget-compact .v-evidence-row > span:nth-child(2),
+  .v-public-design .v-browser .v-home-questions > a,
+  .v-public-design .v-browser .v-company-event > small,
+  .v-public-design .v-browser .v-source-story aside p,
+  .v-public-design .v-browser .v-source-story aside small {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .v-public-design .v-browser .v-browser-top {
+    min-height: 28px;
+    height: auto;
+    padding-block: 5px;
+  }
+  .v-public-design .v-browser .v-today-summary p,
+  .v-public-design .v-browser .v-today-summary > div > b,
+  .v-public-design .v-browser .v-widget-heading > b,
+  .v-public-design .v-browser .v-home-questions > b,
+  .v-public-design .v-browser .v-mini-summary p,
+  .v-public-design .v-browser .v-company-event b,
+  .v-public-design .v-browser .v-metrics p,
+  .v-public-design .v-browser .v-metrics strong,
+  .v-public-design .v-browser .v-insight-row b,
+  .v-public-design .v-browser .v-insight-row small {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .v-public-design .v-browser .v-home-questions > a,
+  .v-public-design .v-browser .v-source-story aside p {
+    white-space: normal;
+  }
+
+  .v-public-design .v-legal-page .d-legal-toc nav a {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .v-public-design .v-terms-row {
+    grid-template-columns: 250px minmax(0, 1fr);
+    padding: 20px;
+  }
+  .v-public-design .v-terms-row h2 {
+    font-size: 18px;
+    white-space: normal;
+  }
+  .v-public-design .v-terms-row p,
+  .v-public-design .v-policy-section > p {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .v-public-design .v-policy-section h3,
+  .v-public-design .v-notice-card h3 {
+    font-size: 18px;
+    line-height: 1.45;
+    white-space: normal;
+  }
+  .v-public-design .v-policy-section {
+    padding-bottom: 20px;
+  }
+  .v-public-design .v-policy-banner p,
+  .v-public-design .v-notice-card p,
+  .v-public-design .v-help-item p,
+  .v-public-design .v-help-strip p,
+  .v-public-design .v-service-caution .v-check-list,
+  .v-public-design .v-caution-banner p {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .v-public-design .v-policy-table {
+    overflow: auto;
+  }
+  .v-public-design .v-policy-table th {
+    white-space: normal;
+  }
+  .v-public-design .v-policy-table th,
+  .v-public-design .v-policy-table td,
+  .v-public-design .v-policy-head > small,
+  .v-public-design .v-legal-page .v-legal-beta,
+  .v-public-design .v-contact-notice p,
+  .v-public-design .v-contact-notice p > span {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .v-public-design .v-footer > .v-container,
+  .reference-auth.v-account .v-footer > .v-container {
+    min-height: 80px;
+    padding-block: 20px;
+    gap: 24px;
+  }
+  .v-public-design .v-footer p,
+  .v-public-design .v-footer nav,
+  .reference-auth.v-account .v-footer p,
+  .reference-auth.v-account .v-footer nav {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .v-public-design .v-footer nav a,
+  .reference-auth.v-account .v-footer nav a {
+    color: #526b89;
+  }
+
+  /* Account presentation only; all existing form handlers stay unchanged. */
+  .reference-auth.v-account .login-box .field > label,
+  .reference-auth.v-account .login-box .field > span,
+  .reference-auth.v-account .login-box .field > input,
+  .reference-auth.v-account .login-box .password-field input {
+    font-size: 16px;
+  }
+  .reference-auth.v-account .login-box .password-requirement,
+  .reference-auth.v-account .login-box .d-signup-ack > label,
+  .reference-auth.v-account .login-box .d-forgot-link,
+  .reference-auth.v-account .login-box .auth-links,
+  .reference-auth.v-account .login-box .v-reset-note,
+  .reference-auth.v-account .v-password-guide > small {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .reference-auth.v-account .login-box .d-signup-ack > label {
+    align-items: flex-start;
+  }
+  .reference-auth.v-account .login-box .d-signup-ack input {
+    margin-top: 2px;
+  }
+  .reference-auth.v-account .login-box .notice {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .reference-auth.v-account .login-box .password-requirement {
+    align-items: flex-start;
+  }
+  .reference-auth.v-account .reference-auth-story {
+    min-width: 0;
+  }
+  .reference-auth.v-account.is-password-reset .reference-auth-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(420px, 575px);
+  }
+  .reference-auth.v-account.is-password-reset .reference-auth-benefit p {
+    white-space: normal;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1250px) {
+  .v-public-design .v-feature-cards,
+  .v-public-design .v-cases > .v-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .v-public-design .v-feature-card > header {
+    min-height: 100px;
+  }
+  .v-public-design .v-cta {
+    flex-wrap: wrap;
+  }
+  .v-public-design .v-update-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1100px) {
+  .v-public-design,
+  .reference-auth.v-account {
+    --public-content-gutters: 64px;
+  }
+  .v-public-design .public-info-header > .public-info-container,
+  .reference-auth.v-account .public-info-header > .public-info-container {
+    gap: 24px;
+  }
+  .v-public-design .public-info-header .public-info-nav,
+  .reference-auth.v-account .public-info-header .public-info-nav {
+    gap: 16px;
+  }
+  .v-public-design .public-info-header .public-info-button,
+  .reference-auth.v-account .public-info-header .public-info-button {
+    padding-inline: 12px;
+  }
+  .v-public-design .v-hero .v-hero-grid,
+  .v-public-design .v-strip .v-strip-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .v-public-design .v-hero-copy {
+    max-width: 720px;
+  }
+  .v-public-design .v-home-features .v-strip-content {
+    padding-top: 12px;
+  }
+  .v-public-design .v-home-features .v-strip-more {
+    top: -22px;
+  }
+  .v-public-design .v-process-sources {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .v-public-design .v-process-sources .v-process-arrow {
+    display: none;
+  }
+  .v-public-design .v-footer > .v-container,
+  .reference-auth.v-account .v-footer > .v-container {
+    flex-wrap: wrap;
+    gap: 16px 24px;
+  }
+  .v-public-design .v-footer nav,
+  .reference-auth.v-account .v-footer nav {
+    width: 100%;
+    margin-left: 0;
+  }
+  .v-public-design .v-footer nav a:first-child,
+  .reference-auth.v-account .v-footer nav a:first-child {
+    padding-left: 0;
+  }
+  .reference-auth.v-account .reference-auth-grid {
+    gap: 32px;
+  }
+  .reference-auth.v-account .login-box.v-login-box {
+    padding-inline: 28px;
+  }
+}

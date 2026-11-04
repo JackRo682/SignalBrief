@@ -10,9 +10,12 @@ widgets, and unsupported filters must remain hidden until supported.
 
 `python scripts/verify_workspace_scope.py` is the current release boundary check.
 It checks 90 public, administrative, and authentication source files against
-commit `485ad4b8a4c2c18b0c370e27abca34254356704d`. Those files were compared with
-that commit when the manifest was created; the manifest is not a snapshot that
-silently blesses edits outside the request. It also checks the 17 retained legacy
+their recorded hashes. The original baseline is commit
+`485ad4b8a4c2c18b0c370e27abca34254356704d`; the narrowly authorized November 4
+public stylesheet revision is recorded separately below with before/after hashes.
+Those files were compared with the original commit when the manifest was created;
+the manifest is not a snapshot that silently blesses edits outside the request.
+It also checks the 17 retained legacy
 implementations, the eight disabled release-flag declarations, structural feature
 gate references, responsive shell order, and workspace CSS boundaries. The unit
 and browser tests verify the resulting route behavior; textual source checks
@@ -26,6 +29,86 @@ implementations, enabled market data, global CSS, missing shell guard calls, and
 unreviewed administrative source files. CSS checks require a positive scope class
 on the subject or an ancestor; a class inside `:not()`, an attribute string, or a
 selector-list pseudo-class does not count as isolation.
+
+### November 4 public-only desktop presentation revision
+
+On November 4, 2026 (Asia/Seoul), the user clarified that the requested alignment
+and readability fixes concern the public/pre-login pages only and that the
+signed-in interface must remain unchanged. The earlier signed-in styling proposal
+in [PR #47](https://github.com/JackRo682/SignalBrief/pull/47) was closed without
+merging; GitHub reports `state: closed`, `merged: false`. This revision starts from
+the unchanged production commit `0d25f2b2c15a818873285524713efe7b469ac63b`.
+
+The sole reviewed application source change is
+`apps/web/src/components/marketing/screenshot-design.css`. It appends desktop
+rules under media queries beginning at 901px, with every added selector positively
+scoped to `.v-public-design` or `.reference-auth.v-account`. The original stylesheet
+is retained as an unchanged prefix. The changes address public content widths,
+header alignment, typography, card spacing and pre-login form presentation; they
+do not change authentication, route destinations, API calls or stored data.
+
+The manifest records this authorization in
+`reviewed_public_presentation_revisions` and replaces only the reviewed
+stylesheet's protected digest. All 90 protected entries and all protected paths
+remain present. The other 89 protected hashes, 17 retained-feature hashes,
+verified customer-entry hashes, disabled-feature declarations and feature gates
+remain unchanged. `scripts/verify_workspace_scope.py`, its existing negative
+tests and the CI gate remain unchanged.
+
+| Reviewed source | Normalized SHA-256 |
+| --- | --- |
+| Production stylesheet before this revision | `f422f98b7881846d975faafc7ebb4cfdbaa5946b335106836ccfa6d147663d44` |
+| Reviewed public desktop stylesheet | `f9ecf9f877076798b117381ec8b0c621558c7d3c26f0a96e425bcd9eeb9355d5` |
+
+Normalization converts CRLF to LF, exactly as the scope guard does. The before
+hash was computed from the production Git object, not from an earlier working
+copy. A byte-for-byte comparison of all **318 tracked `apps/web/src` files** found
+**317 unchanged**, the one reviewed stylesheet changed, and no source additions
+or deletions. This includes the complete signed-in route/source trees, shared
+globals/root layout, AuthProvider, clients and administrative sources. The
+repository diff allowlist for this revision contains only the public stylesheet,
+this scope document, the scope manifest, and focused public tests in the already
+included `marketing-pages.spec.ts` and `responsive-design.spec.ts` suites.
+
+Validation status for this public-only revision:
+
+- Source preservation against production: **PASS**, as described above.
+- Public CSS isolation audit: **PASS**. A PostCSS parse of the appended rules
+  found three desktop media queries, 126 rules and 243 selectors, all under the
+  two public roots. The production stylesheet remains an identical prefix.
+- Unchanged workspace scope guard: **PASS**, preserving all 90 protected files,
+  17 retained implementations and two verified customer entry points.
+- Existing scope regression suite (`python -m pytest -q
+  tests/test_workspace_scope.py`): **24 passed**, with two existing dependency
+  deprecation warnings. Its negative assertions were not edited.
+- Full local repository verifier: **all eight stages PASS** at November 4,
+  2026, 21:32:55 KST (12:32:55 UTC), after the reviewed stylesheet hash was
+  recorded. Backend: **364 passed, 740 PostgreSQL-dependent skips**, with two
+  existing dependency warnings. Frontend: **1,720 passed across 120 files**;
+  compilation, OpenAPI export, Ruff, ESLint, TypeScript and production build
+  passed. ESLint retains five existing navigation warnings and zero errors.
+  PostgreSQL skips are not database passes. The initial public-only run failed
+  only the guard-dependent backend assertion while the hash still referenced
+  production; other stages passed. Earlier signed-in-branch results are not
+  results for this public stylesheet.
+- Public desktop/mobile browser checks and public-to-workspace CSS isolation:
+  **pending**. Existing navigation, authentication and mobile assertions remain.
+- Preview visual acceptance: landing, features, sources, pricing, login and signup
+  inspected in an anonymous browser. A measured 17px public logo inset was then
+  removed and added to the desktop geometry regression; public footnotes are now
+  13px. A subsequent full-page review of Customers and Privacy identified unequal
+  customer header heights and a clipped decorative note. Shared card rows and
+  contained privacy artwork now address both issues, with focused geometry
+  assertions at 1024/1280/1440/1920px. Terms layout also passed visual review.
+  The final exact-commit CI reruns all release and browser checks.
+- Exact-commit CI and production deployment: **pending / not deployed**.
+
+The relevant existing browser suites are `marketing-pages.spec.ts`,
+`ui-refinement.spec.ts`, `responsive-design.spec.ts` and `auth-navigation.spec.ts`.
+New focused assertions must verify the actual public desktop alignment/readability
+and ensure that loading public styles does not alter the signed-in screen after
+client navigation. Screenshots and geometry checks use isolated test data; they
+do not assert provider coverage or live account operations.
 
 ### November 1 calendar and notification route reconciliation
 
