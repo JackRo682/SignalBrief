@@ -23,6 +23,8 @@ const mocks = vi.hoisted(() => ({
   reload: vi.fn(),
   workspace: vi.fn(),
   fetch: vi.fn(),
+  resource: vi.fn(),
+  calendar: vi.fn(),
 }));
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mocks.push }),
@@ -42,6 +44,13 @@ vi.mock("@/workspace/preferences", () => ({
 vi.mock("@/workspace/ui", async (original) => ({
   ...(await original<typeof import("../src/workspace/ui")>()),
   useData: (req: unknown) => mocks.data(req),
+}));
+vi.mock("@/components/ui", async (original) => ({
+  ...(await original<typeof import("../src/components/ui")>()),
+  useResource: (...args: unknown[]) => mocks.resource(...args),
+}));
+vi.mock("../src/redesign/calendar-data", () => ({
+  useCalendarData: (...args: unknown[]) => mocks.calendar(...args),
 }));
 vi.mock("@/workspace/client", () => ({
   workspace: (...args: unknown[]) => mocks.workspace(...args),
@@ -83,6 +92,8 @@ beforeEach(() => {
   vi.clearAllMocks();
   window.history.replaceState(null, "", "/explore");
   failure = false;
+  mocks.resource.mockReturnValue({data:{id:"watchlist", name:"Watchlist", items:[]}, loading:false, error:null, reload:mocks.reload});
+  mocks.calendar.mockReturnValue({data:{items:[], truncated:false}, loading:false, error:"", reload:mocks.reload});
   catalogCompanies = [newsCompany];
   vi.stubGlobal("fetch", mocks.fetch);
   mocks.fetch.mockResolvedValue({
@@ -153,6 +164,7 @@ describe("screenshot discovery behavior", () => {
   });
   it("uses server totals instead of five-row previews and applies exact date boundaries", async () => {
     render(<Home />);
+    fireEvent.click(screen.getByRole("button", { name: "조회 설정" }));
     expect(screen.getByText("42")).toBeVisible();
     fireEvent.change(screen.getByLabelText("시작일"), {
       target: { value: "2026-10-01" },
@@ -170,6 +182,7 @@ describe("screenshot discovery behavior", () => {
   it("keeps dashboard failures distinct from a real zero and supports retry", async () => {
     failure = true;
     render(<Home />);
+    fireEvent.click(screen.getByRole("button", { name: "조회 설정" }));
     const kpis = document.querySelector(".rd-kpis")!;
     expect(within(kpis as HTMLElement).getAllByText("조회 불가")).toHaveLength(
       3,
@@ -182,6 +195,7 @@ describe("screenshot discovery behavior", () => {
   it("defaults all-company news to the first covered company when an unsupported company comes first", async () => {
     catalogCompanies = [company, newsCompany];
     render(<Home />);
+    fireEvent.click(screen.getByRole("button", { name: "조회 설정" }));
     await screen.findByText(/선택 기업의 최신 검색결과 0건입니다/);
     expect(screen.getByLabelText("기업 필터")).toHaveValue("");
     expect(screen.getByText("Synthetic news-covered company · 최신 검색")).toBeVisible();
@@ -193,6 +207,7 @@ describe("screenshot discovery behavior", () => {
   it("preserves an explicitly selected unsupported company and shows its news limitation", async () => {
     catalogCompanies = [newsCompany, company];
     render(<Home />);
+    fireEvent.click(screen.getByRole("button", { name: "조회 설정" }));
     await screen.findByText(/선택 기업의 최신 검색결과 0건입니다/);
     mocks.fetch.mockResolvedValueOnce({ ok: false, status: 422 });
     fireEvent.change(screen.getByLabelText("기업 필터"), { target: { value: company.id } });
@@ -208,10 +223,125 @@ describe("screenshot discovery behavior", () => {
   it("explains missing news coverage without requesting news when all registered companies are unsupported", () => {
     catalogCompanies = [company];
     render(<Home />);
+    fireEvent.click(screen.getByRole("button", { name: "조회 설정" }));
     expect(screen.getByText("뉴스 검색이 연결된 기업이 없습니다.")).toBeVisible();
     expect(screen.queryByText("뉴스를 조회할 등록 기업이 없습니다.")).not.toBeInTheDocument();
     expect(screen.getByRole("option", { name: company.company_name })).toBeInTheDocument();
     expect(mocks.fetch).not.toHaveBeenCalled();
+  });
+  it("opens the activity type from a metric and supports keyboard tabs and hidden query controls", async () => {
+    render(<Home />);
+    expect(screen.getByRole("button", {name:"조회 설정"})).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByRole("combobox", {name:"기업 필터"})).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("link", {name:/기간 내 공개 공시/}));
+    expect(screen.getByRole("tab", {name:"공시"})).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tabpanel")).toHaveTextContent(filing.title);
+    fireEvent.keyDown(screen.getByRole("tab", {name:"공시"}), {key:"ArrowRight"});
+    expect(screen.getByRole("tab", {name:"분석"})).toHaveFocus();
+    expect(screen.getByRole("tabpanel")).not.toHaveTextContent(filing.title);
+    fireEvent.keyDown(screen.getByRole("tab", {name:"분석"}), {key:"End"});
+    expect(screen.getByRole("tab", {name:"일정"})).toHaveAttribute("aria-selected", "true");
+    fireEvent.click(screen.getByRole("button", {name:"조회 설정"}));
+    expect(screen.getByRole("combobox", {name:"기업 필터"})).toBeVisible();
+    await waitFor(() => expect(mocks.fetch).toHaveBeenCalled());
+  });
+  it("never populates an empty watchlist with all-company fallback records", async () => {
+    const original=mocks.data.getMockImplementation()!;
+    mocks.data.mockImplementation(req => req?.action === "source_overview" ? {
+      data:{monitoring:[{company_id:id,latest_filing:filing,latest_analysis:null}]},loading:false,error:"",reload:mocks.reload,
+    } : original(req));
+    render(<Home />);
+    const following=within(document.querySelector(".rd-home-following") as HTMLElement);
+    expect(following.queryByText(filing.title)).not.toBeInTheDocument();
+    expect(following.getByText("관심 기업을 추가하면 최신 소식을 확인할 수 있습니다.")).toBeVisible();
+    expect(mocks.calendar).toHaveBeenCalledWith(expect.objectContaining({companyIds:[],includePersonal:false}));
+    expect(mocks.data.mock.calls.some(([req])=>req?.action === "source_overview")).toBe(false);
+    await waitFor(() => expect(mocks.fetch).toHaveBeenCalled());
+  });
+  it("isolates followed monitoring and verified future dates from unrelated and personal records", async () => {
+    const watched={id,name:company.company_name,ticker:company.ticker,market:"KRX",provider:"dart",is_demo:false,last_ingested_at:null};
+    mocks.resource.mockReturnValue({data:{id:"list",name:"Watchlist",items:[watched]},loading:false,error:null,reload:mocks.reload});
+    const original=mocks.data.getMockImplementation()!;
+    mocks.data.mockImplementation(req => req?.action === "source_overview" ? {
+      data:{monitoring:[{company_id:id,latest_filing:filing,latest_analysis:null},{company_id:newsCompany.id,latest_filing:{...filing,company_id:newsCompany.id,title:"Unfollowed source"},latest_analysis:null}]},loading:false,error:"",reload:mocks.reload,
+    } : original(req));
+    const day=koreaDate();
+    const event={id:"44000000-0000-4000-8000-000000000001",company_id:id,title:"Confirmed future date",occurs_on:day,event_id:null,origin:"official_ir",quote:null,source_url:"https://example.com/event"};
+    mocks.calendar.mockReturnValue({data:{items:[event,{...event,id:"personal",title:"Personal event",origin:"user"},{...event,id:"unrelated",company_id:newsCompany.id,title:"Unrelated event"}],truncated:false},loading:false,error:"",reload:mocks.reload});
+    render(<Home />);
+    const following=within(document.querySelector(".rd-home-following") as HTMLElement);
+    expect(following.getByText(filing.title)).toBeVisible();
+    expect(following.queryByText("Unfollowed source")).not.toBeInTheDocument();
+    const upcoming=within(document.querySelector(".rd-home-upcoming") as HTMLElement);
+    expect(upcoming.getByRole("link",{name:/Confirmed future date/})).toHaveAttribute("href",`/events/${event.id}?kind=calendar`);
+    expect(upcoming.queryByText("Personal event")).not.toBeInTheDocument();
+    expect(upcoming.queryByText("Unrelated event")).not.toBeInTheDocument();
+    expect(upcoming.getByText("날짜 확정")).toBeVisible();
+    expect(upcoming.queryByText(/10:00|종일/)).not.toBeInTheDocument();
+    expect(mocks.calendar).toHaveBeenCalledWith(expect.objectContaining({from:day,companyIds:[id],includePersonal:false}));
+    expect(screen.getByRole("heading",{name:"관심 기업 1곳의 주요 소식을 모았습니다."})).toBeVisible();
+    await waitFor(() => expect(mocks.fetch).toHaveBeenCalled());
+  });
+  it("does not treat watchlist failures or cached records as an empty or current following list", async () => {
+    mocks.resource.mockReturnValue({data:{id:"list",name:"Watchlist",items:[{id,name:"Cached company"}]},loading:false,error:"Watchlist unavailable",reload:mocks.reload});
+    render(<Home />);
+    const following=within(document.querySelector(".rd-home-following") as HTMLElement);
+    expect(following.getByRole("alert")).toHaveTextContent("Watchlist unavailable");
+    expect(following.queryByText(/관심 기업을 추가하면/)).not.toBeInTheDocument();
+    expect(screen.getByRole("heading",{name:"관심 기업의 소식을 불러오지 못했습니다."})).toBeVisible();
+    expect(mocks.calendar).toHaveBeenCalledWith(null);
+    fireEvent.click(following.getByRole("button",{name:"다시 시도"}));
+    expect(mocks.reload).toHaveBeenCalled();
+    await waitFor(() => expect(mocks.fetch).toHaveBeenCalled());
+  });
+  it("keeps followed-company news loading and failures distinct from empty updates without hiding monitoring records", async () => {
+    const watched = { id: newsCompany.id, name: newsCompany.company_name, ticker: newsCompany.ticker,
+      market: "US", provider: "sec", is_demo: false, last_ingested_at: null };
+    mocks.resource.mockReturnValue({ data: { id: "list", name: "Watchlist", items: [watched] },
+      loading: false, error: null, reload: mocks.reload });
+    const original = mocks.data.getMockImplementation()!;
+    const followedFiling = { ...filing, company_id: newsCompany.id,
+      company_name: newsCompany.company_name, ticker: newsCompany.ticker, title: "Available followed filing" };
+    let hasMonitoring = false;
+    mocks.data.mockImplementation(req => req?.action === "source_overview" ? {
+      data: { monitoring: hasMonitoring ? [{ company_id: newsCompany.id,
+        latest_filing: followedFiling, latest_analysis: null }] : [] },
+      loading: false, error: "", reload: mocks.reload,
+    } : original(req));
+    let respond!: (response: { ok: boolean; status: number }) => void;
+    mocks.fetch.mockReturnValueOnce(new Promise(resolve => { respond = resolve; }));
+    const view = render(<Home />);
+    const following = within(document.querySelector(".rd-home-following") as HTMLElement);
+    expect(following.getByRole("status", { name: "불러오는 중" })).toBeVisible();
+    expect(following.queryByText("아직 수집된 최신 소식이 없습니다.")).not.toBeInTheDocument();
+
+    respond({ ok: false, status: 500 });
+    expect(await following.findByRole("alert")).toHaveTextContent("뉴스 제공자에 연결하지 못했습니다.");
+    expect(following.queryByRole("status")).not.toBeInTheDocument();
+    expect(following.queryByText("아직 수집된 최신 소식이 없습니다.")).not.toBeInTheDocument();
+
+    hasMonitoring = true;
+    view.rerender(<Home />);
+    expect(following.getByText(followedFiling.title)).toBeVisible();
+    expect(following.getByRole("alert")).toHaveTextContent("뉴스 제공자에 연결하지 못했습니다.");
+    fireEvent.click(following.getByRole("button", { name: "다시 시도" }));
+    await waitFor(() => expect(mocks.fetch).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(following.queryByRole("alert")).not.toBeInTheDocument());
+    expect(following.getByText(followedFiling.title)).toBeVisible();
+  });
+  it("does not show unrelated-company news failures inside followed updates", async () => {
+    mocks.resource.mockReturnValue({ data: { id: "list", name: "Watchlist", items: [
+      { id, name: company.company_name, ticker: company.ticker, market: "KRX",
+        provider: "dart", is_demo: false, last_ingested_at: null },
+    ] }, loading: false, error: null, reload: mocks.reload });
+    mocks.fetch.mockResolvedValueOnce({ ok: false, status: 500 });
+    render(<Home />);
+    const following = within(document.querySelector(".rd-home-following") as HTMLElement);
+    expect(following.getByText("아직 수집된 최신 소식이 없습니다.")).toBeVisible();
+    expect(following.queryByRole("status")).not.toBeInTheDocument();
+    expect(await screen.findByRole("alert")).toHaveTextContent("뉴스 제공자에 연결하지 못했습니다.");
+    expect(following.queryByRole("alert")).not.toBeInTheDocument();
+    expect(following.getByText("아직 수집된 최신 소식이 없습니다.")).toBeVisible();
   });
   it("does not invent KOSPI membership and sends market filters to the server", () => {
     expect(marketCategory("KRX")).toBe("unclassified");
