@@ -1,6 +1,6 @@
 # Finite official calendar notices
 
-Status: code and local evidence replay verified. Production deployment and native PostgreSQL / browser CI acceptance remain separate release gates.
+Status: deployed and accepted on November 4, 2026. Migration `20261104121333` and calendar Edge v8 are active. All 16 researched notices completed: 27 additional events match the reviewed dates, quotes and source identities, pass the publication predicate, and retain 48 immutable original/text/manifest objects. Together with two restored Samsung conferences, upcoming coverage increased from 15 entries across 8 companies to 44 entries across 16 of 17. LG Electronics has no newly verified future event. All seven exact-source CI workflows, native PostgreSQL calendar tests, browser checks and the full local eight-stage verifier passed. Live signed-in visual acceptance was unavailable; production database visibility was checked explicitly.
 
 ## Evidence and authorization
 

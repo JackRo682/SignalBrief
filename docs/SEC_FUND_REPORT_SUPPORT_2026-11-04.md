@@ -1,5 +1,7 @@
 # SEC fund report support and KIO request procedure
 
+Production verification — November 4, 2026: migration `20261104124412` and collector/us/discovery versions `20/25/10` are active. The guarded KIO request at 13:19:44 UTC refreshed 30 official filings, including 26 fund reports, and finished without an analysis attempt under the exhausted 20-call allowance. The request remains pending with no error for the existing 15-minute schedule. The $1 budget, usage history and human-review gate are unchanged. All seven exact-source CI workflows and the full local eight-stage repeat passed.
+
 This change admits only the exact EDGAR shareholder-report submission types
 `N-CSR`, `N-CSRS`, `N-CSR/A`, and `N-CSRS/A` through the existing SEC pipeline.
 The SEC distinguishes annual and semiannual submissions even though the
@@ -45,12 +47,17 @@ concurrent calls and the exact selected excerpt's cost.
 ## Deployment order
 
 1. Complete exact-source CI, including the native PostgreSQL workspace replay.
-2. Deploy the changed shared code through `signalbrief-collector`,
+2. Apply `20261104124412_sec_fund_report_analysis.sql` and confirm that it has
+   committed before deploying the changed workers. It only replaces existing
+   queue-selection functions and reasserts their service-only permissions.
+   The RPC return types and candidate fields are unchanged; current workers
+   already handle a `NULL` picker result as idle. Installing the quota preflight
+   first prevents a newly ingested fund report from being claimed by the old
+   picker and recorded as blocked by the already exhausted daily call allowance.
+3. Deploy the changed shared code through `signalbrief-collector`,
    `signalbrief-us`, and `signalbrief-discovery`. The collector imports the
    normal ingest/analyze handlers; discovery also uses `secSubmissions`.
    No new HTTP endpoint, Vault secret, or billable resource is required.
-3. Apply `20261104124412_sec_fund_report_analysis.sql`. It only replaces existing
-   queue-selection functions and reasserts their service-only permissions.
 4. Once existing collector runs have finished or expired, execute the guarded
    [one-time KIO request](sql/request-kio-fund-analysis.sql) through the existing
    privileged database operator channel. Do not run it from a public client.
