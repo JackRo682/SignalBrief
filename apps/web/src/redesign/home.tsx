@@ -13,7 +13,7 @@ import { addDays, calendarHref } from "./calendar-utils";
 import { dashboardSchema, koreaDate, rangeStart, validRange } from "./dashboard-contract";
 import {
   activityDay, activityLabels, activityWhen, calendarActivity, combineActivities,
-  followedUpcoming, followingActivities, newsActivities, resourceActivity,
+  upcomingCompanyEvents, followingActivities, newsActivities, resourceActivity,
   type ActivityKind, type HomeActivity,
 } from "./home-data";
 import BriefingIllustration from "./home-illustration";
@@ -96,6 +96,7 @@ export default function Home() {
     [draft, setDraft] = useState(range),
     [rangeError, setRangeError] = useState(""),
     [tab, setTab] = useState<ActivityTab>("all"),
+    [eventScope, setEventScope] = useState<"all" | "following">("all"),
     [filtersOpen, setFiltersOpen] = useState(false);
   const directory = useData(
     { action: "catalog", p: { kind: "company", limit: 50 } }, catalogSchema,
@@ -110,8 +111,11 @@ export default function Home() {
     sourceOverviewSchema,
   );
   const until = addDays(today, 30);
-  const upcoming = useCalendarData(watchlist.data && !watchlist.error ? {
-    from: today, until, companyIds: followed.map((item) => item.id).sort(), includePersonal: false,
+  const eventScopeReady = eventScope === "all" || Boolean(watchlist.data && !watchlist.error);
+  const upcoming = useCalendarData(eventScopeReady ? {
+    from: today, until,
+    companyIds: eventScope === "following" ? followed.map((item) => item.id).sort() : undefined,
+    includePersonal: false,
   } : null);
   const catalog = directory.error ? [] : directory.data?.items ?? [];
   const selected = company ? catalog.find((item) => item.id === company) :
@@ -122,7 +126,10 @@ export default function Home() {
   const includesFollowingNews = !!selected && followed.some((item) => item.id === selected.id);
   const newsItems = newsActivities(news.error ? null : news.data, selected);
   const updates = followingActivities(overview.error ? [] : overview.data?.monitoring ?? [], followed, newsItems);
-  const upcomingItems = followedUpcoming(upcoming.error ? [] : upcoming.data?.items ?? [], followed, today, until);
+  const upcomingItems = upcomingCompanyEvents(upcoming.error ? [] : upcoming.data?.items ?? [],
+    eventScope === "following" ? followed : null, today, until);
+  const upcomingLoading = upcoming.loading || (eventScope === "following" && watchlist.loading);
+  const upcomingError = (eventScope === "following" && watchlist.error) || upcoming.error;
   const recent = combineActivities(
     data.error ? [] : data.data?.filings.map((item) => resourceActivity(item, "document")) ?? [],
     data.error ? [] : data.data?.analyses.map((item) => resourceActivity(item, "analysis")) ?? [],
@@ -199,22 +206,43 @@ export default function Home() {
             (!includesFollowingNews || (!news.loading && !news.error)) &&
             <p className="rd-empty">{followed.length ? "아직 수집된 최신 소식이 없습니다." : "관심 기업을 추가하면 최신 소식을 확인할 수 있습니다."}</p>}
         </Panel>
-        <Panel title="다가오는 일정" className="rd-home-upcoming" action={<More href="/calendar" label="전체 보기" />}>
-          <DataState loading={watchlist.loading || upcoming.loading} error={watchlist.error || upcoming.error}
-            retry={watchlist.error ? watchlist.reload : upcoming.reload} />
+        <Panel title="다가오는 일정" className="rd-home-upcoming" action={<div className="rd-home-calendar-actions">
+          <button type="button" className="rd-home-calendar-refresh" aria-label="다가오는 일정 새로고침"
+            title="다가오는 일정 새로고침" disabled={upcomingLoading} onClick={() => {
+              upcoming.reload();
+              if (eventScope === "following") watchlist.reload();
+            }}><span aria-hidden="true">↻</span></button>
+          <More href="/calendar" label="전체 보기" />
+        </div>}>
+          <div className="rd-home-calendar-toolbar">
+            <div className="rd-home-calendar-scope" role="group" aria-label="다가오는 일정 기업 범위">
+              <button type="button" aria-pressed={eventScope === "all"} onClick={() => setEventScope("all")}>전체 기업</button>
+              <button type="button" aria-pressed={eventScope === "following"} onClick={() => setEventScope("following")}>관심 기업</button>
+            </div>
+            <span>향후 30일 · 확정 일정</span>
+          </div>
+          <DataState loading={upcomingLoading} error={upcomingError}
+            retry={eventScope === "following" && watchlist.error ? watchlist.reload : upcoming.reload} />
           {!!upcomingItems.length && <div className="rd-home-events">
             {upcomingItems.slice(0, 3).map((item) => <Link className="rd-home-event" href={calendarHref(item)} key={item.id}>
               <time className="rd-home-day" dateTime={item.occurs_on} aria-label={formatSourceDate(item.occurs_on)}>
                 <span>{new Intl.DateTimeFormat("ko-KR", { weekday: "short", timeZone: "UTC" }).format(new Date(`${item.occurs_on}T00:00:00Z`))}</span>
                 <strong>{item.occurs_on.slice(5).replace("-", ".")}</strong>
               </time>
-              <strong className="rd-home-company">{followed.find((c) => c.id === item.company_id)?.name}</strong>
+              <strong className="rd-home-company">{catalog.find((c) => c.id === item.company_id)?.company_name
+                || followed.find((c) => c.id === item.company_id)?.name
+                || (directory.loading ? "기업명 확인 중" : "기업명 미제공")}</strong>
               <span className="rd-home-title">{item.title}</span>
               <span className="rd-home-event-meta">날짜 확정</span>
             </Link>)}
           </div>}
-          {!upcomingItems.length && watchlist.data && !watchlist.loading && !watchlist.error && upcoming.data && !upcoming.loading && !upcoming.error &&
-            <p className="rd-empty">{followed.length ? "앞으로 30일간 확인된 관심 기업 일정이 없습니다." : "관심 기업을 추가하면 다가오는 일정을 확인할 수 있습니다."}</p>}
+          {!upcomingItems.length && eventScopeReady && upcoming.data && !upcomingLoading && !upcomingError &&
+            <div className="rd-empty">
+              <p>{eventScope === "all" ? "앞으로 30일간 확인된 기업 일정이 없습니다." :
+                followed.length ? "앞으로 30일간 확인된 관심 기업 일정이 없습니다." : "관심 기업을 추가하면 다가오는 일정을 확인할 수 있습니다."}</p>
+              {eventScope === "following" && <button type="button" className="rd-more"
+                onClick={() => setEventScope("all")}>전체 기업 일정 보기</button>}
+            </div>}
           {upcoming.data?.truncated && <p className="rd-home-recent-note">일정이 많아 가장 가까운 일정부터 표시합니다. 캘린더에서 조회 범위를 좁혀 확인하세요.</p>}
         </Panel>
       </div>
@@ -321,7 +349,7 @@ export default function Home() {
       <p className="rd-home-footnote">
         요약·최근 소식: {company ? catalog.find((item) => item.id === company)?.company_name ?? "선택 기업" : "전체 기업"} · {formatSourceDate(range.start)} ~ {formatSourceDate(range.end)}.
         공시는 원문 공개일, 분석은 승인일, 일정은 개최일 기준입니다. 시간 기준: 한국시간.
-        다가오는 일정은 관심 기업의 향후 30일이며, 확인된 날짜만 표시합니다.
+        다가오는 일정은 {eventScope === "all" ? "전체 기업" : "관심 기업"}의 향후 30일이며, 확인된 날짜만 표시합니다.
       </p>
     </div>
   );

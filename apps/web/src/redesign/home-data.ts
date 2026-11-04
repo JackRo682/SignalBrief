@@ -118,15 +118,16 @@ export function followingActivities(
   return combineActivities(records, news.filter((item) => followed.has(item.companyId)));
 }
 
-export function followedUpcoming(
+/** Null means the Calendar's all-company scope; an empty list means no followed companies. */
+export function upcomingCompanyEvents(
   items: ReadonlyArray<CalendarEntry>,
-  companies: ReadonlyArray<Company>,
+  companies: ReadonlyArray<Company> | null,
   from: string,
   until: string,
 ): CalendarEntry[] {
-  const followed = new Set(companies.map((company) => company.id));
+  const followed = companies === null ? null : new Set(companies.map((company) => company.id));
   return items.filter((item) =>
-    item.origin !== "user" && item.company_id !== null && followed.has(item.company_id) &&
+    item.origin !== "user" && item.company_id !== null && (followed === null || followed.has(item.company_id)) &&
     item.occurs_on >= from && item.occurs_on <= until,
   ).sort((a, b) => a.occurs_on.localeCompare(b.occurs_on) || a.id.localeCompare(b.id));
 }

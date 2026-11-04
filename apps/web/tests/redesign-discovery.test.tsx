@@ -16,6 +16,7 @@ import {
   rangeStart,
   validRange,
 } from "../src/redesign/dashboard-contract";
+import { addDays } from "../src/redesign/calendar-utils";
 import { defaults, type Resource } from "../src/workspace/contracts";
 const mocks = vi.hoisted(() => ({
   data: vi.fn(),
@@ -250,11 +251,20 @@ describe("screenshot discovery behavior", () => {
     mocks.data.mockImplementation(req => req?.action === "source_overview" ? {
       data:{monitoring:[{company_id:id,latest_filing:filing,latest_analysis:null}]},loading:false,error:"",reload:mocks.reload,
     } : original(req));
+    const event = {id:"44000000-0000-4000-8000-000000000004",company_id:newsCompany.id,title:"Official date without a watchlist",occurs_on:koreaDate(),event_id:null,origin:"official_ir",quote:null,source_url:"https://example.com/event"};
+    mocks.calendar.mockReturnValue({data:{items:[event],truncated:false},loading:false,error:"",reload:mocks.reload});
     render(<Home />);
     const following=within(document.querySelector(".rd-home-following") as HTMLElement);
+    const upcoming=within(document.querySelector(".rd-home-upcoming") as HTMLElement);
     expect(following.queryByText(filing.title)).not.toBeInTheDocument();
     expect(following.getByText("관심 기업을 추가하면 최신 소식을 확인할 수 있습니다.")).toBeVisible();
-    expect(mocks.calendar).toHaveBeenCalledWith(expect.objectContaining({companyIds:[],includePersonal:false}));
+    expect(upcoming.getByRole("link", {name:/Official date without a watchlist/})).toBeVisible();
+    expect(mocks.calendar.mock.calls.at(-1)?.[0]).toMatchObject({includePersonal:false});
+    expect(mocks.calendar.mock.calls.at(-1)?.[0].companyIds).toBeUndefined();
+    fireEvent.click(within(screen.getByRole("group", {name:"다가오는 일정 기업 범위"})).getByRole("button", {name:"관심 기업"}));
+    expect(mocks.calendar.mock.calls.at(-1)?.[0]).toMatchObject({companyIds:[],includePersonal:false});
+    expect(upcoming.queryByText(event.title)).not.toBeInTheDocument();
+    expect(upcoming.getByText("관심 기업을 추가하면 다가오는 일정을 확인할 수 있습니다.")).toBeVisible();
     expect(mocks.data.mock.calls.some(([req])=>req?.action === "source_overview")).toBe(false);
     await waitFor(() => expect(mocks.fetch).toHaveBeenCalled());
   });
@@ -273,23 +283,77 @@ describe("screenshot discovery behavior", () => {
     expect(following.getByText(filing.title)).toBeVisible();
     expect(following.queryByText("Unfollowed source")).not.toBeInTheDocument();
     const upcoming=within(document.querySelector(".rd-home-upcoming") as HTMLElement);
+    fireEvent.click(within(upcoming.getByRole("group", {name:"다가오는 일정 기업 범위"})).getByRole("button", {name:"관심 기업"}));
     expect(upcoming.getByRole("link",{name:/Confirmed future date/})).toHaveAttribute("href",`/events/${event.id}?kind=calendar`);
     expect(upcoming.queryByText("Personal event")).not.toBeInTheDocument();
     expect(upcoming.queryByText("Unrelated event")).not.toBeInTheDocument();
     expect(upcoming.getByText("날짜 확정")).toBeVisible();
     expect(upcoming.queryByText(/10:00|종일/)).not.toBeInTheDocument();
-    expect(mocks.calendar).toHaveBeenCalledWith(expect.objectContaining({from:day,companyIds:[id],includePersonal:false}));
+    expect(mocks.calendar.mock.calls.at(-1)?.[0]).toMatchObject({from:day,companyIds:[id],includePersonal:false});
     expect(screen.getByRole("heading",{name:"관심 기업 1곳의 주요 소식을 모았습니다."})).toBeVisible();
     await waitFor(() => expect(mocks.fetch).toHaveBeenCalled());
   });
-  it("does not treat watchlist failures or cached records as an empty or current following list", async () => {
+  it("shows all-company dates when only an unfollowed company has upcoming events and recovers from an empty following scope", async () => {
+    catalogCompanies = [company, newsCompany];
+    const watched = {id,name:company.company_name,ticker:company.ticker,market:"KRX",provider:"dart",is_demo:false,last_ingested_at:null};
+    mocks.resource.mockReturnValue({data:{id:"list",name:"Watchlist",items:[watched]},loading:false,error:null,reload:mocks.reload});
+    const day = koreaDate(), until = addDays(day, 30);
+    const event = {id:"44000000-0000-4000-8000-000000000002",company_id:newsCompany.id,title:"Unfollowed company official date",occurs_on:addDays(day, 2),event_id:null,origin:"official_ir",quote:null,source_url:"https://example.com/event"};
+    const reloadCalendar = vi.fn();
+    mocks.calendar.mockReturnValue({data:{items:[event,
+      {...event,id:"personal",title:"Excluded personal date",origin:"user"},
+      {...event,id:"past",title:"Excluded past date",occurs_on:addDays(day, -1)},
+      {...event,id:"later",title:"Excluded distant date",occurs_on:addDays(until, 1)},
+    ],truncated:false},loading:false,error:"",reload:reloadCalendar});
+    render(<Home />);
+    const upcoming = within(document.querySelector(".rd-home-upcoming") as HTMLElement);
+    const scope = within(upcoming.getByRole("group", {name:"다가오는 일정 기업 범위"}));
+    expect(scope.getByRole("button", {name:"전체 기업"})).toHaveAttribute("aria-pressed", "true");
+    expect(scope.getByRole("button", {name:"관심 기업"})).toHaveAttribute("aria-pressed", "false");
+    expect(mocks.calendar.mock.calls.at(-1)?.[0]).toMatchObject({from:day,until,includePersonal:false});
+    expect(mocks.calendar.mock.calls.at(-1)?.[0].companyIds).toBeUndefined();
+    expect(upcoming.getByRole("link", {name:/Unfollowed company official date/})).toHaveAttribute("href", `/events/${event.id}?kind=calendar`);
+    expect(upcoming.getByText(newsCompany.company_name)).toBeVisible();
+    for (const title of ["Excluded personal date", "Excluded past date", "Excluded distant date"])
+      expect(upcoming.queryByText(title)).not.toBeInTheDocument();
+    fireEvent.click(upcoming.getByRole("button", {name:"다가오는 일정 새로고침"}));
+    expect(reloadCalendar).toHaveBeenCalledOnce();
+
+    fireEvent.click(scope.getByRole("button", {name:"관심 기업"}));
+    expect(scope.getByRole("button", {name:"관심 기업"})).toHaveAttribute("aria-pressed", "true");
+    expect(mocks.calendar.mock.calls.at(-1)?.[0]).toMatchObject({from:day,until,companyIds:[id],includePersonal:false});
+    expect(upcoming.queryByText(event.title)).not.toBeInTheDocument();
+    expect(upcoming.getByText("앞으로 30일간 확인된 관심 기업 일정이 없습니다.")).toBeVisible();
+    fireEvent.click(upcoming.getByRole("button", {name:"전체 기업 일정 보기"}));
+    expect(scope.getByRole("button", {name:"전체 기업"})).toHaveAttribute("aria-pressed", "true");
+    expect(upcoming.getByRole("link", {name:/Unfollowed company official date/})).toBeVisible();
+    expect(mocks.calendar.mock.calls.at(-1)?.[0].companyIds).toBeUndefined();
+    await waitFor(() => expect(mocks.fetch).toHaveBeenCalled());
+  });
+  it("keeps all-company dates available during watchlist failures while rejecting cached following records", async () => {
     mocks.resource.mockReturnValue({data:{id:"list",name:"Watchlist",items:[{id,name:"Cached company"}]},loading:false,error:"Watchlist unavailable",reload:mocks.reload});
+    const day = koreaDate();
+    const event = {id:"44000000-0000-4000-8000-000000000003",company_id:newsCompany.id,title:"Available official date",occurs_on:day,event_id:null,origin:"official_ir",quote:null,source_url:"https://example.com/event"};
+    mocks.calendar.mockReturnValue({data:{items:[event],truncated:false},loading:false,error:"",reload:mocks.reload});
     render(<Home />);
     const following=within(document.querySelector(".rd-home-following") as HTMLElement);
     expect(following.getByRole("alert")).toHaveTextContent("Watchlist unavailable");
     expect(following.queryByText(/관심 기업을 추가하면/)).not.toBeInTheDocument();
     expect(screen.getByRole("heading",{name:"관심 기업의 소식을 불러오지 못했습니다."})).toBeVisible();
-    expect(mocks.calendar).toHaveBeenCalledWith(null);
+    const upcoming = within(document.querySelector(".rd-home-upcoming") as HTMLElement);
+    const scope = within(upcoming.getByRole("group", {name:"다가오는 일정 기업 범위"}));
+    expect(upcoming.getByRole("link", {name:/Available official date/})).toHaveAttribute("href", `/events/${event.id}?kind=calendar`);
+    expect(upcoming.queryByRole("alert")).not.toBeInTheDocument();
+    expect(mocks.calendar.mock.calls.at(-1)?.[0]).toMatchObject({from:day,includePersonal:false});
+    expect(mocks.calendar.mock.calls.at(-1)?.[0].companyIds).toBeUndefined();
+    fireEvent.click(scope.getByRole("button", {name:"관심 기업"}));
+    expect(mocks.calendar.mock.calls.at(-1)?.[0]).toBeNull();
+    expect(upcoming.getByRole("alert")).toHaveTextContent("Watchlist unavailable");
+    expect(upcoming.queryByText(event.title)).not.toBeInTheDocument();
+    expect(upcoming.queryByText("앞으로 30일간 확인된 관심 기업 일정이 없습니다.")).not.toBeInTheDocument();
+    fireEvent.click(scope.getByRole("button", {name:"전체 기업"}));
+    expect(upcoming.getByRole("link", {name:/Available official date/})).toBeVisible();
+    expect(upcoming.queryByRole("alert")).not.toBeInTheDocument();
     fireEvent.click(following.getByRole("button",{name:"다시 시도"}));
     expect(mocks.reload).toHaveBeenCalled();
     await waitFor(() => expect(mocks.fetch).toHaveBeenCalled());

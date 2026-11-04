@@ -3,7 +3,7 @@ import type { Company } from "../src/lib/contracts";
 import { resourceSchema } from "../src/workspace/contracts";
 import {
   activityDay, activityWhen, calendarActivity, combineActivities,
-  followedUpcoming, followingActivities, newsActivities, resourceActivity,
+  upcomingCompanyEvents, followingActivities, newsActivities, resourceActivity,
 } from "../src/redesign/home-data";
 
 const company: Company = { id:"22000000-0000-4000-8000-000000000001",name:"Followed",ticker:"AAPL",market:"US",provider:"sec",is_demo:false,last_ingested_at:null };
@@ -39,9 +39,23 @@ describe("homepage source composition", () => {
     expect(activityWhen(resourceActivity(filing,"document"),new Date("2026-11-04T02:00:00Z"))).toBe("2시간 전");
   });
   it("keeps upcoming official followed dates inside the requested range and canonical occurrence links", () => {
-    const rows=followedUpcoming([event,{...event,id:"prior",occurs_on:"2026-11-03"},{...event,id:"later",occurs_on:"2026-12-05"},{...event,id:"personal",origin:"user"},{...event,id:"unfollowed",company_id:other.id}],[company],"2026-11-04","2026-12-04");
+    const rows=upcomingCompanyEvents([event,{...event,id:"prior",occurs_on:"2026-11-03"},{...event,id:"later",occurs_on:"2026-12-05"},{...event,id:"personal",origin:"user"},{...event,id:"unfollowed",company_id:other.id}],[company],"2026-11-04","2026-12-04");
     expect(rows).toEqual([event]);
     expect(calendarActivity(event)).toMatchObject({href:`/events/${event.id}?kind=calendar`,date:"2026-11-06",precision:"date"});
+  });
+  it("shows official dates from all companies only in the explicit all-company scope", () => {
+    const first = { ...event, id: "first", occurs_on: "2026-11-04", company_id: other.id };
+    const last = { ...event, id: "last", occurs_on: "2026-12-04", company_id: other.id, origin: "official" };
+    const items = [last, event, first,
+      { ...event, id: "past", occurs_on: "2026-11-03" },
+      { ...event, id: "later", occurs_on: "2026-12-05" },
+      { ...event, id: "personal", origin: "user", company_id: other.id },
+      { ...event, id: "unassigned", company_id: null },
+    ];
+    expect(upcomingCompanyEvents(items, null, "2026-11-04", "2026-12-04")).toEqual([first, event, last]);
+    expect(upcomingCompanyEvents(items, [], "2026-11-04", "2026-12-04")).toEqual([]);
+    expect(upcomingCompanyEvents(items, [company], "2026-11-04", "2026-12-04")).toEqual([event]);
+    expect(upcomingCompanyEvents([first, last], [company], "2026-11-04", "2026-12-04")).toEqual([]);
   });
   it("retains selected-company attribution and original article links, deduplicating repeated results", () => {
     const response={provider:"NAVER" as const,query:"Synthetic",retrievedAt:"2026-11-04T00:00:00Z",items:[{title:"News",link:"https://news.naver.com/fixture",originalLink:"https://example.com/original",publishedAt:"2026-11-04T00:00:00Z"}]};
