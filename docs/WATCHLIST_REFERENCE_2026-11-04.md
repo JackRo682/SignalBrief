@@ -12,6 +12,28 @@ The sidebar moves below the list on smaller screens; information tiles stack on
 mobile. All new CSS selectors are rooted under `.sb-redesign .rd-w-page` so they
 cannot restyle Companies after client navigation.
 
+## Readability follow-up
+
+The follow-up keeps the same page structure and data behavior while increasing
+the type and spacing scale. Company names use 20px type on desktop and 18px on
+mobile; tile summaries use 14px/20px, labels 13px, and dates 12px/17px. Search and
+sort controls are 44px tall. Cards have 14px vertical padding, a 48px header, and
+three flexible information tiles with a 96px minimum height on desktop.
+
+Each tile's actual DOM order is label, summary, then date. Dates therefore have
+their own line without squeezing the text beside a label. Linked summaries show
+up to two lines and retain their full-text tooltip; loading, empty and error
+messages wrap fully. Sidebar rows also give company names, event titles, counts
+and dates separate space. The minimum mobile text sizes remain readable instead
+of reverting to the prior smaller overrides.
+
+Existing browser checks passed all six Watchlist cases. Visual checks at 1440,
+1280, 390 and 320px found no horizontal overflow or dates outside their tiles,
+and retained Companies style isolation. The synthetic desktop cards measured
+203px high with 111px tiles; heights remain content-dependent. The prior 150px
+card-height test budget is updated to 240px for the explicitly larger design.
+Release gates and production acceptance are verified separately for this revision.
+
 ## Existing integrations
 
 | Behavior | Existing production integration |

@@ -204,7 +204,8 @@ test('reference layout keeps personal data scoped, supports filters, and preserv
     expect(tileBoxes[1].x).toBeGreaterThan(tileBoxes[0].x);
     expect(tileBoxes[2].x).toBeGreaterThan(tileBoxes[1].x);
     expect(Math.abs(tileBoxes[2].y - tileBoxes[0].y)).toBeLessThanOrEqual(1);
-    expect((await cards.first().boundingBox())!.height).toBeLessThan(150);
+    // The readability revision gives summaries and dates separate, larger lines.
+    expect((await cards.first().boundingBox())!.height).toBeLessThan(240);
   }
   await screenshot(page, info, mobile ? 'watchlist-reference-320px' : 'watchlist-reference-desktop');
 
