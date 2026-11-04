@@ -169,6 +169,11 @@ beforeEach(() => {
       select: () => query,
       in: () => query,
       eq: () => query,
+      gte: () => query,
+      lte: () => query,
+      neq: () => query,
+      order: () => query,
+      limit: () => query,
       abortSignal: async () => ({
         data: calendarVisible ? [calendar] : [],
         error: null,
@@ -245,6 +250,8 @@ beforeEach(() => {
             latest_analysis: analysis,
             next_event: null,
             last_collected_at: null,
+            filing_count: 1,
+            analysis_count: 1,
           },
         ],
       };
@@ -461,7 +468,7 @@ describe("redesigned personal screens", () => {
 
   it("persists company-specific mute settings and preserves state when persistence fails", async () => {
     failPrefs = true;
-    render(<Watchlist />);
+    const first = render(<Watchlist />);
     const toggle = await screen.findByRole("switch", {
       name: "검증용 기업 알림",
     });
@@ -476,6 +483,11 @@ describe("redesigned personal screens", () => {
     expect(mocks.savePrefs).toHaveBeenLastCalledWith({
       muted_companies: [companyId],
     });
+    expect(watched).toHaveLength(1);
+    first.unmount();
+    render(<Watchlist />);
+    expect(await screen.findByRole("switch", { name: "검증용 기업 알림" }))
+      .toHaveAttribute("aria-checked", "false");
   });
 
   it("keeps unread state on failed writes and persists confirmed read state", async () => {

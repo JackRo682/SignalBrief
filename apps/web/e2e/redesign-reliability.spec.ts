@@ -690,7 +690,7 @@ test('watchlist discovers an unregistered issuer, follows explicitly, and persis
   expect(fixture.state.resolutionBodies).toEqual([]);
   expect(fixture.base.state.watched.size).toBe(0);
   await select.click();
-  const card = main.locator('.rd-p-watch-card').filter({ hasText: externalIssuer.name });
+  const card = main.locator('.rd-w-card').filter({ hasText: externalIssuer.name });
   await expect(card).toBeVisible();
   await expect(page).toHaveURL(/\/watchlist$/);
   expect(fixture.state.resolutionBodies).toHaveLength(1);
