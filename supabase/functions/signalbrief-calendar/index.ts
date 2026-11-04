@@ -6,6 +6,7 @@ import {dartRelay} from '../signalbrief-collector/dart-relay.ts';
 import {koreaDate} from '../signalbrief-collector/core.ts';
 import {collectSecIR,type SecIRSource} from './sec-ir.ts';
 import {createCalendarSourceFetch} from './source-relay.ts';
+import {archiveNotice,type NoticePayload} from './curated-notice.ts';
 export async function handleCalendar(req:Request):Promise<Response>{
  const reply=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});
  if(req.method!=='POST')return reply({error:'method_not_allowed'},405);
@@ -33,6 +34,12 @@ export async function handleCalendar(req:Request):Promise<Response>{
   };
   for(const source of sources){
    try{
+    if(source.adapter==='curated-notice'){
+     const payload=await rpc('sb_calendar_notice_payload',{source:source.key,h}) as NoticePayload;
+     const snapshot=await archiveNotice(source,payload,archive);
+     const count=snapshot.completed?snapshot.count:await rpc('sb_calendar_ingest_notice',{source:source.key,h,raw_sha:snapshot.raw_sha,object_key:snapshot.object_key,manifest_text:snapshot.manifest_text});
+     results.push({source:source.key,status:'verified',items:count});continue;
+    }
     if(source.adapter==='sec-ir'){
      const secrets=await rpc('sb_us_secrets') as Record<string,unknown>;
      const contact=Deno.env.get('SEC_CONTACT_EMAIL')||String(secrets?.SEC_CONTACT_EMAIL??'');
