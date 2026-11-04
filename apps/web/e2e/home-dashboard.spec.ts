@@ -56,7 +56,7 @@ async function expectViewportFit(page: Page) {
   ), 'The dashboard must fit the viewport').toBeLessThanOrEqual(1);
 }
 
-test('home keeps monitoring and upcoming events within the actual watchlist even when a response includes unrelated records', async ({ page }) => {
+test('home keeps monitoring and explicitly followed-company events within the actual watchlist even when a response includes unrelated records', async ({ page }) => {
   const fixture = await researchWorkspaceFixture(page, { following: true });
   await page.clock.setFixedTime(new Date(homeNow));
   await page.route('**/api/workspace', async route => {
@@ -91,7 +91,8 @@ test('home keeps monitoring and upcoming events within the actual watchlist even
     const url = new URL(route.request().url());
     fixture.calendarQueries.push(url.search);
     expect(url.searchParams.get('calendar_status')).toBe('eq.confirmed');
-    expect(url.searchParams.get('company_id')).toBe(`in.(${companyId})`);
+    expect([null, `in.(${companyId})`]).toContain(url.searchParams.get('company_id'));
+    expect(url.searchParams.has('or')).toBe(false);
     expect(url.searchParams.get('origin')).toBe('neq.user');
     expect(url.searchParams.getAll('occurs_on')).toEqual(['gte.2026-10-06', 'lte.2026-11-05']);
     // Deliberately overbroad fixture data also exercises the homepage's final
@@ -103,6 +104,7 @@ test('home keeps monitoring and upcoming events within the actual watchlist even
   await expect(page.getByRole('heading', { name: '관심 기업 1곳의 주요 소식을 모았습니다.', exact: true })).toBeVisible();
   const updates = page.locator('.rd-home-following');
   const dates = page.locator('.rd-home-upcoming');
+  const scope = dates.getByRole('group', { name: '다가오는 일정 기업 범위', exact: true });
   await expect(updates.locator('.rd-home-update')).toHaveCount(3);
   await expect(updates.locator('.rd-home-company')).toHaveText(Array(3).fill(companies[0].name));
   await expect(updates.getByRole('link', { name: `${companies[0].name} 공시 ${filing.title}`, exact: true }))
@@ -120,6 +122,16 @@ test('home keeps monitoring and upcoming events within the actual watchlist even
   expect(followingCalls.length).toBeGreaterThan(0);
   for (const call of followingCalls) expect(call.p).toEqual({ scope: 'following', days: 0 });
 
+  await expect(scope.getByRole('button', { name: '전체 기업', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(dates.locator('.rd-home-event')).toHaveCount(2);
+  expect(fixture.calendarQueries.length).toBeGreaterThan(0);
+  for (const query of fixture.calendarQueries) expect(new URLSearchParams(query).has('company_id')).toBe(false);
+  await scope.getByRole('button', { name: '관심 기업', exact: true }).click();
+  await expect(scope.getByRole('button', { name: '관심 기업', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(scope.getByRole('button', { name: '전체 기업', exact: true })).toHaveAttribute('aria-pressed', 'false');
+  await expect.poll(() => fixture.calendarQueries.some(query =>
+    new URLSearchParams(query).get('company_id') === `in.(${companyId})`,
+  )).toBe(true);
   await expect(dates.locator('.rd-home-event')).toHaveCount(1);
   await expect(dates.getByRole('link', { name: new RegExp(upcoming.title) }))
     .toHaveAttribute('href', `/events/${upcoming.id}?kind=calendar`);
@@ -129,21 +141,114 @@ test('home keeps monitoring and upcoming events within the actual watchlist even
   await expect(dates).not.toContainText(/\b\d{1,2}:\d{2}\b|종일/);
   await expectViewportFit(page);
 
-  // Removing every follow must clear the panels after reload, even when the
-  // public catalog and the selected company's news still contain records.
-  const calendarReads = fixture.calendarQueries.length;
+  // Removing every follow clears monitoring. Home reloads in all-company mode;
+  // explicitly selecting following again must clear dates without a broad query.
   const overviewReads = followingCalls.length;
   fixture.state.watched.clear();
   await page.reload();
   await expect(page.getByRole('heading', { name: '첫 관심 기업을 추가해 보세요.', exact: true })).toBeVisible();
   await expect(updates).toContainText('관심 기업을 추가하면 최신 소식을 확인할 수 있습니다.');
   await expect(updates.locator('.rd-home-update')).toHaveCount(0);
+  await expect(scope.getByRole('button', { name: '전체 기업', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(dates.locator('.rd-home-event')).toHaveCount(2);
+  const calendarReads = fixture.calendarQueries.length;
+  await scope.getByRole('button', { name: '관심 기업', exact: true }).click();
+  await expect(scope.getByRole('button', { name: '관심 기업', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(dates).toContainText('관심 기업을 추가하면 다가오는 일정을 확인할 수 있습니다.');
   await expect(dates.locator('.rd-home-event')).toHaveCount(0);
   await expect(updates).not.toContainText(filing.title);
   await expect(dates).not.toContainText(upcoming.title);
   expect(fixture.calendarQueries).toHaveLength(calendarReads);
   expect(fixture.state.calls.filter(call => call.action === 'source_overview')).toHaveLength(overviewReads);
+  expectClean(fixture);
+});
+
+test('home shows unfollowed official events by default, supports an empty watchlist, and refreshes newly available dates', async ({ page }) => {
+  const fixture = await researchWorkspaceFixture(page, { following: true });
+  const unrelatedEvent = noisyCalendar[2];
+  let eventsAvailable = true;
+  await page.route('https://test-project.supabase.co/rest/v1/calendar_items?**', async route => {
+    const headers = cors(route);
+    if (route.request().method() === 'OPTIONS') {
+      await route.fulfill({ status: 204, headers }); return;
+    }
+    expect(route.request().method()).toBe('GET');
+    expect(route.request().headers().authorization).toMatch(/^Bearer /);
+    const url = new URL(route.request().url());
+    fixture.calendarQueries.push(url.search);
+    expect(url.searchParams.get('calendar_status')).toBe('eq.confirmed');
+    expect(url.searchParams.get('origin')).toBe('neq.user');
+    expect(url.searchParams.getAll('occurs_on')).toEqual(['gte.2026-10-06', 'lte.2026-11-05']);
+    expect(url.searchParams.has('or')).toBe(false);
+    const companyFilter = url.searchParams.get('company_id');
+    expect([null, `in.(${companyId})`]).toContain(companyFilter);
+    // The followed company has no upcoming event. The only confirmed official
+    // row belongs to another company, matching the new-user regression.
+    await route.fulfill({ headers, json: eventsAvailable && companyFilter === null ? [unrelatedEvent] : [] });
+  });
+
+  await page.goto('/today');
+  const dates = page.locator('.rd-home-upcoming');
+  const scope = dates.getByRole('group', { name: '다가오는 일정 기업 범위', exact: true });
+  const all = scope.getByRole('button', { name: '전체 기업', exact: true });
+  const following = scope.getByRole('button', { name: '관심 기업', exact: true });
+  const event = dates.getByRole('link', { name: new RegExp(unrelatedEvent.title) });
+  await expect(page.getByRole('heading', { name: '관심 기업 1곳의 주요 소식을 모았습니다.', exact: true })).toBeVisible();
+  await expect(all).toHaveAttribute('aria-pressed', 'true');
+  await expect(following).toHaveAttribute('aria-pressed', 'false');
+  await expect(dates.locator('.rd-home-event')).toHaveCount(1);
+  await expect(event).toHaveAttribute('href', `/events/${unrelatedEvent.id}?kind=calendar`);
+  await expect(event.locator('.rd-home-company')).toHaveText(otherCompany.name);
+  await expect(event.locator('time')).toHaveAttribute('datetime', unrelatedEvent.occurs_on);
+  await expect(event.locator('.rd-home-event-meta')).toHaveText('날짜 확정');
+  await expect(dates).not.toContainText(/\b\d{1,2}:\d{2}\b|종일/);
+  expect(fixture.calendarQueries.length).toBeGreaterThan(0);
+  for (const query of fixture.calendarQueries) expect(new URLSearchParams(query).has('company_id')).toBe(false);
+  expect(fixture.state.calls.some(call => call.action === 'catalog' && call.p.kind === 'company')).toBe(true);
+
+  await following.click();
+  await expect(following).toHaveAttribute('aria-pressed', 'true');
+  await expect(all).toHaveAttribute('aria-pressed', 'false');
+  await expect(dates).toContainText('앞으로 30일간 확인된 관심 기업 일정이 없습니다.');
+  await expect(dates.locator('.rd-home-event')).toHaveCount(0);
+  expect(new URLSearchParams(fixture.calendarQueries.at(-1)).get('company_id')).toBe(`in.(${companyId})`);
+  await dates.getByRole('button', { name: '전체 기업 일정 보기', exact: true }).click();
+  await expect(all).toHaveAttribute('aria-pressed', 'true');
+  await expect(following).toHaveAttribute('aria-pressed', 'false');
+  await expect(event).toBeVisible();
+  expect(new URLSearchParams(fixture.calendarQueries.at(-1)).has('company_id')).toBe(false);
+
+  fixture.state.watched.clear();
+  const readsBeforeReload = fixture.calendarQueries.length;
+  await page.reload();
+  await expect(page.getByRole('heading', { name: '첫 관심 기업을 추가해 보세요.', exact: true })).toBeVisible();
+  await expect(page.locator('.rd-home-following .rd-home-update')).toHaveCount(0);
+  await expect(all).toHaveAttribute('aria-pressed', 'true');
+  await expect(event).toBeVisible();
+  await expect(event.locator('.rd-home-company')).toHaveText(otherCompany.name);
+  expect(fixture.calendarQueries.length).toBeGreaterThan(readsBeforeReload);
+  for (const query of fixture.calendarQueries.slice(readsBeforeReload)) {
+    expect(new URLSearchParams(query).has('company_id')).toBe(false);
+  }
+
+  // A successful empty read must be refreshable after the existing collection
+  // pipeline adds an official date; no page reload or watchlist write is needed.
+  eventsAvailable = false;
+  await page.reload();
+  await expect(dates).toContainText('앞으로 30일간 확인된 기업 일정이 없습니다.');
+  await expect(dates.locator('.rd-home-event')).toHaveCount(0);
+  const readsBeforeRefresh = fixture.calendarQueries.length;
+  eventsAvailable = true;
+  await dates.getByRole('button', { name: '다가오는 일정 새로고침', exact: true }).click();
+  await expect(event).toBeVisible();
+  await expect(event).toHaveAttribute('href', `/events/${unrelatedEvent.id}?kind=calendar`);
+  await expect(event.locator('.rd-home-company')).toHaveText(otherCompany.name);
+  await expect(all).toHaveAttribute('aria-pressed', 'true');
+  expect(fixture.calendarQueries.length).toBeGreaterThan(readsBeforeRefresh);
+  for (const query of fixture.calendarQueries.slice(readsBeforeRefresh)) {
+    expect(new URLSearchParams(query).has('company_id')).toBe(false);
+  }
+  await expectViewportFit(page);
   expectClean(fixture);
 });
 

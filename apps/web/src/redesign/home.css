@@ -207,6 +207,60 @@
   padding-bottom: 7px;
 }
 
+.sb-redesign .rd-home-calendar-actions,
+.sb-redesign .rd-home-calendar-toolbar,
+.sb-redesign .rd-home-calendar-scope {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sb-redesign .rd-home-calendar-toolbar {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 8px 17px;
+  color: var(--rd-muted);
+  font-size: 12px;
+}
+
+.sb-redesign .rd-home-calendar-scope button {
+  min-height: 32px;
+  padding: 5px 10px;
+  border: 1px solid var(--rd-line);
+  border-radius: 6px;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.sb-redesign .rd-home-calendar-scope button[aria-pressed="true"] {
+  border-color: #4865ff;
+  background: #f0f3ff;
+  color: #3454ed;
+}
+
+.sb-redesign .rd-home-calendar-refresh {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--rd-line);
+  border-radius: 6px;
+  background: #fff;
+  color: #3454ed;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sb-redesign .rd-home-calendar-refresh:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.sb-redesign .rd-home-upcoming .rd-empty > p {
+  margin: 0 0 8px;
+}
+
 .sb-redesign .rd-home-update {
   display: grid;
   grid-template-columns: 36px minmax(92px, 138px) 60px minmax(0, 1fr) 94px;
