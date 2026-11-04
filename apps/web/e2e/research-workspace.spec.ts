@@ -150,8 +150,8 @@ test('signed-in research journey connects company tabs, evidence, saved items an
  expect(fixture.state.saved.size).toBe(1);
  await navigate(page,'Watchlist');
  await expect(page.getByRole('heading',{name:'관심 기업',exact:true})).toBeVisible();
- await expect(page.locator('.rd-p-watch-card').getByRole('link',{name:new RegExp(filing.title)})).toBeVisible();
- await expect(page.locator('.rd-p-watch-card').getByRole('link',{name:new RegExp(approved.title)})).toBeVisible();
+ await expect(page.locator('.rd-w-card').getByRole('link',{name:new RegExp(filing.title)})).toBeVisible();
+ await expect(page.locator('.rd-w-card').getByRole('link',{name:new RegExp(approved.title)})).toBeVisible();
  await screenshot(page,info,'watchlist');
  await page.getByLabel(`${companies[0].name} 메뉴`,{exact:true}).click();
  await page.getByRole('button',{name:`${companies[0].name} 팔로우 취소`,exact:true}).click();
@@ -166,7 +166,7 @@ test('signed-in research journey connects company tabs, evidence, saved items an
  await expect(dialog.getByRole('button',{name:'추가됨',exact:true})).toBeDisabled();
  await dialog.getByRole('button',{name:'Close',exact:true}).click();
  await page.reload();
- await expect(page.locator('.rd-p-watch-card')).toHaveCount(1);
+ await expect(page.locator('.rd-w-card')).toHaveCount(1);
  expect(fixture.state.watched.has(companyId)).toBe(true);
  await navigate(page,'Calendar');
  await expect(page.getByRole('heading',{name:'캘린더',exact:true})).toBeVisible();

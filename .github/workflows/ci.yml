@@ -63,7 +63,7 @@ jobs:
           # The former market/portfolio screen contract is retained in its specs
           # and legacy unit suites; it is deliberately hidden in this release.
           # See docs/SIGNED_IN_RELEASE_CHECKS.md for the replacement coverage.
-          E2E_BASE_URL=http://localhost:3000 npm run test:e2e -- research-workspace.spec.ts home-dashboard.spec.ts auth-navigation.spec.ts marketing-pages.spec.ts ui-refinement.spec.ts responsive-design.spec.ts news.spec.ts career-analytics.spec.ts research.spec.ts daily-digest.spec.ts company-profile.spec.ts redesign-reliability.spec.ts
+          E2E_BASE_URL=http://localhost:3000 npm run test:e2e -- research-workspace.spec.ts home-dashboard.spec.ts watchlist-reference.spec.ts auth-navigation.spec.ts marketing-pages.spec.ts ui-refinement.spec.ts responsive-design.spec.ts news.spec.ts career-analytics.spec.ts research.spec.ts daily-digest.spec.ts company-profile.spec.ts redesign-reliability.spec.ts
       - uses: actions/upload-artifact@v4
         if: always()
         with:
