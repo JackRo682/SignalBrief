@@ -106,7 +106,8 @@ describe('private admin shell access states', () => {
     auth.me = admin;
     mounted.rerender(view());
     expect(screen.getByRole('region', {name: 'Private log records'})).toBeVisible();
-    expect(screen.getByRole('link', {name: /사용자 활동 로그/})).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', {name: /운영 현황 · 사용자 로그/})).toHaveAttribute('aria-current', 'page');
+    expect(screen.queryByRole('link', {name: /사용자 행동 분석/})).toBeNull();
   });
 
   it('shows a retry error and restores controls after a failed permission recheck', async () => {

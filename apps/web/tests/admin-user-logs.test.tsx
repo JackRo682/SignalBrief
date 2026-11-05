@@ -21,6 +21,8 @@ vi.mock('@/components/auth', () => ({ useAuth: () => ({
   loading: mock.loading, error: mock.authError, logout: mock.logout,
 }) }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ replace: mock.replace }) }));
+// Overview behavior has independent coverage; these tests isolate the existing log lifecycle.
+vi.mock('../src/admin-logs/overview-client', () => ({ useAdminOverview: () => ({ data: null, error: null, loading: false, reload: () => undefined }) }));
 
 const userId = '20000000-0000-4000-8000-000000000001';
 const otherUser = '20000000-0000-4000-8000-000000000002';
@@ -190,7 +192,8 @@ describe('administrator user activity page', () => {
     expect(within(table).getByText(usage.session_id!)).toBeInTheDocument();
     expect(within(table).getByText(usage.page_id!)).toBeInTheDocument();
     expect(within(table).getByText(userId)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '사용자 행동 분석' })).toHaveAttribute('href', '/ops/analytics');
+    expect(screen.queryByRole('link', { name: '사용자 행동 분석' })).toBeNull();
+    expect(screen.getByRole('link', { name: '활동 로그' })).toHaveAttribute('href', '#activity-logs');
   });
   it('filters by the selected complete user ID and resets pagination', async () => {
     render(<UserActivityLogs/>);
@@ -208,6 +211,14 @@ describe('administrator user activity page', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('전체 UUID');
     expect(mock.fetch).toHaveBeenCalledTimes(1);
     expect(screen.getByLabelText('사용자 ID')).toHaveValue('not-a-uuid');
+  });
+  it('does not query an inverted shared date range', async () => {
+    render(<UserActivityLogs/>);
+    await screen.findByRole('table');
+    fireEvent.change(screen.getByLabelText('시작일'), { target: { value: '2026-11-06' } });
+    fireEvent.click(screen.getByRole('button', { name: '기간 적용' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('시작일과 종료일');
+    expect(mock.fetch).toHaveBeenCalledTimes(1);
   });
   it('uses the returned keyset cursor for next and returns to the first page without storing raw logs', async () => {
     const next = { created_at: usage.created_at, id: usage.id };

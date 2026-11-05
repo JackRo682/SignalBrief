@@ -1,8 +1,20 @@
 import {test,expect,type Page} from '@playwright/test';
-import {mobileFixture} from './mobile-fixture';
+import {fixtureNow,mobileFixture} from './mobile-fixture';
+import {emptyActivityFixture,overviewFixture} from './admin-overview-fixture';
+import type {AdminOverviewRequest} from '../src/admin-logs/overview-contracts';
+import type {UserLogsRequest} from '../src/admin-logs/contracts';
 const id='10000000-0000-4000-8000-000000000321';
 async function fixture(page:Page,admin=true){
  const base=await mobileFixture(page);base.state.profile.is_admin=admin;
+ const overviewCalls:AdminOverviewRequest[]=[],activityCalls:UserLogsRequest[]=[];
+ await page.route('**/api/admin/overview',async route=>{
+  const p=route.request().postDataJSON();overviewCalls.push(p);
+  await route.fulfill({json:overviewFixture(p,false,fixtureNow)});
+ });
+ await page.route('**/api/admin/user-logs',async route=>{
+  activityCalls.push(route.request().postDataJSON());
+  await route.fulfill({json:emptyActivityFixture(fixtureNow)});
+ });
  let joined=false,submitted=false,withdrawn=false;const calls:string[]=[];
  const experiment={id,name:'합성 연구 검증',hypothesis:'테스트 전용 가설과 데이터',status:'running',design:'between',metric:'accuracy',version:1,ratio:50};
  const groups=['A','B'].map(variant=>({variant,assigned:0,exposed:0,completed:0,accuracy:null,completion_rate:null,median_active_ms:null,evidence_rate:null}));
@@ -26,12 +38,13 @@ async function fixture(page:Page,admin=true){
    case 'experiment_create':expect(p.config.A.answer).toBeTruthy();result={id};break;
    default:throw new Error(`Unexpected research action ${action}`);
   }await route.fulfill({json:result});
- });return {base,calls,get withdrawn(){return withdrawn;}};
+ });return {base,calls,overviewCalls,activityCalls,get withdrawn(){return withdrawn;}};
 }
 test('nine admin pages render real empty states and responsive navigation',async({page})=>{
  const f=await fixture(page);
- for(const [path,title] of [['analytics','사용자 행동 분석'],['experiments','A/B 실험 관리'],[`experiments/${id}`,'합성 연구 검증'],['evaluations','AI 금융정보 평가'],[`evaluations/datasets/${id}`,'합성 SEC 테스트'],[`evaluations/runs/${id}`,`평가 실행 ${id.slice(0,8)}`],['quality','금융정보 품질 검수'],['reliability','장애·안전성 관리'],['reports','실험·평가 보고서']]){
+ for(const [path,title] of [['analytics','운영 현황 · 사용자 로그'],['experiments','A/B 실험 관리'],[`experiments/${id}`,'합성 연구 검증'],['evaluations','AI 금융정보 평가'],[`evaluations/datasets/${id}`,'합성 SEC 테스트'],[`evaluations/runs/${id}`,`평가 실행 ${id.slice(0,8)}`],['quality','금융정보 품질 검수'],['reliability','장애·안전성 관리'],['reports','실험·평가 보고서']]){
   await page.goto(`/ops/${path}`);await expect(page.getByRole('heading',{name:title,exact:true})).toBeVisible();await expect(page.getByRole('navigation',{name:'관리자 메뉴'})).toBeVisible();
+  if(path==='analytics'){await expect(page).toHaveURL(/\/ops\/user-logs$/);await expect(page.locator('a[href="/ops/analytics"]')).toHaveCount(0);}
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)).toBe(true);
   if(path==='evaluations')await page.screenshot({path:test.info().outputPath('evaluations.png'),fullPage:true});
  }
@@ -47,10 +60,10 @@ test('private user logs show filtered records and safe details on desktop and mo
  const queries:Record<string,unknown>[]=[];
  await page.route('**/api/admin/user-logs',async route=>{
   const p=route.request().postDataJSON();queries.push(p);
-  await route.fulfill({json:{items:[{id:'usage:20000000-0000-4000-8000-000000000777',created_at:'2026-11-05T01:00:00Z',user_id:user,event:'view',screen:'today',device:'desktop',session_id:'30000000-0000-4000-8000-000000000777',page_id:'40000000-0000-4000-8000-000000000777',active_ms:0,source:'usage',is_admin:false}],next_cursor:null,has_more:false,summary:{events:1,users:1,sessions:1,active_ms:0},retention_days:90,timezone:'Asia/Seoul',consented_users:1,generated_at:'2026-11-05T01:00:00Z'}});
+  await route.fulfill({json:{items:[{id:'usage:20000000-0000-4000-8000-000000000777',created_at:fixtureNow,user_id:user,event:'view',screen:'today',device:'desktop',session_id:'30000000-0000-4000-8000-000000000777',page_id:'40000000-0000-4000-8000-000000000777',active_ms:0,source:'usage',is_admin:false}],next_cursor:null,has_more:false,summary:{events:1,users:1,sessions:1,active_ms:0},retention_days:90,timezone:'Asia/Seoul',consented_users:1,generated_at:fixtureNow}});
  });
  await page.goto('/ops/user-logs');
- await expect(page.getByRole('heading',{name:'사용자 활동 로그',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'운영 현황 · 사용자 로그',exact:true})).toBeVisible();
  await expect(page.getByRole('region',{name:'사용자 활동 로그 목록'})).toBeVisible();
  expect(queries[0].include_admin).toBe(false);
  await page.getByRole('button',{name:/화면 방문 상세/}).click();
@@ -58,7 +71,7 @@ test('private user logs show filtered records and safe details on desktop and mo
  await page.getByRole('button',{name:`사용자 ${user}로 필터`}).click();
  await expect.poll(()=>queries.at(-1)?.user_id).toBe(user);
  await page.getByLabel('관리자 이용 기록 포함').check();
- await page.getByRole('button',{name:'조회하기',exact:true}).click();
+ await page.getByRole('button',{name:'기간 적용',exact:true}).click();
  await expect.poll(()=>queries.at(-1)?.include_admin).toBe(true);
  await expect(page.getByRole('button',{name:'다음',exact:true})).toBeDisabled();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)).toBe(true);
@@ -71,10 +84,80 @@ test('user logs deny non-admin requests and show recoverable permission errors',
  await page.goto('/ops/user-logs');
  await expect(page.getByRole('heading',{name:'관리자 권한이 필요합니다'})).toBeVisible();
  expect(reads).toBe(0);
+ expect(f.overviewCalls).toEqual([]);
  f.base.state.profile.is_admin=true;
  await page.reload();
  await expect(page.getByRole('heading',{name:'사용자 로그에 접근할 수 없습니다'})).toBeVisible();
  await expect(page.getByRole('button',{name:'다른 계정으로 로그인',exact:true})).toBeVisible();
  await expect(page.getByRole('region',{name:'사용자 활동 로그 목록'})).toHaveCount(0);
+ await expect(page.getByRole('region',{name:'핵심 지표',exact:true})).toHaveCount(0);
  expect(reads).toBe(1);
+});
+
+test('temporary overview failure leaves activity available and retries in place',async({page})=>{
+ const f=await fixture(page);
+ let failing=true;
+ await page.route('**/api/admin/overview',async route=>{
+  await route.fulfill(failing
+   ? {status:503,json:{error:{code:'overview_unavailable'}}}
+   : {json:overviewFixture(route.request().postDataJSON(),false,fixtureNow)});
+ });
+ await page.goto('/ops/user-logs');
+ await expect(page.getByRole('heading',{name:'핵심 지표를 불러오지 못했습니다',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'활동 기록',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'조회할 기록이 없습니다',exact:true})).toBeVisible();
+ failing=false;
+ await page.getByRole('button',{name:'다시 시도',exact:true}).click();
+ await expect(page.getByRole('region',{name:'핵심 지표',exact:true}).locator('.overview-metrics > article')).toHaveCount(8);
+ await expect(page.getByRole('heading',{name:'핵심 지표를 불러오지 못했습니다',exact:true})).toHaveCount(0);
+ await expect(page).toHaveURL(/\/ops\/user-logs$/);
+ expect(f.base.state.runtimeErrors).toEqual([]);
+});
+
+test('one admin page keeps eight metrics, shared dates, errors, and activity together',async({page})=>{
+ test.setTimeout(60_000);
+ const f=await fixture(page);
+ const overviewQueries:AdminOverviewRequest[]=[];
+ await page.route('**/api/admin/overview',async route=>{
+  const p=route.request().postDataJSON();overviewQueries.push(p);
+  await route.fulfill({json:overviewFixture(p,true,fixtureNow)});
+ });
+ await page.goto('/ops/analytics');
+ await expect(page).toHaveURL(/\/ops\/user-logs$/);
+ await expect(page.getByRole('heading',{name:'운영 현황 · 사용자 로그',exact:true})).toBeVisible();
+ const metrics=page.getByRole('region',{name:'핵심 지표',exact:true});
+ await expect(metrics.locator('.overview-metrics > article')).toHaveCount(8);
+ for(const label of ['방문자 수','회원가입 전환율','활성화율','D1 · D7 리텐션','핵심 기능 이용률','활성 체류시간','주요 이탈 화면','오류 발생률']){
+  await expect(metrics.getByRole('article',{name:label,exact:true})).toBeVisible();
+ }
+ await expect(metrics.getByRole('article',{name:'회원가입 전환율',exact:true})).toContainText('미측정');
+ await expect(metrics.getByRole('article',{name:'오류 발생률',exact:true})).toContainText('5%');
+ await expect(page.locator('a[href="/ops/analytics"]')).toHaveCount(0);
+ await expect(page.getByRole('navigation',{name:'관리자 메뉴'}).getByRole('link',{name:/운영 현황 · 사용자 로그/})).toHaveCount(1);
+ for(const title of ['날짜별 방문자','가입·활성화','핵심 기능 이용','화면별 이용·이탈','오류·안정성','활동 기록']){
+  await expect(page.getByRole('heading',{name:title,exact:true})).toBeAttached();
+ }
+ await expect(page.getByRole('region',{name:'최근 오류가 기록된 시간대',exact:true})).toBeAttached();
+ await expect(page.getByLabel('시작일',{exact:true})).toHaveCount(1);
+ await expect(page.getByLabel('종료일',{exact:true})).toHaveCount(1);
+ const nextFrom=await page.getByLabel('종료일',{exact:true}).inputValue();
+ await page.getByLabel('시작일',{exact:true}).fill(nextFrom);
+ await page.getByRole('button',{name:'기간 적용',exact:true}).click();
+ await expect.poll(()=>overviewQueries.at(-1)?.from).toBe(nextFrom);
+ await expect.poll(()=>f.activityCalls.at(-1)?.from).toBe(nextFrom);
+ expect(overviewQueries.at(-1)?.to).toBe(f.activityCalls.at(-1)?.to);
+ const beforeFilter=overviewQueries.length;
+ await page.getByRole('combobox',{name:'활동 유형',exact:true}).selectOption('view',{timeout:15_000});
+ await page.getByRole('button',{name:'조회하기',exact:true}).click();
+ await expect.poll(()=>f.activityCalls.at(-1)?.event).toBe('view');
+ expect(overviewQueries).toHaveLength(beforeFilter);
+ await expect(page).toHaveURL(/\/ops\/user-logs$/);
+ const beforeRefresh=overviewQueries.length;
+ await page.getByRole('button',{name:'새로고침',exact:true}).click();
+ await expect.poll(()=>overviewQueries.length).toBe(beforeRefresh+1);
+ await expect(metrics.locator('.overview-metrics > article')).toHaveCount(8);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)).toBe(true);
+ await page.screenshot({path:test.info().outputPath(`synthetic-admin-overview-${test.info().project.name}.png`),fullPage:true,timeout:15_000});
+ expect(f.base.state.runtimeErrors).toEqual([]);
+ expect(f.base.state.unexpected).toEqual([]);
 });

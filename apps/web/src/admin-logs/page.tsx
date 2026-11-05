@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth';
 import { Loading } from '@/components/ui';
-import { Heading, Panel, Stat, Field } from '@/research/ui';
+import { Heading, Panel, Field } from '@/research/ui';
 import { useUserLogs, type UserLogsError } from './client';
 import {
   defaultLogFilters, koreanDate, recentLogDates, userLogEvents, userLogScreens,
@@ -14,37 +14,10 @@ import {
 import './styles.css';
 
 const loginPath = '/login?next=%2Fops%2Fuser-logs';
-const eventLabels: Record<typeof userLogEvents[number], string> = {
-  view: '화면 방문', click: '화면 클릭', heartbeat: '활성시간 기록', conversion: '전환 이벤트',
-  sign_up: '회원가입', login: '로그인', onboarding_started: '온보딩 시작',
-  watchlist_added: '관심 기업 추가', onboarding_completed: '온보딩 완료',
-  brief_impression: '요약 노출', brief_opened: '분석 열기', evidence_opened: '근거 열기',
-  followup_asked: '후속 질문', alert_created: '알림 생성', feedback_submitted: '피드백 제출',
-};
-const screenLabels: Record<typeof userLogScreens[number], string> = {
-  today: '홈', explore: '기업 탐색', search: '검색', watchlist: '관심 기업', portfolio: '포트폴리오',
-  timeline: '타임라인', questions: '질문', calendar: '캘린더', alerts: '알림', saved: '저장',
-  settings: '설정', onboarding: '온보딩', company: '기업 상세', event: '분석 상세',
-  document: '문서 상세', help: '도움말',
-};
-const koreanTimestamp = new Intl.DateTimeFormat('ko-KR', {
-  timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit',
-  hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
-});
-
-export function formatLogTime(value: string): string {
-  return koreanTimestamp.format(new Date(value));
-}
-
-export function formatActiveTime(value: number | null): string {
-  if (value === null) return '미측정';
-  if (value === 0) return '0초';
-  const seconds = Math.floor(value / 1_000);
-  if (seconds < 1) return '1초 미만';
-  if (seconds < 60) return `${seconds}초`;
-  if (seconds < 3_600) return `${Math.floor(seconds / 60)}분 ${seconds % 60}초`;
-  return `${Math.floor(seconds / 3_600).toLocaleString('ko-KR')}시간 ${Math.floor(seconds % 3_600 / 60)}분`;
-}
+export { formatLogTime, formatActiveTime } from './display';
+import { eventLabels, screenLabels, formatLogTime, formatActiveTime } from './display';
+import { useAdminOverview } from './overview-client';
+import { OverviewPanels, OverviewLoading } from './overview';
 
 function requestMessage(error: UserLogsError): { title: string; description: string } {
   if (error.code === 'mfa_required') return { title: '추가 인증이 필요합니다', description: '계정에 설정된 2단계 인증을 완료하면 사용자 로그를 다시 조회할 수 있습니다.' };
@@ -133,7 +106,9 @@ function UserLogContent() {
   const [switchError, setSwitchError] = useState('');
   const cursor = selected.cursors[selected.cursors.length - 1];
   const result = useUserLogs({ ...selected.filters, cursor });
-  const response = result.data;
+  const overview = useAdminOverview({ from: selected.filters.from, to: selected.filters.to, include_admin: selected.filters.include_admin });
+  const accessError = [result.error, overview.error].find(error => error?.status === 401 || error?.status === 403) ?? null;
+  const response = accessError ? null : result.data;
   const oldest = new Date(Date.parse(`${today}T00:00:00Z`) - 89 * 86_400_000).toISOString().slice(0, 10);
 
   function apply(filters: UserLogsFilters) {
@@ -142,7 +117,7 @@ function UserLogContent() {
       setValidation(parsed.error.issues.some(issue => issue.path[0] === 'user_id')
         ? '사용자 ID는 전체 UUID를 입력해 주세요. 이메일이나 이름으로는 조회하지 않습니다.'
         : '시작일과 종료일을 확인해 주세요. 조회 기간은 최대 90일입니다.');
-      return;
+      return false;
     }
     const { cursor: ignored, ...next } = parsed.data;
     void ignored;
@@ -150,11 +125,20 @@ function UserLogContent() {
     setSelected({ filters: next, cursors: [null] });
     setValidation('');
     result.reload();
+    return true;
   }
-  function submit(event: FormEvent) { event.preventDefault(); apply(draft); }
+  function submit(event: FormEvent) {
+    event.preventDefault();
+    apply({ ...draft, from: selected.filters.from, to: selected.filters.to, include_admin: selected.filters.include_admin });
+  }
+  function submitPeriod(event: FormEvent) {
+    event.preventDefault();
+    if (apply({ ...selected.filters, from: draft.from, to: draft.to, include_admin: draft.include_admin })) overview.reload();
+  }
   function refresh() {
     setSelected(value => ({ ...value, cursors: [null] }));
     result.reload();
+    overview.reload();
   }
   async function reauthenticate() {
     if (switching) return;
@@ -170,66 +154,73 @@ function UserLogContent() {
 
   return (
     <div className="user-log-page">
-      <Heading tag="관리자 전용 · 이용 기록" title="사용자 활동 로그" description="동의한 사용자의 화면 방문과 기능 이용 기록을 시간순으로 확인합니다.">
-        <Link className="button secondary" href="/ops/analytics">사용자 행동 분석</Link>
+      <Heading tag="SIGNALBRIEF · 운영 현황" title="운영 현황 · 사용자 로그" description="방문부터 재방문, 기능 이용, 오류와 활동 기록까지 한 페이지에서 확인합니다.">
+        <button type="button" className="button secondary" onClick={refresh} disabled={result.loading || overview.loading}>새로고침</button>
       </Heading>
-      <div className="user-log-privacy"><span aria-hidden="true">●</span><p>관리자 권한을 확인한 계정만 조회할 수 있습니다. 이메일, 검색 내용, 질문 내용, 비밀번호는 이 화면에 표시하지 않습니다.</p></div>
-      <Panel title="조회 조건" aside={<span className="user-log-small">한국 시간 · 최대 90일</span>}>
-        <form onSubmit={submit} noValidate>
-          <div className="user-log-presets" role="group" aria-label="빠른 날짜 선택">
-            {([7, 30] as const).map(days => <button type="button" key={days} className="button secondary" onClick={() => apply({ ...draft, ...recentLogDates(days) })}>최근 {days}일</button>)}
-            <span>원하는 기간을 직접 입력할 수도 있습니다.</span>
-          </div>
-          <div className="user-log-filters">
-            <Field label="시작일"><input type="date" value={draft.from} min={oldest} max={today} required onChange={event => setDraft(value => ({ ...value, from: event.target.value }))}/></Field>
-            <Field label="종료일"><input type="date" value={draft.to} min={oldest} max={today} required onChange={event => setDraft(value => ({ ...value, to: event.target.value }))}/></Field>
-            <Field label="활동 유형"><select value={draft.event} onChange={event => setDraft(value => ({ ...value, event: event.target.value as UserLogsFilters['event'] }))}><option value="">전체 활동</option>{userLogEvents.map(name => <option value={name} key={name}>{eventLabels[name]}</option>)}</select></Field>
-            <Field label="화면"><select value={draft.screen} onChange={event => setDraft(value => ({ ...value, screen: event.target.value as UserLogsFilters['screen'] }))}><option value="">전체 화면</option>{userLogScreens.map(screen => <option value={screen} key={screen}>{screenLabels[screen]}</option>)}</select></Field>
-            <Field label="기기"><select value={draft.device} onChange={event => setDraft(value => ({ ...value, device: event.target.value as UserLogsFilters['device'] }))}><option value="">전체 기기</option><option value="desktop">데스크톱</option><option value="mobile">모바일</option></select></Field>
-            <div className="user-log-id-filter"><Field label="사용자 ID"><input value={draft.user_id} maxLength={36} autoComplete="off" spellCheck={false} placeholder="전체 UUID · 비우면 전체 사용자" onChange={event => setDraft(value => ({ ...value, user_id: event.target.value }))}/></Field></div>
-          </div>
-          <div className="user-log-filter-footer">
-            <label className="user-log-checkbox"><input type="checkbox" checked={draft.include_admin} onChange={event => setDraft(value => ({ ...value, include_admin: event.target.checked }))}/><span>관리자 이용 기록 포함</span></label>
-            <div className="user-log-actions">
-              <button type="button" className="button secondary" onClick={() => apply(defaultLogFilters())}>조건 초기화</button>
-              <button type="submit" className="button primary" disabled={result.loading}>조회하기</button>
+      <nav className="overview-jump-links" aria-label="이 페이지 바로가기">
+        <a href="#overview-metrics">핵심 지표</a><a href="#overview-usage">방문·전환</a><a href="#overview-pages">화면·이탈</a><a href="#overview-errors">오류</a><a href="#activity-logs">활동 로그</a>
+      </nav>
+      <section className="overview-period" aria-label="전체 조회 기간">
+        <form onSubmit={submitPeriod} noValidate>
+          <div className="overview-period-main">
+            <div className="user-log-presets" role="group" aria-label="빠른 날짜 선택">
+              <button type="button" className="button secondary" onClick={() => apply({ ...selected.filters, from: today, to: today })}>오늘</button>
+              {([7, 30] as const).map(days => <button type="button" key={days} className="button secondary" onClick={() => apply({ ...selected.filters, ...recentLogDates(days) })}>최근 {days}일</button>)}
             </div>
+            <div className="overview-date-fields">
+              <Field label="시작일"><input type="date" value={draft.from} min={oldest} max={today} required onChange={event => setDraft(value => ({ ...value, from: event.target.value }))}/></Field>
+              <Field label="종료일"><input type="date" value={draft.to} min={oldest} max={today} required onChange={event => setDraft(value => ({ ...value, to: event.target.value }))}/></Field>
+              <button type="submit" className="button primary" disabled={result.loading || overview.loading}>기간 적용</button>
+            </div>
+          </div>
+          <div className="overview-period-footer">
+            <label className="user-log-checkbox"><input type="checkbox" checked={draft.include_admin} onChange={event => setDraft(value => ({ ...value, include_admin: event.target.checked }))}/><span>관리자 이용 기록 포함</span></label>
+            <span>{selected.filters.from} ~ {selected.filters.to} · 한국 시간 · {selected.filters.include_admin ? '관리자 기록 포함' : '관리자 기록 제외'}</span>
           </div>
           {validation && <p className="user-log-validation" role="alert">{validation}</p>}
         </form>
-      </Panel>
+      </section>
 
-      <div className="user-log-result-heading">
-        <p><strong>{selected.filters.from} ~ {selected.filters.to}</strong><span>{selected.filters.include_admin ? '관리자 기록 포함' : '관리자 기록 제외'}</span></p>
-        <button type="button" className="button secondary" onClick={refresh} disabled={result.loading}>새로고침</button>
-      </div>
-      {result.loading && <Loading label="관리자 권한을 확인하고 로그를 불러오고 있습니다."/>}
-      {result.error && <LogError error={result.error} retry={result.reload} reauthenticate={() => void reauthenticate()} busy={switching} actionError={switchError}/>}
-      {response && <>
-        <div className="research-stats user-log-stats">
-          <Stat label="기록 수" value={response.summary.events.toLocaleString('ko-KR')} note="선택한 조건에 맞는 전체 기록"/>
-          <Stat label="사용자 수" value={response.summary.users.toLocaleString('ko-KR')} note="기록이 있는 고유 사용자"/>
-          <Stat label="세션 수" value={response.summary.sessions.toLocaleString('ko-KR')} note="세션 ID가 있는 기록 기준"/>
-          <Stat label="활성시간 합계" value={formatActiveTime(response.summary.active_ms)} note="기록된 활성 구간의 합계"/>
-        </div>
-        <Panel title="활동 기록" aside={<span className="user-log-small">최근 기록 순 · 페이지당 50개</span>}>
-          {response.items.length ? <LogRows key={JSON.stringify({ filters: selected.filters, cursor })} items={response.items} filterUser={user_id => apply({ ...selected.filters, user_id })}/>
-            : <div className="user-log-empty" role="status"><span aria-hidden="true">◎</span><h3>조회할 기록이 없습니다</h3><p>{response.consented_users === 0 ? '현재 선택적 이용 통계에 동의한 사용자가 없습니다. 통계 수집에 동의한 사용자가 서비스를 이용하면 기록이 표시됩니다.' : selected.cursors.length > 1 ? '이 페이지의 기록이 더 이상 조회되지 않습니다. 새로고침하여 최신 기록부터 확인해 주세요.' : '선택한 조건에 맞는 이용 기록이 없습니다. 날짜와 필터를 확인해 주세요. 관리자 기록은 기본적으로 제외합니다.'}</p><p>미동의 사용자와 비로그인 방문자는 이 로그에 포함되지 않습니다.</p></div>}
-          <div className="user-log-pagination">
-            <span>{selected.cursors.length}페이지 · {response.items.length}개 표시</span>
-            <div className="user-log-actions">
-              <button type="button" className="button secondary" disabled={selected.cursors.length === 1} onClick={() => setSelected(value => ({ ...value, cursors: value.cursors.slice(0, -1) }))}>이전</button>
-              <button type="button" className="button secondary" disabled={!response.has_more || !response.next_cursor} onClick={() => { if (response.next_cursor) setSelected(value => ({ ...value, cursors: [...value.cursors, response.next_cursor] })); }}>다음</button>
-            </div>
-          </div>
-          <p className="user-log-updated">마지막 조회: <time dateTime={response.generated_at}>{formatLogTime(response.generated_at)}</time> (한국 시간)</p>
-        </Panel>
+      {accessError ? <LogError error={accessError} retry={refresh} reauthenticate={() => void reauthenticate()} busy={switching} actionError={switchError}/> : <>
+        {overview.loading && <OverviewLoading/>}
+        {overview.error && <section className="user-log-error" role="alert"><h2>핵심 지표를 불러오지 못했습니다</h2><p>이용 지표를 확인할 수 없습니다. 아래 활동 기록은 별도로 조회할 수 있습니다.</p><LogError error={overview.error} retry={overview.reload} reauthenticate={() => void reauthenticate()} busy={switching} actionError={switchError}/></section>}
+        {overview.data && <OverviewPanels data={overview.data}/>}
+
+        <section id="activity-logs" className="overview-section" aria-label="상세 활동 로그">
+          <Panel title="활동 기록" aside={<span className="user-log-small">최근 기록 순 · 페이지당 50개</span>}>
+            <p className="overview-note user-log-filter-intro">아래 조건은 활동 기록에만 적용됩니다. 위 지표는 전체 조회 기간과 관리자 포함 설정을 따릅니다.</p>
+            <form className="user-log-detail-filters" onSubmit={submit} noValidate>
+              <div className="user-log-filters">
+                <Field label="활동 유형"><select value={draft.event} onChange={event => setDraft(value => ({ ...value, event: event.target.value as UserLogsFilters['event'] }))}><option value="">전체 활동</option>{userLogEvents.map(name => <option value={name} key={name}>{eventLabels[name]}</option>)}</select></Field>
+                <Field label="화면"><select value={draft.screen} onChange={event => setDraft(value => ({ ...value, screen: event.target.value as UserLogsFilters['screen'] }))}><option value="">전체 화면</option>{userLogScreens.map(screen => <option value={screen} key={screen}>{screenLabels[screen]}</option>)}</select></Field>
+                <Field label="기기"><select value={draft.device} onChange={event => setDraft(value => ({ ...value, device: event.target.value as UserLogsFilters['device'] }))}><option value="">전체 기기</option><option value="desktop">데스크톱</option><option value="mobile">모바일</option></select></Field>
+                <div className="user-log-id-filter"><Field label="사용자 ID"><input value={draft.user_id} maxLength={36} autoComplete="off" spellCheck={false} placeholder="전체 UUID · 비우면 전체 사용자" onChange={event => setDraft(value => ({ ...value, user_id: event.target.value }))}/></Field></div>
+              </div>
+              <div className="user-log-filter-footer"><span className="user-log-small">이메일·검색 내용·질문 원문은 표시하지 않습니다.</span><div className="user-log-actions">
+                <button type="button" className="button secondary" onClick={() => apply({ ...defaultLogFilters(), from: selected.filters.from, to: selected.filters.to, include_admin: selected.filters.include_admin })}>조건 초기화</button>
+                <button type="submit" className="button primary" disabled={result.loading}>조회하기</button>
+              </div></div>
+            </form>
+            {result.loading && <Loading label="관리자 권한을 확인하고 로그를 불러오고 있습니다."/>}
+            {result.error && <LogError error={result.error} retry={result.reload} reauthenticate={() => void reauthenticate()} busy={switching} actionError={switchError}/>}
+            {response && <>
+              <div className="user-log-counts"><span>기록 <strong>{response.summary.events.toLocaleString('ko-KR')}개</strong></span><span>사용자 <strong>{response.summary.users.toLocaleString('ko-KR')}명</strong></span><span>기록된 세션 ID <strong>{response.summary.sessions.toLocaleString('ko-KR')}개</strong></span><span>활성시간 합계 <strong>{formatActiveTime(response.summary.active_ms)}</strong></span></div>
+              {response.items.length ? <LogRows key={JSON.stringify({ filters: selected.filters, cursor })} items={response.items} filterUser={user_id => apply({ ...selected.filters, user_id })}/>
+                : <div className="user-log-empty" role="status"><h3>조회할 기록이 없습니다</h3><p>{response.consented_users === 0 ? '현재 선택적 이용 통계에 동의한 사용자가 없습니다. 통계 수집에 동의한 사용자가 서비스를 이용하면 기록이 표시됩니다.' : selected.cursors.length > 1 ? '이 페이지의 기록이 더 이상 조회되지 않습니다. 새로고침하여 최신 기록부터 확인해 주세요.' : '선택한 조건에 맞는 이용 기록이 없습니다. 날짜와 필터를 확인해 주세요. 관리자 기록은 기본적으로 제외합니다.'}</p><p>미동의 사용자와 비로그인 방문자는 이 로그에 포함되지 않습니다.</p></div>}
+              <div className="user-log-pagination"><span>{selected.cursors.length}페이지 · {response.items.length}개 표시</span><div className="user-log-actions">
+                <button type="button" className="button secondary" disabled={selected.cursors.length === 1} onClick={() => setSelected(value => ({ ...value, cursors: value.cursors.slice(0, -1) }))}>이전</button>
+                <button type="button" className="button secondary" disabled={!response.has_more || !response.next_cursor} onClick={() => { if (response.next_cursor) setSelected(value => ({ ...value, cursors: [...value.cursors, response.next_cursor] })); }}>다음</button>
+              </div></div>
+              <p className="user-log-updated">로그 조회 시각: <time dateTime={response.generated_at}>{formatLogTime(response.generated_at)}</time> (한국 시간)</p>
+            </>}
+          </Panel>
+        </section>
       </>}
-      <div className="user-log-scope">
-        <h2>이 로그에서 확인할 수 있는 범위</h2>
-        <p>선택적 이용 통계에 동의한 로그인 사용자의 최근 90일 기록을 조회합니다. 동의를 철회한 사용자는 조회에서 제외합니다. 새로고침하면 최신 기록을 다시 확인할 수 있습니다.</p>
-        <p>활성시간은 화면이 보이고 사용자가 최근에 조작한 구간에만 쌓입니다. 방문이나 클릭 기록의 0초는 그 시점의 기록이며, 해당 방문 전체의 체류시간을 뜻하지 않습니다. 전체 방문자 수와 비로그인 회원가입 전환율은 이 로그의 집계 범위에 포함되지 않습니다.</p>
-      </div>
+      <details className="user-log-scope"><summary>측정 기준·수집 범위</summary>
+        <p>관리자로 확인된 계정만 조회할 수 있습니다. 선택적 이용 통계에 동의한 로그인 사용자의 최근 90일을 집계하며, 동의를 철회한 사용자는 제외합니다. 수집을 시작하기 전의 방문과 행동 기록은 복원하지 않습니다.</p>
+        <p>비로그인 방문자와 가입 시작 기록이 없어 전체 방문자 수와 회원가입 전환율은 측정하지 않습니다. 오류율은 별도로 기록된 인증 API 요청의 최근 30일 이내 집계이며, 관리자 요청을 포함합니다.</p>
+        <p>요약 지표의 세션은 같은 사용자의 기록된 세션 ID 안에서 30분 이상 활동 공백이 생기면 나눕니다. 상세 로그의 세션 ID 수는 원래 기록된 식별자 수여서 요약 세션 수와 다를 수 있습니다.</p>
+      </details>
     </div>
   );
 }
