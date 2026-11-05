@@ -1,0 +1,63 @@
+.user-log-page{--log-muted:#637188;font-size:15px;line-height:1.65;min-width:0}
+.user-log-page .research-heading h1{font-size:30px}
+.user-log-page .research-heading>div>span{font-size:15px;color:var(--log-muted)}
+.user-log-page .research-panel{padding:24px}
+.user-log-page .research-panel h2{font-size:17px}
+.user-log-page .research-field{font-size:13px}
+.user-log-page .research-field input,.user-log-page .research-field select{font-size:14px;min-height:44px}
+.user-log-page .button{font-size:14px;min-height:42px}
+.user-log-page button:focus-visible,.user-log-page input:focus-visible,.user-log-page select:focus-visible,.user-log-page a:focus-visible,.user-log-table-wrap:focus-visible{outline:3px solid #8ea5f4;outline-offset:3px}
+.user-log-privacy{display:flex;gap:12px;align-items:flex-start;color:#425b82;background:#edf3ff;border:1px solid #dce6fa;padding:14px 18px;border-radius:8px;margin-bottom:22px;font-size:13px}
+.user-log-privacy>span{color:#3158d5;font-size:10px;padding-top:5px}
+.user-log-privacy p{margin:0}
+.user-log-small{color:var(--log-muted);font-size:12px}
+.user-log-presets{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.user-log-presets>span{font-size:12px;color:var(--log-muted);margin-left:6px}
+.user-log-filters{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.user-log-id-filter{grid-column:span 3;min-width:0}
+.user-log-filter-footer{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:20px;padding-top:18px;border-top:1px solid #e9edf4}
+.user-log-checkbox{display:flex;align-items:center;gap:9px;font-size:14px;color:#44536b;cursor:pointer}
+.user-log-checkbox input{width:17px;height:17px;accent-color:#3158d5}
+.user-log-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.user-log-validation{font-size:14px;color:#a43838;margin:12px 0 0}
+.user-log-result-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:24px 0 18px}
+.user-log-result-heading p{margin:0;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.user-log-result-heading strong{font-size:15px;color:#34435c}
+.user-log-result-heading p>span{font-size:12px;background:#e9edf5;color:#53647f;padding:3px 10px;border-radius:5px}
+.user-log-stats .research-stat>span{font-size:14px;color:#627189}
+.user-log-stats .research-stat small{font-size:12px;color:#738098}
+.user-log-stats .research-stat strong{font-size:26px;line-height:1.35;overflow-wrap:anywhere}
+.user-log-table-wrap{max-width:100%;overflow-x:auto;border:1px solid #e8edf4;border-radius:7px}
+.user-log-table{width:100%;min-width:880px;border-collapse:collapse;white-space:nowrap;font-size:13px;line-height:1.6}
+.user-log-table th{text-align:left;background:#f6f8fc;font-weight:600;color:#56677f;padding:13px 14px;border-bottom:1px solid #e4eaf3}
+.user-log-table td{padding:14px;border-bottom:1px solid #e9edf4;color:#3d4e68;vertical-align:middle}
+.user-log-table tbody tr:last-child td{border-bottom:0}
+.user-log-table time{font-variant-numeric:tabular-nums;font-size:12px}
+.user-log-user{color:#3158d5;font-weight:600;font-size:13px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;padding:3px 0;border:0;background:none;text-decoration:underline;text-underline-offset:3px}
+.user-log-admin-badge{display:block;width:max-content;font-size:10px;padding:1px 6px;border-radius:4px;color:#647080;background:#edf0f5;margin-top:3px}
+.user-log-event{color:#344866;font-size:13px;font-weight:500}
+.user-log-duration{font-variant-numeric:tabular-nums}
+.user-log-detail-button{font:inherit;background:#fff;border:1px solid #d8e1ef;border-radius:5px;padding:5px 10px;color:#3158d5;min-height:34px}
+.user-log-detail-row td{background:#f8faff;white-space:normal}
+.user-log-detail-row dl{margin:0;display:grid;grid-template-columns:1fr 1fr;gap:10px 26px;max-width:960px}
+.user-log-detail-row dl>div{display:grid;grid-template-columns:95px minmax(0,1fr);gap:10px}
+.user-log-detail-row dt{color:#6f7d92;font-size:12px}
+.user-log-detail-row dd{margin:0;color:#324762;font-size:12px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}
+.user-log-pagination{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:20px}
+.user-log-pagination>span,.user-log-updated{font-size:12px;color:var(--log-muted)}
+.user-log-updated{margin:14px 0 0}
+.user-log-empty{text-align:center;display:grid;justify-items:center;align-content:center;min-height:260px;padding:26px 20px;background:#fbfcfe;border:1px dashed #dae3f1;border-radius:8px}
+.user-log-empty>span{font-size:34px;color:#8b9bb4;line-height:1.3}
+.user-log-empty h3{font-size:17px;color:#445976;margin:10px 0}
+.user-log-empty p{font-size:14px;line-height:1.8;color:#718097;max-width:570px;margin:3px 0}
+.user-log-error{background:#fff7f6;border:1px solid #f2d5d1;border-radius:9px;padding:22px;margin:20px 0;color:#743c3c}
+.user-log-error h1,.user-log-error h2{font-size:18px;line-height:1.5;margin:0 0 10px}
+.user-log-error p{font-size:14px;line-height:1.8;margin:0 0 16px}
+.user-log-error .user-log-reference{margin:18px 0 0;font-size:12px;color:#8a615f;overflow-wrap:anywhere}
+.user-log-link{color:#3158d5;text-decoration:underline;text-underline-offset:4px;font-size:13px}
+.user-log-scope{padding:4px 2px 12px;color:#748198;font-size:13px;line-height:1.9}
+.user-log-scope h2{font-size:14px;color:#52647f;margin:0 0 7px}
+.user-log-scope p{margin:5px 0}
+@media(max-width:1200px){.user-log-filters{grid-template-columns:repeat(3,minmax(0,1fr))}.user-log-id-filter{grid-column:span 2}}
+@media(max-width:700px){.user-log-page .research-heading h1{font-size:26px}.user-log-page .research-panel{padding:18px}.user-log-filters{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.user-log-id-filter{grid-column:span 2}.user-log-filter-footer{align-items:flex-start;flex-direction:column}.user-log-filter-footer>.user-log-actions{width:100%;justify-content:flex-end}.user-log-presets>span{width:100%;margin:0}.user-log-privacy{padding:12px 14px}.user-log-result-heading{align-items:flex-start}.user-log-result-heading p{display:grid;gap:6px}.user-log-result-heading p>span{width:max-content}.user-log-stats{gap:10px}.user-log-stats .research-stat strong{font-size:23px}.user-log-pagination{flex-wrap:wrap}.user-log-table{min-width:820px}.user-log-detail-row dl{grid-template-columns:1fr}.user-log-page .research-panel>header{align-items:flex-start;flex-wrap:wrap;gap:7px}}
+@media(prefers-reduced-motion:reduce){.user-log-page *{scroll-behavior:auto}}

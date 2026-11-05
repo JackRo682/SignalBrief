@@ -1,4 +1,5 @@
 import type {SupabaseClient} from '@supabase/supabase-js';
+import {safeSignInReturn} from './auth-return';
 let flight:{code:string;promise:Promise<string>}|null=null;
 export function completeOAuth(db:SupabaseClient,url:string):Promise<string>{
  const params=new URL(url).searchParams;
@@ -10,7 +11,7 @@ export function completeOAuth(db:SupabaseClient,url:string):Promise<string>{
   const exchange=await db.auth.exchangeCodeForSession(code,flowId?{flowId}:undefined);
   if(exchange.error)throw new Error('oauth_code_exchange_failed');
   const verified=await db.auth.getUser();if(verified.error||!verified.data.user)throw new Error('oauth_session_verification_failed');
-  return params.get('next')==='reset-password'?'/reset-password':'/today';
+  return params.get('next')==='reset-password'?'/reset-password':safeSignInReturn(params.get('next'));
  })();flight={code,promise};return promise;
 }
 export function resetOAuthForTests(){flight=null;}

@@ -40,3 +40,41 @@ test('nine admin pages render real empty states and responsive navigation',async
 test('non-admin cannot open the console or fetch admin data',async({page})=>{const f=await fixture(page,false);await page.goto('/ops/evaluations');await expect(page.getByText('관리자만 접근할 수 있습니다.',{exact:false})).toBeVisible();expect(f.calls).toEqual([]);});
 test('study consent, exposure, answer, and withdrawal flow',async({page})=>{const f=await fixture(page,false);await page.goto(`/study/${id}`);await expect(page.getByRole('heading',{name:'연구 참여 동의'})).toBeVisible();expect(f.calls).not.toContain('expose');await page.getByRole('checkbox').check();await page.getByRole('button',{name:'동의하고 참여하기'}).click();await page.getByLabel('매출 숫자는 무엇인가요?').fill('123');await page.getByRole('button',{name:'답변 제출'}).click();await expect(page.getByRole('heading',{name:'참여해 주셔서 감사합니다'})).toBeVisible();expect(f.calls.indexOf('expose')).toBeLessThan(f.calls.indexOf('submit'));await page.getByRole('button',{name:'참여 철회 및 응답 삭제'}).click();await expect(page.getByRole('heading',{name:'참여를 철회했습니다'})).toBeVisible();expect(f.withdrawn).toBe(true);expect(f.base.state.runtimeErrors).toEqual([]);});
 test('reports download current consent-checked JSON',async({page})=>{const f=await fixture(page);await page.goto('/ops/reports');await expect(page.getByRole('heading',{name:'실험·평가 보고서'})).toBeVisible();const downloaded=page.waitForEvent('download');await page.getByRole('button',{name:'JSON 내보내기'}).click();expect((await downloaded).suggestedFilename()).toContain('.json');expect(f.calls.filter(c=>c==='reports').length).toBeGreaterThanOrEqual(2);});
+
+test('private user logs show filtered records and safe details on desktop and mobile',async({page})=>{
+ const f=await fixture(page);
+ const user='10000000-0000-4000-8000-000000000777';
+ const queries:Record<string,unknown>[]=[];
+ await page.route('**/api/admin/user-logs',async route=>{
+  const p=route.request().postDataJSON();queries.push(p);
+  await route.fulfill({json:{items:[{id:'usage:20000000-0000-4000-8000-000000000777',created_at:'2026-11-05T01:00:00Z',user_id:user,event:'view',screen:'today',device:'desktop',session_id:'30000000-0000-4000-8000-000000000777',page_id:'40000000-0000-4000-8000-000000000777',active_ms:0,source:'usage',is_admin:false}],next_cursor:null,has_more:false,summary:{events:1,users:1,sessions:1,active_ms:0},retention_days:90,timezone:'Asia/Seoul',consented_users:1,generated_at:'2026-11-05T01:00:00Z'}});
+ });
+ await page.goto('/ops/user-logs');
+ await expect(page.getByRole('heading',{name:'사용자 활동 로그',exact:true})).toBeVisible();
+ await expect(page.getByRole('region',{name:'사용자 활동 로그 목록'})).toBeVisible();
+ expect(queries[0].include_admin).toBe(false);
+ await page.getByRole('button',{name:/화면 방문 상세/}).click();
+ await expect(page.getByText('30000000-0000-4000-8000-000000000777',{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:`사용자 ${user}로 필터`}).click();
+ await expect.poll(()=>queries.at(-1)?.user_id).toBe(user);
+ await page.getByLabel('관리자 이용 기록 포함').check();
+ await page.getByRole('button',{name:'조회하기',exact:true}).click();
+ await expect.poll(()=>queries.at(-1)?.include_admin).toBe(true);
+ await expect(page.getByRole('button',{name:'다음',exact:true})).toBeDisabled();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)).toBe(true);
+ expect(f.base.state.runtimeErrors).toEqual([]);
+});
+
+test('user logs deny non-admin requests and show recoverable permission errors',async({page})=>{
+ const f=await fixture(page,false);let reads=0;
+ await page.route('**/api/admin/user-logs',async route=>{reads++;await route.fulfill({status:403,json:{error:{code:'admin_required'}}});});
+ await page.goto('/ops/user-logs');
+ await expect(page.getByRole('heading',{name:'관리자 권한이 필요합니다'})).toBeVisible();
+ expect(reads).toBe(0);
+ f.base.state.profile.is_admin=true;
+ await page.reload();
+ await expect(page.getByRole('heading',{name:'사용자 로그에 접근할 수 없습니다'})).toBeVisible();
+ await expect(page.getByRole('button',{name:'다른 계정으로 로그인',exact:true})).toBeVisible();
+ await expect(page.getByRole('region',{name:'사용자 활동 로그 목록'})).toHaveCount(0);
+ expect(reads).toBe(1);
+});

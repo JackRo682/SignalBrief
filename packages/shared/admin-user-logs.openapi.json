@@ -1,0 +1,727 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SignalBrief Administrator User Activity Logs API",
+    "version": "1.0.0",
+    "description": "Next.js route contract. Request and success-response schemas are generated from the production Zod contracts; cross-field refinements are documented and encoded where JSON Schema supports them."
+  },
+  "servers": [
+    {
+      "url": "https://signalbrief.online"
+    }
+  ],
+  "x-zod-source": "apps/web/src/admin-logs/contracts.ts",
+  "x-handler-source": "apps/web/src/app/api/admin/user-logs/route.ts",
+  "paths": {
+    "/api/admin/user-logs": {
+      "post": {
+        "operationId": "listAdminUserLogs",
+        "summary": "Read consented user activity logs as an administrator",
+        "description": "Requires a verified account on the trusted server-side administrator allowlist. The API verifies the bearer token and membership; the database rechecks the current unrevoked session, membership, MFA when enrolled, and input bounds. A supplied Origin must match the application origin. Read-only, fixed 50-row pages; ordering is created_at descending then stable source-prefixed id descending. The request body is limited to 4096 bytes. This endpoint does not enable analytics consent or collect additional events.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLogsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authorized, validated activity records and filtered summary. An empty items array is a successful result.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/PrivateNoStore"
+              },
+              "Vary": {
+                "$ref": "#/components/headers/VaryAuthorization"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserLogsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication missing, invalid, expired, or revoked. Reauthenticate before retrying.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/PrivateNoStore"
+              },
+              "Vary": {
+                "$ref": "#/components/headers/VaryAuthorization"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Administrator membership, verified account, enrolled MFA, or same-origin requirement failed. No logs are returned.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/PrivateNoStore"
+              },
+              "Vary": {
+                "$ref": "#/components/headers/VaryAuthorization"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "JSON request exceeds the 4096-byte body limit.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/PrivateNoStore"
+              },
+              "Vary": {
+                "$ref": "#/components/headers/VaryAuthorization"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Content-Type must be application/json.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/PrivateNoStore"
+              },
+              "Vary": {
+                "$ref": "#/components/headers/VaryAuthorization"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Malformed JSON, unknown fields, invalid filters/cursor, or invalid inclusive date range.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/PrivateNoStore"
+              },
+              "Vary": {
+                "$ref": "#/components/headers/VaryAuthorization"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit reached. Wait for Retry-After before making another request.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/PrivateNoStore"
+              },
+              "Vary": {
+                "$ref": "#/components/headers/VaryAuthorization"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/RequestId"
+              },
+              "Retry-After": {
+                "description": "Seconds to wait before retrying.",
+                "schema": {
+                  "type": "integer",
+                  "const": 30
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The database response failed the server-side success-response contract. No partial records are returned.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/PrivateNoStore"
+              },
+              "Vary": {
+                "$ref": "#/components/headers/VaryAuthorization"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Configuration, authentication service, permission lookup, or log query is temporarily unavailable. Access fails closed.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/PrivateNoStore"
+              },
+              "Vary": {
+                "$ref": "#/components/headers/VaryAuthorization"
+              },
+              "X-Request-ID": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Supabase access token for the signed-in user. No service-role key is accepted from clients."
+      }
+    },
+    "headers": {
+      "PrivateNoStore": {
+        "description": "Private responses must never be cached.",
+        "schema": {
+          "type": "string",
+          "const": "private, no-store, max-age=0"
+        }
+      },
+      "VaryAuthorization": {
+        "schema": {
+          "type": "string",
+          "const": "Authorization"
+        }
+      },
+      "RequestId": {
+        "description": "Safe correlation identifier for support.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "schemas": {
+      "UserLogsRequest": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+          },
+          "to": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": ""
+              },
+              {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              }
+            ]
+          },
+          "event": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": ""
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "view",
+                  "click",
+                  "heartbeat",
+                  "conversion",
+                  "sign_up",
+                  "login",
+                  "onboarding_started",
+                  "watchlist_added",
+                  "onboarding_completed",
+                  "brief_impression",
+                  "brief_opened",
+                  "evidence_opened",
+                  "followup_asked",
+                  "alert_created",
+                  "feedback_submitted"
+                ]
+              }
+            ]
+          },
+          "screen": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": ""
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "today",
+                  "explore",
+                  "search",
+                  "watchlist",
+                  "portfolio",
+                  "timeline",
+                  "questions",
+                  "calendar",
+                  "alerts",
+                  "saved",
+                  "settings",
+                  "onboarding",
+                  "company",
+                  "event",
+                  "document",
+                  "help"
+                ]
+              }
+            ]
+          },
+          "device": {
+            "type": "string",
+            "enum": [
+              "",
+              "desktop",
+              "mobile"
+            ]
+          },
+          "include_admin": {
+            "type": "boolean"
+          },
+          "cursor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserLogCursor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "user_id",
+          "event",
+          "screen",
+          "device",
+          "include_admin",
+          "cursor"
+        ],
+        "additionalProperties": false,
+        "description": "All fields are required. Dates are inclusive Asia/Seoul calendar dates; from must be no later than to, and the inclusive span must be at most 90 days. The database additionally restricts results to its rolling 90-day retention window. Empty user_id, event, screen, or device strings mean no filter. include_admin=false excludes all administrator traffic. Cursor must be null for the first page or the exact next_cursor from the preceding response.",
+        "x-validation": {
+          "timezone": "Asia/Seoul",
+          "inclusiveDateRange": true,
+          "maximumCalendarDays": 90,
+          "maximumRequestBytes": 4096,
+          "pageSize": 50,
+          "additionalPropertiesAllowed": false
+        }
+      },
+      "UserLogsResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "maxItems": 50,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserLog"
+            }
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserLogCursor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "events": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "users": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "sessions": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "active_ms": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "events",
+              "users",
+              "sessions",
+              "active_ms"
+            ],
+            "additionalProperties": false
+          },
+          "retention_days": {
+            "type": "number",
+            "const": 90
+          },
+          "timezone": {
+            "type": "string",
+            "const": "Asia/Seoul"
+          },
+          "consented_users": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "has_more",
+          "summary",
+          "retention_days",
+          "timezone",
+          "consented_users",
+          "generated_at"
+        ],
+        "additionalProperties": false,
+        "description": "Only current consented users are included. Summary covers all matching records before pagination, not just the current page. Sessions count only records with a session ID. active_ms is accumulated recorded active time, not full elapsed dwell time. No anonymous visits, emails, raw search/question text, or free-form properties are returned.",
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "has_more": {
+                  "const": true
+                }
+              },
+              "required": [
+                "has_more"
+              ]
+            },
+            "then": {
+              "properties": {
+                "next_cursor": {
+                  "$ref": "#/components/schemas/UserLogCursor"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "next_cursor": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "UserLog": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "pattern": "^(usage|product):[A-Za-z0-9_-]+$"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "event": {
+            "type": "string",
+            "enum": [
+              "view",
+              "click",
+              "heartbeat",
+              "conversion",
+              "sign_up",
+              "login",
+              "onboarding_started",
+              "watchlist_added",
+              "onboarding_completed",
+              "brief_impression",
+              "brief_opened",
+              "evidence_opened",
+              "followup_asked",
+              "alert_created",
+              "feedback_submitted"
+            ]
+          },
+          "screen": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "today",
+                  "explore",
+                  "search",
+                  "watchlist",
+                  "portfolio",
+                  "timeline",
+                  "questions",
+                  "calendar",
+                  "alerts",
+                  "saved",
+                  "settings",
+                  "onboarding",
+                  "company",
+                  "event",
+                  "document",
+                  "help"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "device": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "desktop",
+                  "mobile",
+                  "unknown"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "session_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "page_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "active_ms": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Recorded active time in milliseconds; null means this event does not measure active time. Zero is a measured event value, not an unknown value."
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "usage",
+              "product"
+            ]
+          },
+          "is_admin": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "user_id",
+          "event",
+          "screen",
+          "device",
+          "session_id",
+          "page_id",
+          "active_ms",
+          "source",
+          "is_admin"
+        ],
+        "additionalProperties": false
+      },
+      "UserLogCursor": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+          },
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "pattern": "^(usage|product):[A-Za-z0-9_-]+$"
+          }
+        },
+        "required": [
+          "created_at",
+          "id"
+        ],
+        "additionalProperties": false,
+        "description": "Descending keyset pagination uses the pair (created_at, id); pass this object unchanged."
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "error",
+          "request_id"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "authentication_required",
+                  "invalid_or_expired_session",
+                  "session_revoked",
+                  "admin_required",
+                  "mfa_required",
+                  "verified_account_required",
+                  "origin_not_allowed",
+                  "json_required",
+                  "body_too_large",
+                  "invalid_input",
+                  "invalid_date_range",
+                  "invalid_filter",
+                  "invalid_cursor",
+                  "rate_limit_exceeded",
+                  "activity_logs_configuration_missing",
+                  "authentication_unavailable",
+                  "permission_check_unavailable",
+                  "activity_logs_unavailable",
+                  "invalid_activity_response"
+                ]
+              }
+            }
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Same identifier as the X-Request-ID response header."
+          }
+        }
+      }
+    }
+  }
+}

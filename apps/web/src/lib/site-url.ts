@@ -1,3 +1,5 @@
+import { signInReturnFromUrl } from './auth-return';
+
 export const PRODUCTION_SITE = 'https://signalbrief.online';
 
 export function siteOrigin(current: string, configured: string | undefined, production: boolean): string {
@@ -14,9 +16,11 @@ export async function startGoogleLogin(
   current: string, canonical: string, navigate: (url: string) => void,
   login: (redirectTo: string) => Promise<void>,
 ): Promise<void> {
+  const next = signInReturnFromUrl(current);
+  const suffix = next === '/today' ? '' : `?next=${encodeURIComponent(next)}`;
   if (new URL(current).origin !== canonical) {
-    navigate(`${canonical}/login`);
+    navigate(`${canonical}/login${suffix}`);
     return;
   }
-  await login(`${canonical}/auth/callback`);
+  await login(`${canonical}/auth/callback${suffix}`);
 }

@@ -115,6 +115,7 @@ export default function RedesignShell({ children }: { children: ReactNode }) {
               <Link href="/settings/notifications">알림 설정</Link>
               <Link href="/help">도움말</Link>
               {auth.me.is_admin && <Link href="/ops">운영 콘솔</Link>}
+              {auth.me.is_admin && <Link href="/ops/user-logs">사용자 활동 로그</Link>}
               <button
                 type="button"
                 disabled={action.busy}

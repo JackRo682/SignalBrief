@@ -74,9 +74,17 @@
     "apps/web/src/lib/runtime-config.ts",
     "apps/web/src/screens/ops.tsx",
     "apps/web/src/screens/ops-document.tsx",
-    "apps/web/src/screens/ops-run.tsx"
+    "apps/web/src/screens/ops-run.tsx",
+    "apps/web/src/admin-logs",
+    "apps/web/src/app/api/admin",
+    "apps/web/src/lib/auth-return.ts",
+    "apps/web/src/lib/site-url.ts"
   ],
   "protected_files": {
+    "apps/web/src/admin-logs/client.ts": "652ce7e53eba31a809ccdff087fa98089bf1f111281d725896f588edc82e65e0",
+    "apps/web/src/admin-logs/contracts.ts": "df165e9d5c6b50fb7bf7a71ce677d29e7e644c097061ebb916555258b580e78f",
+    "apps/web/src/admin-logs/page.tsx": "94449f8d3fc682cca929ed70a310b2d2681909d64e267ae9d9efbbd999804559",
+    "apps/web/src/admin-logs/styles.css": "6766137dace1cdb098b43a58b27fa99d5668b28472db812b57dcf037fb7be083",
     "apps/web/src/app/(workspace)/ops/analytics/page.tsx": "7e9a076949a0081e5d59cecd82672555bbda40ec550bd04377217d8a91e17f90",
     "apps/web/src/app/(workspace)/ops/documents/[id]/page.tsx": "8a092635af6adfba1bd2b3e6fb5efadfd75e4104b94a53a123190360a4e85504",
     "apps/web/src/app/(workspace)/ops/evaluations/datasets/[id]/page.tsx": "154461ddbb1f5fde85e834ddd85cd36e2f7561049c78e3f632c5b10d6510d026",
@@ -89,9 +97,11 @@
     "apps/web/src/app/(workspace)/ops/reliability/page.tsx": "040ba1d72cd720fbc7c59cceb4e2308be2aa353397b8039427d0f4c1af7be4ae",
     "apps/web/src/app/(workspace)/ops/reports/page.tsx": "44d27bd82f4535884f699f518a0de763f316a475993a38c8199c33de8b1dda27",
     "apps/web/src/app/(workspace)/ops/runs/[id]/page.tsx": "4c0afb109b7a0b5e10e1c58e2643c33a1f1be6d3f3ed164a51d3b1e1ff109915",
+    "apps/web/src/app/(workspace)/ops/user-logs/page.tsx": "6582aaa16863d0e028e82b38f5a050bf80ea4214f4963a0673abd5361c9389c7",
     "apps/web/src/app/(workspace)/us/page.tsx": "646fb49e8cb35ebd6305611c834b09ba55dbea7e25079b0e0357315a7ce78fb4",
     "apps/web/src/app/about/page.tsx": "4c912bd7995480649e24841c13ef2cf371755b08e390ebda44276d1d7baecb87",
     "apps/web/src/app/account-marketing.css": "b72e43d5b87ba0ccfb81d028e7e893a8d4a9baf886f426933ba02f272b67351e",
+    "apps/web/src/app/api/admin/user-logs/route.ts": "7ec7542637982752461f7bd0af8138d4377bed0c9fdbe417b8a9da706699fb65",
     "apps/web/src/app/api/auth-config/route.ts": "4caba149ed3c6883b6b442a49f125cac18a24151ac8ff94394744d5ca7cab185",
     "apps/web/src/app/api/research/route.ts": "aeb1ad9fdcc5db4820e99bce270a1537dab6c80ee0cba3e6796a49ca125b1654",
     "apps/web/src/app/api/us/[...path]/route.ts": "3d8262b6190871df6608c58a3090295420c11d364b6e0e9325342513221f23b4",
@@ -115,8 +125,8 @@
     "apps/web/src/app/study/[id]/page.tsx": "bcb9aaa59b4800a17055c2a79936ca09b64980d518a6994e0baa9493bff3ce8c",
     "apps/web/src/app/terms/page.tsx": "7785398382441416bb0bc2ad0e1d24b416c72ebb3d5a60d4996dbfe26cefda8d",
     "apps/web/src/components/auth-layout.tsx": "2592f83a1ef65eabf0d342edc81572710e724ea922b8d307b767646fb0316f9f",
-    "apps/web/src/components/auth.tsx": "76d85bc380bba967c89c408c2e6a0b723655bc5132ddffd06254b31b264c7b01",
-    "apps/web/src/components/login-form.tsx": "b1b15afc8f8593881687f625e9ac6d305ee337f08c66d5f0b064737436253f73",
+    "apps/web/src/components/auth.tsx": "6ef895d699be87a4fb9ab3406d1528a12eb1df565b12b85e772733350fa97c15",
+    "apps/web/src/components/login-form.tsx": "fab3451ca155afe6b9df9183bf91662fe85dfba9c78698716eec6f059283471e",
     "apps/web/src/components/marketing/actions.tsx": "16c728a7d9a037a22832115cc0e0ebdebe25097f265ef508df88ea53c92e2e14",
     "apps/web/src/components/marketing/design.tsx": "7835ae7837e9b758acc721252544566d5f7c250848bca76e2cf8707768a057bb",
     "apps/web/src/components/marketing/header.tsx": "8b4c4c1576e2b857a5e7a2eef2a517870e84415e3977a8bc9b4cbdc9c6d809dd",
@@ -137,8 +147,10 @@
     "apps/web/src/components/reset-password-form.tsx": "5f0dfcf94eeb67b0b99f622f4c2a963e885ebff712cf41218a9369a592366d5b",
     "apps/web/src/lib/api.ts": "87d5f019e66f68af853669444b63cf47526047aafd10b3dee05a423b84dc3379",
     "apps/web/src/lib/auth-policy.ts": "8cdd93f809d03afb2ad09599168cd7bf83aca9363a754f2eeec7ea83401aff8c",
-    "apps/web/src/lib/oauth-callback.ts": "8a79020329aa1d166978ae19b76ee2e9521f6fa19c93f20a8819f8fa7de713e7",
+    "apps/web/src/lib/auth-return.ts": "3e70eec35e77f969be6bd14f0a49ab54d9e3e3643db8e6544f213c7e0e7eb94a",
+    "apps/web/src/lib/oauth-callback.ts": "700285038d69104a7d5f9fe0685cfff9bc45aecf21510b653299754352543141",
     "apps/web/src/lib/runtime-config.ts": "0046bfdb2556a92d0f504031abaec7e50c1dc38068b493c24ecf666f53b5c5e2",
+    "apps/web/src/lib/site-url.ts": "c768181d63cef960270f886369a61db1bff1a4ce8aa74fec33c84c98d9d413ba",
     "apps/web/src/lib/supabase.ts": "e9b5f56864fc58ffc67078fd1cdb78ea4abe2c7f99f1f74472bf30b0e6116385",
     "apps/web/src/reference/controller.ts": "8eb2fc94ffdca27b3ccefcbd1ca3512e7111acd9bfe132b6cee7a941d95a6812",
     "apps/web/src/reference/legacy-summaries.ts": "6b1783e5f02f94a8a27129700addcac1e148df32d6d365e2dfd98909ad9be8b8",
@@ -158,9 +170,9 @@
     "apps/web/src/research/evaluations.tsx": "c87edaf6c1a2a0477b215b5ca05d2b6691fa80925cfbc3a9443cc299e26e09c9",
     "apps/web/src/research/experiments.tsx": "25cc2d3fc75e96294a5e82c008c8fb323df15718f8a364e89b03d19eb30e2230",
     "apps/web/src/research/operations.tsx": "1bc91299886aa0d088243d8f2003daca879847148ee90d94d2935472b325c198",
-    "apps/web/src/research/ops-links.tsx": "27581e94871755ed084b12378fe5d0bc240840d531add7b1c5d49874a23043c6",
-    "apps/web/src/research/research.css": "502202291c113f5af7f212a6bef223f2819ce25196775a533e9a14a0d451bb11",
-    "apps/web/src/research/shell.tsx": "6ebd5ddd6d092beb6f6eef009d53d509f39faf184fe123785eb0b7ca4739c03d",
+    "apps/web/src/research/ops-links.tsx": "347f5ce77d6f4575be70c5ce6d0d4e7717e5674caeb1378625e2322bc0033e1c",
+    "apps/web/src/research/research.css": "60b2f2dfea762b4c53d84073c20fff3bb16b9da0047dd768b9a0e061a6155cee",
+    "apps/web/src/research/shell.tsx": "b9595037f25270afd7b785b4bbc4766b1c039c28b1e18371885c4d406b2e35f7",
     "apps/web/src/research/study.tsx": "52c62eaaa7b90ecc8720000977fe5751d10635ef9e1aaa6807ce1367f9313468",
     "apps/web/src/research/tracker.tsx": "a551445bc98684655fa6ea8ad0ca4122d263cc17e917c7dff57c694ec9701e33",
     "apps/web/src/research/ui.tsx": "6338289b661d5c24185104647b54fdb999a74874caee729968562a969cd591b7",
@@ -215,5 +227,72 @@
     "apps/web/src/mobile/watchlist.tsx": "marketData",
     "apps/web/src/app/(workspace)/portfolio/page.tsx": "portfolio",
     "apps/web/src/app/(workspace)/onboarding/page.tsx": "portfolio"
-  }
+  },
+  "reviewed_admin_activity_revisions": [
+    {
+      "date": "2026-11-05",
+      "authorization": "User requested one administrator-only user activity log page for the existing verified administrator account and normal handling for inability to access the administrator area. This revision covers that page, its protected API, navigation, and required authentication/session recovery. The private account identifier is not published in this repository.",
+      "production_baseline_commit": "3a6548955b42057c531c2c5fa1858fd36af89e4b",
+      "reviewed_files": {
+        "apps/web/src/admin-logs/client.ts": {
+          "before_sha256": null,
+          "after_sha256": "652ce7e53eba31a809ccdff087fa98089bf1f111281d725896f588edc82e65e0"
+        },
+        "apps/web/src/admin-logs/contracts.ts": {
+          "before_sha256": null,
+          "after_sha256": "df165e9d5c6b50fb7bf7a71ce677d29e7e644c097061ebb916555258b580e78f"
+        },
+        "apps/web/src/admin-logs/page.tsx": {
+          "before_sha256": null,
+          "after_sha256": "94449f8d3fc682cca929ed70a310b2d2681909d64e267ae9d9efbbd999804559"
+        },
+        "apps/web/src/admin-logs/styles.css": {
+          "before_sha256": null,
+          "after_sha256": "6766137dace1cdb098b43a58b27fa99d5668b28472db812b57dcf037fb7be083"
+        },
+        "apps/web/src/app/(workspace)/ops/user-logs/page.tsx": {
+          "before_sha256": null,
+          "after_sha256": "6582aaa16863d0e028e82b38f5a050bf80ea4214f4963a0673abd5361c9389c7"
+        },
+        "apps/web/src/app/api/admin/user-logs/route.ts": {
+          "before_sha256": null,
+          "after_sha256": "7ec7542637982752461f7bd0af8138d4377bed0c9fdbe417b8a9da706699fb65"
+        },
+        "apps/web/src/components/auth.tsx": {
+          "before_sha256": "76d85bc380bba967c89c408c2e6a0b723655bc5132ddffd06254b31b264c7b01",
+          "after_sha256": "6ef895d699be87a4fb9ab3406d1528a12eb1df565b12b85e772733350fa97c15"
+        },
+        "apps/web/src/components/login-form.tsx": {
+          "before_sha256": "b1b15afc8f8593881687f625e9ac6d305ee337f08c66d5f0b064737436253f73",
+          "after_sha256": "fab3451ca155afe6b9df9183bf91662fe85dfba9c78698716eec6f059283471e"
+        },
+        "apps/web/src/lib/auth-return.ts": {
+          "before_sha256": null,
+          "after_sha256": "3e70eec35e77f969be6bd14f0a49ab54d9e3e3643db8e6544f213c7e0e7eb94a"
+        },
+        "apps/web/src/lib/oauth-callback.ts": {
+          "before_sha256": "8a79020329aa1d166978ae19b76ee2e9521f6fa19c93f20a8819f8fa7de713e7",
+          "after_sha256": "700285038d69104a7d5f9fe0685cfff9bc45aecf21510b653299754352543141"
+        },
+        "apps/web/src/lib/site-url.ts": {
+          "before_sha256": null,
+          "after_sha256": "c768181d63cef960270f886369a61db1bff1a4ce8aa74fec33c84c98d9d413ba"
+        },
+        "apps/web/src/research/ops-links.tsx": {
+          "before_sha256": "27581e94871755ed084b12378fe5d0bc240840d531add7b1c5d49874a23043c6",
+          "after_sha256": "347f5ce77d6f4575be70c5ce6d0d4e7717e5674caeb1378625e2322bc0033e1c"
+        },
+        "apps/web/src/research/research.css": {
+          "before_sha256": "502202291c113f5af7f212a6bef223f2819ce25196775a533e9a14a0d451bb11",
+          "after_sha256": "60b2f2dfea762b4c53d84073c20fff3bb16b9da0047dd768b9a0e061a6155cee"
+        },
+        "apps/web/src/research/shell.tsx": {
+          "before_sha256": "6ebd5ddd6d092beb6f6eef009d53d509f39faf184fe123785eb0b7ca4739c03d",
+          "after_sha256": "b9595037f25270afd7b785b4bbc4766b1c039c28b1e18371885c4d406b2e35f7"
+        }
+      },
+      "evidence": "docs/ADMIN_USER_LOGS_2026-11-05.md",
+      "guard_changes": "No verifier assertions or retained feature protections changed."
+    }
+  ]
 }

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "./auth";
 import { initializeSupabase } from "@/lib/supabase";
 import { siteOrigin } from "@/lib/site-url";
+import { signInReturnFromUrl } from "@/lib/auth-return";
 import { Icon } from "./icons";
 import {Brand} from "./marketing/layout";
 import {SecurityPicture,PasswordEye} from "./marketing/screenshot-preview";
@@ -48,7 +49,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
 
   useEffect(() => {
     if (auth.me) {
-      router.replace(auth.me.onboarding_completed ? "/today" : "/onboarding");
+      router.replace(auth.me.onboarding_completed ? signInReturnFromUrl(location.href) : "/onboarding");
     }
   }, [auth.me, router]);
 
@@ -88,7 +89,8 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
       );
       const callback = `${canonical}/auth/callback`;
       if (location.origin !== canonical) {
-        location.assign(`${canonical}/${mode === 'reset' ? 'forgot-password' : mode}`);
+        const next = signInReturnFromUrl(location.href);
+        location.assign(`${canonical}/${mode === 'reset' ? 'forgot-password' : mode}${mode === 'login' && next !== '/today' ? `?next=${encodeURIComponent(next)}` : ''}`);
         return;
       }
       const supabase = await initializeSupabase();
@@ -96,7 +98,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
       if (mode === "login") {
         const result = await supabase.auth.signInWithPassword({ email, password });
         if (result.error) throw result.error;
-        router.replace("/today");
+        router.replace(signInReturnFromUrl(location.href));
         return;
       }
 

@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { request, body, errorMessage, emptySchema, API_URL, APIError } from "@/lib/api";
 import { meSchema, tokenSchema, type Me, type RuntimeConfig } from "@/lib/contracts";
 import { getSupabase, initializeSupabase, resolvedPublicAuth } from "@/lib/supabase";
@@ -15,6 +15,19 @@ export function AuthProvider({children}:{children:ReactNode}) {
   const [token,setToken]=useState<string|null>(null),[me,setMe]=useState<Me|null>(null),[config,setConfig]=useState<RuntimeConfig|null>(null);
   const [mfaRequired,setMfaRequired]=useState(false);
   const [initializing,setInitializing]=useState(true),[profileLoading,setProfileLoading]=useState(false),[error,setError]=useState<string|null>(null);
+  const currentToken=useRef<string|null>(null);
+  const profileRevision=useRef(0);
+  const changeToken=useCallback((next:string|null)=>{
+    if(currentToken.current===next)return;
+    currentToken.current=next;
+    profileRevision.current++;
+    pageDataCache.reset(next);
+    setMe(null);
+    setProfileLoading(next!==null);
+    setMfaRequired(false);
+    setError(null);
+    setToken(next);
+  },[]);
   useEffect(()=> {
     let alive=true; let unsubscribe:(()=>void)|undefined;
     runtimeConfig().then(async c=>{
@@ -24,32 +37,44 @@ export function AuthProvider({children}:{children:ReactNode}) {
       const publicAuth=resolvedPublicAuth();
       assertRuntimeAuth(c,location.hostname,process.env.NODE_ENV === "production",API_URL,publicAuth.url,publicAuth.key);
       setConfig(c);
-      if(c.demo_mode && c.auth_mode==="demo") {setToken(sessionStorage.getItem(DEMO_KEY));}
+      if(c.demo_mode && c.auth_mode==="demo") {changeToken(sessionStorage.getItem(DEMO_KEY));}
       else {
         sessionStorage.removeItem(DEMO_KEY);
         const supabase=await initializeSupabase();
         if(!alive)return;
-        const listener=supabase.auth.onAuthStateChange((_event,session)=>{if(alive)setToken(session?.access_token??null);});
+        let sessionRevision=0;
+        const listener=supabase.auth.onAuthStateChange((_event,session)=>{sessionRevision++;if(alive)changeToken(session?.access_token??null);});
         unsubscribe=()=>listener.data.subscription.unsubscribe();
+        const initialRevision=sessionRevision;
         const result=await supabase.auth.getSession();
+        if(!alive||sessionRevision!==initialRevision)return;
         if(result.error)throw result.error;
-        if(alive)setToken(result.data.session?.access_token??null);
+        if(alive)changeToken(result.data.session?.access_token??null);
       }
     }).catch(e=>{if(alive)setError(e instanceof Error && e.message.includes("Supabase") ? e.message : errorMessage(e));})
       .finally(()=>{if(alive)setInitializing(false);});
     return ()=>{alive=false;unsubscribe?.();};
-  },[]);
+  },[changeToken]);
   useEffect(()=>{pageDataCache.reset(token);},[token]);
-  const refresh=useCallback(async()=>{if(!token){setMe(null);return;}const user=await request("/v1/me",token,meSchema);setMe(user);},[token]);
-  useEffect(()=>{let alive=true;if(!token){setMe(null);setMfaRequired(false);return;}setProfileLoading(true);setError(null);
-    request("/v1/me",token,meSchema).then(user=>{if(alive){setMe(user);setMfaRequired(false);}}).catch(e=>{if(alive){setMe(null);if(e instanceof APIError && e.code === "mfa_required"){setMfaRequired(true);setError(null);}else setError(errorMessage(e));}}).finally(()=>{if(alive)setProfileLoading(false);});return ()=>{alive=false;};
+  const refresh=useCallback(async()=>{
+    if(currentToken.current!==token)return;
+    if(!token){setMe(null);return;}
+    const revision=++profileRevision.current;
+    setProfileLoading(true);setError(null);
+    try{const user=await request("/v1/me",token,meSchema);if(currentToken.current===token&&profileRevision.current===revision){setMe(user);setMfaRequired(false);}}
+    catch(e){if(currentToken.current===token&&profileRevision.current===revision){setMe(null);if(e instanceof APIError&&e.code==='mfa_required'){setMfaRequired(true);setError(null);}else setError(errorMessage(e));}throw e;}
+    finally{if(currentToken.current===token&&profileRevision.current===revision)setProfileLoading(false);}
   },[token]);
-  useEffect(()=>{const clear=()=>{pageDataCache.reset();setToken(null);setMe(null);setMfaRequired(false);setError(null);sessionStorage.removeItem(DEMO_KEY);};window.addEventListener("signalbrief:unauthorized",clear);return ()=>window.removeEventListener("signalbrief:unauthorized",clear);},[]);
-  useEffect(()=>{const requireMfa=()=>{pageDataCache.reset();setMe(null);setMfaRequired(true);};window.addEventListener("signalbrief:mfa-required",requireMfa);return()=>window.removeEventListener("signalbrief:mfa-required",requireMfa);},[]);
+  useEffect(()=>{let alive=true;if(!token){setMe(null);setMfaRequired(false);return;}setProfileLoading(true);setError(null);
+    const revision=++profileRevision.current;
+    request("/v1/me",token,meSchema).then(user=>{if(alive&&currentToken.current===token&&profileRevision.current===revision){setMe(user);setMfaRequired(false);}}).catch(e=>{if(alive&&currentToken.current===token&&profileRevision.current===revision){setMe(null);if(e instanceof APIError && e.code === "mfa_required"){setMfaRequired(true);setError(null);}else setError(errorMessage(e));}}).finally(()=>{if(alive&&currentToken.current===token&&profileRevision.current===revision)setProfileLoading(false);});return ()=>{alive=false;};
+  },[token]);
+  useEffect(()=>{const clear=()=>{pageDataCache.reset();changeToken(null);setMe(null);setProfileLoading(false);setMfaRequired(false);setError(null);sessionStorage.removeItem(DEMO_KEY);};window.addEventListener("signalbrief:unauthorized",clear);return ()=>window.removeEventListener("signalbrief:unauthorized",clear);},[changeToken]);
+  useEffect(()=>{const requireMfa=()=>{profileRevision.current++;pageDataCache.reset(currentToken.current);setMe(null);setProfileLoading(false);setMfaRequired(true);};window.addEventListener("signalbrief:mfa-required",requireMfa);return()=>window.removeEventListener("signalbrief:mfa-required",requireMfa);},[]);
   const demoLogin=useCallback(async(admin=false)=>{
     if(!localDemoAllowed(location.hostname,process.env.NODE_ENV === "production") || !config?.demo_mode)throw new Error("demo_disabled");
-    const result=await request(`/v1/auth/demo?admin=${admin}`,null,tokenSchema,body("POST"));sessionStorage.setItem(DEMO_KEY,result.access_token);setToken(result.access_token);
-  },[config]);
+    const result=await request(`/v1/auth/demo?admin=${admin}`,null,tokenSchema,body("POST"));sessionStorage.setItem(DEMO_KEY,result.access_token);changeToken(result.access_token);
+  },[config,changeToken]);
   const googleLogin=useCallback(async()=>{
     const canonical=siteOrigin(location.href,process.env.NEXT_PUBLIC_SITE_URL,process.env.NODE_ENV === "production");
     await startGoogleLogin(location.href,canonical,url=>location.assign(url),async redirectTo=>{
@@ -60,10 +85,10 @@ export function AuthProvider({children}:{children:ReactNode}) {
   },[]);
   useEffect(()=>{pageDataCache.reset(token);},[token]);
   const logout=useCallback(async()=>{
-    pageDataCache.reset();
+    pageDataCache.reset(currentToken.current);
     if(config?.auth_mode==="supabase") {const result=await getSupabase().auth.signOut({scope:"local"});if(result.error)throw result.error;}
-    sessionStorage.removeItem(DEMO_KEY);setToken(null);setMe(null);setMfaRequired(false);
-  },[config]);
+    sessionStorage.removeItem(DEMO_KEY);changeToken(null);setMe(null);setProfileLoading(false);setMfaRequired(false);
+  },[config,changeToken]);
   const track=useCallback((name:string,properties:Record<string,string|number|boolean>={})=>{
     if(me?.analytics_consent&&token)void request("/v1/analytics",token,emptySchema,body("POST",{event_name:name,properties})).catch(()=>{});
   },[me?.analytics_consent,token]);
