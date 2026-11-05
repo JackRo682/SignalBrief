@@ -209,7 +209,7 @@ GRANT EXECUTE ON FUNCTION public.sb_admin_user_logs(jsonb) TO authenticated;
 
 -- Browser sessions must use the guarded projection, including when reading their own events.
 REVOKE SELECT ON TABLE public.user_events FROM PUBLIC, anon, authenticated;
-DROP POLICY IF EXISTS owner_select ON public.user_events;
+-- Preserve the existing policy for reversibility; no browser role has SELECT to use it.
 COMMENT ON FUNCTION public.sb_admin_user_logs(jsonb) IS
   'Verified live administrator session plus MFA; consented activity only, 90-day KST range, 50-row keyset pages.';
 NOTIFY pgrst, 'reload schema';
