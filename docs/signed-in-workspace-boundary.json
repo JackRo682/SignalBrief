@@ -101,7 +101,7 @@
     "apps/web/src/app/(workspace)/us/page.tsx": "646fb49e8cb35ebd6305611c834b09ba55dbea7e25079b0e0357315a7ce78fb4",
     "apps/web/src/app/about/page.tsx": "4c912bd7995480649e24841c13ef2cf371755b08e390ebda44276d1d7baecb87",
     "apps/web/src/app/account-marketing.css": "b72e43d5b87ba0ccfb81d028e7e893a8d4a9baf886f426933ba02f272b67351e",
-    "apps/web/src/app/api/admin/user-logs/route.ts": "7ec7542637982752461f7bd0af8138d4377bed0c9fdbe417b8a9da706699fb65",
+    "apps/web/src/app/api/admin/user-logs/route.ts": "84f618a03d839d66033e816a939e6927bcdc351cb93790bb55fbc8fbc35d5621",
     "apps/web/src/app/api/auth-config/route.ts": "4caba149ed3c6883b6b442a49f125cac18a24151ac8ff94394744d5ca7cab185",
     "apps/web/src/app/api/research/route.ts": "aeb1ad9fdcc5db4820e99bce270a1537dab6c80ee0cba3e6796a49ca125b1654",
     "apps/web/src/app/api/us/[...path]/route.ts": "3d8262b6190871df6608c58a3090295420c11d364b6e0e9325342513221f23b4",
@@ -256,7 +256,7 @@
         },
         "apps/web/src/app/api/admin/user-logs/route.ts": {
           "before_sha256": null,
-          "after_sha256": "7ec7542637982752461f7bd0af8138d4377bed0c9fdbe417b8a9da706699fb65"
+          "after_sha256": "84f618a03d839d66033e816a939e6927bcdc351cb93790bb55fbc8fbc35d5621"
         },
         "apps/web/src/components/auth.tsx": {
           "before_sha256": "76d85bc380bba967c89c408c2e6a0b723655bc5132ddffd06254b31b264c7b01",

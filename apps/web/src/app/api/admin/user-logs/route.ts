@@ -78,6 +78,7 @@ export async function POST(req: Request) {
 
     const permission = await db.rpc('sb_is_admin');
     if (permission.error) {
+      if (permission.error.code === 'PT403' && permission.error.message === 'mfa_required') return fail(403, 'mfa_required');
       if (permission.status === 429 || permission.error.code === 'PT429') return fail(429, 'rate_limit_exceeded');
       if (['PGRST301', 'PGRST303', 'PT401'].includes(permission.error.code)) return fail(401, 'invalid_or_expired_session');
       return fail(503, 'permission_check_unavailable');
