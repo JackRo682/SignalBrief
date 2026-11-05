@@ -1,2 +1,5 @@
-import Analytics from '@/research/analytics';
-export default function Page(){return <Analytics/>;}
+import { redirect } from 'next/navigation';
+
+export default function Page() {
+  redirect('/ops/user-logs');
+}
