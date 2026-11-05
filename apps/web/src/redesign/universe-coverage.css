@@ -1,0 +1,10 @@
+.sb-redesign .rd-universe { margin: 0 0 24px; padding: 16px 20px; border: 1px solid var(--rd-line, #e5e7eb); border-radius: 12px; background: var(--rd-surface, #fff); font-size: 13px; line-height: 1.6; }
+.sb-redesign .rd-universe summary { cursor: pointer; font-weight: 600; }
+.sb-redesign .rd-universe p { margin: 12px 0; color: var(--rd-muted, #64748b); }
+.sb-redesign .rd-universe-scroll { overflow-x: auto; max-width: 100%; }
+.sb-redesign .rd-universe table { width: 100%; border-collapse: collapse; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sb-redesign .rd-universe caption { text-align: left; margin-bottom: 8px; font-weight: 600; }
+.sb-redesign .rd-universe th, .sb-redesign .rd-universe td { padding: 8px 12px; border-bottom: 1px solid var(--rd-line, #e5e7eb); text-align: right; }
+.sb-redesign .rd-universe th:first-child { text-align: left; }
+.sb-redesign .rd-universe ul { padding-left: 20px; margin: 12px 0; }
+.sb-redesign .rd-universe a { text-decoration: underline; text-underline-offset: 2px; }

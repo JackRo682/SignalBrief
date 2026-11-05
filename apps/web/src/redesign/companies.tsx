@@ -9,6 +9,7 @@ import { catalogSchema, sourceOverviewSchema } from "@/workspace/contracts";
 import { DataState, useData } from "@/workspace/ui";
 import { CompanyLogo, Heading, SearchForm, formatSourceDate } from "./ui";
 import CompanyDiscovery from "./company-discovery";
+import UniverseCoverage from "./universe-coverage";
 import { marketCategory, normalizeCompanyQuery, type MarketGroup } from "./company-search";
 export { marketCategory } from "./company-search";
 const markets: MarketGroup[] = ["all", "kospi", "kosdaq", "overseas", "unclassified"];
@@ -56,20 +57,21 @@ function Directory() {
     },
     catalogSchema,
   );
+  const rows = directory.data?.items ?? [];
   const overview = useData(
-    { action: "source_overview", p: { scope: "all", days: 0 } },
+    directory.data ? { action: "source_overview", p: { scope: "all", days: 0, company_ids: rows.map(row => row.id) } } : null,
     sourceOverviewSchema,
   );
   const monitoring = new Map(
     overview.data?.monitoring.map((x) => [x.company_id, x]),
   );
-  const rows = directory.data?.items ?? [];
   const hasUnknown = directory.data?.markets.some(
     (x) => marketCategory(x) === "unclassified",
   );
   return (
     <div data-screen="redesign-companies">
       <Heading title="기업" />
+      <UniverseCoverage />
       <div className="rd-directory-tools">
         <SearchForm
           initial={query}

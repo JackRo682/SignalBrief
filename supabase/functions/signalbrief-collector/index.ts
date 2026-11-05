@@ -4,7 +4,8 @@ import {createClient} from 'npm:@supabase/supabase-js@2.117.2';
 import {ingest,analyze} from '../signalbrief-api/us-handler.ts';
 import {collectCompanyFinancials} from '../signalbrief-api/company-financials.ts';
 import {ProviderError,obj,str,type Row} from '../signalbrief-api/us-core.ts';
-import {taskToken,dartList,dartPage} from './core.ts';
+import {taskToken} from './core.ts';
+import {collectDartFilings} from './dart-ingest.ts';
 const env=(key:string)=>Deno.env.get(key)??'';
 const db=createClient(env('SUPABASE_URL'),env('SUPABASE_SERVICE_ROLE_KEY'),{auth:{persistSession:false,autoRefreshToken:false}});
 const hash=async(value:string)=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)))].map(x=>x.toString(16).padStart(2,'0')).join('');
@@ -18,25 +19,6 @@ async function rpc(name:string,args:Row={}){
 async function check(provider:string,status:string,detail:Row){
  const result=await db.from('us_provider_checks').upsert({provider,status,detail,checked_at:new Date().toISOString()});
  if(result.error)throw new ProviderError('database','check_save_failed');
-}
-async function dartIngest(company:Row,key:string,relaySecret:string){
- let pages=1,total=0;
- for(let page=1;page<=pages;page++){
-  await rpc('sb_us_reserve',{p:'dart',amount:0,smoke:false});
-  const raw=await dartList(str(company.provider_company_id),key,page,fetch,relaySecret),parsed=dartPage(raw,str(company.provider_company_id)),sha=await hash(raw);
-  if(page===1)pages=parsed.pages;
-  else if(parsed.pages!==pages)throw new ProviderError('dart','pagination_changed_retry_later');
-  const path=`dart/lists/${sha}.json`,archive=await db.storage.from('signalbrief-raw').upload(path,raw,{contentType:'application/json',upsert:false});
-  if(archive.error&&!/already exists|duplicate/i.test(archive.error.message))throw new ProviderError('storage','archive_failed');
-  if(parsed.items.length){
-   const result=await db.from('dart_filings').upsert(parsed.items.map(item=>({...item,company_id:company.id,source_sha256:sha,source_object_key:path,publication_precision:'date',publication_timezone:'Asia/Seoul'})),{onConflict:'company_id,receipt',ignoreDuplicates:true});
-   if(result.error)throw new ProviderError('database','dart_save_failed');
-  }
-  total+=parsed.items.length;
- }
- const updated=await db.from('companies').update({last_ingested_at:new Date().toISOString()}).eq('id',company.id);
- if(updated.error)throw new ProviderError('database','ingestion_timestamp_failed');
- return {symbol:company.ticker,filings:total,coverage:'previous_seven_days_metadata',document_analysis:'separate_document_stage'};
 }
 export async function handleCollector(req:Request):Promise<Response>{
  if(req.method!=='POST')return reply({error:{code:'method_not_allowed'}},405);
@@ -55,9 +37,11 @@ export async function handleCollector(req:Request):Promise<Response>{
   for(const provider of ['sec','dart']){
    const company=companies.find(c=>c.provider===provider);if(!company)continue;
    try{
-    const detail=provider==='sec'?await ingest(db,secrets,str(company.ticker)):await dartIngest(company,str(secrets.DART_API_KEY),str(secrets.DART_RELAY_SECRET));
+    const detail=provider==='sec'?await ingest(db,secrets,str(company.ticker)):await collectDartFilings(db,company,str(secrets.DART_API_KEY),str(secrets.DART_RELAY_SECRET));
     result[provider]={status:'verified',...detail};await check(provider,'verified',detail);
    }catch(error){result[provider]={status:'blocked',code:code(error)};await check(provider,'blocked',{code:code(error)});}
+   const outcome=obj(result[provider]);
+   await rpc('sb_collection_finish',{company_id:company.id,result_status:outcome.status,result_code:outcome.code??null,lease_id:company.collection_lease_id});
   }
   const financialCompany=obj(await rpc('sb_financial_collection_pick'));
   if(financialCompany.id)result.financials=await collectCompanyFinancials(db,secrets,financialCompany);
