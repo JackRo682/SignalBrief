@@ -9,7 +9,7 @@ import {pageDataCache} from '../src/lib/page-data-cache';
 
 const mock = vi.hoisted(() => ({
   runtime: vi.fn(), initialize: vi.fn(), getSession: vi.fn(), onAuthStateChange: vi.fn(),
-  signOut: vi.fn(), unsubscribe: vi.fn(), request: vi.fn(),
+  signOut: vi.fn(), signInWithOAuth: vi.fn(), unsubscribe: vi.fn(), request: vi.fn(),
 }));
 vi.mock('../src/lib/runtime-config', () => ({runtimeConfig: mock.runtime}));
 vi.mock('../src/lib/supabase', () => ({
@@ -69,13 +69,29 @@ beforeEach(() => {
     authListener = listener;
     return {data: {subscription: {unsubscribe: mock.unsubscribe}}};
   });
-  mock.initialize.mockResolvedValue({auth: {onAuthStateChange: mock.onAuthStateChange, getSession: mock.getSession, signOut: mock.signOut}});
+  mock.initialize.mockResolvedValue({auth: {onAuthStateChange: mock.onAuthStateChange, getSession: mock.getSession, signOut: mock.signOut, signInWithOAuth: mock.signInWithOAuth}});
   mock.signOut.mockResolvedValue({error: null});
+  mock.signInWithOAuth.mockResolvedValue({error: null});
   mock.request.mockImplementation(async (_path: string, token: string) => token === READER_TOKEN ? reader : admin);
 });
-afterEach(() => {cleanup(); vi.unstubAllGlobals();});
+afterEach(() => {cleanup(); vi.unstubAllGlobals(); vi.unstubAllEnvs();});
 
 describe('administrator authentication concurrency and recovery', () => {
+  it.each(['/ops/user-logs', '/today'])('preserves the Google return path and offers account selection for administrator recovery: %s', async next => {
+    vi.stubGlobal('location', {href: `https://signalbrief.online/login?next=${encodeURIComponent(next)}`, origin: 'https://signalbrief.online', hostname: 'signalbrief.online', assign: vi.fn()});
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://signalbrief.online');
+    await readyAdmin();
+    await act(async () => current.googleLogin());
+    const adminReturn = next.startsWith('/ops/');
+    expect(mock.signInWithOAuth).toHaveBeenCalledExactlyOnceWith({
+      provider: 'google',
+      options: {
+        redirectTo: `https://signalbrief.online/auth/callback${adminReturn ? `?next=${encodeURIComponent(next)}` : ''}`,
+        ...(adminReturn ? {queryParams: {prompt: 'select_account'}} : {}),
+      },
+    });
+  });
+
   it('keeps loading active until the initial identity has been verified', async () => {
     const profile = deferred<Me>();
     mock.request.mockReturnValue(profile.promise);

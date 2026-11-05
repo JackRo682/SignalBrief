@@ -5,6 +5,7 @@ import { meSchema, tokenSchema, type Me, type RuntimeConfig } from "@/lib/contra
 import { getSupabase, initializeSupabase, resolvedPublicAuth } from "@/lib/supabase";
 import { assertRuntimeAuth,localDemoAllowed } from "@/lib/auth-policy";
 import { siteOrigin, startGoogleLogin } from "@/lib/site-url";
+import { signInReturnFromUrl } from "@/lib/auth-return";
 import { pageDataCache } from "@/lib/page-data-cache";
 import { runtimeConfig } from "@/lib/runtime-config";
 import MfaChallenge from "./mfa-challenge";
@@ -79,7 +80,9 @@ export function AuthProvider({children}:{children:ReactNode}) {
     const canonical=siteOrigin(location.href,process.env.NEXT_PUBLIC_SITE_URL,process.env.NODE_ENV === "production");
     await startGoogleLogin(location.href,canonical,url=>location.assign(url),async redirectTo=>{
       const supabase=await initializeSupabase();
-      const result=await supabase.auth.signInWithOAuth({provider:"google",options:{redirectTo}});
+      const next=signInReturnFromUrl(redirectTo);
+      const chooseAccount=next==='/ops'||next.startsWith('/ops/');
+      const result=await supabase.auth.signInWithOAuth({provider:"google",options:{redirectTo,...(chooseAccount?{queryParams:{prompt:'select_account'}}:{})}});
       if(result.error)throw result.error;
     });
   },[]);

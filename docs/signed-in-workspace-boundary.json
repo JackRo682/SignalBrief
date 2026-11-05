@@ -125,7 +125,7 @@
     "apps/web/src/app/study/[id]/page.tsx": "bcb9aaa59b4800a17055c2a79936ca09b64980d518a6994e0baa9493bff3ce8c",
     "apps/web/src/app/terms/page.tsx": "7785398382441416bb0bc2ad0e1d24b416c72ebb3d5a60d4996dbfe26cefda8d",
     "apps/web/src/components/auth-layout.tsx": "2592f83a1ef65eabf0d342edc81572710e724ea922b8d307b767646fb0316f9f",
-    "apps/web/src/components/auth.tsx": "6ef895d699be87a4fb9ab3406d1528a12eb1df565b12b85e772733350fa97c15",
+    "apps/web/src/components/auth.tsx": "9ce10b4bfef03b3259e5305900bd3515eb434921c93c1b575d80c07c09f93da0",
     "apps/web/src/components/login-form.tsx": "fab3451ca155afe6b9df9183bf91662fe85dfba9c78698716eec6f059283471e",
     "apps/web/src/components/marketing/actions.tsx": "16c728a7d9a037a22832115cc0e0ebdebe25097f265ef508df88ea53c92e2e14",
     "apps/web/src/components/marketing/design.tsx": "7835ae7837e9b758acc721252544566d5f7c250848bca76e2cf8707768a057bb",
@@ -260,7 +260,7 @@
         },
         "apps/web/src/components/auth.tsx": {
           "before_sha256": "76d85bc380bba967c89c408c2e6a0b723655bc5132ddffd06254b31b264c7b01",
-          "after_sha256": "6ef895d699be87a4fb9ab3406d1528a12eb1df565b12b85e772733350fa97c15"
+          "after_sha256": "9ce10b4bfef03b3259e5305900bd3515eb434921c93c1b575d80c07c09f93da0"
         },
         "apps/web/src/components/login-form.tsx": {
           "before_sha256": "b1b15afc8f8593881687f625e9ac6d305ee337f08c66d5f0b064737436253f73",

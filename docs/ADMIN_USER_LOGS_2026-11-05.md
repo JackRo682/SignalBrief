@@ -27,7 +27,7 @@ The Next.js route is documented in `packages/shared/admin-user-logs.openapi.json
 ## Recovery and failure states
 
 - Signed out: show a sign-in action and retain an allowlisted internal return destination.
-- Wrong account: show access denied, local-device sign-out/account switching, and service navigation.
+- Wrong account: show access denied, local-device sign-out/account switching, and service navigation. Google sign-in for an administrator return destination explicitly requests the account chooser so an existing Google session does not silently select the same wrong account.
 - Expired or revoked session: return no logs and offer reauthentication.
 - MFA: use the existing challenge flow.
 - Missing administrator grant: fail closed; the project owner must restore a verified account through trusted project administration. No client-side automatic role assignment exists.
@@ -45,7 +45,9 @@ The requested admin page and authentication recovery necessarily change previous
 
 ## Verification
 
-Focused API, frontend, login-return, auth-race and permission tests have been added, together with desktop/mobile cases in the existing research browser suite. SQL security and pagination are tested on a disposable PostgreSQL engine. Full gate, exact-source CI, migration and production acceptance results will be recorded after they complete.
+The local eight-stage `scripts/verify.py --full` gate passed: 364 backend tests, 1,904 frontend tests (including 33 actual embedded PostgreSQL cases), lint, type checking, schema export and the production build. The subsequent administrator Google account-chooser correction passed its 30 focused auth/return tests, scoped lint and type checking. Native PostgreSQL cases are intentionally skipped locally because there is no disposable server; 47 new cases are collected for the repository's native PostgreSQL CI job.
+
+Desktop/mobile browser cases are part of the existing research suite. The release requires the exact-source CI checks, the native PostgreSQL suite, migration application, and live administrator acceptance before production completion. Review and CI results are attached to https://github.com/JackRo682/SignalBrief/pull/52. This document describes the implementation and gates; the deployment record and live URL establish production status.
 
 References used during implementation:
 
