@@ -25,7 +25,7 @@ from test_workspace_schema import A, B
 from test_workspace_schema import db as db
 
 pytestmark = pytest.mark.postgres
-MIGRATION = Path(__file__).resolve().parents[2] / 'supabase/migrations/20261105045400_admin_overview.sql'
+MIGRATION = Path(__file__).resolve().parents[2] / 'supabase/migrations/20261105050950_admin_overview.sql'
 KST = ZoneInfo('Asia/Seoul')
 
 

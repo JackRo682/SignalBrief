@@ -6,7 +6,7 @@ import { PGlite } from '@electric-sql/pglite';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { adminOverviewResponseSchema, type AdminOverviewRequest } from '../src/admin-logs/overview-contracts';
 
-const migration = 'migrations/20261105045400_admin_overview.sql';
+const migration = 'migrations/20261105050950_admin_overview.sql';
 const sql = (file: string) => readFileSync(new URL(`../../../supabase/${file}`, import.meta.url), 'utf8');
 const admin = '10000000-0000-4000-8000-000000000001';
 const member = '10000000-0000-4000-8000-000000000002';

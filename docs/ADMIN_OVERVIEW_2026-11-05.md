@@ -41,4 +41,12 @@ Baseline: `fd7d643` from `JackRo682/SignalBrief/main`. The requested administrat
 
 The actual Zod request and response contract is exported with `node scripts/export_admin_overview_contract.cjs` to `packages/shared/admin-overview.openapi.json`. Tests cover UI definitions, no-data states, request cancellation, consent/admin exclusions, ratio denominators, date boundaries, session segmentation, mature cohorts, direct RPC denial and authentication failures. Browser fixtures are synthetic and isolated; screenshots from those tests are not live operational data.
 
-The final release record must distinguish local checks, native PostgreSQL CI, migration application, production deployment, and signed-in browser acceptance. A locally built or tested page alone does not establish deployment.
+### Verified release source
+
+The full local verifier passed all eight stages at `2026-11-05T05:13:15Z`, including 2,021 frontend tests in 132 files and a production build. The backend run passed 364 tests with 855 database-dependent local skips; native database coverage was checked independently in CI. Initial local concurrency-related timeouts were resolved by running the unchanged suite with `VITEST_MAX_WORKERS=1`, without changing assertions or time limits.
+
+[CI run 41971982689](https://github.com/JackRo682/SignalBrief/actions/runs/41971982689) passed on source `34db8f6bf9b050c2d8ce8fddcb61997319361dc0`. Its browser suite passed 115 tests, with three intentional mobile exclusions for desktop-only layout cases and no failures. Both desktop and mobile consolidated-page cases passed. [Workspace PostgreSQL run 41971982641](https://github.com/JackRo682/SignalBrief/actions/runs/41971982641) passed 424 tests with no skips, including all four new overview cases.
+
+The production migration ledger records `20261105050950_admin_overview`. The repository filename and the two test loaders were aligned to that ledger after application; application source and SQL bytes are unchanged from the verified source. SQL SHA-256 is `786d7a45a3261fdea725073dc405a8876678e4ee699c3c7cab3333394d2f1281`, matching the applied migration. Anonymous execution is revoked and the security-advisor findings are unchanged.
+
+Production deployment and signed-in browser acceptance are recorded separately on [pull request 53](https://github.com/JackRo682/SignalBrief/pull/53). A local build or applied database migration alone does not establish that the frontend is live.
