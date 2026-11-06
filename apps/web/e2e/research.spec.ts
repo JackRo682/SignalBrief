@@ -81,17 +81,20 @@ async function fixture(page:Page,admin=true){
   else if(path==='/v1/ops/audit')await route.fulfill(operations.auditStatus===200
    ?{json:operations.populated?[{id:'synthetic-audit-1',action:'review_event',target_id:opsIds.review,created_at:fixtureNow,details:{reason:'Synthetic source review reason'}}]:[]}
    :{status:operations.auditStatus,json:{error:{code:operations.auditStatus===403?'admin_required':'audit_unavailable'}}});
+  else if(path===`/v1/ops/documents/${opsIds.document}`)await route.fulfill({json:{id:opsIds.document,title:'Synthetic source document',state:'ready'}});
+  else if(path===`/v1/ops/runs/${opsIds.failure}`)await route.fulfill({json:{id:opsIds.failure,model:'synthetic-model-only',status:'failed',validation_result:{}}});
   else throw new Error(`Unexpected operation request ${request.method()} ${path}`);
  });
  let joined=false,submitted=false,withdrawn=false;const calls:string[]=[];
+ const research={deniedAction:'',status:403};
  const experiment={id,name:'합성 연구 검증',hypothesis:'테스트 전용 가설과 데이터',status:'running',design:'between',metric:'accuracy',version:1,ratio:50};
  const groups=['A','B'].map(variant=>({variant,assigned:0,exposed:0,completed:0,accuracy:null,completion_rate:null,median_active_ms:null,evidence_rate:null}));
- await page.route('**/api/research',async route=>{const {action,p}=route.request().postDataJSON();calls.push(action);let result:unknown={};
+ await page.route('**/api/research',async route=>{const {action,p}=route.request().postDataJSON();calls.push(action);if(action===research.deniedAction){await route.fulfill({status:research.status,json:{error:{code:research.status===403?'admin_required':'research_unavailable'}}});return;}let result:unknown={};
   switch(action){
    case 'analytics':result={dau:0,wau:0,views:0,active_ms:0,bounce_rate:null,days:[],pages:[],retention:[],paths:[]};break;
    case 'experiments':result={items:[experiment]};break;
    case 'experiment':result={experiment,groups,participants:[]};break;
-   case 'datasets':result={items:[{id,name:'합성 SEC 테스트',split:'review',cases:0,approved:0,version:1}],filings:[]};break;
+   case 'datasets':result={daily_budget_usd:1,items:[{id,name:'합성 SEC 테스트',split:'review',cases:0,approved:0,version:1}],filings:[]};break;
    case 'dataset':result={dataset:{id,name:'합성 SEC 테스트',split:'review'},cases:[]};break;
    case 'evaluations':result={runs:[]};break;
    case 'evaluation':result={id,dataset_id:id,method:'A',model:'synthetic-only',prompt_version:'test',status:'queued',cases:[],results:[]};break;
@@ -106,19 +109,61 @@ async function fixture(page:Page,admin=true){
    case 'experiment_create':expect(p.config.A.answer).toBeTruthy();result={id};break;
    default:throw new Error(`Unexpected research action ${action}`);
   }await route.fulfill({json:result});
- });return {base,calls,overviewCalls,activityCalls,operations,get withdrawn(){return withdrawn;}};
+ });return {base,calls,overviewCalls,activityCalls,operations,research,get withdrawn(){return withdrawn;}};
 }
-test('nine admin pages render real empty states and responsive navigation',async({page})=>{
+test('one operations page contains every section and keeps details inline on desktop and mobile',async({page},info)=>{
  const f=await fixture(page);
- for(const [path,title] of [['analytics','운영 현황'],['experiments','A/B 실험 관리'],[`experiments/${id}`,'합성 연구 검증'],['evaluations','AI 금융정보 평가'],[`evaluations/datasets/${id}`,'합성 SEC 테스트'],[`evaluations/runs/${id}`,`평가 실행 ${id.slice(0,8)}`],['quality','금융정보 품질 검수'],['reliability','장애·안전성 관리'],['reports','실험·평가 보고서']]){
-  await page.goto(`/ops/${path}`);await expect(page.getByRole('heading',{name:title,exact:true})).toBeVisible();await expect(page.getByRole('navigation',{name:'관리자 메뉴'})).toBeVisible();
-  if(path==='analytics'){await expect(page).toHaveURL(/\/ops$/);await expect(page.locator('a[href="/ops/analytics"],a[href="/ops/user-logs"]')).toHaveCount(0);}
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)).toBe(true);
-  if(path==='evaluations')await page.screenshot({path:test.info().outputPath('evaluations.png'),fullPage:true});
+ await page.goto('/ops');
+ await expect(page.getByRole('heading',{level:1,name:'운영 현황',exact:true})).toBeVisible();
+ await expect(page.locator('h1')).toHaveCount(1);
+ await expect(page.locator('.research-sidebar')).toHaveCount(0);
+ const navigation=page.getByRole('navigation',{name:'관리자 메뉴'});
+ await expect(navigation.getByRole('link')).toHaveCount(1);
+ await expect(navigation.getByRole('link',{name:'운영 현황',exact:true})).toHaveAttribute('href','/ops');
+ for(const name of ['A/B 실험 관리','AI 평가 관리','금융정보 품질 검수','장애·안전성 관리','실험·평가 보고서']){
+  await expect(page.getByRole('region',{name,exact:true})).toBeVisible();
  }
+ await expect(page.getByRole('link',{name:'합성 연구 검증',exact:true})).toBeVisible();
+ await expect(page.locator('.ops-overview-metric')).toHaveCount(24);
+ await expect(page.getByRole('region',{name:'핵심 지표',exact:true}).locator('.overview-metrics > article')).toHaveCount(8);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)).toBe(true);
+ const screenshot=info.outputPath(`one-page-ops-${info.project.name}.png`);
+ await page.screenshot({path:screenshot,fullPage:false,animations:'disabled'});
+ await info.attach('Single operations page',{path:screenshot,contentType:'image/png'});
+ await page.getByRole('combobox',{name:'활동 유형',exact:true}).selectOption('view');
+ await page.getByRole('button',{name:'조회하기',exact:true}).click();
+ await expect.poll(()=>f.activityCalls.at(-1)?.event).toBe('view');
+ const initialReads=f.activityCalls.length;
+ await page.getByRole('link',{name:'합성 연구 검증',exact:true}).click();
+ await expect(page).toHaveURL(new RegExp(`/ops\\?detail=experiment&id=${id}#operations-detail$`));
+ const detail=page.getByRole('region',{name:'선택한 운영 항목 상세',exact:true});
+ await expect(detail.getByRole('heading',{name:'합성 연구 검증',exact:true})).toBeVisible();
+ await expect(page.getByRole('combobox',{name:'활동 유형',exact:true})).toHaveValue('view');
+ expect(f.activityCalls).toHaveLength(initialReads);
+ await detail.getByRole('button',{name:'상세 닫기',exact:true}).click();
+ await expect(detail).toHaveCount(0);
+ await expect(page).toHaveURL(/\/ops#operations-experiments$/);
+ await expect(page.getByRole('combobox',{name:'활동 유형',exact:true})).toHaveValue('view');
+ await page.getByRole('link',{name:'합성 연구 검증',exact:true}).click();
+ await expect(detail).toBeVisible();
+ await navigation.getByRole('link',{name:'운영 현황',exact:true}).click();
+ await expect(page).toHaveURL(/\/ops$/);
+ await expect(detail).toHaveCount(0);
+ expect(f.base.state.runtimeErrors).toEqual([]);
+ expect(f.base.state.unexpected).toEqual([]);
+});
+test('legacy research links return to sections and selected records on the single operations page',async({page})=>{
+ const f=await fixture(page);
+ await page.goto('/ops/evaluations');
+ await expect(page).toHaveURL(/\/ops#operations-evaluations$/);
+ await expect(page.getByRole('region',{name:'AI 평가 관리',exact:true})).toBeVisible();
+ await page.goto(`/ops/evaluations/datasets/${id}`);
+ await expect(page).toHaveURL(new RegExp(`/ops\\?detail=dataset&id=${id}#operations-detail$`));
+ await expect(page.getByRole('region',{name:'선택한 운영 항목 상세',exact:true}).getByRole('heading',{name:'합성 SEC 테스트',exact:true})).toBeVisible();
+ await expect(page.getByRole('region',{name:'A/B 실험 관리',exact:true})).toBeVisible();
  expect(f.base.state.runtimeErrors).toEqual([]);
 });
-test('non-admin cannot open the console or fetch admin data',async({page})=>{const f=await fixture(page,false);await page.goto('/ops/evaluations');await expect(page.getByText('관리자만 접근할 수 있습니다.',{exact:false})).toBeVisible();expect(f.calls).toEqual([]);});
+test('non-admin cannot open the console or fetch admin data',async({page})=>{const f=await fixture(page,false);await page.goto('/ops/evaluations');await expect(page.getByRole('heading',{name:'관리자 권한이 필요합니다',exact:true})).toBeVisible();expect(f.calls).toEqual([]);});
 test('study consent, exposure, answer, and withdrawal flow',async({page})=>{const f=await fixture(page,false);await page.goto(`/study/${id}`);await expect(page.getByRole('heading',{name:'연구 참여 동의'})).toBeVisible();expect(f.calls).not.toContain('expose');await page.getByRole('checkbox').check();await page.getByRole('button',{name:'동의하고 참여하기'}).click();await page.getByLabel('매출 숫자는 무엇인가요?').fill('123');await page.getByRole('button',{name:'답변 제출'}).click();await expect(page.getByRole('heading',{name:'참여해 주셔서 감사합니다'})).toBeVisible();expect(f.calls.indexOf('expose')).toBeLessThan(f.calls.indexOf('submit'));await page.getByRole('button',{name:'참여 철회 및 응답 삭제'}).click();await expect(page.getByRole('heading',{name:'참여를 철회했습니다'})).toBeVisible();expect(f.withdrawn).toBe(true);expect(f.base.state.runtimeErrors).toEqual([]);});
 test('reports download current consent-checked JSON',async({page})=>{const f=await fixture(page);await page.goto('/ops/reports');await expect(page.getByRole('heading',{name:'실험·평가 보고서'})).toBeVisible();const downloaded=page.waitForEvent('download');await page.getByRole('button',{name:'JSON 내보내기'}).click();expect((await downloaded).suggestedFilename()).toContain('.json');expect(f.calls.filter(c=>c==='reports').length).toBeGreaterThanOrEqual(2);});
 
@@ -234,9 +279,11 @@ test('one admin page keeps usage and operations, shared dates, errors, and activ
  await expect(page).toHaveURL(/\/ops$/);
  const beforeRefresh=overviewQueries.length;
  const operationsBeforeRefresh=f.operations.calls.length;
+ const researchBeforeRefresh=Object.fromEntries(['experiments','datasets','evaluations','quality','reliability','reports'].map(action=>[action,f.calls.filter(value=>value===action).length]));
  await page.getByRole('button',{name:'새로고침',exact:true}).click();
  await expect.poll(()=>overviewQueries.length).toBe(beforeRefresh+1);
  await expect.poll(()=>f.operations.calls.length).toBe(operationsBeforeRefresh+5);
+ for(const [action,count] of Object.entries(researchBeforeRefresh))await expect.poll(()=>f.calls.filter(value=>value===action).length).toBe(count+1);
  await expect(metrics.locator('.overview-metrics > article')).toHaveCount(8);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2)).toBe(true);
  await page.screenshot({path:test.info().outputPath(`synthetic-admin-overview-${test.info().project.name}.png`),fullPage:true,timeout:15_000});
@@ -258,15 +305,21 @@ test('unified operations preserve live v2 rows and allow only valid in-page revi
  await page.getByRole('heading',{level:3,name:'공식 자료 수집',exact:true}).evaluate(heading=>heading.scrollIntoView({block:'start'}));
  await page.screenshot({path:info.outputPath(`synthetic-ops-collection-${info.project.name}.png`),fullPage:false,animations:'disabled',timeout:15_000});
 
- for(const title of ['검토 대기 이벤트·분석','수집·처리·AI 실패','인용·수치 검증 문제','중복 이벤트 후보','사용자 의견','최근 원본 문서','모델·분석 실행 기록','가입 사용자','운영 감사 로그']){
-  await expect(page.getByRole('heading',{level:2,name:title,exact:true})).toBeVisible();
+ for(const [region,titles] of [
+  ['검토·실패 기록',['검토 대기 이벤트·분석','수집·처리·AI 실패','인용·수치 검증 문제','중복 이벤트 후보','사용자 의견']],
+  ['원문·모델 실행',['최근 원본 문서','모델·분석 실행 기록']],
+  ['가입 사용자',['가입 사용자']],
+  ['운영 감사 로그',['운영 감사 로그']],
+ ] as const){
+  const section=page.getByRole('region',{name:region,exact:true});
+  for(const title of titles)await expect(section.getByRole('heading',{level:3,name:title,exact:true})).toBeVisible();
  }
  const operationSections=page.locator('.ops-consolidated-sections');
  for(const text of ['Synthetic review needed','Synthetic failed run','Synthetic citation issue','Synthetic duplicate candidate','Synthetic user feedback','Synthetic source document','Synthetic test user','Synthetic source review reason','Synthetic collector activity','Synthetic processing stage','Synthetic email queue','Synthetic delivery receipt']){
   await expect(operationSections.getByText(text)).toBeVisible();
  }
- await expect(page.getByRole('link',{name:/^Synthetic source document/})).toHaveAttribute('href',`/ops/documents/${opsIds.document}`);
- await expect(page.getByRole('link',{name:/^synthetic-model-only/})).toHaveAttribute('href',`/ops/runs/${opsIds.failure}`);
+ await expect(page.getByRole('link',{name:/^Synthetic source document/})).toHaveAttribute('href',`/ops?detail=document&id=${opsIds.document}#operations-detail`);
+ await expect(page.getByRole('link',{name:/^synthetic-model-only/})).toHaveAttribute('href',`/ops?detail=run&id=${opsIds.failure}#operations-detail`);
 
  // Live provider rows are not event IDs or AI-run IDs. They retain evidence
  // links without manufacturing a mutation or a broken internal detail route.
@@ -307,7 +360,7 @@ test('an operations permission denial suppresses all consolidated private data',
  f.operations.auditStatus=403;
  await page.getByRole('button',{name:'새로고침',exact:true}).click();
  await expect(page.getByRole('button',{name:'다른 계정으로 로그인',exact:true})).toBeVisible();
- for(const section of ['핵심 지표','상세 활동 로그','수집·AI 처리 현황','원문·모델 실행','가입 사용자','운영 감사 로그']){
+ for(const section of ['핵심 지표','상세 활동 로그','수집·AI 처리 현황','원문·모델 실행','가입 사용자','운영 감사 로그','A/B 실험 관리','AI 평가 관리','금융정보 품질 검수','장애·안전성 관리','실험·평가 보고서','선택한 운영 항목 상세']){
   await expect(page.getByRole('region',{name:section,exact:true})).toHaveCount(0);
  }
  await expect(page.getByText('Synthetic source document',{exact:true})).toHaveCount(0);
@@ -358,3 +411,19 @@ test('a legacy audit view scrolls to its unified section after delayed authentic
   expect(f.base.state.runtimeErrors).toEqual([]);
  }finally{releaseAuth();}
 });
+
+ test('a research permission denial hides every private section and its selected detail',async({page})=>{
+ const f=await fixture(page);f.operations.populated=true;
+ await page.goto('/ops');
+ await page.getByRole('link',{name:'합성 연구 검증',exact:true}).click();
+ await expect(page.getByRole('region',{name:'선택한 운영 항목 상세',exact:true})).toBeVisible();
+ f.research.deniedAction='quality';
+ await page.getByRole('button',{name:'새로고침',exact:true}).click();
+ await expect(page.getByRole('button',{name:'다른 계정으로 로그인',exact:true})).toBeVisible();
+ for(const name of ['핵심 지표','수집·AI 처리 현황','원문·모델 실행','A/B 실험 관리','AI 평가 관리','금융정보 품질 검수','장애·안전성 관리','실험·평가 보고서','선택한 운영 항목 상세']){
+  await expect(page.getByRole('region',{name,exact:true})).toHaveCount(0);
+ }
+ await expect(page.getByText('Synthetic source document',{exact:true})).toHaveCount(0);
+ expect(f.base.state.runtimeErrors).toEqual([]);
+ expect(f.base.state.unexpected).toEqual([]);
+ });

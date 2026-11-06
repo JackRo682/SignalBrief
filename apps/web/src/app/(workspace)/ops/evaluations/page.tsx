@@ -1,2 +1,5 @@
-import Evaluations from '@/research/evaluations';
-export default function Page(){return <Evaluations/>;}
+import { redirect } from 'next/navigation';
+
+export default function Page() {
+  redirect('/ops#operations-evaluations');
+}

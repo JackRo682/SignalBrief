@@ -1,2 +1,5 @@
-import Experiments from '@/research/experiments';
-export default function Page(){return <Experiments/>;}
+import { redirect } from 'next/navigation';
+
+export default function Page() {
+  redirect('/ops#operations-experiments');
+}

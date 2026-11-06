@@ -1,2 +1,5 @@
-import {Reliability} from '@/research/operations';
-export default function Page(){return <Reliability/>;}
+import { redirect } from 'next/navigation';
+
+export default function Page() {
+  redirect('/ops#operations-reliability');
+}

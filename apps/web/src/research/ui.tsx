@@ -1,8 +1,9 @@
 'use client';
 import {Loading,ErrorState} from '@/components/ui';
+import {useOpsWorkspace} from '@/admin-logs/workspace-context';
 import type {useResearch} from './client';
-export function Heading({tag,title,description,children}:{tag:string;title:string;description:string;children?:React.ReactNode}){return <header className="research-heading"><div><p>{tag}</p><h1>{title}</h1><span>{description}</span></div>{children}</header>;}
-export function Panel({title,children,aside}:{title:string;children:React.ReactNode;aside?:React.ReactNode}){return <section className="research-panel"><header><h2>{title}</h2>{aside}</header>{children}</section>;}
+export function Heading({tag,title,description,children}:{tag:string;title:string;description:string;children?:React.ReactNode}){const embedded=useOpsWorkspace()!==null,Title=embedded?'h2':'h1';return <header className="research-heading"><div><p>{tag}</p><Title>{title}</Title><span>{description}</span></div>{children}</header>;}
+export function Panel({title,children,aside}:{title:string;children:React.ReactNode;aside?:React.ReactNode}){const embedded=useOpsWorkspace()!==null,Title=embedded?'h3':'h2';return <section className="research-panel"><header><Title>{title}</Title>{aside}</header>{children}</section>;}
 export function Stat({label,value,note}:{label:string;value:React.ReactNode;note?:string}){return <div className="research-stat"><span>{label}</span><strong>{value}</strong>{note&&<small>{note}</small>}</div>;}
 export function Empty({children='아직 수집된 데이터가 없습니다. 실제 기록이 생기면 표시됩니다.'}:{children?:React.ReactNode}){return <div className="research-empty"><span>◎</span><p>{children}</p></div>;}
 export function State({resource,children}:{resource:ReturnType<typeof useResearch>;children:React.ReactNode}){return resource.loading?<Loading/>:resource.error?<ErrorState message={resource.error} retry={resource.reload}/>:<>{children}</>;}
