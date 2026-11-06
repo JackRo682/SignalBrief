@@ -143,6 +143,7 @@ test('signed-in research journey connects company tabs, evidence, saved items an
 
  await navigate(page,'Saved');
  await expect(page.getByRole('heading',{name:'저장',exact:true})).toBeVisible();
+ await expect(page.getByRole('tab',{name:'저장한 분석',exact:true})).toHaveAttribute('aria-selected','true');
  const savedAnalysis=page.locator('#rd-saved-analysis');
  await expect(savedAnalysis.getByRole('link',{name:approved.title,exact:true})).toBeVisible();
  await page.reload();
@@ -222,18 +223,30 @@ test('first-save discovery keeps public sources separate and persists only expli
  await page.goto('/saved');
  await expect(page.getByRole('heading',{name:'저장',exact:true})).toBeVisible();
  const discovery=page.getByRole('region',{name:'저장할 자료 찾기',exact:true});
- const documents=page.getByRole('region',{name:'북마크 문서',exact:true});
- const analyses=page.getByRole('region',{name:'저장한 분석',exact:true});
- await expect(discovery.getByRole('link',{name:filing.title,exact:true})).toBeVisible();
+ const documents=page.locator('#rd-saved-document');
+ const analyses=page.locator('#rd-saved-analysis');
+ await expect(page.getByRole('tab',{name:'저장한 분석',exact:true})).toHaveAttribute('aria-selected','true');
+ await expect(page.getByRole('tabpanel',{name:'저장한 분석',exact:true})).toBeVisible();
+ await expect(documents).toBeHidden();
  await expect(discovery.getByRole('link',{name:approved.title,exact:true})).toBeVisible();
- await expect(discovery).toContainText('저장을 누른 자료만 내 저장 목록에 추가됩니다.');
- await expect(documents.getByRole('link',{name:filing.title,exact:true})).toHaveCount(0);
- await expect(analyses.getByRole('link',{name:approved.title,exact:true})).toHaveCount(0);
- await expect(documents).toContainText('북마크한 문서가 없습니다.');
+ await expect(discovery.getByRole('link',{name:filing.title,exact:true})).toHaveCount(0);
+ await expect(discovery).toContainText('최근 공개된 분석입니다. 저장을 누르면 내 목록에 추가됩니다.');
  await expect(analyses).toContainText('저장한 분석이 없습니다.');
+ expect(new Set(fixture.state.calls.filter(call=>call.action==='catalog').map(call=>call.p.kind))).toEqual(new Set(['analysis']));
  expect(fixture.state.saved.size).toBe(0);expect(saveCalls()).toEqual([]);
  noIncidentalWrites();
- await screenshot(page,info,'first-save-discovery');
+ await screenshot(page,info,'first-save-analysis-discovery');
+
+ await page.getByRole('tab',{name:'북마크 문서',exact:true}).click();
+ await expect(page).toHaveURL(/\/saved\?tab=document$/);
+ await expect(page.getByRole('tabpanel',{name:'북마크 문서',exact:true})).toBeVisible();
+ await expect(analyses).toBeHidden();
+ await expect(discovery).toHaveCount(1);
+ await expect(discovery.getByRole('link',{name:filing.title,exact:true})).toBeVisible();
+ await expect(discovery.getByRole('link',{name:approved.title,exact:true})).toHaveCount(0);
+ await expect(discovery).toContainText('최근 공시·문서입니다. 저장을 누르면 내 목록에 추가됩니다.');
+ await expect(documents).toContainText('북마크한 문서가 없습니다.');
+ await screenshot(page,info,'first-save-document-discovery');
 
  await discovery.getByRole('button',{name:`${filing.title} 저장`,exact:true}).click();
  const documentLink=documents.getByRole('link',{name:filing.title,exact:true});
@@ -243,6 +256,7 @@ test('first-save discovery keeps public sources separate and persists only expli
  expect([...fixture.state.saved]).toEqual([`filing:${sourceId}`]);
  await expect(analyses.getByRole('link',{name:approved.title,exact:true})).toHaveCount(0);
  await page.reload();
+ await expect(page.getByRole('tab',{name:'북마크 문서',exact:true})).toHaveAttribute('aria-selected','true');
  await expect(documentLink).toHaveAttribute('href',`/documents/${sourceId}?kind=filing`);
  await expect(documents.getByRole('button',{name:`${filing.title} 저장 취소`,exact:true})).toHaveAttribute('aria-pressed','true');
  const companyFilter=page.getByRole('combobox',{name:'저장 항목 회사',exact:true});
@@ -274,6 +288,104 @@ test('first-save discovery keeps public sources separate and persists only expli
  await page.reload();
  await expect(discovery.getByRole('button',{name:`${filing.title} 저장`,exact:true})).toHaveAttribute('aria-pressed','false');
  noIncidentalWrites();
+ expectClean(fixture);
+});
+
+test('saved tabs retain filters, URL history and scroll with accessible keyboard navigation',async({page},info)=>{
+ const fixture=await researchWorkspaceFixture(page);
+ fixture.state.preferences.history_enabled=false;
+ fixture.state.saved.add(`us_analysis:${sourceId}`);
+ fixture.state.saved.add(`filing:${sourceId}`);
+ await page.goto('/saved?tab=document');
+ const tabs=page.getByRole('tablist',{name:'저장 항목',exact:true});
+ const labels=['저장한 분석','저장한 일정','북마크 문서','최근 본 항목'];
+ const keys=['analysis','event','document','history'];
+ const tab=(label:string)=>tabs.getByRole('tab',{name:label,exact:true});
+ const selected=async(label:string,key:string)=>{
+  await expect(tab(label)).toHaveAttribute('aria-selected','true');
+  await expect(tab(label)).toHaveAttribute('tabindex','0');
+  await expect(page.getByRole('tabpanel')).toHaveCount(1);
+  await expect(page.getByRole('tabpanel',{name:label,exact:true})).toHaveAttribute('id',`rd-saved-${key}`);
+  for(let index=0;index<keys.length;index++){
+   if(keys[index]===key)continue;
+   await expect(tab(labels[index])).toHaveAttribute('aria-selected','false');
+   await expect(tab(labels[index])).toHaveAttribute('tabindex','-1');
+   await expect(page.locator(`#rd-saved-${keys[index]}`)).toBeHidden();
+  }
+ };
+ await expect(tabs.getByRole('tab')).toHaveCount(4);
+ for(let index=0;index<labels.length;index++)await expect(tab(labels[index])).toHaveAttribute('aria-controls',`rd-saved-${keys[index]}`);
+ await selected('북마크 문서','document');
+ await expect(page.getByRole('tabpanel').getByRole('link',{name:filing.title,exact:true})).toBeVisible();
+ await page.evaluate(()=>{(window as Window & {savedTabDocumentMarker?:string}).savedTabDocumentMarker='same-document';});
+ const companyFilter=page.getByRole('combobox',{name:'저장 항목 회사',exact:true});
+ const keyword=page.getByRole('textbox',{name:'저장 항목 키워드',exact:true});
+ await companyFilter.selectOption(companyId);
+ await keyword.fill('nVdA');
+ await main(page).getByRole('button',{name:'검색',exact:true}).click();
+ await tab('저장한 분석').click();
+ await selected('저장한 분석','analysis');
+ await expect(page).toHaveURL(/\/saved\?tab=analysis$/);
+ await expect(page.getByRole('tabpanel').getByRole('link',{name:approved.title,exact:true})).toBeVisible();
+ await tab('저장한 일정').click();
+ await selected('저장한 일정','event');
+ await expect(page).toHaveURL(/\/saved\?tab=event$/);
+ await page.goBack();
+ await selected('저장한 분석','analysis');
+ await page.goBack();
+ await selected('북마크 문서','document');
+ await page.goForward();
+ await selected('저장한 분석','analysis');
+ await expect(companyFilter).toHaveValue(companyId);
+ await expect(keyword).toHaveValue('nVdA');
+ expect(await page.evaluate(()=>(window as Window & {savedTabDocumentMarker?:string}).savedTabDocumentMarker)).toBe('same-document');
+
+ await tab('저장한 분석').focus();
+ await page.keyboard.press('ArrowRight');
+ await selected('저장한 일정','event');
+ await expect(tab('저장한 일정')).toBeFocused();
+ await page.keyboard.press('End');
+ await selected('최근 본 항목','history');
+ await expect(tab('최근 본 항목')).toBeFocused();
+ await page.keyboard.press('ArrowRight');
+ await selected('저장한 분석','analysis');
+ await page.keyboard.press('ArrowLeft');
+ await selected('최근 본 항목','history');
+ await page.keyboard.press('Home');
+ await selected('저장한 분석','analysis');
+ await expect(tab('저장한 분석')).toBeFocused();
+ await page.keyboard.press('Tab');
+ await expect(page.getByRole('combobox',{name:'저장 항목 정렬',exact:true})).toBeFocused();
+
+ // Keep the tab visible while the page is scrolled; changing categories must
+ // not jump down to a hash target or reload the archive.
+ const viewport=page.viewportSize()!;
+ await page.setViewportSize({...viewport,height:320});
+ await tab('북마크 문서').click();
+ await tab('북마크 문서').focus();
+ await page.evaluate(()=>window.scrollTo(0,64));
+ const previousScroll=await page.evaluate(()=>window.scrollY);
+ expect(previousScroll).toBeGreaterThan(0);
+ await page.keyboard.press('Home');
+ await selected('저장한 분석','analysis');
+ await expect.poll(()=>page.evaluate(()=>window.scrollY)).toBe(previousScroll);
+ expect(await page.evaluate(()=>(window as Window & {savedTabDocumentMarker?:string}).savedTabDocumentMarker)).toBe('same-document');
+ await page.setViewportSize(viewport);
+ await page.evaluate(()=>window.scrollTo(0,0));
+ await screenshot(page,info,'saved-tabs-analysis');
+ await page.reload();
+ await selected('저장한 분석','analysis');
+ await expect(page).toHaveURL(/\/saved\?tab=analysis$/);
+ await tab('북마크 문서').click();
+ await screenshot(page,info,'saved-tabs-documents');
+ await page.goto('/saved#rd-saved-event');
+ await selected('저장한 일정','event');
+ await tab('북마크 문서').click();
+ await expect(page).toHaveURL(/\/saved\?tab=document$/);
+ await page.reload();
+ await selected('북마크 문서','document');
+ expect(fixture.state.calls.filter(call=>['save','visit','preferences_save','history_clear'].includes(call.action))).toEqual([]);
+ expect(fixture.state.reminderCalls.every(call=>call.action==='list')).toBe(true);
  expectClean(fixture);
 });
 

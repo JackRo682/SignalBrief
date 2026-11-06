@@ -204,7 +204,9 @@ async function reliabilityFixture(page: Page) {
       await route.fulfill({ status: 503, headers, json: { code: 'temporary_unavailable', message: 'Synthetic outage' } });
       return;
     }
-    const id = url.searchParams.get('id')?.replace(/^eq\./, '');
+    const idFilter = url.searchParams.get('id');
+    const id = idFilter?.startsWith('eq.') ? idFilter.slice(3) : undefined;
+    const ids = idFilter?.startsWith('in.') ? idFilter.slice(4, -1).split(',') : undefined;
     const companyFilter = url.searchParams.get('company_id');
     const company = companyFilter?.startsWith('eq.') ? companyFilter.slice(3) : undefined;
     const companyList = companyFilter?.startsWith('in.') ? companyFilter.slice(4, -1).split(',') : undefined;
@@ -218,6 +220,7 @@ async function reliabilityFixture(page: Page) {
         ...(state.collectionReady ? collectedCalendarEntries : [])]
       : calendarEntries;
     const rows = available.filter(item => (!id || item.id === id)
+      && (!ids || ids.includes(item.id))
       && (!company || item.company_id === company)
       && (!companyList || companyList.includes(item.company_id!))
       && (!orCompanies || item.origin === 'user' || orCompanies.includes(item.company_id!))
@@ -227,7 +230,10 @@ async function reliabilityFixture(page: Page) {
     const descending = url.searchParams.get('order')?.startsWith('occurs_on.desc');
     rows.sort((a, b) => (descending ? b.occurs_on.localeCompare(a.occurs_on) : a.occurs_on.localeCompare(b.occurs_on))
       || a.id.localeCompare(b.id));
-    await route.fulfill({ headers, json: rows.slice(0, Number(url.searchParams.get('limit') ?? 500)) });
+    const result = rows.slice(0, Number(url.searchParams.get('limit') ?? 500));
+    await route.fulfill({ headers, json: url.searchParams.get('select')?.includes('company:companies')
+      ? result.map(item => ({ ...item, company: companies.find(company => company.id === item.company_id) ?? null }))
+      : result });
   });
   await page.route('**/api/workspace', async route => {
     const payload = route.request().postDataJSON() as { action: string; p: Record<string, unknown> };
@@ -510,6 +516,47 @@ test('calendar aliases use server search and monthly navigation opens the correc
   await expect(page.getByRole('tabpanel')).toContainText('2026년 11월 15일 · 날짜 기준');
   await expect(page.getByRole('tabpanel')).toContainText('정확한 시간·장소는 공식 원문에서 확인하세요.');
   await expect(page.getByRole('tabpanel')).not.toContainText('원문에 확인된 세부 시간·장소 정보가 없습니다.');
+  await finish(page, info, fixture);
+});
+
+test('saved schedule tab opens its exact calendar occurrence and returns to the same tab', async ({ page }, info) => {
+  const fixture = await reliabilityFixture(page);
+  fixture.base.state.preferences.history_enabled = false;
+  const occurrence = calendarEntries[1];
+  fixture.base.state.reminders.add(occurrence.id);
+  await page.goto('/saved?tab=event');
+  const tab = page.getByRole('tab', { name: '저장한 일정', exact: true });
+  const panel = page.getByRole('tabpanel', { name: '저장한 일정', exact: true });
+  await expect(tab).toHaveAttribute('aria-selected', 'true');
+  await expect(panel).toBeVisible();
+  await expect(page.getByRole('tabpanel')).toHaveCount(1);
+  const eventLink = panel.getByRole('link', { name: occurrence.title, exact: true });
+  await expect(eventLink).toHaveAttribute('href', `/events/${occurrence.id}?kind=calendar`);
+  await expect(panel.getByRole('link', { name: calendarEntries[0].title, exact: true })).toHaveCount(0);
+  await expect(panel.getByRole('link', { name: calendarEntries[2].title, exact: true })).toHaveCount(0);
+  await expect(panel).toContainText(companies[1].name);
+  await expect(panel.getByRole('button', { name: `${occurrence.title} 일정 저장 취소`, exact: true }))
+    .toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('region', { name: '저장할 자료 찾기', exact: true })).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth))
+    .toBeLessThanOrEqual(1);
+  await page.screenshot({ path: info.outputPath('saved-schedule-list.png'), fullPage: true, animations: 'disabled' });
+  await eventLink.click();
+  await expect(page).toHaveURL(`/events/${occurrence.id}?kind=calendar`);
+  await expect(page.getByRole('heading', { name: occurrence.title, exact: true })).toBeVisible();
+  await expect(page.getByRole('tabpanel')).toContainText(occurrence.quote!);
+  await expect(page.getByRole('tabpanel')).toContainText('2026년 11월 15일 · 날짜 기준');
+  await expect(page.getByRole('link', { name: '공식 출처 ↗', exact: true })).toHaveAttribute('href', occurrence.source_url!);
+  await page.screenshot({ path: info.outputPath('saved-schedule-detail.png'), fullPage: true, animations: 'disabled' });
+  await page.goBack();
+  await expect(page).toHaveURL('/saved?tab=event');
+  await expect(tab).toHaveAttribute('aria-selected', 'true');
+  await expect(eventLink).toBeVisible();
+  await page.reload();
+  await expect(tab).toHaveAttribute('aria-selected', 'true');
+  await expect(eventLink).toBeVisible();
+  expect([...fixture.base.state.reminders]).toEqual([occurrence.id]);
+  expectNoCalendarWrites(fixture);
   await finish(page, info, fixture);
 });
 

@@ -10,7 +10,7 @@ const session=vi.hoisted(()=>({token:'synthetic-saved-owner-a',fetch:vi.fn(),rpc
 vi.mock('@/components/auth',()=>({useAuth:()=>({token:session.token,me:{id:session.token}})}));
 vi.mock('@/workspace/preferences',()=>({usePrefs:()=>({value:{...defaults,locale:'en'},text:(_ko:string,en:string)=>en,date:(value:string|null)=>value??'Unknown',save:session.savePrefs})}));
 vi.mock('@/lib/supabase',()=>({initializeSupabase:async()=>({rpc:session.rpc,from:()=>{throw new Error('Unexpected calendar data request');}})}));
-vi.mock('next/navigation',()=>({useRouter:()=>({push:vi.fn(),replace:vi.fn()}),useSearchParams:()=>new URLSearchParams(),usePathname:()=>'/saved'}));
+vi.mock('next/navigation',()=>({useRouter:()=>({push:vi.fn(),replace:vi.fn()}),useSearchParams:()=>new URLSearchParams(window.location.search),usePathname:()=>'/saved'}));
 
 const companyId='20000000-0000-4000-8000-000000000011';
 const company:Resource={id:companyId,kind:'company',title:'Synthetic saved issuer',summary:'',company_id:companyId,company_name:'Synthetic saved issuer',ticker:'TEST',market:'NASDAQ',source_url:null,published_at:null,publication_precision:'date',category:'company',is_saved:false};
@@ -27,8 +27,11 @@ let records:Map<string,Set<string>>,failRead:boolean,failWrite:boolean,saveGate:
 function owned(token=session.token){if(!records.has(token))records.set(token,new Set());return records.get(token)!;}
 function resource(item:Resource,token:string){return {...item,is_saved:owned(token).has(key(item))};}
 function section(id:string){return within(document.getElementById(`rd-saved-${id}`)!);}
+const labels={analysis:'저장한 분석',document:'북마크 문서',event:'저장한 일정',history:'최근 본 항목'} as const;
+function selectTab(id:keyof typeof labels){fireEvent.click(screen.getByRole('tab',{name:labels[id]}));}
 
 beforeEach(()=>{
+ window.history.replaceState(null,'','/saved');
  vi.clearAllMocks();session.token='synthetic-saved-owner-a';records=new Map();failRead=failWrite=false;saveGate=null;
  session.rpc.mockImplementation((name:string,{p}:{p:{action:string}})=>{
   expect(name).toBe('sb_reference_reminders');expect(p.action).toBe('list');
@@ -75,12 +78,13 @@ describe('saved-resource journey uses canonical identities and owned responses',
   expect([...owned()]).toEqual([key(item)]);sourceView.unmount();
   const savedView=render(<Saved/>);
   const expectedSection=item.kind==='event'||item.kind.endsWith('analysis')?'analysis':'document';
+  selectTab(expectedSection);
   expect(await section(expectedSection).findByRole('link',{name:item.title})).toHaveAttribute('href',resourceHref(item));
   if(item.kind==='event')expect(section('event').queryByRole('link',{name:item.title})).not.toBeInTheDocument();
   fireEvent.click(section(expectedSection).getByRole('button',{name:`${item.title} 저장 취소`}));
   await waitFor(()=>expect(screen.queryByRole('link',{name:item.title})).not.toBeInTheDocument());
   expect(owned().size).toBe(0);savedView.unmount();render(<Saved/>);
-  await screen.findByText('저장한 분석이 없습니다.');
+  await section(expectedSection).findByText(expectedSection==='analysis'?'저장한 분석이 없습니다.':'북마크한 문서가 없습니다.');
   expect(screen.queryByRole('link',{name:item.title})).not.toBeInTheDocument();
   expect(session.savePrefs).not.toHaveBeenCalled();
  });
@@ -88,8 +92,11 @@ describe('saved-resource journey uses canonical identities and owned responses',
  it('offers direct browse actions for a genuinely empty account without enabling or recording history',async()=>{
   render(<Saved/>);
   expect(await screen.findByRole('link',{name:'분석 찾아보기'})).toHaveAttribute('href','/search?kind=analysis');
+  selectTab('document');
   expect(screen.getByRole('link',{name:'공시 찾아보기'})).toHaveAttribute('href','/search?kind=filing');
+  selectTab('event');
   expect(await screen.findByRole('link',{name:'캘린더 열기'})).toHaveAttribute('href','/calendar');
+  selectTab('history');
   expect(screen.getByText(/방문 기록 저장이 꺼져 있습니다/)).toBeVisible();
   expect(session.savePrefs).not.toHaveBeenCalled();
   expect(session.fetch.mock.calls.every(([,init])=>['saved_list','catalog'].includes(JSON.parse(String(init?.body)).action))).toBe(true);
@@ -120,6 +127,7 @@ describe('saved-resource journey uses canonical identities and owned responses',
   const error=await screen.findByRole('alert');
   expect(screen.queryByText('북마크한 문서가 없습니다.')).not.toBeInTheDocument();
   failRead=false;fireEvent.click(within(error).getByRole('button',{name:'Retry'}));
+  selectTab('document');
   expect(await screen.findByRole('link',{name:secFiling.title})).toBeVisible();
  });
 
@@ -132,6 +140,7 @@ describe('saved-resource journey uses canonical identities and owned responses',
   const reloaded=render(<AnalysisDetail {...props}/>);
   expect(await screen.findByRole('button',{name:'Saved'})).toHaveAttribute('aria-pressed','true');
   reloaded.unmount();render(<Saved/>);
+  selectTab(item.kind==='filing'?'document':'analysis');
   expect(await screen.findByRole('link',{name:item.title})).toHaveAttribute('href',resourceHref(item));
  });
 
