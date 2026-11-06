@@ -83,8 +83,18 @@ production build passed. ESLint retained five existing warnings and no errors.
 The frontend suite initially passed 2,057 tests and failed one obsolete
 administrator navigation-label assertion. The test was updated for canonical
 `/ops`, including its login return path and accessible navigation label; all 12
-administrator-shell tests then passed. A complete frontend rerun and the
-exact-source CI gate determine release readiness.
+administrator-shell tests then passed. The final full verifier on the published
+application source completed all eight stages successfully at 05:17:00 UTC:
+1,219 backend tests with zero skips and 2,070 frontend tests in 134 files. The
+latest Saved release was included in that final run.
+
+The first CI browser run passed 135 cases, skipped three existing conditional
+cases, and failed the delayed-authentication audit bookmark test on both desktop
+and mobile. The test awaited the redirect before releasing the authentication
+response it deliberately withheld. That setup ordering was corrected while
+retaining the final canonical URL, actual audit-heading viewport position and
+runtime-error checks. Application source did not change for this correction;
+the final exact-source CI result is recorded on the pull request.
 
 Focused tests cover v1/v2 responses, actions, stale responses and identities,
 access denials, notification failures and confirmed writes, cross-tab/focus

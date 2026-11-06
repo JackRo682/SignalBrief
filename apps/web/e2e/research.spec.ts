@@ -345,8 +345,9 @@ test('a legacy audit view scrolls to its unified section after delayed authentic
  try{
   await page.goto('/ops?view=audit',{waitUntil:'domcontentloaded'});
   await requested;
-  await expect(page).toHaveURL(/\/ops#operations-audit$/);
+  // The authenticated shell must reveal the streamed redirect before it can run.
   releaseAuth();
+  await expect(page).toHaveURL(/\/ops#operations-audit$/);
   await expect(page.getByRole('heading',{level:1,name:'운영 현황',exact:true})).toBeVisible();
   await expect(page.locator('.ops-overview-metric')).toHaveCount(24);
   const audit=page.getByRole('region',{name:'운영 감사 로그',exact:true});
