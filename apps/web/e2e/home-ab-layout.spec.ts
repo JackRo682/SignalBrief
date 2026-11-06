@@ -60,7 +60,7 @@ test('administrator can compare both real layouts, use B controls, and return to
     body: await page.screenshot({ fullPage: true }), contentType: 'image/png',
   });
   await page.getByRole('tab', { name: '분석', exact: true }).click();
-  await expect(page.locator('#home-activity-panel .rd-home-col-title')).toContainText(approved.title);
+  await expect(page.locator('#home-activity-panel tbody .rd-home-col-title')).toContainText(approved.title);
   await page.getByRole('button', { name: '조회 설정', exact: true }).click();
   await expect(page.locator('#home-filters')).toBeVisible();
   await fitsViewport(page);
@@ -87,7 +87,7 @@ test('B fits a narrow viewport and preserves genuine empty and retry states', as
   fixture.control.newsError = false;
   await page.locator('#news .ws-error button').click();
   await expect(page.locator('#news .ws-error')).toHaveCount(0);
-  await expect(page.locator('#home-activity-panel .rd-home-col-title')).toContainText('Synthetic company news article');
+  await expect(page.locator('#home-activity-panel tbody .rd-home-col-title')).toContainText('Synthetic company news article');
   await fitsViewport(page);
   clean(fixture);
 });
