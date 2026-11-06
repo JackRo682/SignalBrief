@@ -539,6 +539,43 @@ describe("redesigned personal screens", () => {
     expect(screen.queryByText("프로젝트")).not.toBeInTheDocument();
   });
 
+  it("opens a notification only after its read is persisted and stays on the list if saving fails", async () => {
+    render(<Notifications />);
+    const title = await screen.findByRole("link", { name: "검증용 승인 분석" });
+    expect(read).toBe(false);
+    failRead = true;
+    fireEvent.click(title);
+    await screen.findByText("검증용 읽음 처리 실패");
+    expect(mocks.push).not.toHaveBeenCalled();
+    expect(read).toBe(false);
+    failRead = false;
+    fireEvent.click(title);
+    await waitFor(() => expect(mocks.push).toHaveBeenCalledWith(`/documents/${filingId}?kind=filing&analysis=us`));
+    expect(read).toBe(true);
+  });
+
+  it.each(["ctrl", "meta", "middle"])("persists a read for a %s-click without replacing native new-tab navigation", async (mode) => {
+    render(<Notifications />);
+    const title = await screen.findByRole("link", { name: "검증용 승인 분석" });
+    const event = new MouseEvent(mode === "middle" ? "auxclick" : "click", {
+      bubbles: true,
+      cancelable: true,
+      button: mode === "middle" ? 1 : 0,
+      ctrlKey: mode === "ctrl",
+      metaKey: mode === "meta",
+    });
+    let preventedByApp: boolean | undefined;
+    // Observe the app's decision before stopping JSDOM's unsupported navigation.
+    window.document.addEventListener(event.type, (nativeEvent) => {
+      preventedByApp = nativeEvent.defaultPrevented;
+      nativeEvent.preventDefault();
+    }, { once: true });
+    fireEvent(title, event);
+    await waitFor(() => expect(read).toBe(true));
+    expect(preventedByApp).toBe(false);
+    expect(mocks.push).not.toHaveBeenCalled();
+  });
+
   it("filters notification rows by their real resource kinds and retains a real empty state", async () => {
     render(<Notifications />);
     await screen.findByRole("link", { name: "검증용 승인 분석" });

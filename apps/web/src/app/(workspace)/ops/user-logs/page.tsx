@@ -1,5 +1,5 @@
-import UserActivityLogs from '@/admin-logs/page';
+import { redirect } from 'next/navigation';
 
 export default function Page() {
-  return <UserActivityLogs/>;
+  redirect('/ops');
 }

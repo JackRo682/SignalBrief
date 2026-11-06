@@ -253,7 +253,7 @@ describe('administrator user activity page', () => {
     expect(screen.queryByRole('table')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: status === 401 ? '다시 로그인' : '다른 계정으로 로그인' }));
     await waitFor(() => expect(mock.logout).toHaveBeenCalledTimes(1));
-    expect(mock.replace).toHaveBeenCalledWith('/login?next=%2Fops%2Fuser-logs');
+    expect(mock.replace).toHaveBeenCalledWith('/login?next=%2Fops');
   });
   it('keeps filters and retries a temporary failure without displaying raw error details', async () => {
     render(<UserActivityLogs/>);

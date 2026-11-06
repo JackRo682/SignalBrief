@@ -7,7 +7,7 @@ import {Loading} from '@/components/ui';
 import {signInLink} from '@/lib/auth-return';
 import './research.css';
 
-const nav=[['/ops','운영 대시보드','01'],['/ops/user-logs','운영 현황 · 사용자 로그','02'],['/ops/experiments','A/B 실험 관리','03'],['/ops/evaluations','AI 평가 관리','04'],['/ops/quality','금융정보 품질 검수','05'],['/ops/reliability','장애·안전성 관리','06'],['/ops/reports','실험·평가 보고서','07']];
+const nav=[['/ops','운영 현황','01'],['/ops/experiments','A/B 실험 관리','02'],['/ops/evaluations','AI 평가 관리','03'],['/ops/quality','금융정보 품질 검수','04'],['/ops/reliability','장애·안전성 관리','05'],['/ops/reports','실험·평가 보고서','06']];
 
 export default function ResearchShell({children}:{children:React.ReactNode}) {
   const auth=useAuth(),path=usePathname(),router=useRouter();

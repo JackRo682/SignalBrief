@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useEffect, useState, type FormEvent } from 'react';
+import { Fragment, useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth';
@@ -13,11 +13,13 @@ import {
 } from './contracts';
 import './styles.css';
 
-const loginPath = '/login?next=%2Fops%2Fuser-logs';
+const loginPath = '/login?next=%2Fops';
 export { formatLogTime, formatActiveTime } from './display';
 import { eventLabels, screenLabels, formatLogTime, formatActiveTime } from './display';
 import { useAdminOverview } from './overview-client';
 import { OverviewPanels, OverviewLoading } from './overview';
+import { useOperationsData } from './operations-client';
+import { OperationsPanels } from './operations';
 
 function requestMessage(error: UserLogsError): { title: string; description: string } {
   if (error.code === 'mfa_required') return { title: '추가 인증이 필요합니다', description: '계정에 설정된 2단계 인증을 완료하면 사용자 로그를 다시 조회할 수 있습니다.' };
@@ -95,7 +97,7 @@ function LogRows({ items, filterUser }: { items: UserLog[]; filterUser: (id: str
   );
 }
 
-function UserLogContent() {
+function UserLogContent({ unified }: { unified: boolean }) {
   const auth = useAuth();
   const router = useRouter();
   const [draft, setDraft] = useState<UserLogsFilters>(defaultLogFilters);
@@ -104,12 +106,21 @@ function UserLogContent() {
   const [validation, setValidation] = useState('');
   const [switching, setSwitching] = useState(false);
   const [switchError, setSwitchError] = useState('');
+  const initialAnchorHandled = useRef(false);
   const cursor = selected.cursors[selected.cursors.length - 1];
   const result = useUserLogs({ ...selected.filters, cursor });
   const overview = useAdminOverview({ from: selected.filters.from, to: selected.filters.to, include_admin: selected.filters.include_admin });
-  const accessError = [result.error, overview.error].find(error => error?.status === 401 || error?.status === 403) ?? null;
+  const operations = useOperationsData({ from: selected.filters.from, to: selected.filters.to }, unified);
+  const accessError = [result.error, overview.error, operations.accessError].find(error => error?.status === 401 || error?.status === 403) ?? null;
   const response = accessError ? null : result.data;
   const oldest = new Date(Date.parse(`${today}T00:00:00Z`) - 89 * 86_400_000).toISOString().slice(0, 10);
+
+  useEffect(() => {
+    if (!unified || initialAnchorHandled.current || accessError || result.loading || overview.loading || operations.loading) return;
+    initialAnchorHandled.current = true;
+    const target = window.location.hash.slice(1);
+    if (/^(overview-|operations-|activity-logs$)/.test(target)) document.getElementById(target)?.scrollIntoView?.({ block: 'start' });
+  }, [unified, accessError, result.loading, overview.loading, operations.loading]);
 
   function apply(filters: UserLogsFilters) {
     const parsed = userLogsRequestSchema.safeParse({ ...filters, user_id: filters.user_id.trim(), cursor: null });
@@ -139,6 +150,7 @@ function UserLogContent() {
     setSelected(value => ({ ...value, cursors: [null] }));
     result.reload();
     overview.reload();
+    operations.reload();
   }
   async function reauthenticate() {
     if (switching) return;
@@ -153,12 +165,13 @@ function UserLogContent() {
   }
 
   return (
-    <div className="user-log-page">
-      <Heading tag="SIGNALBRIEF · 운영 현황" title="운영 현황 · 사용자 로그" description="방문부터 재방문, 기능 이용, 오류와 활동 기록까지 한 페이지에서 확인합니다.">
-        <button type="button" className="button secondary" onClick={refresh} disabled={result.loading || overview.loading}>새로고침</button>
+    <div className={`user-log-page${unified ? ' unified-ops-page' : ''}`}>
+      <Heading tag="SIGNALBRIEF · ADMIN" title={unified ? '운영 현황' : '운영 현황 · 사용자 로그'} description={unified ? '이용 지표·활동 로그부터 수집·AI 처리·검토·감사 기록까지 한 페이지에서 확인합니다.' : '방문부터 재방문, 기능 이용, 오류와 활동 기록까지 한 페이지에서 확인합니다.'}>
+        <button type="button" className="button secondary" onClick={refresh} disabled={result.loading || overview.loading || operations.loading}>새로고침</button>
       </Heading>
       <nav className="overview-jump-links" aria-label="이 페이지 바로가기">
         <a href="#overview-metrics">핵심 지표</a><a href="#overview-usage">방문·전환</a><a href="#overview-pages">화면·이탈</a><a href="#overview-errors">오류</a><a href="#activity-logs">활동 로그</a>
+        {unified && <><a href="#operations-pipeline">수집·AI 처리</a><a href="#operations-review">검토·실패</a><a href="#operations-data">원문·실행</a><a href="#operations-users">사용자</a><a href="#operations-audit">감사 로그</a></>}
       </nav>
       <section className="overview-period" aria-label="전체 조회 기간">
         <form onSubmit={submitPeriod} noValidate>
@@ -177,6 +190,7 @@ function UserLogContent() {
             <label className="user-log-checkbox"><input type="checkbox" checked={draft.include_admin} onChange={event => setDraft(value => ({ ...value, include_admin: event.target.checked }))}/><span>관리자 이용 기록 포함</span></label>
             <span>{selected.filters.from} ~ {selected.filters.to} · 한국 시간 · {selected.filters.include_admin ? '관리자 기록 포함' : '관리자 기록 제외'}</span>
           </div>
+          {unified && <p className="overview-note">조회 기간은 이용 지표·활동 로그·수집·AI 처리 이력에 적용됩니다. {(operations.resources.snapshot.data?.schema_version ?? 1) >= 2 ? '검토 대기 목록은 기간과 관계없이 현재 대기 중인 항목입니다. ' : ''}원문·실행·가입 사용자·감사 로그는 전체 기간의 최신 기록을 표시합니다. 관리자 포함 설정은 이용 지표와 활동 로그에 적용됩니다.</p>}
           {validation && <p className="user-log-validation" role="alert">{validation}</p>}
         </form>
       </section>
@@ -215,6 +229,7 @@ function UserLogContent() {
             </>}
           </Panel>
         </section>
+        {unified && <OperationsPanels resources={operations.resources} reload={operations.reload} refresh={refresh} deny={operations.deny}/>}
       </>}
       <details className="user-log-scope"><summary>측정 기준·수집 범위</summary>
         <p>관리자로 확인된 계정만 조회할 수 있습니다. 선택적 이용 통계에 동의한 로그인 사용자의 최근 90일을 집계하며, 동의를 철회한 사용자는 제외합니다. 수집을 시작하기 전의 방문과 행동 기록은 복원하지 않습니다.</p>
@@ -225,9 +240,9 @@ function UserLogContent() {
   );
 }
 
-export default function UserActivityLogs() {
+export default function UserActivityLogs({ unified = false }: { unified?: boolean }) {
   const auth = useAuth();
   if (auth.loading) return <Loading label="관리자 인증 정보를 확인하고 있습니다."/>;
   if (!auth.token || !auth.me?.is_admin || auth.error) return <section className="user-log-error"><h1>관리자 인증이 필요합니다</h1><p>관리자 계정으로 로그인한 뒤 다시 시도해 주세요.</p><Link className="button primary" href={loginPath}>로그인</Link></section>;
-  return <UserLogContent key={auth.me.id}/>;
+  return <UserLogContent key={auth.me.id} unified={unified}/>;
 }

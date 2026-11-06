@@ -13,11 +13,11 @@ import { typeLabels } from "@/lib/format";
 import { workspace } from "@/workspace/client";
 import {
   catalogSchema,
-  contentNotificationsSchema,
   notificationsSettingsSchema,
   resourceHref,
 } from "@/workspace/contracts";
 import { usePrefs } from "@/workspace/preferences";
+import { markContentNotificationRead, useContentNotifications } from "@/workspace/notification-state";
 import {
   DataState,
   Empty,
@@ -488,25 +488,11 @@ export default function Notifications() {
     { date } = usePrefs(),
     router = useRouter(),
     action = useMutation();
-  const data = useData(
-    { action: "content_notifications", p: {} },
-    contentNotificationsSchema,
-  );
+  const data = useContentNotifications();
   const [unread, setUnread] = useState(false),
     [company, setCompany] = useState(""),
     [kind, setKind] = useState("");
   const reload = data.reload;
-  useEffect(() => {
-    const refresh = () => {
-      if (document.visibilityState === "visible") reload();
-    };
-    const timer = setInterval(refresh, 60000);
-    window.addEventListener("focus", refresh);
-    return () => {
-      clearInterval(timer);
-      window.removeEventListener("focus", refresh);
-    };
-  }, [reload]);
   const companies = [
     ...new Map(
       data.data?.items.map((item) => [
@@ -526,15 +512,7 @@ export default function Notifications() {
               item.resource.kind === "dart_analysis"
             : item.resource.kind === "event")),
     ) ?? [];
-  const mark = async (id?: string) => {
-    await workspace(
-      token,
-      { action: "content_notification_read", p: id ? { id } : { all: true } },
-      z.unknown(),
-    );
-    reload();
-    window.dispatchEvent(new Event("signalbrief:content-updated"));
-  };
+  const mark = (id?: string) => markContentNotificationRead(token, id);
 
   return (
     <div className="rd-p-page" data-screen="redesign-notifications">
@@ -542,9 +520,19 @@ export default function Notifications() {
         <div>
           <h1>알림</h1>
           <p>
-            중요한 소식을 한눈에 확인하고, 원하는 알림을 설정할 수 있습니다.
+            알림 제목을 열거나 읽음으로 표시하면 빨간 점에 반영됩니다.
+            목록을 보는 것만으로는 읽음 처리되지 않습니다.
           </p>
         </div>
+        <button
+          className="rd-p-button primary"
+          disabled={action.busy || !data.data?.unread_count}
+          onClick={() =>
+            void action.run(() => mark(), "모든 알림을 읽음으로 표시했습니다.")
+          }
+        >
+          모두 읽음으로 표시
+        </button>
       </header>
       <Notice action={action} />
       <div className="rd-p-notifications-grid">
@@ -617,8 +605,10 @@ export default function Notifications() {
                         event.metaKey ||
                         event.shiftKey ||
                         event.altKey
-                      )
+                      ) {
+                        if (!item.read_at) void action.run(() => mark(item.id));
                         return;
+                      }
                       if (!item.read_at) {
                         event.preventDefault();
                         void action.run(async () => {
@@ -626,6 +616,10 @@ export default function Notifications() {
                           router.push(resourceHref(item.resource));
                         });
                       }
+                    }}
+                    onAuxClick={(event) => {
+                      if (event.button === 1 && !item.read_at)
+                        void action.run(() => mark(item.id));
                     }}
                   >
                     <strong>{item.resource.title}</strong>
@@ -669,25 +663,13 @@ export default function Notifications() {
           <footer className="rd-p-notification-footer">
             <button
               className="rd-p-link"
-              disabled={action.busy || !data.data?.unread_count}
-              onClick={() =>
-                void action.run(
-                  () => mark(),
-                  "모든 알림을 읽음으로 표시했습니다.",
-                )
-              }
-            >
-              모두 읽음으로 표시
-            </button>
-            <button
-              className="rd-p-link"
               disabled={data.loading}
               onClick={reload}
             >
               새로고침
             </button>
             {data.data?.items.length === 100 && (
-              <small>최근 알림 최대 100개를 표시합니다.</small>
+              <small>최근 알림 최대 100개를 표시합니다. 모두 읽음으로 표시는 이전 알림에도 적용됩니다.</small>
             )}
           </footer>
         </section>
