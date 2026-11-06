@@ -90,7 +90,7 @@
     "apps/web/src/admin-logs/overview-client.ts": "bb8f693c8914c62593b8a390c9108eead281a9cb14fa599b6eb09852ae26c0e0",
     "apps/web/src/admin-logs/overview-contracts.ts": "b00f635fc4b5b83e686ada1ef56e101f49651084a97e8658b0382c26b92a4b2b",
     "apps/web/src/admin-logs/overview.tsx": "f3495c93115e503133605cefce038d3556c3e1afe8d60f80e8a913db791b3ea7",
-    "apps/web/src/admin-logs/page.tsx": "74ea85e31ff7b2ed34e7d962c3e3ec561fa73b55905cf855724ed094b8e1ed1a",
+    "apps/web/src/admin-logs/page.tsx": "24b727573a6ac8d432116692386c31c7361cc14e52093ff41c3863f7ac3ff0d7",
     "apps/web/src/admin-logs/styles.css": "a3f6f62daaa14e45b8c30dbaace41f898a6d6ca451ffefa14de9270d82813fb8",
     "apps/web/src/app/(workspace)/ops/analytics/page.tsx": "3ea74b58112af7a3d1755558373ec276ee2c9706a74d5fffd44a77b4207be5e9",
     "apps/web/src/app/(workspace)/ops/documents/[id]/page.tsx": "8a092635af6adfba1bd2b3e6fb5efadfd75e4104b94a53a123190360a4e85504",
@@ -180,7 +180,7 @@
     "apps/web/src/research/operations.tsx": "1bc91299886aa0d088243d8f2003daca879847148ee90d94d2935472b325c198",
     "apps/web/src/research/ops-links.tsx": "275ae9462b01bc7198aeea6b56806578e9ccc18570427709f9d3d75cba8a225a",
     "apps/web/src/research/research.css": "60b2f2dfea762b4c53d84073c20fff3bb16b9da0047dd768b9a0e061a6155cee",
-    "apps/web/src/research/shell.tsx": "d4de234958eaec8591eee02956859e98c336e9581fe9c97fab6c11d5dc39a1f1",
+    "apps/web/src/research/shell.tsx": "fe81c5cbb5763941c0e1a4b860b2bf1942aad2f9c02b0d9bad2846bc099e26d3",
     "apps/web/src/research/study.tsx": "52c62eaaa7b90ecc8720000977fe5751d10635ef9e1aaa6807ce1367f9313468",
     "apps/web/src/research/tracker.tsx": "a551445bc98684655fa6ea8ad0ca4122d263cc17e917c7dff57c694ec9701e33",
     "apps/web/src/research/ui.tsx": "6338289b661d5c24185104647b54fdb999a74874caee729968562a969cd591b7",
@@ -424,6 +424,24 @@
       "normalization": "CRLF to LF, matching the unchanged scripts/verify_workspace_scope.py",
       "evidence": "docs/UNIFIED_OPS_AND_NOTIFICATION_READ_2026-11-06.md",
       "guard_changes": "No verifier assertions, authorization checks, disabled-feature gates or retained implementation hashes were weakened."
+    },
+    {
+      "date": "2026-11-06",
+      "authorization": "User explicitly requested only one Operations menu and the logs already implemented in the site on that screen. This presentation-only revision removes the five research menu entries and the jump-link menu and displays existing activity logs before aggregate panels. Existing protected APIs, data sources, consent, roles, pagination, filters and legacy detail routes remain unchanged.",
+      "production_baseline_commit": "bd2d4a9274c29a9de62d98313c3f4da4ff6afb3e",
+      "reviewed_files": {
+        "apps/web/src/research/shell.tsx": {
+          "before_sha256": "d4de234958eaec8591eee02956859e98c336e9581fe9c97fab6c11d5dc39a1f1",
+          "after_sha256": "fe81c5cbb5763941c0e1a4b860b2bf1942aad2f9c02b0d9bad2846bc099e26d3"
+        },
+        "apps/web/src/admin-logs/page.tsx": {
+          "before_sha256": "74ea85e31ff7b2ed34e7d962c3e3ec561fa73b55905cf855724ed094b8e1ed1a",
+          "after_sha256": "24b727573a6ac8d432116692386c31c7361cc14e52093ff41c3863f7ac3ff0d7"
+        }
+      },
+      "normalization": "CRLF to LF, matching the unchanged scripts/verify_workspace_scope.py",
+      "evidence": "docs/OPS_LOGS_ONLY_2026-11-06.md",
+      "guard_changes": "No verifier assertions or retained feature protections changed."
     }
   ]
 }
