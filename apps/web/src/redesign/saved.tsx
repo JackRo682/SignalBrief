@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { z } from "zod";
 import { useAuth } from "@/components/auth";
 import { Icon } from "@/components/icons";
@@ -29,6 +30,7 @@ import {
 } from "./calendar-utils";
 import { CompanyLogo as Logo } from "./ui";
 import "./personal.css";
+import "./saved.css";
 
 type Section = "analysis" | "event" | "document" | "history";
 const savedCompanySchema = z.object({ id: z.string().uuid(), name: z.string(), ticker: z.string() });
@@ -44,6 +46,15 @@ const sections: {
   { key: "document", label: "북마크 문서", icon: "star" },
   { key: "history", label: "최근 본 항목", icon: "clock" },
 ];
+
+function sectionFromLocation(): Section {
+  const url = new URL(window.location.href);
+  const query = url.searchParams.get("tab");
+  const legacyHash = url.hash.replace(/^#rd-saved-/, "");
+  return sections.find((section) => section.key === query)?.key
+    ?? sections.find((section) => section.key === legacyHash)?.key
+    ?? "analysis";
+}
 
 function Bookmark({ filled = true }: { filled?: boolean }) {
   return (
@@ -272,31 +283,34 @@ function SaveButton({ item, reload, labeled = false }: { item: Resource; reload:
   );
 }
 
-function SaveDiscovery({ reload }: { reload: () => void }) {
-  const analyses = useData({ action: "catalog", p: { kind: "analysis", sort: "newest", limit: 3 } }, catalogSchema);
-  const documents = useData({ action: "catalog", p: { kind: "document", sort: "newest", limit: 3 } }, catalogSchema);
+function SaveDiscovery({ kind, reload }: { kind: "analysis" | "document"; reload: () => void }) {
+  const result = useData({ action: "catalog", p: { kind, sort: "newest", limit: 3 } }, catalogSchema);
   const { date } = usePrefs();
+  const kinds = kind === "analysis" ? ["event", "us_analysis", "dart_analysis"] : ["filing", "document"];
+  const items = result.data?.items.filter(item => kinds.includes(item.kind) && !item.is_saved) ?? [];
   return (
-    <section className="rd-p-panel" aria-labelledby="rd-save-discovery-title">
-      <header className="rd-p-section-head"><h2 id="rd-save-discovery-title"><Icon name="star" />저장할 자료 찾기</h2></header>
-      <p className="rd-p-muted">아래는 최근 공개된 자료입니다. 저장을 누른 자료만 내 저장 목록에 추가됩니다.</p>
-      {([{ title: "최근 공개 분석", result: analyses, kinds: ["event", "us_analysis", "dart_analysis"] },
-        { title: "최근 공시·문서", result: documents, kinds: ["filing", "document"] }] as const).map(({ title, result, kinds }) => {
-        const items = result.data?.items.filter(item => (kinds as readonly string[]).includes(item.kind) && !item.is_saved) ?? [];
-        return <div key={title}>
-          <h3>{title}</h3>
-          <DataState {...result} retry={result.reload} />
-          <div className="rd-p-analysis-grid">
-            {items.map(item => <article key={`${item.kind}:${item.id}`} className="rd-p-analysis-card">
-              <header><span>{item.company_name} · {item.ticker}</span><SaveButton item={item} labeled reload={reload} /></header>
+    <section className="rd-saved-discovery" aria-labelledby={`rd-save-discovery-title-${kind}`}>
+      <header className="rd-p-section-head">
+        <h3 id={`rd-save-discovery-title-${kind}`}>저장할 자료 찾기</h3>
+        <Link className="rd-p-link" href={kind === "analysis" ? "/search?kind=analysis" : "/search?kind=filing"}>
+          전체 보기 <Icon name="arrow" size={16} />
+        </Link>
+      </header>
+      <p className="rd-p-muted">{kind === "analysis" ? "최근 공개된 분석" : "최근 공시·문서"}입니다. 저장을 누르면 내 목록에 추가됩니다.</p>
+      <DataState {...result} retry={result.reload} />
+      <div className="rd-saved-resource-list">
+        {items.map(item => <article key={`${item.kind}:${item.id}`} className="rd-saved-resource">
+          <Logo ticker={item.ticker} />
+          <div className="rd-saved-resource-body">
+              <div className="rd-saved-meta"><span>{item.company_name}</span><span>{item.ticker}</span></div>
               <Link className="rd-p-card-title" href={resourceHref(item)}>{item.title}</Link>
               {item.summary && <p>{item.summary}</p>}
               <footer>{item.kind === "event" ? "검토된 분석" : item.kind.endsWith("analysis") ? "승인된 분석" : "공식 문서"} · {date(item.published_at, item.publication_precision)}</footer>
-            </article>)}
           </div>
-          {result.data && !result.error && !items.length && <p className="rd-p-muted">지금 표시할 공개 자료가 없습니다.</p>}
-        </div>;
-      })}
+          <SaveButton item={item} labeled reload={reload} />
+        </article>)}
+      </div>
+      {result.data && !result.error && !items.length && <p className="rd-p-muted">지금 표시할 공개 자료가 없습니다.</p>}
     </section>
   );
 }
@@ -306,6 +320,7 @@ function SavedSection({
   title,
   icon,
   total,
+  active,
   expanded,
   toggle,
   children,
@@ -313,7 +328,8 @@ function SavedSection({
   id: Section;
   title: string;
   icon: "file" | "calendar" | "star" | "clock";
-  total: number;
+  total: number | null;
+  active: boolean;
   expanded: boolean;
   toggle: () => void;
   children: ReactNode;
@@ -321,15 +337,19 @@ function SavedSection({
   return (
     <section
       id={`rd-saved-${id}`}
-      className="rd-p-panel rd-p-saved-section"
-      aria-labelledby={`rd-saved-title-${id}`}
+      className="rd-p-saved-section"
+      role="tabpanel"
+      hidden={!active}
+      tabIndex={0}
+      aria-labelledby={`rd-saved-tab-${id}`}
     >
       <header className="rd-p-section-head">
         <h2 id={`rd-saved-title-${id}`}>
           <Icon name={icon} />
           {title}
+          {total !== null && <span className="rd-saved-total">{total}개</span>}
         </h2>
-        {total > (id === "analysis" ? 3 : 4) && (
+        {(total ?? 0) > (id === "analysis" ? 3 : 4) && (
           <button className="rd-p-link" onClick={toggle}>
             {expanded ? "접기" : "더보기"}
             <Icon name="arrow" size={16} />
@@ -343,13 +363,18 @@ function SavedSection({
 
 export default function Saved() {
   const { token } = useAuth();
-  return <SavedContent key={token ?? "signed-out"} />;
+  return (
+    <Suspense fallback={<p role="status">저장 항목을 불러오는 중…</p>}>
+      <SavedContent key={token ?? "signed-out"} />
+    </Suspense>
+  );
 }
 
 function SavedContent() {
   const { token } = useAuth(),
     prefs = usePrefs(),
     action = useMutation();
+  const routeQuery = useSearchParams().toString();
   const [active, setActive] = useState<Section>("analysis"),
     [query, setQuery] = useState(""),
     [draft, setDraft] = useState(""),
@@ -357,6 +382,28 @@ function SavedContent() {
     [sort, setSort] = useState<"newest" | "oldest">("newest"),
     [manage, setManage] = useState(false),
     [expanded, setExpanded] = useState<Section[]>([]);
+  const tabRefs = useRef<Partial<Record<Section, HTMLButtonElement | null>>>({});
+  useEffect(() => {
+    const syncSection = () => setActive(sectionFromLocation());
+    syncSection();
+    window.addEventListener("popstate", syncSection);
+    window.addEventListener("hashchange", syncSection);
+    return () => {
+      window.removeEventListener("popstate", syncSection);
+      window.removeEventListener("hashchange", syncSection);
+    };
+  }, [routeQuery]);
+  const selectSection = (key: Section) => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("tab") !== key || url.hash) {
+      url.searchParams.set("tab", key);
+      url.hash = "";
+      // Native history integrates with the App Router without scrolling or
+      // remounting the archive; Back and detail-return retain the selected tab.
+      window.history.pushState(null, "", `${url.pathname}${url.search}`);
+    }
+    setActive(key);
+  };
   const saved = useData(
     { action: "saved_list", p: { kind: "", sort } },
     savedSchema,
@@ -416,6 +463,16 @@ function SavedContent() {
     );
   const unavailableDates =
     !company && !query ? (dates.data?.unavailableIds ?? []) : [];
+  const visibleCalendarItems = expanded.includes("event") ? calendarItems : calendarItems.slice(0, 4);
+  const visibleUnavailableDates = expanded.includes("event")
+    ? unavailableDates
+    : unavailableDates.slice(0, Math.max(0, 4 - visibleCalendarItems.length));
+  const totals: Record<Section, number | null> = {
+    analysis: saved.data && !saved.error ? analyses.length : null,
+    document: saved.data && !saved.error ? documents.length : null,
+    history: history.data && !history.error ? visits.length : null,
+    event: dates.data && !dates.error ? calendarItems.length + unavailableDates.length : null,
+  };
   const page = (list: Resource[], key: Section, limit = 4) =>
     expanded.includes(key) ? list : list.slice(0, limit);
   const track = (item: Resource) => {
@@ -432,23 +489,44 @@ function SavedContent() {
       <header className="rd-p-heading">
         <div>
           <h1>저장</h1>
+          <p>다시 보고 싶은 분석, 일정, 문서를 한곳에 모아 보세요.</p>
         </div>
+        <button className="rd-p-button rd-saved-manage" type="button" onClick={() => setManage(true)}>
+          <Icon name="settings" size={17} />기록 관리
+        </button>
       </header>
       <Notice action={action} />
-      <nav className="rd-p-saved-tabs" aria-label="저장 항목 바로가기">
-        {sections.map((section) => (
-          <a
+      <div className="rd-p-saved-tabs" role="tablist" aria-label="저장 항목">
+        {sections.map((section, index) => (
+          <button
             key={section.key}
-            href={`#rd-saved-${section.key}`}
+            ref={(node) => { tabRefs.current[section.key] = node; }}
+            id={`rd-saved-tab-${section.key}`}
+            type="button"
+            role="tab"
             className={active === section.key ? "active" : ""}
-            aria-current={active === section.key ? "location" : undefined}
-            onClick={() => setActive(section.key)}
+            aria-selected={active === section.key}
+            aria-controls={`rd-saved-${section.key}`}
+            tabIndex={active === section.key ? 0 : -1}
+            onClick={() => selectSection(section.key)}
+            onKeyDown={(event) => {
+              const nextIndex = event.key === "ArrowRight" ? (index + 1) % sections.length
+                : event.key === "ArrowLeft" ? (index + sections.length - 1) % sections.length
+                  : event.key === "Home" ? 0 : event.key === "End" ? sections.length - 1 : null;
+              if (nextIndex === null) return;
+              event.preventDefault();
+              const next = sections[nextIndex].key;
+              selectSection(next);
+              // Let the browser reveal the focused tab inside the mobile strip.
+              tabRefs.current[next]?.focus();
+            }}
           >
             <Icon name={section.icon} />
             <span>{section.label}</span>
-          </a>
+            {totals[section.key] !== null && <span className="rd-saved-tab-count" aria-hidden="true">{totals[section.key]}</span>}
+          </button>
         ))}
-      </nav>
+      </div>
       <form
         className="rd-p-filter-panel"
         onSubmit={(event) => {
@@ -463,8 +541,8 @@ function SavedContent() {
             value={sort}
             onChange={(event) => setSort(event.target.value as typeof sort)}
           >
-            <option value="newest">최신순</option>
-            <option value="oldest">오래된 순</option>
+            <option value="newest">{active === "event" ? "일정 날짜 최신순" : "최신순"}</option>
+            <option value="oldest">{active === "event" ? "일정 날짜 오래된 순" : "오래된 순"}</option>
           </select>
         </label>
         <label>
@@ -509,43 +587,34 @@ function SavedContent() {
             저장 필터 초기화
           </button>
         )}
-        <button
-          className="rd-p-button"
-          type="button"
-          onClick={() => setManage(true)}
-        >
-          <Icon name="settings" size={17} />
-          기록 관리
-        </button>
       </form>
-      <DataState {...saved} retry={saved.reload} />
-      {!hasFilters && saved.data && !saved.error && saved.data.items.length === 0 && <SaveDiscovery reload={reload} />}
       <div className="rd-p-saved-stack">
         <SavedSection
           id="analysis"
           title="저장한 분석"
           icon="file"
-          total={analyses.length}
+          total={totals.analysis}
+          active={active === "analysis"}
           expanded={expanded.includes("analysis")}
           toggle={() => toggle("analysis")}
         >
-          <div className="rd-p-analysis-grid">
+          <DataState {...saved} retry={saved.reload} />
+          <div className="rd-saved-resource-list">
             {page(analyses, "analysis", 3).map((item) => (
               <article
                 key={`${item.kind}:${item.id}`}
-                className="rd-p-analysis-card"
+                className="rd-saved-resource"
               >
-                <header>
+                <Logo ticker={item.ticker} />
+                <div className="rd-saved-resource-body">
+                <div className="rd-saved-meta">
                   <Link
                     href={`/companies/${item.company_id}`}
-                    className="rd-p-company-identity"
                   >
-                    <Logo ticker={item.ticker} />
                     <strong>{item.company_name}</strong>
-                    <small>{item.ticker}</small>
                   </Link>
-                  <SaveButton item={item} reload={reload} />
-                </header>
+                  <span>{item.ticker}</span>
+                </div>
                 <Link
                   href={resourceHref(item)}
                   className="rd-p-card-title"
@@ -565,6 +634,8 @@ function SavedContent() {
                   </time>
                   {item.provider && <> · {item.provider.toUpperCase()}</>}
                 </footer>
+                </div>
+                <SaveButton item={item} reload={reload} />
               </article>
             ))}
           </div>
@@ -584,16 +655,19 @@ function SavedContent() {
               label="분석 찾아보기"
             />
           )}
+          {active === "analysis" && !hasFilters && saved.data && !saved.error && !saved.loading && !analyses.length && <SaveDiscovery kind="analysis" reload={reload} />}
         </SavedSection>
         <SavedSection
           id="document"
           title="북마크 문서"
           icon="star"
-          total={documents.length}
+          total={totals.document}
+          active={active === "document"}
           expanded={expanded.includes("document")}
           toggle={() => toggle("document")}
         >
-          <div className="rd-p-table-scroll">
+          <DataState {...saved} retry={saved.reload} />
+          {documents.length > 0 && <div className="rd-p-table-scroll">
             <table className="rd-p-saved-table">
               <thead>
                 <tr>
@@ -645,7 +719,7 @@ function SavedContent() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </div>}
           {saved.data && !documents.length && !saved.error && (
             <Empty
               title={
@@ -662,12 +736,14 @@ function SavedContent() {
               label="공시 찾아보기"
             />
           )}
+          {active === "document" && !hasFilters && saved.data && !saved.error && !saved.loading && !documents.length && <SaveDiscovery kind="document" reload={reload} />}
         </SavedSection>
         <SavedSection
           id="history"
           title="최근 본 항목"
           icon="clock"
-          total={visits.length}
+          total={totals.history}
+          active={active === "history"}
           expanded={expanded.includes("history")}
           toggle={() => toggle("history")}
         >
@@ -719,7 +795,8 @@ function SavedContent() {
           id="event"
           title="저장한 일정"
           icon="calendar"
-          total={Math.max(calendarItems.length, unavailableDates.length)}
+          total={totals.event}
+          active={active === "event"}
           expanded={expanded.includes("event")}
           toggle={() => toggle("event")}
         >
@@ -730,10 +807,7 @@ function SavedContent() {
             </p>
           )}
           <div className="rd-p-event-list">
-            {(expanded.includes("event")
-              ? calendarItems
-              : calendarItems.slice(0, 4)
-            ).map((item) => (
+            {visibleCalendarItems.map((item) => (
               <SavedCalendarItem
                 key={item.id}
                 item={item}
@@ -747,10 +821,7 @@ function SavedContent() {
           </div>
           {unavailableDates.length > 0 && (
             <div className="rd-p-event-list">
-              {(expanded.includes("event")
-                ? unavailableDates
-                : unavailableDates.slice(0, 4)
-              ).map((id, index) => (
+              {visibleUnavailableDates.map((id, index) => (
                 <article key={id}>
                   <span className="rd-p-tile">
                     <Icon name="calendar" />

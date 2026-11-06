@@ -28,6 +28,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mocks.push }),
   usePathname: () => "/saved",
+  useSearchParams: () => new URLSearchParams(window.location.search),
 }));
 vi.mock("@/components/auth", () => ({
   useAuth: () => ({
@@ -131,6 +132,7 @@ let watched: (typeof company)[],
   emailAvailable: boolean,
   ruleEnabled: boolean;
 beforeEach(() => {
+  window.history.replaceState(null, "", "/saved");
   vi.clearAllMocks();
   pageDataCache.reset();
   mocks.muted = [];
@@ -317,9 +319,10 @@ afterEach(() => {
 });
 
 describe("redesigned personal screens", () => {
-  it("applies actual saved keyword, company and sort filters while keeping the multi-section layout", async () => {
+  it("applies actual saved keyword, company and sort filters across selected tabs", async () => {
     render(<Saved />);
     await screen.findByRole("link", { name: "검증용 승인 분석" });
+    fireEvent.click(screen.getByRole("tab", { name: "북마크 문서" }));
     expect(
       screen.getByRole("link", { name: "검증용 원문 문서" }),
     ).toBeVisible();
@@ -348,12 +351,14 @@ describe("redesigned personal screens", () => {
       expect.anything(),
     );
     expect(screen.getByLabelText("저장 항목 회사")).toHaveValue(companyId);
+    fireEvent.click(screen.getByRole("tab", { name: "저장한 분석" }));
     expect(screen.getByRole("link", { name: "검증용 승인 분석" })).toBeVisible();
     // Filters operate on the complete owner-scoped response, preserving options
     // for saved issuers that are not in a global directory's first page.
     fireEvent.click(screen.getByRole("button", { name: "저장 필터 초기화" }));
+    fireEvent.click(screen.getByRole("tab", { name: "북마크 문서" }));
     expect(await screen.findByRole("link", { name: "검증용 원문 문서" })).toBeVisible();
-    expect(screen.getByRole("heading", { name: "북마크 문서" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: /북마크 문서 1개/ })).toBeVisible();
   });
 
   it("keeps failed saves visible and persists successful removal across remount", async () => {
@@ -387,8 +392,10 @@ describe("redesigned personal screens", () => {
     fireEvent.click(screen.getByRole("button", { name: "기록 관리" }));
     expect(history).toBe(true);
     fireEvent.click(screen.getByRole("button", { name: "기록 지우기" }));
-    await screen.findByText("최근 본 항목이 없습니다.");
+    fireEvent.click(screen.getByRole("tab", { name: "최근 본 항목" }));
+    expect(await screen.findByText("최근 본 항목이 없습니다.")).toBeVisible();
     expect(saved).toBe(true);
+    fireEvent.click(screen.getByRole("tab", { name: "저장한 분석" }));
     expect(
       screen.getByRole("link", { name: "검증용 승인 분석" }),
     ).toBeVisible();
@@ -401,6 +408,7 @@ describe("redesigned personal screens", () => {
 
   it("uses calendar IDs and the calendar RPC for saved dates, never reviewed-event IDs", async () => {
     render(<Saved />);
+    fireEvent.click(screen.getByRole("tab", { name: "저장한 일정" }));
     expect(
       await screen.findByRole("link", { name: "검증용 저장 일정" }),
     ).toHaveAttribute("href", `/events/${calendarId}?kind=calendar`);
@@ -448,6 +456,7 @@ describe("redesigned personal screens", () => {
   it("allows removal of an unavailable saved date without revealing inaccessible details", async () => {
     calendarVisible = false;
     render(<Saved />);
+    fireEvent.click(screen.getByRole("tab", { name: "저장한 일정" }));
     await screen.findByText("사용할 수 없는 저장 일정");
     expect(screen.queryByText("검증용 저장 일정")).not.toBeInTheDocument();
     fireEvent.click(
