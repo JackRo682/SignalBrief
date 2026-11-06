@@ -363,7 +363,7 @@ test('saved tabs retain filters, URL history and scroll with accessible keyboard
  await page.setViewportSize({...viewport,height:320});
  await tab('북마크 문서').click();
  await tab('북마크 문서').focus();
- await page.evaluate(()=>window.scrollTo(0,64));
+ await page.evaluate(()=>window.scrollTo({top:64,behavior:'instant'}));
  const previousScroll=await page.evaluate(()=>window.scrollY);
  expect(previousScroll).toBeGreaterThan(0);
  await page.keyboard.press('Home');
@@ -371,7 +371,7 @@ test('saved tabs retain filters, URL history and scroll with accessible keyboard
  await expect.poll(()=>page.evaluate(()=>window.scrollY)).toBe(previousScroll);
  expect(await page.evaluate(()=>(window as Window & {savedTabDocumentMarker?:string}).savedTabDocumentMarker)).toBe('same-document');
  await page.setViewportSize(viewport);
- await page.evaluate(()=>window.scrollTo(0,0));
+ await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
  await screenshot(page,info,'saved-tabs-analysis');
  await page.reload();
  await selected('저장한 분석','analysis');
