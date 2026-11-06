@@ -305,8 +305,14 @@ test('unified operations preserve live v2 rows and allow only valid in-page revi
  await page.getByRole('heading',{level:3,name:'공식 자료 수집',exact:true}).evaluate(heading=>heading.scrollIntoView({block:'start'}));
  await page.screenshot({path:info.outputPath(`synthetic-ops-collection-${info.project.name}.png`),fullPage:false,animations:'disabled',timeout:15_000});
 
- for(const title of ['검토 대기 이벤트·분석','수집·처리·AI 실패','인용·수치 검증 문제','중복 이벤트 후보','사용자 의견','최근 원본 문서','모델·분석 실행 기록','가입 사용자','운영 감사 로그']){
-  await expect(page.getByRole('heading',{level:3,name:title,exact:true})).toBeVisible();
+ for(const [region,titles] of [
+  ['검토·실패 기록',['검토 대기 이벤트·분석','수집·처리·AI 실패','인용·수치 검증 문제','중복 이벤트 후보','사용자 의견']],
+  ['원문·모델 실행',['최근 원본 문서','모델·분석 실행 기록']],
+  ['가입 사용자',['가입 사용자']],
+  ['운영 감사 로그',['운영 감사 로그']],
+ ] as const){
+  const section=page.getByRole('region',{name:region,exact:true});
+  for(const title of titles)await expect(section.getByRole('heading',{level:3,name:title,exact:true})).toBeVisible();
  }
  const operationSections=page.locator('.ops-consolidated-sections');
  for(const text of ['Synthetic review needed','Synthetic failed run','Synthetic citation issue','Synthetic duplicate candidate','Synthetic user feedback','Synthetic source document','Synthetic test user','Synthetic source review reason','Synthetic collector activity','Synthetic processing stage','Synthetic email queue','Synthetic delivery receipt']){
