@@ -166,13 +166,12 @@ function UserLogContent({ unified }: { unified: boolean }) {
 
   return (
     <div className={`user-log-page${unified ? ' unified-ops-page' : ''}`}>
-      <Heading tag="SIGNALBRIEF · ADMIN" title={unified ? '운영 현황' : '운영 현황 · 사용자 로그'} description={unified ? '이용 지표·활동 로그부터 수집·AI 처리·검토·감사 기록까지 한 페이지에서 확인합니다.' : '방문부터 재방문, 기능 이용, 오류와 활동 기록까지 한 페이지에서 확인합니다.'}>
+      <Heading tag="SIGNALBRIEF · ADMIN" title={unified ? '운영 현황' : '운영 현황 · 사용자 로그'} description={unified ? '사이트에서 수집 중인 사용자 활동·오류·처리·감사 기록을 한 화면에서 확인합니다.' : '방문부터 재방문, 기능 이용, 오류와 활동 기록까지 한 페이지에서 확인합니다.'}>
         <button type="button" className="button secondary" onClick={refresh} disabled={result.loading || overview.loading || operations.loading}>새로고침</button>
       </Heading>
-      <nav className="overview-jump-links" aria-label="이 페이지 바로가기">
+      {!unified && <nav className="overview-jump-links" aria-label="이 페이지 바로가기">
         <a href="#overview-metrics">핵심 지표</a><a href="#overview-usage">방문·전환</a><a href="#overview-pages">화면·이탈</a><a href="#overview-errors">오류</a><a href="#activity-logs">활동 로그</a>
-        {unified && <><a href="#operations-pipeline">수집·AI 처리</a><a href="#operations-review">검토·실패</a><a href="#operations-data">원문·실행</a><a href="#operations-users">사용자</a><a href="#operations-audit">감사 로그</a></>}
-      </nav>
+      </nav>}
       <section className="overview-period" aria-label="전체 조회 기간">
         <form onSubmit={submitPeriod} noValidate>
           <div className="overview-period-main">
@@ -196,13 +195,9 @@ function UserLogContent({ unified }: { unified: boolean }) {
       </section>
 
       {accessError ? <LogError error={accessError} retry={refresh} reauthenticate={() => void reauthenticate()} busy={switching} actionError={switchError}/> : <>
-        {overview.loading && <OverviewLoading/>}
-        {overview.error && <section className="user-log-error" role="alert"><h2>핵심 지표를 불러오지 못했습니다</h2><p>이용 지표를 확인할 수 없습니다. 아래 활동 기록은 별도로 조회할 수 있습니다.</p><LogError error={overview.error} retry={overview.reload} reauthenticate={() => void reauthenticate()} busy={switching} actionError={switchError}/></section>}
-        {overview.data && <OverviewPanels data={overview.data}/>}
-
         <section id="activity-logs" className="overview-section" aria-label="상세 활동 로그">
           <Panel title="활동 기록" aside={<span className="user-log-small">최근 기록 순 · 페이지당 50개</span>}>
-            <p className="overview-note user-log-filter-intro">아래 조건은 활동 기록에만 적용됩니다. 위 지표는 전체 조회 기간과 관리자 포함 설정을 따릅니다.</p>
+            <p className="overview-note user-log-filter-intro">활동 유형·화면·기기·사용자 조건은 이 목록에만 적용됩니다. 이용 지표는 상단 조회 기간과 관리자 포함 설정을 따릅니다. {unified && <>관리자 처리 이력은 <a className="user-log-link" href="#operations-audit">감사 로그</a>에서 확인할 수 있습니다.</>}</p>
             <form className="user-log-detail-filters" onSubmit={submit} noValidate>
               <div className="user-log-filters">
                 <Field label="활동 유형"><select value={draft.event} onChange={event => setDraft(value => ({ ...value, event: event.target.value as UserLogsFilters['event'] }))}><option value="">전체 활동</option>{userLogEvents.map(name => <option value={name} key={name}>{eventLabels[name]}</option>)}</select></Field>
@@ -229,6 +224,10 @@ function UserLogContent({ unified }: { unified: boolean }) {
             </>}
           </Panel>
         </section>
+        {overview.loading && <OverviewLoading/>}
+        {overview.error && <section className="user-log-error" role="alert"><h2>핵심 지표를 불러오지 못했습니다</h2><p>이용 지표를 확인할 수 없습니다. 활동 기록은 별도로 조회할 수 있습니다.</p><LogError error={overview.error} retry={overview.reload} reauthenticate={() => void reauthenticate()} busy={switching} actionError={switchError}/></section>}
+        {overview.data && <OverviewPanels data={overview.data}/>}
+
         {unified && <OperationsPanels resources={operations.resources} reload={operations.reload} refresh={refresh} deny={operations.deny}/>}
       </>}
       <details className="user-log-scope"><summary>측정 기준·수집 범위</summary>
