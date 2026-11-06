@@ -6,8 +6,8 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { useAuth } from "@/components/auth";
 import { Icon } from "@/components/icons";
 import WorkspaceLoading from "@/components/workspace-loading";
-import { contentNotificationsSchema } from "@/workspace/contracts";
-import { Notice, useData, useMutation } from "@/workspace/ui";
+import { useContentNotifications } from "@/workspace/notification-state";
+import { Notice, useMutation } from "@/workspace/ui";
 import { SearchForm } from "./ui";
 import "./styles.css";
 
@@ -24,12 +24,7 @@ export default function RedesignShell({ children }: { children: ReactNode }) {
     router = useRouter(),
     action = useMutation(),
     profile = useRef<HTMLDetailsElement>(null);
-  const alerts = useData(
-    auth.me?.onboarding_completed
-      ? { action: "content_notifications", p: {} }
-      : null,
-    contentNotificationsSchema,
-  );
+  const alerts = useContentNotifications(Boolean(auth.me?.onboarding_completed));
   const reload = alerts.reload;
   useEffect(() => {
     if (!auth.loading && !auth.token)
@@ -44,7 +39,6 @@ export default function RedesignShell({ children }: { children: ReactNode }) {
     reload();
   }, [path, reload]);
   useEffect(() => {
-    window.addEventListener("signalbrief:content-updated", reload);
     const key = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
@@ -57,7 +51,6 @@ export default function RedesignShell({ children }: { children: ReactNode }) {
     };
     window.addEventListener("keydown", key);
     return () => {
-      window.removeEventListener("signalbrief:content-updated", reload);
       window.removeEventListener("keydown", key);
     };
   }, [reload]);
@@ -114,8 +107,7 @@ export default function RedesignShell({ children }: { children: ReactNode }) {
               <Link href="/settings/account">계정 설정</Link>
               <Link href="/settings/notifications">알림 설정</Link>
               <Link href="/help">도움말</Link>
-              {auth.me.is_admin && <Link href="/ops">운영 콘솔</Link>}
-              {auth.me.is_admin && <Link href="/ops/user-logs">운영 현황 · 사용자 로그</Link>}
+              {auth.me.is_admin && <Link href="/ops">운영 현황</Link>}
               <button
                 type="button"
                 disabled={action.busy}

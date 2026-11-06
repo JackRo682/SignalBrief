@@ -16,7 +16,7 @@ export default function WorkspaceLayout({children}:{children:React.ReactNode}){
  const redesigned=['/today','/explore','/watchlist','/calendar','/saved','/search','/alerts'].includes(path)||/^\/(companies|events|documents)\/[^/]+$/.test(path);
  if(redesigned)return <RedesignShell>{children}</RedesignShell>;
  if(mobile===null)return null;
- if(path.startsWith('/ops/'))return <ResearchShell>{children}</ResearchShell>;
+ if(path==='/ops'||path.startsWith('/ops/'))return <ResearchShell>{children}</ResearchShell>;
  if(mobile&&!path.startsWith('/ops'))return <MobileShell>{disabledWorkspaceRoute(path)?<WorkspaceUnavailable/>:children}</MobileShell>;
  const desktop = ["/today","/explore","/search","/watchlist","/timeline","/questions","/more","/calendar","/alerts","/saved","/settings","/help","/portfolio"].includes(path)||/^\/(companies|events|documents)\/[^/]+$/.test(path)||/^\/companies\/[^/]+\/timeline$/.test(path);
  if(desktop||path.startsWith("/settings/"))return <DesktopShell>{disabledWorkspaceRoute(path)?<WorkspaceUnavailable/>:['/saved','/settings','/help'].includes(path)||path.startsWith('/settings/')?<div className="ws pc-workspace-page">{children}</div>:children}</DesktopShell>;

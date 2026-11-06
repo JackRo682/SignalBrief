@@ -5,8 +5,8 @@ import {Suspense,useEffect,useRef,useState,type ReactNode,type RefObject} from '
 import {useAuth} from '@/components/auth';
 import {Icon} from '@/components/icons';
 import WorkspaceLoading from '@/components/workspace-loading';
-import {useData,useMutation} from '@/workspace/ui';
-import {contentNotificationsSchema} from '@/workspace/contracts';
+import {useMutation} from '@/workspace/ui';
+import {useContentNotifications} from '@/workspace/notification-state';
 import {usePrefs} from '@/workspace/preferences';
 import {PcNotice} from './ui';
 import './shell.css';
@@ -23,10 +23,9 @@ export function DesktopShell({children}:{children:ReactNode}){
  const auth=useAuth(),path=usePathname(),router=useRouter(),{text:t}=usePrefs(),action=useMutation();
  const searchRef=useRef<HTMLInputElement>(null),profileRef=useRef<HTMLDetailsElement>(null);
  const [fragment,setFragment]=useState('');
- const notifications=useData(auth.me?.onboarding_completed?{action:'content_notifications',p:{}}:null,contentNotificationsSchema),unread=notifications.data?.unread_count;
+ const notifications=useContentNotifications(Boolean(auth.me?.onboarding_completed)),unread=notifications.data?.unread_count;
  const reloadNotifications=notifications.reload;
  useEffect(()=>{reloadNotifications();},[path,reloadNotifications]);
- useEffect(()=>{const refresh=()=>reloadNotifications();window.addEventListener('signalbrief:content-updated',refresh);return()=>window.removeEventListener('signalbrief:content-updated',refresh);},[reloadNotifications]);
  useEffect(()=>{if(!auth.loading&&!auth.token)router.replace(`/login?next=${encodeURIComponent(path+window.location.search)}`);else if(auth.me&&!auth.me.onboarding_completed)router.replace('/onboarding');},[auth.loading,auth.token,auth.me,path,router]);
  useEffect(()=>{if(profileRef.current)profileRef.current.open=false;setFragment(window.location.hash);},[path]);
  useEffect(()=>{const hash=()=>setFragment(window.location.hash);window.addEventListener('hashchange',hash);window.addEventListener('popstate',hash);return()=>{window.removeEventListener('hashchange',hash);window.removeEventListener('popstate',hash);};},[]);

@@ -84,24 +84,27 @@
     "apps/web/src/admin-logs/client.ts": "652ce7e53eba31a809ccdff087fa98089bf1f111281d725896f588edc82e65e0",
     "apps/web/src/admin-logs/contracts.ts": "df165e9d5c6b50fb7bf7a71ce677d29e7e644c097061ebb916555258b580e78f",
     "apps/web/src/admin-logs/display.ts": "60182577284c2332f56df3c01238501098294f7fc1306b15087736f7eec7d3fe",
+    "apps/web/src/admin-logs/operations-client.ts": "3e1b388af786503502fdfb30408885fc05eaf74bd78949a59b34c5fd2c0e8ca9",
+    "apps/web/src/admin-logs/operations-contracts.ts": "1c3b1091658d67475942728f6078d32d383640555dc579cb9f81957bfac3e79b",
+    "apps/web/src/admin-logs/operations.tsx": "6be3de50dacada8138663d844d3fa2d66f9a22cf9906026f43e161b888694469",
     "apps/web/src/admin-logs/overview-client.ts": "bb8f693c8914c62593b8a390c9108eead281a9cb14fa599b6eb09852ae26c0e0",
     "apps/web/src/admin-logs/overview-contracts.ts": "b00f635fc4b5b83e686ada1ef56e101f49651084a97e8658b0382c26b92a4b2b",
     "apps/web/src/admin-logs/overview.tsx": "f3495c93115e503133605cefce038d3556c3e1afe8d60f80e8a913db791b3ea7",
-    "apps/web/src/admin-logs/page.tsx": "514cf31a3ca79ec07c4d9a098841b4ed0604ffdb74ab72dc464aa7077228f4b7",
-    "apps/web/src/admin-logs/styles.css": "4dd158ce39b66a62e06d0e01a902634a644ef53effbf3834a3a6f48a0f3b4adf",
-    "apps/web/src/app/(workspace)/ops/analytics/page.tsx": "553a980836bbdfb11724596c9b727006a97e53e010fc1c98cff571b180a04b14",
+    "apps/web/src/admin-logs/page.tsx": "74ea85e31ff7b2ed34e7d962c3e3ec561fa73b55905cf855724ed094b8e1ed1a",
+    "apps/web/src/admin-logs/styles.css": "a3f6f62daaa14e45b8c30dbaace41f898a6d6ca451ffefa14de9270d82813fb8",
+    "apps/web/src/app/(workspace)/ops/analytics/page.tsx": "3ea74b58112af7a3d1755558373ec276ee2c9706a74d5fffd44a77b4207be5e9",
     "apps/web/src/app/(workspace)/ops/documents/[id]/page.tsx": "8a092635af6adfba1bd2b3e6fb5efadfd75e4104b94a53a123190360a4e85504",
     "apps/web/src/app/(workspace)/ops/evaluations/datasets/[id]/page.tsx": "154461ddbb1f5fde85e834ddd85cd36e2f7561049c78e3f632c5b10d6510d026",
     "apps/web/src/app/(workspace)/ops/evaluations/page.tsx": "e75abf0389002fbf62d8e7a3e801a1465fdd9cc6f346dc01a7ac742cb40377ef",
     "apps/web/src/app/(workspace)/ops/evaluations/runs/[id]/page.tsx": "6e8b236b7b9f3ebc1dac409edfd94ce75beffceaa995fc6e2e5bfaf81a1d4bfe",
     "apps/web/src/app/(workspace)/ops/experiments/[id]/page.tsx": "58dbf06a7a6523c9f62fd4375270dcb0b722e988fe59ba6bf306324df69b5cd1",
     "apps/web/src/app/(workspace)/ops/experiments/page.tsx": "83d05b143f201ba6f7222299fdd16bfe9b60566fe7e8f962961f8a5614203d28",
-    "apps/web/src/app/(workspace)/ops/page.tsx": "70df2be0e070a088aff9ad866bcf98ada438dedd2afffdf111cc78daa5dc0eb5",
+    "apps/web/src/app/(workspace)/ops/page.tsx": "5cb6302231f42b6ce37e18348fa12337a515394a859f23a4bdd3c730e19f9241",
     "apps/web/src/app/(workspace)/ops/quality/page.tsx": "672e23a9e407ca0a8130abcfb9743666b148171876b5ebefd1a2e300122f1e65",
     "apps/web/src/app/(workspace)/ops/reliability/page.tsx": "040ba1d72cd720fbc7c59cceb4e2308be2aa353397b8039427d0f4c1af7be4ae",
     "apps/web/src/app/(workspace)/ops/reports/page.tsx": "44d27bd82f4535884f699f518a0de763f316a475993a38c8199c33de8b1dda27",
     "apps/web/src/app/(workspace)/ops/runs/[id]/page.tsx": "4c0afb109b7a0b5e10e1c58e2643c33a1f1be6d3f3ed164a51d3b1e1ff109915",
-    "apps/web/src/app/(workspace)/ops/user-logs/page.tsx": "6582aaa16863d0e028e82b38f5a050bf80ea4214f4963a0673abd5361c9389c7",
+    "apps/web/src/app/(workspace)/ops/user-logs/page.tsx": "3ea74b58112af7a3d1755558373ec276ee2c9706a74d5fffd44a77b4207be5e9",
     "apps/web/src/app/(workspace)/us/page.tsx": "646fb49e8cb35ebd6305611c834b09ba55dbea7e25079b0e0357315a7ce78fb4",
     "apps/web/src/app/about/page.tsx": "4c912bd7995480649e24841c13ef2cf371755b08e390ebda44276d1d7baecb87",
     "apps/web/src/app/account-marketing.css": "b72e43d5b87ba0ccfb81d028e7e893a8d4a9baf886f426933ba02f272b67351e",
@@ -175,9 +178,9 @@
     "apps/web/src/research/evaluations.tsx": "c87edaf6c1a2a0477b215b5ca05d2b6691fa80925cfbc3a9443cc299e26e09c9",
     "apps/web/src/research/experiments.tsx": "25cc2d3fc75e96294a5e82c008c8fb323df15718f8a364e89b03d19eb30e2230",
     "apps/web/src/research/operations.tsx": "1bc91299886aa0d088243d8f2003daca879847148ee90d94d2935472b325c198",
-    "apps/web/src/research/ops-links.tsx": "aeddc9782b983638ef79e73c43c474e54c5f2bc184ae8c4e79b82da3bc05687e",
+    "apps/web/src/research/ops-links.tsx": "275ae9462b01bc7198aeea6b56806578e9ccc18570427709f9d3d75cba8a225a",
     "apps/web/src/research/research.css": "60b2f2dfea762b4c53d84073c20fff3bb16b9da0047dd768b9a0e061a6155cee",
-    "apps/web/src/research/shell.tsx": "3f4be72c32c58a0c0c39c1b24be1f3a97e1885914cb83165e86c3a0d7297aead",
+    "apps/web/src/research/shell.tsx": "d4de234958eaec8591eee02956859e98c336e9581fe9c97fab6c11d5dc39a1f1",
     "apps/web/src/research/study.tsx": "52c62eaaa7b90ecc8720000977fe5751d10635ef9e1aaa6807ce1367f9313468",
     "apps/web/src/research/tracker.tsx": "a551445bc98684655fa6ea8ad0ca4122d263cc17e917c7dff57c694ec9701e33",
     "apps/web/src/research/ui.tsx": "6338289b661d5c24185104647b54fdb999a74874caee729968562a969cd591b7",
@@ -351,6 +354,76 @@
       },
       "normalization": "CRLF to LF, matching the unchanged scripts/verify_workspace_scope.py",
       "evidence": "docs/ADMIN_OVERVIEW_2026-11-05.md"
+    },
+    {
+      "date": "2026-11-06",
+      "authorization": "The user explicitly requested that all information at /ops and /ops/user-logs be consolidated on one page, and asked for the persistent unread notification bell to be fixed and explained. This revision authorizes canonical /ops routing, the combined existing administrator sources and navigation, and customer notification read-state synchronization. No administrator grants, consent changes, public tracking or database migrations are included.",
+      "production_baseline_commit": "2ab91e2e3f30357cc38c9230a33631a9c82f8e5a",
+      "reviewed_files": {
+        "apps/web/src/admin-logs/operations-client.ts": {
+          "before_sha256": null,
+          "after_sha256": "3e1b388af786503502fdfb30408885fc05eaf74bd78949a59b34c5fd2c0e8ca9"
+        },
+        "apps/web/src/admin-logs/operations-contracts.ts": {
+          "before_sha256": null,
+          "after_sha256": "1c3b1091658d67475942728f6078d32d383640555dc579cb9f81957bfac3e79b"
+        },
+        "apps/web/src/admin-logs/operations.tsx": {
+          "before_sha256": null,
+          "after_sha256": "6be3de50dacada8138663d844d3fa2d66f9a22cf9906026f43e161b888694469"
+        },
+        "apps/web/src/admin-logs/page.tsx": {
+          "before_sha256": "514cf31a3ca79ec07c4d9a098841b4ed0604ffdb74ab72dc464aa7077228f4b7",
+          "after_sha256": "74ea85e31ff7b2ed34e7d962c3e3ec561fa73b55905cf855724ed094b8e1ed1a"
+        },
+        "apps/web/src/admin-logs/styles.css": {
+          "before_sha256": "4dd158ce39b66a62e06d0e01a902634a644ef53effbf3834a3a6f48a0f3b4adf",
+          "after_sha256": "a3f6f62daaa14e45b8c30dbaace41f898a6d6ca451ffefa14de9270d82813fb8"
+        },
+        "apps/web/src/app/(workspace)/layout.tsx": {
+          "before_sha256": "43e5f0dcf68d63a3fa1d05d8397fea4e92fd3f19940ea076836771e073b73f4f",
+          "after_sha256": "4b101e5fc671e37b43fd539d6197273d0480520feb7e6f02aa8c10e7945c022c"
+        },
+        "apps/web/src/app/(workspace)/ops/analytics/page.tsx": {
+          "before_sha256": "553a980836bbdfb11724596c9b727006a97e53e010fc1c98cff571b180a04b14",
+          "after_sha256": "3ea74b58112af7a3d1755558373ec276ee2c9706a74d5fffd44a77b4207be5e9"
+        },
+        "apps/web/src/app/(workspace)/ops/page.tsx": {
+          "before_sha256": "70df2be0e070a088aff9ad866bcf98ada438dedd2afffdf111cc78daa5dc0eb5",
+          "after_sha256": "5cb6302231f42b6ce37e18348fa12337a515394a859f23a4bdd3c730e19f9241"
+        },
+        "apps/web/src/app/(workspace)/ops/user-logs/page.tsx": {
+          "before_sha256": "6582aaa16863d0e028e82b38f5a050bf80ea4214f4963a0673abd5361c9389c7",
+          "after_sha256": "3ea74b58112af7a3d1755558373ec276ee2c9706a74d5fffd44a77b4207be5e9"
+        },
+        "apps/web/src/desktop/shell.tsx": {
+          "before_sha256": "8e5adc69ea786e03fb03aa027ed179fd208e95978fc14ea1a4eb36d6a09ab493",
+          "after_sha256": "ea32ace6d16ea5a8618283501ef4ac8da9b86845503b371ec28ea7e9b1f168b3"
+        },
+        "apps/web/src/redesign/notifications.tsx": {
+          "before_sha256": "fc68cfe6c8a02aeb499d7bcd863f41082869a3e43357da01900b9c8b549db578",
+          "after_sha256": "46c968a87507390c325111765ec8fd475f47287afecf28b6b79f190166c19b82"
+        },
+        "apps/web/src/redesign/shell.tsx": {
+          "before_sha256": "ec507693c2ad99ff38a7b50e9599ae93f67dddcbbf4ef7aab2b8d6ef1c54085f",
+          "after_sha256": "185b89373723b9d7fca0220705e238ade6a2f5429d41a36615fbcf2f2ccb0a94"
+        },
+        "apps/web/src/research/ops-links.tsx": {
+          "before_sha256": "aeddc9782b983638ef79e73c43c474e54c5f2bc184ae8c4e79b82da3bc05687e",
+          "after_sha256": "275ae9462b01bc7198aeea6b56806578e9ccc18570427709f9d3d75cba8a225a"
+        },
+        "apps/web/src/research/shell.tsx": {
+          "before_sha256": "3f4be72c32c58a0c0c39c1b24be1f3a97e1885914cb83165e86c3a0d7297aead",
+          "after_sha256": "d4de234958eaec8591eee02956859e98c336e9581fe9c97fab6c11d5dc39a1f1"
+        },
+        "apps/web/src/workspace/notification-state.ts": {
+          "before_sha256": null,
+          "after_sha256": "9454f4b82d533de6a8c1c8796c8810ca563c029d6069117549697747d54ee49c"
+        }
+      },
+      "normalization": "CRLF to LF, matching the unchanged scripts/verify_workspace_scope.py",
+      "evidence": "docs/UNIFIED_OPS_AND_NOTIFICATION_READ_2026-11-06.md",
+      "guard_changes": "No verifier assertions, authorization checks, disabled-feature gates or retained implementation hashes were weakened."
     }
   ]
 }

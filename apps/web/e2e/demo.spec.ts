@@ -43,5 +43,8 @@ test("demo login, important changes, evidence, and settings",async({page})=>{
  await page.goto("/today");await expect(page).toHaveURL(/\/login/);
 });
 test("a signed-out visitor cannot see operations",async({page})=>{
- await page.goto("/ops");await expect(page).toHaveURL(/\/login/);
+ await page.goto("/ops");
+ await expect(page.getByRole('heading',{name:'관리자 계정으로 로그인해 주세요'})).toBeVisible();
+ await expect(page.getByRole('link',{name:'로그인',exact:true})).toHaveAttribute('href','/login?next=%2Fops');
+ await expect(page.getByRole('region',{name:'수집·AI 처리 현황'})).toHaveCount(0);
 });

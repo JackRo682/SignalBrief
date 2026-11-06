@@ -10,7 +10,7 @@ const admin: Me = {id: 'synthetic-admin', display_name: 'Synthetic administrator
 let auth: {token: string | null; me: Me | null; loading: boolean; error: string | null; logout: typeof mock.logout; refresh: typeof mock.refresh};
 vi.mock('../src/components/auth', () => ({useAuth: () => auth}));
 vi.mock('../src/components/ui', () => ({Loading: () => <p role="status">Verifying access</p>}));
-vi.mock('next/navigation', () => ({usePathname: () => '/ops/user-logs', useRouter: () => ({replace: mock.replace})}));
+vi.mock('next/navigation', () => ({usePathname: () => '/ops', useRouter: () => ({replace: mock.replace})}));
 
 function ProtectedPanel() {
   const [value, setValue] = useState('');
@@ -44,7 +44,7 @@ describe('private admin shell access states', () => {
   it('sends signed-out visitors to login with a safe return path', () => {
     auth = {...auth, token: null, me: null};
     render(view());
-    expect(screen.getByRole('link', {name: '로그인'})).toHaveAttribute('href', '/login?next=%2Fops%2Fuser-logs');
+    expect(screen.getByRole('link', {name: '로그인'})).toHaveAttribute('href', '/login?next=%2Fops');
     expect(screen.queryByText('Synthetic private activity')).not.toBeInTheDocument();
     expect(screen.getByRole('link', {name: '서비스로 돌아가기'})).toHaveAttribute('href', '/today');
     expect(mock.logout).not.toHaveBeenCalled();
@@ -79,7 +79,7 @@ describe('private admin shell access states', () => {
     expect(mock.replace).not.toHaveBeenCalled();
     await act(async () => pending.resolve());
     expect(mock.logout).toHaveBeenCalledTimes(1);
-    expect(mock.replace).toHaveBeenCalledWith('/login?next=%2Fops%2Fuser-logs');
+    expect(mock.replace).toHaveBeenCalledWith('/login?next=%2Fops');
   });
 
   it('keeps account-switch controls recoverable when sign-out fails', async () => {
@@ -106,7 +106,8 @@ describe('private admin shell access states', () => {
     auth.me = admin;
     mounted.rerender(view());
     expect(screen.getByRole('region', {name: 'Private log records'})).toBeVisible();
-    expect(screen.getByRole('link', {name: /운영 현황 · 사용자 로그/})).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', {name: /^01 운영 현황$/})).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', {name: /^01 운영 현황$/})).toHaveAttribute('href', '/ops');
     expect(screen.queryByRole('link', {name: /사용자 행동 분석/})).toBeNull();
   });
 
@@ -128,7 +129,7 @@ describe('private admin shell access states', () => {
     auth = {...auth, token: null, me: null};
     mounted.rerender(view());
     expect(screen.queryByText('Synthetic private activity')).not.toBeInTheDocument();
-    expect(screen.getByRole('link', {name: '로그인'})).toHaveAttribute('href', '/login?next=%2Fops%2Fuser-logs');
+    expect(screen.getByRole('link', {name: '로그인'})).toHaveAttribute('href', '/login?next=%2Fops');
   });
 
   it('removes previously displayed records when admin privileges are revoked', () => {
