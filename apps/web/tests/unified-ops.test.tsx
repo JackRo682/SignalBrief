@@ -20,7 +20,7 @@ vi.mock('@/components/auth', () => ({ useAuth: () => ({
   token: mock.token, me: mock.token ? { id: mock.id, is_admin: mock.admin, display_name: 'Synthetic administrator' } : null,
   loading: mock.loading, error: mock.error, logout: mock.logout,
 }) }));
-vi.mock('next/navigation', () => ({ useRouter: () => ({ replace: mock.replace }), redirect: mock.redirect }));
+vi.mock('next/navigation', () => ({ useSearchParams: () => new URLSearchParams(window.location.search), useRouter: () => ({ replace: mock.replace }), redirect: mock.redirect }));
 vi.mock('@/lib/supabase', () => ({ getSupabase: () => ({
   rpc: (name: string, params: unknown) => ({ abortSignal: (signal: AbortSignal) => mock.rpc(name, params, signal) }),
 }) }));
@@ -75,6 +75,7 @@ function rpcResponse(name: string) {
 }
 async function fetchResponse(input: string, init?: RequestInit) {
   const path = new URL(input, 'http://localhost').pathname;
+  if (path === '/api/research') return Response.json({});
   if (path === '/api/admin/user-logs') return Response.json(userLogs());
   if (path === '/api/admin/overview') return Response.json(overviewFixture(JSON.parse(String(init?.body)), true));
   if (path === '/v1/ops/documents') return Response.json([{ id: documentId, title: 'Synthetic original document', provider: 'sec', state: 'parsed', publication_date: '2026-11-05' }]);
@@ -268,8 +269,8 @@ describe('one continuous operations page', () => {
   it('preserves report resolution and deep document/run links', async () => {
     render(<UserActivityLogs unified/>);
     await screen.findByText('Synthetic audit reason');
-    expect(screen.getByRole('link', { name: /^Synthetic original document / })).toHaveAttribute('href', `/ops/documents/${documentId}`);
-    expect(screen.getByRole('link', { name: '실행 보기' })).toHaveAttribute('href', `/ops/runs/${runId}`);
+    expect(screen.getByRole('link', { name: /^Synthetic original document / })).toHaveAttribute('href', `/ops?detail=document&id=${documentId}#operations-detail`);
+    expect(screen.getByRole('link', { name: '실행 보기' })).toHaveAttribute('href', `/ops?detail=run&id=${runId}#operations-detail`);
     fireEvent.click(screen.getByRole('button', { name: 'Synthetic user feedback 검토하기' }));
     fireEvent.change(screen.getByLabelText('검토 사유 (5자 이상)'), { target: { value: 'Synthetic reviewed feedback' } });
     fireEvent.click(screen.getByRole('button', { name: '검토 완료' }));

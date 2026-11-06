@@ -1,2 +1,5 @@
-import {Quality} from '@/research/operations';
-export default function Page(){return <Quality/>;}
+import { redirect } from 'next/navigation';
+
+export default function Page() {
+  redirect('/ops#operations-quality');
+}

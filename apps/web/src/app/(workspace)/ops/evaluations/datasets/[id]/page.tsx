@@ -1,2 +1,7 @@
-import {DatasetDetail} from '@/research/evaluations';
-export default async function Page({params}:{params:Promise<{id:string}>}){const {id}=await params;return <DatasetDetail id={id}/>;}
+import { redirect } from 'next/navigation';
+import { opsDetailHref } from '@/admin-logs/navigation';
+
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  redirect(opsDetailHref('dataset', id));
+}

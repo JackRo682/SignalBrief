@@ -86,24 +86,24 @@
     "apps/web/src/admin-logs/display.ts": "60182577284c2332f56df3c01238501098294f7fc1306b15087736f7eec7d3fe",
     "apps/web/src/admin-logs/operations-client.ts": "3e1b388af786503502fdfb30408885fc05eaf74bd78949a59b34c5fd2c0e8ca9",
     "apps/web/src/admin-logs/operations-contracts.ts": "1c3b1091658d67475942728f6078d32d383640555dc579cb9f81957bfac3e79b",
-    "apps/web/src/admin-logs/operations.tsx": "6be3de50dacada8138663d844d3fa2d66f9a22cf9906026f43e161b888694469",
+    "apps/web/src/admin-logs/operations.tsx": "bdf3b7d591a7280cf399dd562765eeefa72304669fe7f6a880bb1b9411fb41a3",
     "apps/web/src/admin-logs/overview-client.ts": "bb8f693c8914c62593b8a390c9108eead281a9cb14fa599b6eb09852ae26c0e0",
     "apps/web/src/admin-logs/overview-contracts.ts": "b00f635fc4b5b83e686ada1ef56e101f49651084a97e8658b0382c26b92a4b2b",
     "apps/web/src/admin-logs/overview.tsx": "f3495c93115e503133605cefce038d3556c3e1afe8d60f80e8a913db791b3ea7",
-    "apps/web/src/admin-logs/page.tsx": "74ea85e31ff7b2ed34e7d962c3e3ec561fa73b55905cf855724ed094b8e1ed1a",
+    "apps/web/src/admin-logs/page.tsx": "2922637614ba0f2f45d7af0369fd2bf34c8ef489e50309d109a2bca262cffc15",
     "apps/web/src/admin-logs/styles.css": "a3f6f62daaa14e45b8c30dbaace41f898a6d6ca451ffefa14de9270d82813fb8",
     "apps/web/src/app/(workspace)/ops/analytics/page.tsx": "3ea74b58112af7a3d1755558373ec276ee2c9706a74d5fffd44a77b4207be5e9",
-    "apps/web/src/app/(workspace)/ops/documents/[id]/page.tsx": "8a092635af6adfba1bd2b3e6fb5efadfd75e4104b94a53a123190360a4e85504",
-    "apps/web/src/app/(workspace)/ops/evaluations/datasets/[id]/page.tsx": "154461ddbb1f5fde85e834ddd85cd36e2f7561049c78e3f632c5b10d6510d026",
-    "apps/web/src/app/(workspace)/ops/evaluations/page.tsx": "e75abf0389002fbf62d8e7a3e801a1465fdd9cc6f346dc01a7ac742cb40377ef",
-    "apps/web/src/app/(workspace)/ops/evaluations/runs/[id]/page.tsx": "6e8b236b7b9f3ebc1dac409edfd94ce75beffceaa995fc6e2e5bfaf81a1d4bfe",
-    "apps/web/src/app/(workspace)/ops/experiments/[id]/page.tsx": "58dbf06a7a6523c9f62fd4375270dcb0b722e988fe59ba6bf306324df69b5cd1",
-    "apps/web/src/app/(workspace)/ops/experiments/page.tsx": "83d05b143f201ba6f7222299fdd16bfe9b60566fe7e8f962961f8a5614203d28",
-    "apps/web/src/app/(workspace)/ops/page.tsx": "5cb6302231f42b6ce37e18348fa12337a515394a859f23a4bdd3c730e19f9241",
-    "apps/web/src/app/(workspace)/ops/quality/page.tsx": "672e23a9e407ca0a8130abcfb9743666b148171876b5ebefd1a2e300122f1e65",
-    "apps/web/src/app/(workspace)/ops/reliability/page.tsx": "040ba1d72cd720fbc7c59cceb4e2308be2aa353397b8039427d0f4c1af7be4ae",
-    "apps/web/src/app/(workspace)/ops/reports/page.tsx": "44d27bd82f4535884f699f518a0de763f316a475993a38c8199c33de8b1dda27",
-    "apps/web/src/app/(workspace)/ops/runs/[id]/page.tsx": "4c0afb109b7a0b5e10e1c58e2643c33a1f1be6d3f3ed164a51d3b1e1ff109915",
+    "apps/web/src/app/(workspace)/ops/documents/[id]/page.tsx": "e962343352da17f87fc9ac38854dd5e589b98c71638bfdafddeae780bb7821ae",
+    "apps/web/src/app/(workspace)/ops/evaluations/datasets/[id]/page.tsx": "fdfc26d85987434925cf22dddeb0350828184be2359c7e50403673bc275fbc14",
+    "apps/web/src/app/(workspace)/ops/evaluations/page.tsx": "e3627bf35636e2f374beadcf63c9ac9f2e0cc5c8c129a5a96a523ffb44898b2d",
+    "apps/web/src/app/(workspace)/ops/evaluations/runs/[id]/page.tsx": "00813c74ae1620317807cd00c05467f83681afa78ebea91102cca94749b35164",
+    "apps/web/src/app/(workspace)/ops/experiments/[id]/page.tsx": "2773305171c41afa13a197edbe9f68ce6f73c800dd19da22ed8f13f533916f8e",
+    "apps/web/src/app/(workspace)/ops/experiments/page.tsx": "5a940a0e64c1370963f5c3403808723d0884930d6832f7d57d00c6dbf22d2f4e",
+    "apps/web/src/app/(workspace)/ops/page.tsx": "685107dbf1d740f7aba69523de765e2c538bbf64e351d7ac11370bf85e107ef0",
+    "apps/web/src/app/(workspace)/ops/quality/page.tsx": "b8069d12d2419c3f69ebb53c11c29cf65bc5fe865e4ad48009e8985f3201fcb1",
+    "apps/web/src/app/(workspace)/ops/reliability/page.tsx": "6b0de9533b70a3a2e5c35b0ccd3c8b3328d2d864cab630427859a73b4deb157f",
+    "apps/web/src/app/(workspace)/ops/reports/page.tsx": "d161c895743f29d355cd14769928c376b8a2693c99f56943a450efb8d5f1d7e3",
+    "apps/web/src/app/(workspace)/ops/runs/[id]/page.tsx": "0c5f15b28d07e762eb1f56923929b7558cca9d83ccf7d77e4694cc3ce3db26d6",
     "apps/web/src/app/(workspace)/ops/user-logs/page.tsx": "3ea74b58112af7a3d1755558373ec276ee2c9706a74d5fffd44a77b4207be5e9",
     "apps/web/src/app/(workspace)/us/page.tsx": "646fb49e8cb35ebd6305611c834b09ba55dbea7e25079b0e0357315a7ce78fb4",
     "apps/web/src/app/about/page.tsx": "4c912bd7995480649e24841c13ef2cf371755b08e390ebda44276d1d7baecb87",
@@ -172,21 +172,25 @@
     "apps/web/src/reference/templates.ts": "decf04d07eaf79f6149fff9da9e0b17dab1a4a99f4c601205d2b7d9810664cf1",
     "apps/web/src/reference/usability.css": "e424627bbe89d7d3f6b41539582ff9f00816c1da333a2f622adcf5eb56e8ae8c",
     "apps/web/src/research/analytics.tsx": "dea6e9ae03455b4512f252424bdcba3e6a707d78840aae36c06bee9966ead666",
-    "apps/web/src/research/client.ts": "688cf8ee4b1d1fa16165d5848d69f76972dc26f947c700a12b52c929e12222d0",
+    "apps/web/src/research/client.ts": "9a2be3d82df6a59b0dabb2491564d49dde2824b76b9dc702354c2ab44baf5995",
     "apps/web/src/research/contracts.ts": "6dc2c13eaae9339c027c1e18c36f576e03efe1f9c2ddcaee7dd403c0625785f4",
-    "apps/web/src/research/evaluation-setup.tsx": "75b5fd857d9a800fc4cf3a989584df6fc6dded4816b336bf1397311ab7da5ded",
-    "apps/web/src/research/evaluations.tsx": "c87edaf6c1a2a0477b215b5ca05d2b6691fa80925cfbc3a9443cc299e26e09c9",
-    "apps/web/src/research/experiments.tsx": "25cc2d3fc75e96294a5e82c008c8fb323df15718f8a364e89b03d19eb30e2230",
-    "apps/web/src/research/operations.tsx": "1bc91299886aa0d088243d8f2003daca879847148ee90d94d2935472b325c198",
-    "apps/web/src/research/ops-links.tsx": "275ae9462b01bc7198aeea6b56806578e9ccc18570427709f9d3d75cba8a225a",
-    "apps/web/src/research/research.css": "60b2f2dfea762b4c53d84073c20fff3bb16b9da0047dd768b9a0e061a6155cee",
-    "apps/web/src/research/shell.tsx": "d4de234958eaec8591eee02956859e98c336e9581fe9c97fab6c11d5dc39a1f1",
+    "apps/web/src/research/evaluation-setup.tsx": "a9a7da47cf7ac85a52b01bb1e64eb1f5113b23a8bad05e221c04e1a59dc6c946",
+    "apps/web/src/research/evaluations.tsx": "06ff8b1a3bb88f79e603b08cdbcabc3c102c4aa1f340037aa05d96566a31dcc9",
+    "apps/web/src/research/experiments.tsx": "18c9072ce2f8bd0aec3802d84acac18ec1d35acd961360c23f888cec36d00b2d",
+    "apps/web/src/research/operations.tsx": "ff9ea4dbea50dd78ee9d03f8063d6c371a8a93e8bdd1318a82f77dad3bb018fd",
+    "apps/web/src/research/ops-links.tsx": "5e05ccdaf97aba72bde3e099c041a98caecd817be7fd0e32e8b41d7afd558a6d",
+    "apps/web/src/research/research.css": "84abd20e6bcd3a194130db0b271d1a03fef9882c93cb368a0599a8fe0ad5dae7",
+    "apps/web/src/research/shell.tsx": "678c8bb8e6c0aabb2d1916943f91fa2fb49ac76773e0db864190c28a4b2a4747",
     "apps/web/src/research/study.tsx": "52c62eaaa7b90ecc8720000977fe5751d10635ef9e1aaa6807ce1367f9313468",
     "apps/web/src/research/tracker.tsx": "a551445bc98684655fa6ea8ad0ca4122d263cc17e917c7dff57c694ec9701e33",
-    "apps/web/src/research/ui.tsx": "6338289b661d5c24185104647b54fdb999a74874caee729968562a969cd591b7",
-    "apps/web/src/screens/ops-document.tsx": "c397e426e84b623a3706eb1815f86f512b742dac0f4e8093eb26f1322748b0c4",
-    "apps/web/src/screens/ops-run.tsx": "e7a9fdec46f7685f327ae967bf5c817cfadad9448bb5ec5609f2b10276ed8252",
-    "apps/web/src/screens/ops.tsx": "56250236ec473c19999af7154628106ae84edc4fdb8f55685904c9289412ff4d"
+    "apps/web/src/research/ui.tsx": "9f1e9d9f0ae8daa4673b2e6efa75a3e31590aa8dac124250356660750e65bb2b",
+    "apps/web/src/screens/ops-document.tsx": "4ede66d01b05a7341f2f4a7391c72842b11fa68c834e9335a1adea36a8359dc9",
+    "apps/web/src/screens/ops-run.tsx": "b65c0a23a4930fd31523cc841ff75f843e13cfd83d25559a7c6f07949561b139",
+    "apps/web/src/screens/ops.tsx": "56250236ec473c19999af7154628106ae84edc4fdb8f55685904c9289412ff4d",
+    "apps/web/src/admin-logs/navigation.ts": "ab141e087e13682b5f9101dbfddd18589c1298497484f0fe1542b97f6ee7e07c",
+    "apps/web/src/admin-logs/record-client.ts": "adc097a45cb76821131a0d00208b160adabab054a8a8d70517d089e534d2f580",
+    "apps/web/src/admin-logs/research-panels.tsx": "fb796f886f412629657f9b463837ce24cd49a47751e6833cd0e42322e8934063",
+    "apps/web/src/admin-logs/workspace-context.tsx": "b797e99ce54cf79d6a63c202d6d12bd0b9456e3a1f2e08af61def205eac1cb65"
   },
   "retained_files": {
     "apps/web/src/desktop/today-legacy.tsx": "f00178cb723ad8b0ab3ca646586f130861aa0b2a914fa8b01694bacea964e919",
@@ -423,6 +427,128 @@
       },
       "normalization": "CRLF to LF, matching the unchanged scripts/verify_workspace_scope.py",
       "evidence": "docs/UNIFIED_OPS_AND_NOTIFICATION_READ_2026-11-06.md",
+      "guard_changes": "No verifier assertions, authorization checks, disabled-feature gates or retained implementation hashes were weakened."
+    },
+    {
+      "date": "2026-11-06",
+      "authorization": "The user explicitly identified the six separate administrator pages in a screenshot and requested exactly one /ops page. This revision replaces the sidebar with a single workspace, composes all existing operations and research sections, opens details inline, preserves legacy links and scoped administrator access, and isolates report printing. Existing data sources and action rules are retained.",
+      "production_baseline_commit": "bd2d4a9274c29a9de62d98313c3f4da4ff6afb3e",
+      "reviewed_files": {
+        "apps/web/src/admin-logs/navigation.ts": {
+          "before_sha256": null,
+          "after_sha256": "ab141e087e13682b5f9101dbfddd18589c1298497484f0fe1542b97f6ee7e07c"
+        },
+        "apps/web/src/admin-logs/operations.tsx": {
+          "before_sha256": "6be3de50dacada8138663d844d3fa2d66f9a22cf9906026f43e161b888694469",
+          "after_sha256": "bdf3b7d591a7280cf399dd562765eeefa72304669fe7f6a880bb1b9411fb41a3"
+        },
+        "apps/web/src/admin-logs/page.tsx": {
+          "before_sha256": "74ea85e31ff7b2ed34e7d962c3e3ec561fa73b55905cf855724ed094b8e1ed1a",
+          "after_sha256": "2922637614ba0f2f45d7af0369fd2bf34c8ef489e50309d109a2bca262cffc15"
+        },
+        "apps/web/src/admin-logs/record-client.ts": {
+          "before_sha256": null,
+          "after_sha256": "adc097a45cb76821131a0d00208b160adabab054a8a8d70517d089e534d2f580"
+        },
+        "apps/web/src/admin-logs/research-panels.tsx": {
+          "before_sha256": null,
+          "after_sha256": "fb796f886f412629657f9b463837ce24cd49a47751e6833cd0e42322e8934063"
+        },
+        "apps/web/src/admin-logs/workspace-context.tsx": {
+          "before_sha256": null,
+          "after_sha256": "b797e99ce54cf79d6a63c202d6d12bd0b9456e3a1f2e08af61def205eac1cb65"
+        },
+        "apps/web/src/app/(workspace)/ops/documents/[id]/page.tsx": {
+          "before_sha256": "8a092635af6adfba1bd2b3e6fb5efadfd75e4104b94a53a123190360a4e85504",
+          "after_sha256": "e962343352da17f87fc9ac38854dd5e589b98c71638bfdafddeae780bb7821ae"
+        },
+        "apps/web/src/app/(workspace)/ops/evaluations/datasets/[id]/page.tsx": {
+          "before_sha256": "154461ddbb1f5fde85e834ddd85cd36e2f7561049c78e3f632c5b10d6510d026",
+          "after_sha256": "fdfc26d85987434925cf22dddeb0350828184be2359c7e50403673bc275fbc14"
+        },
+        "apps/web/src/app/(workspace)/ops/evaluations/page.tsx": {
+          "before_sha256": "e75abf0389002fbf62d8e7a3e801a1465fdd9cc6f346dc01a7ac742cb40377ef",
+          "after_sha256": "e3627bf35636e2f374beadcf63c9ac9f2e0cc5c8c129a5a96a523ffb44898b2d"
+        },
+        "apps/web/src/app/(workspace)/ops/evaluations/runs/[id]/page.tsx": {
+          "before_sha256": "6e8b236b7b9f3ebc1dac409edfd94ce75beffceaa995fc6e2e5bfaf81a1d4bfe",
+          "after_sha256": "00813c74ae1620317807cd00c05467f83681afa78ebea91102cca94749b35164"
+        },
+        "apps/web/src/app/(workspace)/ops/experiments/[id]/page.tsx": {
+          "before_sha256": "58dbf06a7a6523c9f62fd4375270dcb0b722e988fe59ba6bf306324df69b5cd1",
+          "after_sha256": "2773305171c41afa13a197edbe9f68ce6f73c800dd19da22ed8f13f533916f8e"
+        },
+        "apps/web/src/app/(workspace)/ops/experiments/page.tsx": {
+          "before_sha256": "83d05b143f201ba6f7222299fdd16bfe9b60566fe7e8f962961f8a5614203d28",
+          "after_sha256": "5a940a0e64c1370963f5c3403808723d0884930d6832f7d57d00c6dbf22d2f4e"
+        },
+        "apps/web/src/app/(workspace)/ops/page.tsx": {
+          "before_sha256": "5cb6302231f42b6ce37e18348fa12337a515394a859f23a4bdd3c730e19f9241",
+          "after_sha256": "685107dbf1d740f7aba69523de765e2c538bbf64e351d7ac11370bf85e107ef0"
+        },
+        "apps/web/src/app/(workspace)/ops/quality/page.tsx": {
+          "before_sha256": "672e23a9e407ca0a8130abcfb9743666b148171876b5ebefd1a2e300122f1e65",
+          "after_sha256": "b8069d12d2419c3f69ebb53c11c29cf65bc5fe865e4ad48009e8985f3201fcb1"
+        },
+        "apps/web/src/app/(workspace)/ops/reliability/page.tsx": {
+          "before_sha256": "040ba1d72cd720fbc7c59cceb4e2308be2aa353397b8039427d0f4c1af7be4ae",
+          "after_sha256": "6b0de9533b70a3a2e5c35b0ccd3c8b3328d2d864cab630427859a73b4deb157f"
+        },
+        "apps/web/src/app/(workspace)/ops/reports/page.tsx": {
+          "before_sha256": "44d27bd82f4535884f699f518a0de763f316a475993a38c8199c33de8b1dda27",
+          "after_sha256": "d161c895743f29d355cd14769928c376b8a2693c99f56943a450efb8d5f1d7e3"
+        },
+        "apps/web/src/app/(workspace)/ops/runs/[id]/page.tsx": {
+          "before_sha256": "4c0afb109b7a0b5e10e1c58e2643c33a1f1be6d3f3ed164a51d3b1e1ff109915",
+          "after_sha256": "0c5f15b28d07e762eb1f56923929b7558cca9d83ccf7d77e4694cc3ce3db26d6"
+        },
+        "apps/web/src/research/client.ts": {
+          "before_sha256": "688cf8ee4b1d1fa16165d5848d69f76972dc26f947c700a12b52c929e12222d0",
+          "after_sha256": "9a2be3d82df6a59b0dabb2491564d49dde2824b76b9dc702354c2ab44baf5995"
+        },
+        "apps/web/src/research/evaluation-setup.tsx": {
+          "before_sha256": "75b5fd857d9a800fc4cf3a989584df6fc6dded4816b336bf1397311ab7da5ded",
+          "after_sha256": "a9a7da47cf7ac85a52b01bb1e64eb1f5113b23a8bad05e221c04e1a59dc6c946"
+        },
+        "apps/web/src/research/evaluations.tsx": {
+          "before_sha256": "c87edaf6c1a2a0477b215b5ca05d2b6691fa80925cfbc3a9443cc299e26e09c9",
+          "after_sha256": "06ff8b1a3bb88f79e603b08cdbcabc3c102c4aa1f340037aa05d96566a31dcc9"
+        },
+        "apps/web/src/research/experiments.tsx": {
+          "before_sha256": "25cc2d3fc75e96294a5e82c008c8fb323df15718f8a364e89b03d19eb30e2230",
+          "after_sha256": "18c9072ce2f8bd0aec3802d84acac18ec1d35acd961360c23f888cec36d00b2d"
+        },
+        "apps/web/src/research/operations.tsx": {
+          "before_sha256": "1bc91299886aa0d088243d8f2003daca879847148ee90d94d2935472b325c198",
+          "after_sha256": "ff9ea4dbea50dd78ee9d03f8063d6c371a8a93e8bdd1318a82f77dad3bb018fd"
+        },
+        "apps/web/src/research/ops-links.tsx": {
+          "before_sha256": "275ae9462b01bc7198aeea6b56806578e9ccc18570427709f9d3d75cba8a225a",
+          "after_sha256": "5e05ccdaf97aba72bde3e099c041a98caecd817be7fd0e32e8b41d7afd558a6d"
+        },
+        "apps/web/src/research/research.css": {
+          "before_sha256": "60b2f2dfea762b4c53d84073c20fff3bb16b9da0047dd768b9a0e061a6155cee",
+          "after_sha256": "84abd20e6bcd3a194130db0b271d1a03fef9882c93cb368a0599a8fe0ad5dae7"
+        },
+        "apps/web/src/research/shell.tsx": {
+          "before_sha256": "d4de234958eaec8591eee02956859e98c336e9581fe9c97fab6c11d5dc39a1f1",
+          "after_sha256": "678c8bb8e6c0aabb2d1916943f91fa2fb49ac76773e0db864190c28a4b2a4747"
+        },
+        "apps/web/src/research/ui.tsx": {
+          "before_sha256": "6338289b661d5c24185104647b54fdb999a74874caee729968562a969cd591b7",
+          "after_sha256": "9f1e9d9f0ae8daa4673b2e6efa75a3e31590aa8dac124250356660750e65bb2b"
+        },
+        "apps/web/src/screens/ops-document.tsx": {
+          "before_sha256": "c397e426e84b623a3706eb1815f86f512b742dac0f4e8093eb26f1322748b0c4",
+          "after_sha256": "4ede66d01b05a7341f2f4a7391c72842b11fa68c834e9335a1adea36a8359dc9"
+        },
+        "apps/web/src/screens/ops-run.tsx": {
+          "before_sha256": "e7a9fdec46f7685f327ae967bf5c817cfadad9448bb5ec5609f2b10276ed8252",
+          "after_sha256": "b65c0a23a4930fd31523cc841ff75f843e13cfd83d25559a7c6f07949561b139"
+        }
+      },
+      "normalization": "CRLF to LF, matching the unchanged scripts/verify_workspace_scope.py",
+      "evidence": "docs/SINGLE_PAGE_OPS_2026-11-06.md",
       "guard_changes": "No verifier assertions, authorization checks, disabled-feature gates or retained implementation hashes were weakened."
     }
   ]

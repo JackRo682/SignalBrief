@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { OpsDetailLink } from './workspace-context';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useAuth } from '@/components/auth';
 import { ActionNotice, Loading, useAction } from '@/components/ui';
@@ -104,10 +104,10 @@ function ReviewTable({ title, rows, kind, onReview, total, limit = 100, currentB
       <thead><tr><th scope="col">발생 시각 (한국 시간)</th><th scope="col">{kind === 'report' ? '의견 내용' : '문서·이벤트'}</th><th scope="col">{kind === 'run' ? '오류 유형' : kind === 'report' ? '구분' : '종목·문제 유형'}</th><th scope="col">상태</th><th scope="col">작업</th></tr></thead>
       <tbody>{filtered.map((row, index) => <tr key={`${row.id}:${row.symbol ?? ''}:${index}`}>
         <td><time dateTime={row.created_at ?? undefined}>{operationTime(row.created_at)}</time></td>
-        <td>{row.document_id && uuid.test(row.document_id) ? <Link href={`/ops/documents/${encodeURIComponent(row.document_id)}`}>{row.title || '제목 없음'}</Link> : row.title || row.comment || row.question || '내용 없음'}{row.kind && <small className="ops-record-kind">{activityLabels[row.kind] ?? row.kind}</small>}</td>
+        <td>{row.document_id && uuid.test(row.document_id) ? <OpsDetailLink kind="document" id={row.document_id}>{row.title || '제목 없음'}</OpsDetailLink> : row.title || row.comment || row.question || '내용 없음'}{row.kind && <small className="ops-record-kind">{activityLabels[row.kind] ?? row.kind}</small>}</td>
         <td>{kind === 'run' ? <>{row.error_code || '오류 코드 없음'}{row.symbol && <small className="ops-record-kind">{row.symbol}</small>}{row.rating && <small className="ops-record-kind">{row.rating}</small>}</> : <>{row.symbol || row.rating || row.error_code || '—'}{row.symbol && row.rating && <small className="ops-record-kind">{row.rating}</small>}{row.error_code && (row.symbol || row.rating) && <small className="ops-record-kind">{row.error_code}</small>}</>}</td>
         <td><Badge value={row.state || row.status || 'pending'}/></td>
-        <td>{!hasAction(row, kind) ? sourceLink(row.source_url) : kind === 'run' ? <Link className="button secondary" href={`/ops/runs/${encodeURIComponent(row.id)}`}>실행 보기</Link> : <button type="button" className="button secondary" aria-label={`${row.title || row.comment || row.question || title} 검토하기`} onClick={() => onReview({ kind, row })}>검토하기</button>}</td>
+        <td>{!hasAction(row, kind) ? sourceLink(row.source_url) : kind === 'run' ? <OpsDetailLink kind="run" className="button secondary" id={row.id}>실행 보기</OpsDetailLink> : <button type="button" className="button secondary" aria-label={`${row.title || row.comment || row.question || title} 검토하기`} onClick={() => onReview({ kind, row })}>검토하기</button>}</td>
       </tr>)}</tbody>
     </table></div> : <NoRecords>{rows.length ? '검색 조건에 맞는 항목이 없습니다.' : `${currentBacklog ? '현재' : '선택 기간에'} ${title} 기록이 없습니다.`}</NoRecords>}
   </Panel>;
@@ -142,7 +142,7 @@ function ReviewEditor({ selection, close, refresh, deny }: {
   return <section className="ops-review-editor" aria-label="운영 항목 검토">
     <header><h3>{selection.kind === 'report' ? '사용자 의견 검토' : '이벤트 검토'}</h3><button type="button" className="button secondary" onClick={close} disabled={action.busy}>검토 닫기</button></header>
     <p>{selection.row.title || selection.row.comment || selection.row.question || '내용 없음'}</p>
-    {selection.row.document_id && <Link className="user-log-link" href={`/ops/documents/${encodeURIComponent(selection.row.document_id)}`}>원문·검증 이력 확인</Link>}
+    {selection.row.document_id && <OpsDetailLink kind="document" className="user-log-link" id={selection.row.document_id}>원문·검증 이력 확인</OpsDetailLink>}
     <Field label="검토 사유 (5자 이상)"><textarea ref={reasonInput} value={reason} minLength={5} maxLength={500} onChange={event => setReason(event.target.value)}/></Field>
     <ActionNotice action={action}/>
     <div className="user-log-actions">{(selection.kind === 'report' ? [['resolve_report', '검토 완료']] as const : [['approve', '승인'], ['reject', '거절'], ['rerun', '재분석 요청']] as const).map(([kind, label]) => <button type="button" key={kind} className={`button ${kind === 'approve' || kind === 'resolve_report' ? 'primary' : 'secondary'}`} disabled={action.busy || reason.trim().length < 5} onClick={() => void submit(kind)}>{label}</button>)}</div>
@@ -195,10 +195,10 @@ export function OperationsPanels({ resources, reload, refresh, deny }: {
       <div className="overview-section-heading"><h2>원문·모델 실행</h2><span>전체 기간의 최신 기록</span></div>
       <div className="overview-two-column">
         <Panel title="최근 원본 문서" aside={<span className="user-log-small">최신 100개까지</span>}>
-          <ResourceState resource={resources.documents} retry={reload}>{data => data.length ? <ul className="ops-record-list">{data.map(document => <li key={document.id}><Link href={`/ops/documents/${encodeURIComponent(document.id)}`}><strong>{document.title}</strong><span>{document.provider.toUpperCase()} · {document.state}{document.publication_date ? ` · ${document.publication_date}` : ''}</span></Link></li>)}</ul> : <NoRecords>수집된 원본 문서가 없습니다.</NoRecords>}</ResourceState>
+          <ResourceState resource={resources.documents} retry={reload}>{data => data.length ? <ul className="ops-record-list">{data.map(document => <li key={document.id}><OpsDetailLink kind="document" id={document.id}><strong>{document.title}</strong><span>{document.provider.toUpperCase()} · {document.state}{document.publication_date ? ` · ${document.publication_date}` : ''}</span></OpsDetailLink></li>)}</ul> : <NoRecords>수집된 원본 문서가 없습니다.</NoRecords>}</ResourceState>
         </Panel>
         <Panel title="모델·분석 실행 기록" aside={<span className="user-log-small">최근 실패 실행 50개까지</span>}>
-          <ResourceState resource={resources.queues} retry={reload}>{data => data.failed_runs.length ? <ul className="ops-record-list">{data.failed_runs.map(run => <li key={run.id}><Link href={`/ops/runs/${encodeURIComponent(run.id)}`}><strong>{run.model} · {run.status}</strong><span>프롬프트 {run.prompt_version || '미기록'} · {run.error_code || '오류 코드 없음'}</span></Link></li>)}</ul> : <NoRecords>기록된 실패 실행이 없습니다.</NoRecords>}</ResourceState>
+          <ResourceState resource={resources.queues} retry={reload}>{data => data.failed_runs.length ? <ul className="ops-record-list">{data.failed_runs.map(run => <li key={run.id}><OpsDetailLink kind="run" id={run.id}><strong>{run.model} · {run.status}</strong><span>프롬프트 {run.prompt_version || '미기록'} · {run.error_code || '오류 코드 없음'}</span></OpsDetailLink></li>)}</ul> : <NoRecords>기록된 실패 실행이 없습니다.</NoRecords>}</ResourceState>
           <p className="overview-note">실제 저장된 실행 이력을 표시합니다. 모델 설정은 실행 상세에서 확인할 수 있습니다.</p>
         </Panel>
       </div>

@@ -10,7 +10,7 @@ const admin: Me = {id: 'synthetic-admin', display_name: 'Synthetic administrator
 let auth: {token: string | null; me: Me | null; loading: boolean; error: string | null; logout: typeof mock.logout; refresh: typeof mock.refresh};
 vi.mock('../src/components/auth', () => ({useAuth: () => auth}));
 vi.mock('../src/components/ui', () => ({Loading: () => <p role="status">Verifying access</p>}));
-vi.mock('next/navigation', () => ({usePathname: () => '/ops', useRouter: () => ({replace: mock.replace})}));
+vi.mock('next/navigation', () => ({ useSearchParams: () => new URLSearchParams(window.location.search),usePathname: () => '/ops', useRouter: () => ({replace: mock.replace})}));
 
 function ProtectedPanel() {
   const [value, setValue] = useState('');
@@ -106,8 +106,8 @@ describe('private admin shell access states', () => {
     auth.me = admin;
     mounted.rerender(view());
     expect(screen.getByRole('region', {name: 'Private log records'})).toBeVisible();
-    expect(screen.getByRole('link', {name: /^01 운영 현황$/})).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByRole('link', {name: /^01 운영 현황$/})).toHaveAttribute('href', '/ops');
+    expect(screen.getByRole('link', {name: /^운영 현황$/})).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', {name: /^운영 현황$/})).toHaveAttribute('href', '/ops');
     expect(screen.queryByRole('link', {name: /사용자 행동 분석/})).toBeNull();
   });
 

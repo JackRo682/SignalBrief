@@ -20,7 +20,7 @@ vi.mock('@/components/auth', () => ({ useAuth: () => ({
   me: mock.token ? { id: mock.id, is_admin: mock.admin, display_name: 'Synthetic administrator' } : null,
   loading: mock.loading, error: mock.authError, logout: mock.logout,
 }) }));
-vi.mock('next/navigation', () => ({ useRouter: () => ({ replace: mock.replace }) }));
+vi.mock('next/navigation', () => ({ useSearchParams: () => new URLSearchParams(window.location.search), useRouter: () => ({ replace: mock.replace }) }));
 // Overview behavior has independent coverage; these tests isolate the existing log lifecycle.
 vi.mock('../src/admin-logs/overview-client', () => ({ useAdminOverview: () => ({ data: null, error: null, loading: false, reload: () => undefined }) }));
 
