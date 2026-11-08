@@ -1,5 +1,11 @@
 # Homepage A/B presentation rollout — 2026-11-06
 
+> November 8 update: B now implements the supplied compact dashboard reference.
+> See [Home B reference implementation](HOME_B_REFERENCE_2026-11-08.md) for its
+> current presentation, reused data contracts and validation boundaries. The
+> allocation and preview rules below remain unchanged; the earlier editorial B
+> description is retained as rollout history.
+
 ## Scope
 
 The authenticated `/today` homepage now selects one layout per account. The existing
