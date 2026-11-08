@@ -17,6 +17,15 @@ account menu, original `home.tsx`/`home.css`, and allocation/authorization logic
 are retained. The experiment ID and approximately 50/50 account assignment stay
 unchanged; this change does not claim a measured A/B outcome.
 
+### Spacing refinement
+
+The November 8 follow-up gives B more breathing room through wider card gutters,
+larger card insets, clearer separation below headings and filter controls, and
+more vertical space within list rows. Existing breakpoint rules reduce these
+insets on small screens while retaining comfortable control sizes. The change
+is confined to B's stylesheet; the header, comparison bar, Home A, data requests,
+filters, navigation and persistence behavior are retained.
+
 ## Existing data and actions
 
 | Section | Existing source / behavior |
