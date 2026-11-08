@@ -14,7 +14,8 @@ vi.mock('next/navigation', () => ({
 }));
 vi.mock('next/link', () => ({ default: ({ href, children }: { href: string; children: ReactNode }) => <a href={href}>{children}</a> }));
 vi.mock('@/components/workspace-loading', () => ({ default: () => <div role="status">Loading</div> }));
-vi.mock('@/redesign/home', () => ({ default: () => <div className="rd-home" data-testid="original-home">Shared real home renderer</div> }));
+vi.mock('@/redesign/home', () => ({ default: () => <div className="rd-home" data-testid="original-home">Original home renderer</div> }));
+vi.mock('@/redesign/home-b', () => ({ default: () => <div className="sb-home-b" data-testid="reference-home">Reference dashboard renderer</div> }));
 const a = '00000000-0000-4000-8000-000000000001';
 const b = '00000000-0000-4000-8000-000000000002';
 function user(id = a, admin = false) { return { id, is_admin: admin, onboarding_completed: true }; }
@@ -27,32 +28,35 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.unstubAllEnvs(); });
 
 describe('home experiment rendering', () => {
-  it('preserves A as a direct child with only one mounted data renderer', () => {
+  it('preserves A as a direct child and never mounts B alongside it', () => {
     const { container } = render(<HomeExperiment />);
     expect(marker(container)?.getAttribute('data-home-variant')).toBe('A');
     expect(container.querySelector(':scope > .rd-home')).not.toBeNull();
     expect(container.querySelector('.sb-home-b')).toBeNull();
     expect(screen.getAllByTestId('original-home')).toHaveLength(1);
+    expect(screen.queryByTestId('reference-home')).toBeNull();
     expect(screen.queryByRole('region', { name: '관리자 홈 화면 비교' })).toBeNull();
   });
-  it('renders B with the same single data renderer and functional navigation', () => {
+  it('mounts only the independent B dashboard for its assigned account', () => {
     state.me = user(b);
     const { container } = render(<HomeExperiment />);
     expect(marker(container)?.getAttribute('data-home-variant')).toBe('B');
-    expect(container.querySelector('.sb-home-b .rd-home')).not.toBeNull();
-    expect(screen.getAllByTestId('original-home')).toHaveLength(1);
-    expect(screen.getByRole('link', { name: /저장한 자료/ }).getAttribute('href')).toBe('/saved');
-    expect(screen.getByRole('link', { name: /최근 소식으로 이동/ }).getAttribute('href')).toBe('#recent-activity');
+    expect(container.querySelector('.sb-home-b')).not.toBeNull();
+    expect(screen.getAllByTestId('reference-home')).toHaveLength(1);
+    expect(screen.queryByTestId('original-home')).toBeNull();
   });
   it('does not render A while authentication or onboarding is unresolved', () => {
     state.loading = true;
     const { container, rerender } = render(<HomeExperiment />);
     expect(marker(container)).toBeNull();
     expect(screen.queryByTestId('original-home')).toBeNull();
+    expect(screen.queryByTestId('reference-home')).toBeNull();
     state.loading = false; state.me = null; rerender(<HomeExperiment />);
     expect(screen.queryByTestId('original-home')).toBeNull();
+    expect(screen.queryByTestId('reference-home')).toBeNull();
     state.me = { ...user(), onboarding_completed: false }; rerender(<HomeExperiment />);
     expect(screen.queryByTestId('original-home')).toBeNull();
+    expect(screen.queryByTestId('reference-home')).toBeNull();
   });
   it('keeps assignment over rerenders and handles account changes and logout', () => {
     const { container, rerender } = render(<HomeExperiment />);
@@ -60,9 +64,12 @@ describe('home experiment rendering', () => {
     expect(marker(container)?.getAttribute('data-home-variant')).toBe('A');
     state.me = user(b); rerender(<HomeExperiment />);
     expect(marker(container)?.getAttribute('data-home-variant')).toBe('B');
+    expect(screen.queryByTestId('original-home')).toBeNull();
+    expect(screen.getAllByTestId('reference-home')).toHaveLength(1);
     state.me = null; rerender(<HomeExperiment />);
     expect(marker(container)).toBeNull();
     expect(screen.queryByTestId('original-home')).toBeNull();
+    expect(screen.queryByTestId('reference-home')).toBeNull();
   });
   it('rejects ordinary-user query overrides', () => {
     state.query = 'home_preview=B';
@@ -76,6 +83,8 @@ describe('home experiment rendering', () => {
     const { container } = render(<HomeExperiment />);
     expect(marker(container)?.getAttribute('data-home-variant')).toBe('B');
     expect(marker(container)?.getAttribute('data-home-preview')).toBe('true');
+    expect(screen.getAllByTestId('reference-home')).toHaveLength(1);
+    expect(screen.queryByTestId('original-home')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: '자동 배정' }));
     expect(state.replace).toHaveBeenLastCalledWith('/today?keep=1', { scroll: false });
     fireEvent.click(screen.getByRole('button', { name: 'A 미리보기' }));
