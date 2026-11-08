@@ -198,7 +198,7 @@ test('B fits a narrow viewport and preserves genuine empty and retry states', as
   clean(fixture);
 });
 
-test('B filters actual documents and seven-day calendar records and persists a bookmark', async ({ page }) => {
+test('B filters actual documents and seven-day calendar records and persists a bookmark', async ({ page }, testInfo) => {
   const fixture = await referenceDashboardFixture(page);
   await page.goto('/today?home_preview=B');
   const home = page.locator('.sb-home-b');
@@ -219,6 +219,9 @@ test('B filters actual documents and seven-day calendar records and persists a b
     .toHaveAttribute('href', `/events/${referenceEvents[0].id}?kind=calendar`);
   // Calendar storage exposes a date, not a meeting hour to fabricate from the reference image.
   await expect(calendar).not.toContainText(/오전|오후|장 마감|\b\d{1,2}:\d{2}\b/);
+  await testInfo.attach(`home-B-populated-${testInfo.project.name}`, {
+    body: await page.screenshot({ fullPage: true }), contentType: 'image/png',
+  });
   await eventTabs.getByRole('button', { name: '실적 발표', exact: true }).click();
   await expect(calendar.locator('.hb-event')).toHaveCount(1);
   await expect(calendar).toContainText(referenceEvents[0].title);

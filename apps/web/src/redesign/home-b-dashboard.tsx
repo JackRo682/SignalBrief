@@ -968,7 +968,7 @@ export default function HomeB() {
         <aside className="hb-sidebar" aria-label="커버리지와 알림">
           <Card
             title="커버리지 현황"
-            description="등록 기업의 공식 일정 수집 상태입니다."
+            description="등록 기업의 공식 일정 소스 현황입니다."
             icon="layers"
             className="hb-coverage"
           >
@@ -979,7 +979,7 @@ export default function HomeB() {
             <div
               className="hb-progress"
               role="progressbar"
-              aria-label="공식 일정 수집 확인 비율"
+              aria-label="공식 일정 소스 확인 비율"
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={coveragePercent ?? undefined}
@@ -992,7 +992,7 @@ export default function HomeB() {
             <div className="hb-coverage-list">
               <div>
                 <span className="hb-dot" data-state="current" />
-                <strong>수집 확인</strong>
+                <strong>소스 확인</strong>
                 <span>
                   {coverageData
                     ? `${coverageData.covered_companies}개 기업`
@@ -1010,7 +1010,7 @@ export default function HomeB() {
               </div>
               <div>
                 <span className="hb-dot" data-state="review" />
-                <strong>수집 미확인</strong>
+                <strong>확인 필요</strong>
                 <span>
                   {coverageData
                     ? `${Math.max(0, coverageData.registered_companies - coverageData.covered_companies)}개 기업`
@@ -1031,13 +1031,13 @@ export default function HomeB() {
                   {coverageData.registered_companies === 0
                     ? "등록된 기업이 없습니다."
                     : coveragePercent === 100
-                      ? "모든 등록 기업에 공식 일정 수집 이력이 있습니다."
-                      : "일부 기업의 공식 일정 수집 확인이 필요합니다."}
+                      ? "모든 등록 기업에 공식 일정 소스가 연결되어 있습니다."
+                      : "일부 기업의 공식 일정 소스 확인이 필요합니다."}
                 </span>
               </div>
             )}
             <p className="hb-coverage-caption">
-              수집 이력 기준이며 최신성 보장은 아닙니다. 업데이트 중인 기업은
+              등록된 공식 소스 기준이며 최신성 보장은 아닙니다. 업데이트 중인 기업은
               다른 상태에도 포함될 수 있습니다.
             </p>
           </Card>

@@ -27,7 +27,7 @@ unchanged; this change does not claim a measured A/B outcome.
 | Approved analysis | Existing `catalog(kind=analysis)` visibility rules and `resourceHref`, including filing IDs and US/DART analysis query parameters. |
 | News | Existing `/api/news` market query or authenticated company query, validated `newsResponse`, original source links and NAVER attribution. |
 | Saved items | Existing `saved_list` and `save` actions. Document saves/removals refresh both the document and Saved panels. History is read only when the preference allows it. |
-| Coverage | Existing `sb_calendar_coverage` through `useCalendarCoverage(null)`. Counts refer to registered companies' official calendar collection history. They are not a freshness/uptime percentage. Pending and covered sets can overlap. |
+| Coverage | Existing `sb_calendar_coverage` through `useCalendarCoverage(null)`. Counts describe registered companies' configured official calendar source coverage under the backend's rules; SEC IR sources additionally require a successful collection. They are not a universal collection-success or freshness/uptime percentage. Pending and covered sets can overlap. |
 | Notifications | `useContentNotifications` plus `markContentNotificationRead`. A normal click waits for the persisted write before navigating; failures remain visible. Modified/middle clicks preserve native navigation and still request the same confirmed read. |
 
 Every panel retains independent loading, empty, error and retry behavior. Failed
