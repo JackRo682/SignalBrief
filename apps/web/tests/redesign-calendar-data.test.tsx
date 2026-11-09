@@ -1,6 +1,7 @@
 import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { useCalendarCoverage, useCalendarData } from "@/redesign/calendar-data";
+import { calendarDataKey, loadCalendarData, useCalendarCoverage, useCalendarData } from "@/redesign/calendar-data";
+import { pageDataCache } from "@/lib/page-data-cache";
 
 const mocks = vi.hoisted(() => ({
   token: "synthetic-account-a" as string | null,
@@ -33,6 +34,7 @@ const row = {
 };
 beforeEach(() => {
   vi.clearAllMocks();
+  pageDataCache.reset();
   mocks.token = "synthetic-account-a";
   mocks.queries = [];
   mocks.from.mockImplementation(() => {
@@ -49,6 +51,133 @@ beforeEach(() => {
     registered_companies: 7, covered_companies: 2,
     selected: { company_id: "00000000-0000-4000-8000-000000000002", source_count: 0, last_success_at: null, has_error: false },
   }, error: null });
+});
+
+describe("calendar navigation cache", () => {
+  const range = { from: "2026-11-01", until: "2026-11-30" };
+
+  it("uses a prefetched result on the first render without another database read", async () => {
+    await loadCalendarData(mocks.token!, range);
+    const { result } = renderHook(() => useCalendarData(range));
+    expect(result.current.data?.items).toEqual([row]);
+    expect(result.current.loading).toBe(false);
+    await act(async () => {});
+    expect(mocks.from).toHaveBeenCalledTimes(1);
+  });
+
+  it("deduplicates concurrent readers and keeps the request alive when one leaves", async () => {
+    let finish!: (value: unknown) => void;
+    mocks.result.mockImplementation(() => new Promise(resolve => { finish = resolve; }));
+    const first = renderHook(() => useCalendarData(range));
+    const second = renderHook(() => useCalendarData(range));
+    await waitFor(() => expect(mocks.from).toHaveBeenCalledTimes(1));
+    first.unmount();
+    const signal = mocks.queries[0].abortSignal.mock.calls[0][0] as AbortSignal;
+    expect(signal.aborted).toBe(false);
+    await act(async () => finish({ data: [row], error: null }));
+    expect(second.result.current.data?.items).toEqual([row]);
+    expect(second.result.current.loading).toBe(false);
+  });
+
+  it("keeps previous values visible during a stale refresh and then replaces them", async () => {
+    vi.useFakeTimers();
+    await loadCalendarData(mocks.token!, range);
+    vi.advanceTimersByTime(60_001);
+    let finish!: (value: unknown) => void;
+    mocks.result.mockImplementationOnce(() => new Promise(resolve => { finish = resolve; }));
+    const { result } = renderHook(() => useCalendarData(range));
+    expect(result.current.data?.items).toEqual([row]);
+    expect(result.current.loading).toBe(false);
+    await act(async () => {});
+    expect(mocks.from).toHaveBeenCalledTimes(2);
+    const updated = { ...row, title: "Freshly confirmed date" };
+    await act(async () => finish({ data: [updated], error: null }));
+    expect(result.current.data?.items).toEqual([updated]);
+  });
+
+  it("shares equivalent scopes while separating dates, order and personal visibility", async () => {
+    const a = "00000000-0000-4000-8000-000000000002";
+    const b = "00000000-0000-4000-8000-000000000003";
+    const query = { ...range, companyIds: [a, b] };
+    await loadCalendarData(mocks.token!, query);
+    await loadCalendarData(mocks.token!, { until: range.until, companyIds: [b, a], from: range.from, includePersonal: true, order: "asc" });
+    expect(mocks.from).toHaveBeenCalledTimes(1);
+    expect(calendarDataKey({ ...query, includePersonal: false })).not.toBe(calendarDataKey(query));
+    expect(calendarDataKey({ ...query, order: "desc" })).not.toBe(calendarDataKey(query));
+    expect(calendarDataKey({ ...query, until: "2026-12-01" })).not.toBe(calendarDataKey(query));
+    expect(calendarDataKey({ ...query, companyIds: [] })).not.toBe(calendarDataKey(range));
+  });
+
+  it("does not briefly show the previous range when a new range has no cache", async () => {
+    const { result, rerender } = renderHook(({ until }) => useCalendarData({ ...range, until }), {
+      initialProps: { until: range.until },
+    });
+    await waitFor(() => expect(result.current.data?.items).toHaveLength(1));
+    mocks.result.mockImplementationOnce(() => new Promise(() => {}));
+    rerender({ until: "2026-12-31" });
+    expect(result.current.data).toBeNull();
+    expect(result.current.loading).toBe(true);
+  });
+
+  it("forces an explicit fresh read without throwing away unrelated cached tabs", async () => {
+    await pageDataCache.request(mocks.token!, "/v1/watchlist", "GET", async () => ({ items: ["kept"] }));
+    const { result } = renderHook(() => useCalendarData(range));
+    await waitFor(() => expect(result.current.data?.items).toHaveLength(1));
+    const updated = { ...row, title: "Refresh result" };
+    mocks.result.mockResolvedValueOnce({ data: [updated], error: null });
+    await act(async () => result.current.reload());
+    expect(mocks.from).toHaveBeenCalledTimes(2);
+    expect(result.current.data?.items).toEqual([updated]);
+    expect(pageDataCache.peek(mocks.token!, "/v1/watchlist")).toEqual({ items: ["kept"] });
+  });
+
+  it("surfaces a failed background refresh alongside the last successful snapshot", async () => {
+    await loadCalendarData(mocks.token!, range);
+    const { result } = renderHook(() => useCalendarData(range));
+    await act(async () => {});
+    mocks.result.mockResolvedValueOnce({ data: null, error: { message: "permission denied" } });
+    await act(async () => result.current.reload());
+    expect(result.current.error).not.toBe("");
+    expect(result.current.data?.items).toEqual([row]);
+    expect(result.current.loading).toBe(false);
+  });
+
+  it("discards an earlier response when an explicit refresh finishes first", async () => {
+    let finishEarlier!: (value: unknown) => void;
+    mocks.result.mockImplementationOnce(() => new Promise(resolve => { finishEarlier = resolve; }));
+    const { result } = renderHook(() => useCalendarData(range));
+    await waitFor(() => expect(mocks.from).toHaveBeenCalledTimes(1));
+    const updated = { ...row, title: "Newer refresh" };
+    mocks.result.mockResolvedValueOnce({ data: [updated], error: null });
+    await act(async () => result.current.reload());
+    expect(result.current.data?.items).toEqual([updated]);
+    await act(async () => finishEarlier({ data: [row], error: null }));
+    expect(result.current.data?.items).toEqual([updated]);
+    expect(pageDataCache.peek(mocks.token!, calendarDataKey(range))).toEqual({ items: [updated], truncated: false });
+  });
+
+  it("uses cached coverage on a return visit but explicit refresh still queries the server", async () => {
+    const first = renderHook(() => useCalendarCoverage(null));
+    await waitFor(() => expect(first.result.current.data).not.toBeNull());
+    first.unmount();
+    const second = renderHook(() => useCalendarCoverage(null));
+    expect(second.result.current.data?.registered_companies).toBe(7);
+    expect(second.result.current.loading).toBe(false);
+    await act(async () => {});
+    expect(mocks.coverage).toHaveBeenCalledTimes(1);
+    await act(async () => second.result.current.reload());
+    expect(mocks.coverage).toHaveBeenCalledTimes(2);
+  });
+
+  it("clears a cached private date immediately on logout", async () => {
+    const { result, rerender } = renderHook(() => useCalendarData(range));
+    await waitFor(() => expect(result.current.data?.items).toHaveLength(1));
+    mocks.token = null;
+    pageDataCache.reset();
+    rerender();
+    expect(result.current.data).toBeNull();
+    expect(result.current.loading).toBe(false);
+  });
 });
 
 describe("calendar source coverage", () => {

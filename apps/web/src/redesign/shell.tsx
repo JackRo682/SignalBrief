@@ -9,6 +9,7 @@ import WorkspaceLoading from "@/components/workspace-loading";
 import { useContentNotifications } from "@/workspace/notification-state";
 import { Notice, useMutation } from "@/workspace/ui";
 import { SearchForm } from "./ui";
+import { useNavigationPrefetch } from "./use-navigation-prefetch";
 import "./styles.css";
 
 const links = [
@@ -25,7 +26,7 @@ export default function RedesignShell({ children }: { children: ReactNode }) {
     action = useMutation(),
     profile = useRef<HTMLDetailsElement>(null);
   const alerts = useContentNotifications(Boolean(auth.me?.onboarding_completed));
-  const reload = alerts.reload;
+  const prefetch = useNavigationPrefetch(path);
   useEffect(() => {
     if (!auth.loading && !auth.token)
       router.replace(
@@ -36,8 +37,7 @@ export default function RedesignShell({ children }: { children: ReactNode }) {
   }, [auth.loading, auth.token, auth.me, path, router]);
   useEffect(() => {
     if (profile.current) profile.current.open = false;
-    reload();
-  }, [path, reload]);
+  }, [path]);
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -53,7 +53,7 @@ export default function RedesignShell({ children }: { children: ReactNode }) {
     return () => {
       window.removeEventListener("keydown", key);
     };
-  }, [reload]);
+  }, []);
   if (!auth.me?.onboarding_completed)
     return <WorkspaceLoading error={auth.loading ? null : auth.error} />;
   const active = (href: string) =>
@@ -83,6 +83,9 @@ export default function RedesignShell({ children }: { children: ReactNode }) {
               href={href}
               className={active(href) ? "active" : ""}
               aria-current={active(href) ? "page" : undefined}
+              onPointerEnter={() => { void prefetch(href); }}
+              onFocus={() => { void prefetch(href); }}
+              onTouchStart={() => { void prefetch(href); }}
             >
               {title}
             </Link>

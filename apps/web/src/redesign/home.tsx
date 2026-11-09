@@ -107,7 +107,9 @@ export default function Home() {
   const watchlist = useResource("/v1/watchlist", watchlistSchema);
   const followed = watchlist.data && !watchlist.error ? watchlist.data.items : [];
   const overview = useData(
-    followed.length ? { action: "source_overview", p: { scope: "following", days: 0 } } : null,
+    // The server resolves membership; visible updates are intersected with the
+    // authoritative watchlist below, so both reads can start together.
+    { action: "source_overview", p: { scope: "following", days: 0 } },
     sourceOverviewSchema,
   );
   const until = addDays(today, 30);

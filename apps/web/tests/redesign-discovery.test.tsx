@@ -265,7 +265,21 @@ describe("screenshot discovery behavior", () => {
     expect(mocks.calendar.mock.calls.at(-1)?.[0]).toMatchObject({companyIds:[],includePersonal:false});
     expect(upcoming.queryByText(event.title)).not.toBeInTheDocument();
     expect(upcoming.getByText("관심 기업을 추가하면 다가오는 일정을 확인할 수 있습니다.")).toBeVisible();
-    expect(mocks.data.mock.calls.some(([req])=>req?.action === "source_overview")).toBe(false);
+    expect(mocks.data).toHaveBeenCalledWith({action:"source_overview",p:{scope:"following",days:0}});
+    await waitFor(() => expect(mocks.fetch).toHaveBeenCalled());
+  });
+  it("starts following updates while the watchlist is pending without exposing fallback records", async () => {
+    mocks.resource.mockReturnValue({data:null,loading:true,error:null,reload:mocks.reload});
+    const original=mocks.data.getMockImplementation()!;
+    mocks.data.mockImplementation(req => req?.action === "source_overview" ? {
+      data:{monitoring:[{company_id:id,latest_filing:filing,latest_analysis:null}]},
+      loading:false,error:"",reload:mocks.reload,
+    } : original(req));
+    render(<Home />);
+    expect(mocks.data).toHaveBeenCalledWith({action:"source_overview",p:{scope:"following",days:0}});
+    const following=within(document.querySelector(".rd-home-following") as HTMLElement);
+    expect(following.queryByText(filing.title)).not.toBeInTheDocument();
+    expect(following.getByRole("status", {name:"불러오는 중"})).toBeVisible();
     await waitFor(() => expect(mocks.fetch).toHaveBeenCalled());
   });
   it("isolates followed monitoring and verified future dates from unrelated and personal records", async () => {

@@ -1,28 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { useAuth } from "@/components/auth";
 import { initializeSupabase } from "@/lib/supabase";
-import {
-  calendarEntrySchema,
-  isoDaySchema,
-  type CalendarEntry,
-} from "./calendar-utils";
-
-const fields =
-  "id,title,occurs_on,company_id,event_id,origin,quote,source_url,source_timezone,verified_at";
-type Query =
-  | { id: string }
-  | {
-      from: string;
-      until: string;
-      companyId?: string;
-      companyIds?: string[];
-      includePersonal?: boolean;
-      order?: "asc" | "desc";
-    };
-type Result = { items: CalendarEntry[]; truncated: boolean };
+import { pageDataCache } from "@/lib/page-data-cache";
+import { calendarDataKey, loadCalendarData, type CalendarQuery, type CalendarResult } from "./calendar-query";
+export { calendarDataKey, loadCalendarData, type CalendarQuery, type CalendarResult } from "./calendar-query";
 
 const coverageSchema = z.object({
   registered_companies: z.number().int().nonnegative(),
@@ -37,6 +21,18 @@ const coverageSchema = z.object({
     pending: z.boolean().default(false),
   }).nullable(),
 });
+type Coverage = z.infer<typeof coverageSchema>;
+export const calendarCoverageKey = (companyId: string | null) => `calendar-coverage:${companyId ?? "all"}`;
+export function loadCalendarCoverage(token: string, companyId: string | null) {
+  return pageDataCache.request(token, calendarCoverageKey(companyId), "GET", async () => {
+    if (companyId) z.string().uuid().parse(companyId);
+    const db = await initializeSupabase();
+    const response = await db.rpc("sb_calendar_coverage", { p_company_id: companyId })
+      .abortSignal(AbortSignal.timeout(20000));
+    if (response.error) throw new Error("coverage_unavailable");
+    return coverageSchema.parse(response.data);
+  });
+}
 
 /** Coverage is independent of date reads: a provider outage never erases verified dates. */
 export function useCalendarCoverage(companyId: string | null, enabled = true) {
@@ -44,10 +40,15 @@ export function useCalendarCoverage(companyId: string | null, enabled = true) {
   const [revision, setRevision] = useState(0);
   const [collectionRevision, setCollectionRevision] = useState(0);
   const [state, setState] = useState<{
-    key: string; data: z.infer<typeof coverageSchema> | null; error: string; polling: boolean;
+    key: string; data: Coverage | null; error: string; polling: boolean;
   }>({ key: "", data: null, error: "", polling: false });
   const key = JSON.stringify([token, companyId, revision, enabled]);
-  const reload = useCallback(() => setRevision((value) => value + 1), []);
+  const cacheKey = calendarCoverageKey(companyId);
+  const snapshot = token && enabled ? pageDataCache.peek<Coverage>(token, cacheKey) : undefined;
+  const reload = useCallback(() => {
+    if (token) pageDataCache.invalidate(token, cacheKey);
+    setRevision((value) => value + 1);
+  }, [token, cacheKey]);
   useEffect(() => {
     if (!token || !enabled) return;
     let alive = true;
@@ -55,21 +56,19 @@ export function useCalendarCoverage(companyId: string | null, enabled = true) {
     let timer: ReturnType<typeof setTimeout> | undefined;
     void (async () => {
       try {
-        if (companyId) z.string().uuid().parse(companyId);
-        const db = await initializeSupabase();
+        const saved = pageDataCache.peek<Coverage>(token, cacheKey);
+        const wasPending = companyId ? saved?.selected?.pending === true : (saved?.pending_companies ?? 0) > 0;
         // Poll only a server-confirmed pending collection, at most 12 more times.
         // Each completed poll refreshes the independent date queries; no provider
         // requests or queue writes are initiated by this read-only status hook.
         for (let poll = 0; poll <= 12 && alive; poll++) {
-          const response = await db.rpc("sb_calendar_coverage", { p_company_id: companyId })
-            .abortSignal(AbortSignal.any([controller.signal, AbortSignal.timeout(20000)]));
-          if (response.error) throw new Error("coverage_unavailable");
-          const data = coverageSchema.parse(response.data);
+          if (poll > 0) pageDataCache.invalidate(token, cacheKey);
+          const data = await loadCalendarCoverage(token, companyId);
           if (!alive) return;
           const pending = companyId ? data.selected?.pending === true : data.pending_companies > 0;
           const polling = pending && poll < 12;
           setState({ key, data, error: "", polling });
-          if (poll > 0) setCollectionRevision(value => value + 1);
+          if (poll > 0 || (wasPending && !pending)) setCollectionRevision(value => value + 1);
           if (!polling) return;
           await new Promise<void>(resolve => {
             const cancel = () => { clearTimeout(timer); resolve(); };
@@ -85,12 +84,13 @@ export function useCalendarCoverage(companyId: string | null, enabled = true) {
       }
     })();
     return () => { alive = false; clearTimeout(timer); controller.abort(); };
-  }, [token, companyId, revision, key, enabled]);
+  }, [token, companyId, revision, key, enabled, cacheKey]);
   const current = state.key === key;
+  const data = current && state.data !== null ? state.data : snapshot ?? null;
   return {
-    data: current ? state.data : null,
+    data,
     error: current ? state.error : "",
-    loading: Boolean(enabled && token && !current),
+    loading: Boolean(enabled && token && !data && !current),
     polling: current && state.polling,
     collectionRevision,
     reload,
@@ -98,112 +98,60 @@ export function useCalendarCoverage(companyId: string | null, enabled = true) {
 }
 
 /** Uses the signed-in user's JWT and existing calendar RLS, never a service key. */
-export function useCalendarData(query: Query | null, collectionRevision = 0) {
+export function useCalendarData(query: CalendarQuery | null, collectionRevision = 0) {
   const { token } = useAuth();
-  const key = JSON.stringify(query);
+  const serialized = JSON.stringify(query);
+  const key = query ? calendarDataKey(query) : "";
   const [revision, setRevision] = useState(0);
+  const previousCollection = useRef<{ token: string | null; revision: number } | null>(null);
   const [state, setState] = useState<{
     key: string;
     token: string | null;
-    data: Result | null;
+    data: CalendarResult | null;
     loading: boolean;
     error: string;
   }>({ key: "", token: null, data: null, loading: false, error: "" });
-  const reload = useCallback(() => setRevision((value) => value + 1), []);
+  const snapshot = token && query ? pageDataCache.peek<CalendarResult>(token, key) : undefined;
+  const current = state.key === key && state.token === token;
+  const data = current && state.data !== null ? state.data : snapshot ?? null;
+  const reload = useCallback(() => {
+    if (token && key) pageDataCache.invalidate(token, key);
+    setRevision((value) => value + 1);
+  }, [token, key, setRevision]);
   useEffect(() => {
     let alive = true;
-    const controller = new AbortController();
-    if (!token || key === "null") {
+    if (!token || serialized === "null") {
+      previousCollection.current = { token, revision: collectionRevision };
       setState({ key, token, data: null, loading: false, error: "" });
       return;
     }
-    setState({ key, token, data: null, loading: true, error: "" });
-    void (async () => {
-      try {
-        const input = JSON.parse(key) as Query;
-        const companyIds = "id" in input || input.companyIds === undefined
-          ? undefined
-          : z.array(z.string().uuid()).max(500).parse(input.companyIds);
-        if (!("id" in input)) {
-          const from = isoDaySchema.parse(input.from), until = isoDaySchema.parse(input.until);
-          if (from > until) throw new Error("Invalid range");
-          if (companyIds?.length === 0 && input.includePersonal === false) {
-            if (alive) setState({ key, token, data: { items: [], truncated: false }, loading: false, error: "" });
-            return;
-          }
-        }
-        const db = await initializeSupabase();
-        // calendar_items is RLS-protected: verified official rows, or this user's own rows.
-        let request = db
-          .from("calendar_items")
-          .select(fields)
-          .eq("calendar_status", "confirmed");
-        if ("id" in input)
-          request = request.eq("id", z.string().uuid().parse(input.id));
-        else {
-          const from = isoDaySchema.parse(input.from),
-            until = isoDaySchema.parse(input.until);
-          if (from > until) throw new Error("Invalid range");
-          request = request.gte("occurs_on", from).lte("occurs_on", until);
-          if (input.companyId)
-            request = request.eq(
-              "company_id",
-              z.string().uuid().parse(input.companyId),
-            );
-          // Filter before LIMIT: unrelated companies must not displace selected dates.
-          if (companyIds !== undefined) {
-            if (input.includePersonal !== false) {
-              request = companyIds.length
-                ? request.or(`origin.eq.user,company_id.in.(${companyIds.join(",")})`)
-                : request.eq("origin", "user");
-            } else request = request.in("company_id", companyIds).neq("origin", "user");
-          } else if (input.includePersonal === false) request = request.neq("origin", "user");
-        }
-        const response = await request
-          .order("occurs_on", { ascending: "id" in input || input.order !== "desc" })
-          .order("id")
-          .limit("id" in input ? 1 : 501)
-          .abortSignal(
-            AbortSignal.any([controller.signal, AbortSignal.timeout(20000)]),
-          );
-        if (response.error)
-          throw new Error("일정을 불러오지 못했습니다. 다시 시도해 주세요.");
-        const entries = z.array(calendarEntrySchema).parse(response.data);
-        if (alive)
-          setState({
-            key,
-            token,
-            data: {
-              items: entries.slice(0, 500),
-              truncated: entries.length > 500,
-            },
-            loading: false,
-            error: "",
+    // A collector completion is new evidence even while the last read is still fresh.
+    if (previousCollection.current?.token === token &&
+        previousCollection.current.revision !== collectionRevision)
+      pageDataCache.invalidate(token, key);
+    previousCollection.current = { token, revision: collectionRevision };
+    const saved = pageDataCache.peek<CalendarResult>(token, key);
+    setState({ key, token, data: saved ?? null, loading: saved === undefined, error: "" });
+    void Promise.resolve().then(() => {
+      if (!alive) return;
+      return loadCalendarData(token, JSON.parse(serialized) as CalendarQuery)
+        .then((value) => {
+          if (alive) setState({ key, token, data: value, loading: false, error: "" });
+        })
+        .catch((error: unknown) => {
+          if (alive) setState({
+            key, token, data: pageDataCache.peek<CalendarResult>(token, key) ?? null, loading: false,
+            error: error instanceof Error && error.message.startsWith("일정")
+              ? error.message : "일정 데이터와 연결 상태를 확인해 주세요.",
           });
-      } catch (error) {
-        if (alive)
-          setState({
-            key,
-            token,
-            data: null,
-            loading: false,
-            error:
-              error instanceof Error && error.message.startsWith("일정")
-                ? error.message
-                : "일정 데이터와 연결 상태를 확인해 주세요.",
-          });
-      }
-    })();
-    return () => {
-      alive = false;
-      controller.abort();
-    };
-  }, [key, token, revision, collectionRevision]);
-  // Never show a previous account's or previous range's records during a transition.
-  const current = state.key === key && state.token === token;
+        });
+    });
+    // The request belongs to the shared cache. Only this view's continuation ends.
+    return () => { alive = false; };
+  }, [key, serialized, token, revision, collectionRevision]);
   return {
-    data: current ? state.data : null,
-    loading: Boolean(token && query && (!current || state.loading)),
+    data,
+    loading: Boolean(token && query && !data && (!current || state.loading)),
     error: current ? state.error : "",
     reload,
   };

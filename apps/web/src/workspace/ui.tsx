@@ -35,12 +35,12 @@ export function useData<T>(req:WorkspaceRequest|null,schema:z.ZodType<T>){
   });
   return()=>{alive=false;};
  },[token,key,serialized,schema,seq]);
- const reload=useCallback(()=>{pageDataCache.reset(token);setSeq(x=>x+1);},[token]);
+ const reload=useCallback(()=>{pageDataCache.invalidate(token,key);setSeq(x=>x+1);},[token,key]);
  return {data,loading,error:current?state.error:'',reload};
 }
 export function useMutation(){const [busy,setBusy]=useState(false),[error,setError]=useState(''),[success,setSuccess]=useState('');const lock=useRef(false),alive=useRef(true);
  useEffect(()=>{alive.current=true;return()=>{alive.current=false;};},[]);
- async function run(fn:()=>Promise<unknown>,message=''){if(lock.current)return false;lock.current=true;setBusy(true);setError('');setSuccess('');try{await fn();pageDataCache.reset();if(alive.current)setSuccess(message);return true;}catch(e){if(alive.current)setError(e instanceof Error?e.message:'요청 오류');return false;}finally{lock.current=false;if(alive.current)setBusy(false);}}
+ async function run(fn:()=>Promise<unknown>,message='',options:{invalidateCache?:boolean}={}){if(lock.current)return false;lock.current=true;setBusy(true);setError('');setSuccess('');try{await fn();if(options.invalidateCache!==false)pageDataCache.reset();if(alive.current)setSuccess(message);return true;}catch(e){if(alive.current)setError(e instanceof Error?e.message:'요청 오류');return false;}finally{lock.current=false;if(alive.current)setBusy(false);}}
  return {busy,error,success,run};
 }
 export function Notice({action}:{action:ReturnType<typeof useMutation>}){return <>{action.error&&<div role="alert" className="ws-notice ws-error">{action.error}</div>}{action.success&&<div role="status" className="ws-notice ws-success">{action.success}</div>}</>;}

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { useAuth } from "@/components/auth";
+import { pageDataCache } from "@/lib/page-data-cache";
 import { workspace } from "./client";
 import { contentNotificationsSchema } from "./contracts";
 
@@ -10,6 +11,17 @@ type Notifications = z.infer<typeof contentNotificationsSchema>;
 type ReadConfirmation = { token: string; id?: string; readAt: string };
 const contentUpdated = "signalbrief:content-updated";
 const storageKey = "signalbrief:notifications-updated";
+const notificationRequest = { action: "content_notifications", p: {} } as const;
+const notificationKey = `workspace:${JSON.stringify(notificationRequest)}`;
+// A DOM event is delivered to every mounted notification consumer. Invalidate
+// once so the header and page share the same subsequent network request.
+const invalidatedEvents = new WeakSet<Event>();
+
+function invalidateForEvent(scope: string | null, event: Event) {
+  if (!scope || !pageDataCache.isCurrent(scope) || invalidatedEvents.has(event)) return;
+  pageDataCache.invalidate(scope, notificationKey);
+  invalidatedEvents.add(event);
+}
 
 function applyRead(data: Notifications | null, confirmation: ReadConfirmation) {
   if (!data) return data;
@@ -36,9 +48,12 @@ export async function markContentNotificationRead(token: string | null, id?: str
   );
   // Only a confirmed write may clear a row or badge. No credentials or notification
   // contents are stored in the cross-tab signal.
-  window.dispatchEvent(new CustomEvent<ReadConfirmation>(contentUpdated, {
-    detail: { token, id, readAt: new Date().toISOString() },
-  }));
+  const confirmation = { token, id, readAt: new Date().toISOString() };
+  pageDataCache.update<Notifications>(token, notificationKey,
+    (data) => applyRead(data ?? null, confirmation) ?? undefined);
+  const event = new CustomEvent<ReadConfirmation>(contentUpdated, { detail: confirmation });
+  invalidatedEvents.add(event);
+  window.dispatchEvent(event);
   try {
     localStorage.setItem(storageKey, `${Date.now()}:${Math.random()}`);
   } catch {
@@ -58,19 +73,21 @@ export function useContentNotifications(enabled = true) {
     error: string;
   }>({ scope: null, data: null, loading: false, error: "" });
 
-  const reload = useCallback(() => {
+  const revalidate = useCallback(() => {
     const requestId = ++generation.current;
     if (!scope) {
       setState({ scope, data: null, loading: false, error: "" });
       return;
     }
+    const cached = pageDataCache.peek<Notifications>(scope, notificationKey);
     setState((current) => ({
       scope,
-      data: current.scope === scope ? current.data : null,
+      data: current.scope === scope ? current.data ?? cached ?? null : cached ?? null,
       loading: true,
       error: "",
     }));
-    void workspace(scope, { action: "content_notifications", p: {} }, contentNotificationsSchema)
+    void pageDataCache.request(scope, notificationKey, "GET", () =>
+      workspace(scope, notificationRequest, contentNotificationsSchema))
       .then((data) => {
         if (generation.current === requestId)
           setState({ scope, data, loading: false, error: "" });
@@ -84,16 +101,24 @@ export function useContentNotifications(enabled = true) {
           }));
       });
   }, [scope]);
+  const reload = useCallback(() => {
+    if (scope) pageDataCache.invalidate(scope, notificationKey);
+    revalidate();
+  }, [scope, revalidate]);
 
   useEffect(() => {
-    const refreshVisible = () => {
-      if (document.visibilityState === "visible") reload();
+    const refreshVisible = (event?: Event) => {
+      if (document.visibilityState !== "visible") return;
+      if (event) invalidateForEvent(scope, event);
+      // The periodic read is already older than the cache's 30-second TTL.
+      revalidate();
     };
     const update = (event: Event) => {
       const confirmation = event instanceof CustomEvent
         ? event.detail as ReadConfirmation | undefined
         : undefined;
       if (confirmation?.token && confirmation.token !== scope) return;
+      invalidateForEvent(scope, event);
       if (confirmation?.token === scope) {
         setState((current) => current.scope === scope
           ? { ...current, data: applyRead(current.data, confirmation) }
@@ -101,12 +126,12 @@ export function useContentNotifications(enabled = true) {
       }
       // Invalidates responses started before a successful mutation, including
       // requests still pending when the notification link navigates away.
-      reload();
+      revalidate();
     };
     const storage = (event: StorageEvent) => {
-      if (event.key === storageKey) refreshVisible();
+      if (event.key === storageKey) refreshVisible(event);
     };
-    reload();
+    revalidate();
     window.addEventListener(contentUpdated, update);
     window.addEventListener("focus", refreshVisible);
     document.addEventListener("visibilitychange", refreshVisible);
@@ -120,13 +145,16 @@ export function useContentNotifications(enabled = true) {
       document.removeEventListener("visibilitychange", refreshVisible);
       window.removeEventListener("storage", storage);
     };
-  }, [invalidatePending, reload, scope]);
+  }, [invalidatePending, revalidate, scope]);
 
   const current = state.scope === scope;
+  const cached = scope ? pageDataCache.peek<Notifications>(scope, notificationKey) : undefined;
+  const data = current ? state.data ?? cached ?? null : cached ?? null;
   return {
-    data: current ? state.data : null,
-    loading: Boolean(scope && (!current || (state.loading && !state.data))),
+    data,
+    loading: Boolean(scope && !data && (!current || state.loading)),
     error: current ? state.error : "",
     reload,
+    revalidate,
   };
 }

@@ -528,7 +528,7 @@ export default function Notifications() {
           className="rd-p-button primary"
           disabled={action.busy || !data.data?.unread_count}
           onClick={() =>
-            void action.run(() => mark(), "모든 알림을 읽음으로 표시했습니다.")
+            void action.run(() => mark(), "모든 알림을 읽음으로 표시했습니다.", { invalidateCache: false })
           }
         >
           모두 읽음으로 표시
@@ -606,7 +606,7 @@ export default function Notifications() {
                         event.shiftKey ||
                         event.altKey
                       ) {
-                        if (!item.read_at) void action.run(() => mark(item.id));
+                        if (!item.read_at) void action.run(() => mark(item.id), "", { invalidateCache: false });
                         return;
                       }
                       if (!item.read_at) {
@@ -614,12 +614,12 @@ export default function Notifications() {
                         void action.run(async () => {
                           await mark(item.id);
                           router.push(resourceHref(item.resource));
-                        });
+                        }, "", { invalidateCache: false });
                       }
                     }}
                     onAuxClick={(event) => {
                       if (event.button === 1 && !item.read_at)
-                        void action.run(() => mark(item.id));
+                        void action.run(() => mark(item.id), "", { invalidateCache: false });
                     }}
                   >
                     <strong>{item.resource.title}</strong>
@@ -642,7 +642,7 @@ export default function Notifications() {
                     className="rd-p-link"
                     disabled={action.busy || !!item.read_at}
                     aria-label={`${item.resource.title} ${item.read_at ? "읽음" : "읽음으로 표시"}`}
-                    onClick={() => void action.run(() => mark(item.id))}
+                    onClick={() => void action.run(() => mark(item.id), "", { invalidateCache: false })}
                   >
                     {item.read_at ? "읽음" : "읽음으로 표시"}
                   </button>

@@ -17,15 +17,52 @@ export class PageDataCache {
     this.entries.clear();
   }
   isCurrent(scope: string | null) { return scope === this.scope; }
+  /** Refresh one read without throwing away the other tabs' data. */
+  invalidate(scope: string | null, path?: string) {
+    if (!this.isCurrent(scope)) return;
+    if (path === undefined) {
+      this.reset(scope);
+      return;
+    }
+    const entry = this.entries.get(path);
+    if (entry) {
+      // Replace the entry so an older in-flight response cannot overwrite a
+      // confirmed mutation or a refresh requested after it started.
+      this.entries.set(path, { ...entry, expires: 0, promise: undefined });
+    }
+  }
+  /** Apply a server-confirmed change and revalidate the rest on the next read. */
+  update<T>(scope: string | null, path: string, updater: (value: T | undefined) => T | undefined) {
+    if (!this.isCurrent(scope)) return;
+    const entry = this.entries.get(path);
+    const value = updater(entry?.hasValue ? entry.value as T : undefined);
+    if (value === undefined) {
+      this.entries.delete(path);
+      return;
+    }
+    this.entries.set(path, {
+      value, hasValue: true, expires: 0,
+      staleUntil: entry?.staleUntil ?? Date.now() + 300_000,
+    });
+  }
   private select(scope: string | null) {
     if (scope !== this.scope) this.reset(scope);
   }
   private ttl(path: string) {
     if (path.startsWith('workspace:')) {
       // Settings, signed URLs, personal help, and admin data must always be freshly read.
-      try { return JSON.parse(path.slice('workspace:'.length)).action === 'catalog' ? 30_000 : 0; }
+      try {
+        const request = JSON.parse(path.slice('workspace:'.length));
+        if (request.action === 'design_directory') return 60_000;
+        if (['catalog', 'source_overview', 'design_dashboard', 'content_notifications'].includes(request.action)) return 30_000;
+        // History is consent-sensitive and is never prefetched or cached.
+        if (request.action === 'saved_list' && request.p?.kind !== 'history') return 30_000;
+        return 0;
+      }
       catch { return 0; }
     }
+    if (path.startsWith('calendar-data:')) return 60_000;
+    if (path.startsWith('calendar-coverage:')) return 30_000;
     if (path.startsWith('/market?')) return 30_000;
     if (/^\/v1\/(feed)([/?]|$)/.test(path)) return 15_000;
     if (/^\/v1\/(companies|watchlist|portfolio|calendar)([/?]|$)/.test(path)) return 60_000;

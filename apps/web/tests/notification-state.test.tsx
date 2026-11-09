@@ -5,6 +5,7 @@ import { z } from "zod";
 import { contentNotificationsSchema, type WorkspaceRequest } from "../src/workspace/contracts";
 import { markContentNotificationRead, useContentNotifications } from "../src/workspace/notification-state";
 import { DesktopShell } from "../src/desktop/shell";
+import { pageDataCache } from "../src/lib/page-data-cache";
 
 const mocks = vi.hoisted(() => ({ workspace: vi.fn(), token: "synthetic-account-a" }));
 vi.mock("@/components/auth", () => ({ useAuth: () => ({
@@ -68,6 +69,8 @@ function deferred<T>() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mocks.workspace.mockReset();
+  pageDataCache.reset();
   mocks.token = "synthetic-account-a";
   localStorage.clear();
   mocks.workspace.mockImplementation(async (_token: string, request: WorkspaceRequest) =>
@@ -77,7 +80,6 @@ afterEach(() => cleanup());
 
 describe("confirmed notification read state", () => {
   it("updates bell and list immediately after confirmation, keeping other unread rows and older totals", async () => {
-    mocks.workspace.mockResolvedValueOnce({ ...unread, unread_count: 102 });
     mocks.workspace.mockResolvedValueOnce({ ...unread, unread_count: 102 });
     render(<><Consumer name="bell" /><Consumer name="list" /></>);
     await waitFor(() => expect(screen.getByLabelText("bell unread")).toHaveTextContent("102"));
@@ -122,6 +124,7 @@ describe("confirmed notification read state", () => {
       request.action === "content_notifications" ? fresh.promise : Promise.resolve({ updated: true }));
     mocks.workspace.mockReturnValueOnce(stale.promise);
     fireEvent.focus(window);
+    await waitFor(() => expect(mocks.workspace).toHaveBeenCalledTimes(2));
     await act(() => markContentNotificationRead(mocks.token));
     expect(screen.getByLabelText("bell unread")).toHaveTextContent("0");
     await act(async () => { stale.resolve(unread); await stale.promise; });
@@ -176,5 +179,53 @@ describe("confirmed notification read state", () => {
     await act(() => markContentNotificationRead(mocks.token));
     expect(bell).toHaveAccessibleName("알림 센터");
     expect(bell.querySelector("i")).toBeNull();
+  });
+});
+
+describe("shared notification reads", () => {
+  it("shares one initial request and one event refresh between the header and page", async () => {
+    const pending = deferred<Notifications>();
+    mocks.workspace.mockReturnValueOnce(pending.promise);
+    render(<><Consumer name="bell" /><Consumer name="list" /></>);
+    await waitFor(() => expect(mocks.workspace).toHaveBeenCalledTimes(1));
+    await act(async () => { pending.resolve(unread); await pending.promise; });
+    expect(screen.getByLabelText("bell unread")).toHaveTextContent("2");
+    expect(screen.getByLabelText("list unread")).toHaveTextContent("2");
+    mocks.workspace.mockResolvedValue(read);
+    fireEvent.focus(window);
+    await waitFor(() => expect(screen.getByLabelText("list unread")).toHaveTextContent("0"));
+    expect(screen.getByLabelText("bell unread")).toHaveTextContent("0");
+    expect(mocks.workspace).toHaveBeenCalledTimes(2);
+  });
+
+  it("renders previously loaded notifications synchronously on a return visit", async () => {
+    const first = render(<Consumer name="first" />);
+    await waitFor(() => expect(screen.getByLabelText("first unread")).toHaveTextContent("2"));
+    first.unmount();
+    render(<Consumer name="return" />);
+    expect(screen.getByLabelText("return unread")).toHaveTextContent("2");
+    await act(async () => {});
+    expect(mocks.workspace).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps confirmed reads in the cached snapshot while a return visit revalidates", async () => {
+    const first = render(<Consumer name="first" />);
+    await waitFor(() => expect(screen.getByLabelText("first unread")).toHaveTextContent("2"));
+    first.unmount();
+    mocks.workspace.mockImplementation((_token: string, request: WorkspaceRequest) =>
+      request.action === "content_notifications" ? new Promise(() => {}) : Promise.resolve({ updated: true }));
+    await act(() => markContentNotificationRead(mocks.token, firstId));
+    render(<Consumer name="return" />);
+    expect(screen.getByLabelText("return unread")).toHaveTextContent("1");
+    expect(screen.getByLabelText("return rows")).toHaveTextContent("1");
+  });
+
+  it("does not discard already loaded rows when background revalidation fails", async () => {
+    render(<Consumer name="bell" />);
+    await waitFor(() => expect(screen.getByLabelText("bell unread")).toHaveTextContent("2"));
+    mocks.workspace.mockRejectedValueOnce(new Error("Synthetic notification outage"));
+    fireEvent.focus(window);
+    expect(await screen.findByRole("alert")).toHaveTextContent("Synthetic notification outage");
+    expect(screen.getByLabelText("bell unread")).toHaveTextContent("2");
   });
 });

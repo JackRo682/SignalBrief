@@ -7,7 +7,7 @@ import { resourceSchema, type Resource } from '@/workspace/contracts';
 
 const state = vi.hoisted(() => ({
   saved: new Set<string>(), rejectSave: false, rejectRead: false, historyEnabled: false,
-  documentError: '', calls: [] as { action: string; p: Record<string, unknown> }[],
+  documentError: '', watchlistLoading: false, calls: [] as { action: string; p: Record<string, unknown> }[],
   documents: [] as Resource[], analyses: [] as Resource[], events: [] as CalendarEntry[],
   notices: [] as { id: string; created_at: string; read_at: string | null; resource: Resource }[],
   coverageRevision: 1, calendarRead: vi.fn(),
@@ -23,7 +23,7 @@ vi.mock('next/link', () => ({
 vi.mock('next/image', () => ({ default: () => <span aria-hidden="true" /> }));
 vi.mock('@/components/auth', () => ({ useAuth: () => ({ token: 'synthetic-account-token' }) }));
 vi.mock('@/components/ui', () => ({
-  useResource: () => ({ data: { items: [] }, loading: false, error: null, reload: vi.fn() }),
+  useResource: () => ({ data: state.watchlistLoading ? null : { items: [] }, loading: state.watchlistLoading, error: null, reload: vi.fn() }),
 }));
 vi.mock('@/workspace/preferences', () => ({
   usePrefs: () => ({ loaded: true, value: { history_enabled: state.historyEnabled }, text: (ko: string) => ko }),
@@ -60,6 +60,17 @@ vi.mock('@/workspace/ui', async () => {
       const base = { loading: false, error: '', reload: vi.fn() };
       if (!request) return { ...base, data: null };
       state.calls.push(request);
+      if (request.action === 'source_overview') {
+        return { ...base, data: {
+          companies: 1, filing_count: state.documents.length, published_count: 0,
+          filings: state.documents, historical_events: [], calendar: [], analyses: [],
+          scope: 'all', following_count: 0, fallback_to_all: true,
+          monitoring: state.documents.map(item => ({
+            company_id: item.company_id, latest_filing: item, latest_analysis: null,
+            next_event: null, last_collected_at: null, filing_count: 1, analysis_count: 0,
+          })),
+        } };
+      }
       if (request.action === 'catalog') {
         const kind = request.p.kind;
         const items = kind === 'document' ? state.documents : kind === 'analysis' ? state.analyses : [];
@@ -110,7 +121,7 @@ beforeEach(() => {
   vi.useFakeTimers({ toFake: ['Date'] });
   vi.setSystemTime(new Date('2026-10-06T08:00:00.000Z'));
   state.saved.clear(); state.rejectSave = false; state.rejectRead = false;
-  state.historyEnabled = false; state.documentError = ''; state.calls = [];
+  state.historyEnabled = false; state.documentError = ''; state.watchlistLoading = false; state.calls = [];
   state.documents = [document]; state.analyses = [analysis]; state.events = [earnings];
   state.notices = [{
     id: '80000000-0000-4000-8000-000000000201', created_at: '2026-10-06T08:00:00.000Z',
@@ -134,6 +145,18 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 
 describe('the real Home B dashboard with isolated service responses', () => {
+  it('starts following updates before watchlist resolves and never displays all-company fallback as followed', () => {
+    state.watchlistLoading = true;
+    const view = render(<HomeB />);
+    expect(state.calls).toContainEqual({ action: 'source_overview', p: { scope: 'following', days: 0 } });
+    const following = within(screen.getByRole('region', { name: '관심기업 업데이트' }));
+    expect(following.queryByText(document.title)).toBeNull();
+    state.watchlistLoading = false;
+    view.rerender(<HomeB />);
+    expect(following.queryByText(document.title)).toBeNull();
+    expect(following.getByRole('link', { name: /관심 기업 추가/ })).toBeDefined();
+  });
+
   it('renders the reference sections with canonical links and working category filters', () => {
     state.documents.push(resourceSchema.parse({
       ...document, kind: 'document', id: '40000000-0000-4000-8000-000000000102',

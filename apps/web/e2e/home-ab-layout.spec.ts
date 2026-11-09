@@ -7,6 +7,54 @@ import { calendarEntrySchema } from '../src/redesign/calendar-utils';
 import { catalogSchema, contentNotificationsSchema, resourceSchema, workspaceRequest } from '../src/workspace/contracts';
 import { newsResponse } from '../src/lib/news-contract';
 
+test('primary tabs retain prepared content without another content round trip', async ({ page }) => {
+  const fixture = await researchWorkspaceFixture(page, { following: true });
+  fixture.state.saved.add(`us_analysis:${sourceId}`);
+  await page.goto('/today');
+  await expect(page.locator('[data-screen="redesign-home"]')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '관심 기업 1곳의 주요 소식을 모았습니다.', exact: true })).toBeVisible();
+  // Saved is the final idle-prefetched destination from Home. Waiting for it
+  // establishes that the preceding directory/watchlist/calendar reads finished.
+  await expect.poll(() => fixture.state.calls.some(call => call.action === 'saved_list' && call.p.kind === '')).toBe(true);
+  const forbidden: string[] = [];
+  await page.route('**/api/workspace', async route => {
+    const input = workspaceRequest.safeParse(route.request().postDataJSON());
+    if (input.success && ['design_directory', 'source_overview', 'design_dashboard'].includes(input.data.action)) {
+      forbidden.push(input.data.action);
+      await route.fulfill({ status: 503, json: { error: { code: 'synthetic_slow_read' } } });
+      return;
+    }
+    if (input.success && input.data.action === 'saved_list' && input.data.p.kind !== 'history') {
+      forbidden.push('saved_list');
+      await route.fulfill({ status: 503, json: { error: { code: 'synthetic_slow_read' } } });
+      return;
+    }
+    await route.fallback();
+  });
+  await page.route('https://test-project.supabase.co/rest/v1/calendar_items?**', async route => {
+    if (route.request().method() === 'GET') {
+      forbidden.push('calendar_items');
+      await route.abort('failed');
+    } else await route.fallback();
+  });
+  const nav = page.getByRole('navigation', { name: '주 메뉴', exact: true });
+  await nav.getByRole('link', { name: '기업', exact: true }).click();
+  await expect(page.locator('.rd-company-card')).not.toHaveCount(0);
+  await expect(page.locator('[data-screen="redesign-companies"] .ws-loading')).toHaveCount(0);
+  await nav.getByRole('link', { name: '홈', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '관심 기업 1곳의 주요 소식을 모았습니다.', exact: true })).toBeVisible();
+  await nav.getByRole('link', { name: '관심 기업', exact: true }).click();
+  await expect(page.locator('.rd-w-card')).toHaveCount(1);
+  await expect(page.locator('.rd-w-list')).toHaveAttribute('aria-busy', 'false');
+  await nav.getByRole('link', { name: '캘린더', exact: true }).click();
+  await expect(page.locator('[data-screen="redesign-calendar"]')).toContainText('Synthetic historical official event');
+  await nav.getByRole('link', { name: '저장', exact: true }).click();
+  await expect(page.locator('[data-screen="redesign-saved"]')).toContainText(approved.title);
+  expect(forbidden).toEqual([]);
+  expect(fixture.state.runtimeErrors).toEqual([]);
+  expect(fixture.state.unexpected).toEqual([]);
+});
+
 // These records exist only in this isolated browser test. They deliberately sit
 // inside B's 30-day document / inclusive seven-day calendar windows. A keeps its
 // original fixtures and all of its original assertions below.
