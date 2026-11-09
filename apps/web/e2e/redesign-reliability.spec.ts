@@ -725,8 +725,14 @@ test('calendar collection keeps scope honest and stops polling until an explicit
   expect(initialRanges).toHaveLength(3);
   const initialCoverage = fixture.state.coverageQueries.length;
   for (let poll = 1; poll <= 12; poll++) {
+    const beforeRanges = fixture.state.calendarQueries.length;
     await page.clock.runFor(10000);
     await expect.poll(() => fixture.state.coverageQueries.length).toBe(initialCoverage + poll);
+    // The RPC is recorded before its response reaches the hook. Its three date
+    // refreshes prove collectionRevision was applied and the next poll was
+    // scheduled before the fake clock advances again.
+    await expect.poll(() => fixture.state.calendarQueries.slice(beforeRanges)
+      .filter(query => initialRanges.includes(query)).sort()).toEqual(initialRanges);
     await expect(refresh).toBeEnabled();
   }
   await expect(main.getByText('공식 일정 수집이 계속 진행 중입니다. 잠시 후 일정 새로고침을 눌러 확인해 주세요.', { exact: true })).toBeVisible();
