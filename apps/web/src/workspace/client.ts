@@ -6,6 +6,9 @@ import {type WorkspaceRequest,workspaceRequest} from './contracts';
 const invalidatesViews = new Set<WorkspaceRequest['action']>([
  'save','history_clear','preferences_save','onboarding_complete',
 ]);
+export class WorkspaceError extends Error {
+ constructor(public status:number,public code:string,message:string){super(message);this.name='WorkspaceError';}
+}
 export async function workspace<T>(token:string|null,req:WorkspaceRequest,schema:z.ZodType<T>,signal?:AbortSignal):Promise<T>{
  if(!token)throw new Error('로그인이 필요합니다.');
  const valid=workspaceRequest.parse(req);
@@ -14,7 +17,7 @@ export async function workspace<T>(token:string|null,req:WorkspaceRequest,schema
  if(!response.ok){if(response.status===401 && pageDataCache.isCurrent(token))window.dispatchEvent(new Event('signalbrief:unauthorized'));
   const code=z.object({error:z.object({code:z.string()})}).safeParse(data);const key=code.success?code.data.error.code:'';
   if(response.status===403&&key==='mfa_required'&&pageDataCache.isCurrent(token))window.dispatchEvent(new Event('signalbrief:mfa-required'));
-  throw new Error(key==='version_conflict'?'다른 화면에서 설정이 변경되었습니다. 새로고침 후 다시 시도해 주세요.':key==='resource_not_available'?'이 자료는 더 이상 공개되지 않습니다.':response.status===401?'로그인이 만료되었습니다. 다시 로그인해 주세요.':response.status===429?'요청 한도를 초과했습니다. 잠시 후 다시 시도해 주세요.':response.status===503?'서비스 업데이트를 준비 중입니다. 잠시 후 다시 시도해 주세요.':'요청을 완료하지 못했습니다. 다시 시도해 주세요.');}
+  throw new WorkspaceError(response.status,key,key==='version_conflict'?'다른 화면에서 설정이 변경되었습니다. 새로고침 후 다시 시도해 주세요.':key==='resource_not_available'?'이 자료는 더 이상 공개되지 않습니다.':response.status===401?'로그인이 만료되었습니다. 다시 로그인해 주세요.':response.status===429?'요청 한도를 초과했습니다. 잠시 후 다시 시도해 주세요.':response.status===503?'서비스 업데이트를 준비 중입니다. 잠시 후 다시 시도해 주세요.':'요청을 완료하지 못했습니다. 다시 시도해 주세요.');}
  const result=schema.parse(data);
  if(invalidatesViews.has(valid.action))pageDataCache.invalidate(token);
  return result;

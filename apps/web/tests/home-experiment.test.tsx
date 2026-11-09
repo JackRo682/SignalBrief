@@ -6,8 +6,10 @@ import HomeExperiment from '@/redesign/home-experiment';
 const state = vi.hoisted(() => ({
   me: null as null | { id: string; is_admin: boolean; onboarding_completed: boolean },
   loading: false, error: null as string | null, query: '', replace: vi.fn(),
+  token: 'synthetic-home-session' as string | null, prefetch: vi.fn(),
 }));
-vi.mock('@/components/auth', () => ({ useAuth: () => ({ me: state.me, loading: state.loading, error: state.error }) }));
+vi.mock('@/components/auth', () => ({ useAuth: () => ({ me: state.me, loading: state.loading, error: state.error, token: state.token }) }));
+vi.mock('@/redesign/navigation-data', () => ({ prefetchNavigation: state.prefetch }));
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ replace: state.replace }),
   useSearchParams: () => new URLSearchParams(state.query),
@@ -23,6 +25,7 @@ function marker(container: HTMLElement) { return container.querySelector('[data-
 
 beforeEach(() => {
   state.me = user(); state.loading = false; state.error = null; state.query = ''; state.replace.mockReset();
+  state.token = 'synthetic-home-session'; state.prefetch.mockReset(); state.prefetch.mockResolvedValue(undefined);
   vi.stubEnv('NEXT_PUBLIC_HOME_AB_MODE', 'split');
 });
 afterEach(() => { cleanup(); vi.unstubAllEnvs(); });
@@ -95,5 +98,22 @@ describe('home experiment rendering', () => {
     const { container } = render(<HomeExperiment />);
     expect(marker(container)?.getAttribute('data-home-variant')).toBe('A');
     expect((screen.getByRole('button', { name: 'B 미리보기' }) as HTMLButtonElement).disabled).toBe(true);
+  });
+  it.each(['pointerEnter', 'focus', 'touchStart', 'click'] as const)('prepares the requested preview on %s without waiting for another page mount', (intent) => {
+    state.me = user(a, true);
+    render(<HomeExperiment />);
+    fireEvent[intent](screen.getByRole('button', { name: 'B 미리보기' }));
+    expect(state.prefetch).toHaveBeenCalledExactlyOnceWith('synthetic-home-session', '/today', { timezone: 'Asia/Seoul', homeVariant: 'B' });
+    if (intent === 'click') expect(state.replace).toHaveBeenCalledWith('/today?home_preview=B', { scroll: false });
+    else expect(state.replace).not.toHaveBeenCalled();
+  });
+  it('warms the assigned variant for automatic mode and never sends an anonymous warm', () => {
+    state.me = user(a, true); state.query = 'home_preview=B';
+    const { rerender } = render(<HomeExperiment />);
+    fireEvent.focus(screen.getByRole('button', { name: '자동 배정' }));
+    expect(state.prefetch).toHaveBeenCalledExactlyOnceWith('synthetic-home-session', '/today', { timezone: 'Asia/Seoul', homeVariant: 'A' });
+    state.token = null; state.prefetch.mockClear(); rerender(<HomeExperiment />);
+    fireEvent.pointerEnter(screen.getByRole('button', { name: 'B 미리보기' }));
+    expect(state.prefetch).not.toHaveBeenCalled();
   });
 });

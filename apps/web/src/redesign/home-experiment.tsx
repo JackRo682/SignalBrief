@@ -5,6 +5,7 @@ import WorkspaceLoading from '@/components/workspace-loading';
 import Home from './home';
 import HomeB from './home-b';
 import { HOME_EXPERIMENT_ID, homeRolloutMode, resolveHomeVariant, type HomeVariant } from './home-variant';
+import { prefetchNavigation } from './navigation-data';
 import './home-experiment.css';
 
 export default function HomeExperiment() {
@@ -21,7 +22,13 @@ export default function HomeExperiment() {
     userId: auth.me.id, isAdmin: auth.me.is_admin,
     preview: params.get('home_preview'), mode,
   });
+  function prepare(variant: HomeVariant | null) {
+    if (!auth.token) return;
+    const target = resolveHomeVariant({ userId: auth.me!.id, isAdmin: auth.me!.is_admin, preview: variant, mode }).variant;
+    void prefetchNavigation(auth.token, '/today', { timezone: 'Asia/Seoul', homeVariant: target });
+  }
   function preview(variant: HomeVariant | null) {
+    prepare(variant);
     const next = new URLSearchParams(params.toString());
     if (variant) next.set('home_preview', variant);
     else next.delete('home_preview');
@@ -39,10 +46,13 @@ export default function HomeExperiment() {
           : `자동 배정: ${selection.variant} · 사용자별 약 50:50`}
       </span></div>
       <div role="group" aria-label="홈 디자인 미리보기">
-        <button type="button" aria-pressed={!selection.isPreview} disabled={mode !== 'split'} onClick={() => preview(null)}>자동 배정</button>
+        <button type="button" aria-pressed={!selection.isPreview} disabled={mode !== 'split'}
+          onPointerEnter={() => prepare(null)} onFocus={() => prepare(null)} onTouchStart={() => prepare(null)}
+          onClick={() => preview(null)}>자동 배정</button>
         {(['A', 'B'] as const).map(variant => <button key={variant} type="button"
           aria-pressed={selection.isPreview && selection.variant === variant}
-          disabled={mode !== 'split'} onClick={() => preview(variant)}>{variant} 미리보기</button>)}
+          disabled={mode !== 'split'} onPointerEnter={() => prepare(variant)} onFocus={() => prepare(variant)}
+          onTouchStart={() => prepare(variant)} onClick={() => preview(variant)}>{variant} 미리보기</button>)}
       </div>
     </section>}
     {selection.variant === 'A' ? <Home key={auth.me.id} /> : <HomeB key={auth.me.id} />}

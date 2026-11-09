@@ -20,6 +20,10 @@ describe('workspace contracts and deterministic presentation',()=>{
   expect(workspaceRequest.parse({action:'company_lookup',p:{q:'삼전',market:'KRX',limit:100}}).action).toBe('company_lookup');
   for(const p of [{limit:101},{q:'x'.repeat(101)},{user_id:id}])expect(workspaceRequest.safeParse({action:'company_lookup',p}).success).toBe(false);
  });
+ it('accepts a real Home calendar date and rejects ownership or unbounded snapshot parameters',()=>{
+  expect(workspaceRequest.parse({action:'home_snapshot',p:{today:'2026-11-09'}})).toEqual({action:'home_snapshot',p:{today:'2026-11-09'}});
+  for(const p of [{},{today:'2026-02-30'},{today:'2026-11-9'},{today:'2026-11-09',user_id:id},{today:'2026-11-09',variant:'admin'},{today:'2026-11-09',limit:5000}])expect(workspaceRequest.safeParse({action:'home_snapshot',p}).success).toBe(false);
+ });
  it('keeps missing customer totals unavailable instead of fabricating successful zeros',()=>{
   const value=sourceOverviewSchema.parse({companies:0,filing_count:0,published_count:0,filings:[],historical_events:[],calendar:[]});
   expect(value.following_count).toBeUndefined();expect(value.saved_count).toBeUndefined();expect(value.unread_count).toBeUndefined();
@@ -82,6 +86,27 @@ describe('authenticated workspace BFF',()=>{
   const r=await POST(req({action:'onboarding_complete',p}));
   expect(r.status).toBe(200);expect(await r.json()).toEqual({id,onboarding_completed:true});
   expect(mock.rpc).toHaveBeenCalledExactlyOnceWith('sb_mobile_onboarding',{p});
+ });
+ it('authenticates once and dispatches Home only to its account-scoped snapshot RPC',async()=>{
+  const p={today:'2026-11-09'};const snapshot={today:p.today,as_of:'2026-11-09T03:00:00Z'};
+  mock.rpc.mockResolvedValue({data:snapshot,error:null});
+  const r=await POST(req({action:'home_snapshot',p}));
+  expect(r.status).toBe(200);expect(await r.json()).toEqual(snapshot);
+  expect(mock.getUser).toHaveBeenCalledTimes(1);
+  expect(mock.rpc).toHaveBeenCalledExactlyOnceWith('sb_home_snapshot',{p});
+  expect(r.headers.get('Cache-Control')).toBe('private, no-store');
+  expect(mock.createClient).toHaveBeenCalledWith('https://fixture.supabase.co','sb_publishable_test_only',expect.objectContaining({global:expect.objectContaining({headers:{Authorization:'Bearer isolated_fixture_token_0123456789'}})}));
+ });
+ it('denies an expired Home session before executing the snapshot RPC',async()=>{
+  mock.getUser.mockResolvedValue({data:{user:null},error:{message:'expired'}});
+  const r=await POST(req({action:'home_snapshot',p:{today:'2026-11-09'}}));
+  expect(r.status).toBe(401);expect(await r.json()).toEqual({error:{code:'invalid_or_expired_session'}});
+  expect(mock.rpc).not.toHaveBeenCalled();
+ });
+ it.each([['PT403','mfa_required',403],['PT403','onboarding_required',403],['PT429','rate_limit_exceeded',429],['PGRST202','workspace_request_failed',503]])('preserves Home denial or availability failure %s/%s',async(code,message,status)=>{
+  mock.rpc.mockResolvedValue({data:null,error:{code,message,details:'private server context'}});
+  const r=await POST(req({action:'home_snapshot',p:{today:'2026-11-09'}}));
+  expect(r.status).toBe(status);expect(await r.json()).toEqual({error:{code:message}});
  });
  it('dispatches document-detail reads only to their reviewed projection RPC',async()=>{
   const p={id,kind:'document',section_offset:12};mock.rpc.mockResolvedValue({data:{sections:[],sections_total:12,next_section_offset:null},error:null});

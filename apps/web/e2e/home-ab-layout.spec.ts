@@ -6,6 +6,7 @@ import {
 import { calendarEntrySchema } from '../src/redesign/calendar-utils';
 import { catalogSchema, contentNotificationsSchema, resourceSchema, workspaceRequest } from '../src/workspace/contracts';
 import { newsResponse } from '../src/lib/news-contract';
+import { homeSnapshotSchema } from '../src/redesign/home-snapshot-contract';
 
 test('primary tabs retain prepared content without another content round trip', async ({ page }) => {
   const fixture = await researchWorkspaceFixture(page, { following: true });
@@ -16,16 +17,22 @@ test('primary tabs retain prepared content without another content round trip', 
   // Saved is the final idle-prefetched destination from Home. Waiting for it
   // establishes that the preceding directory/watchlist/calendar reads finished.
   await expect.poll(() => fixture.state.calls.some(call => call.action === 'saved_list' && call.p.kind === '')).toBe(true);
+  expect(fixture.state.calls.filter(call => call.action === 'home_snapshot')).toHaveLength(1);
   const forbidden: string[] = [];
   await page.route('**/api/workspace', async route => {
     const input = workspaceRequest.safeParse(route.request().postDataJSON());
-    if (input.success && ['design_directory', 'source_overview', 'design_dashboard'].includes(input.data.action)) {
+    if (input.success && ['home_snapshot', 'design_directory', 'source_overview', 'design_dashboard'].includes(input.data.action)) {
       forbidden.push(input.data.action);
       await route.fulfill({ status: 503, json: { error: { code: 'synthetic_slow_read' } } });
       return;
     }
     if (input.success && input.data.action === 'saved_list' && input.data.p.kind !== 'history') {
       forbidden.push('saved_list');
+      await route.fulfill({ status: 503, json: { error: { code: 'synthetic_slow_read' } } });
+      return;
+    }
+    if (input.success && input.data.action === 'catalog' && ['company', 'document', 'analysis'].includes(input.data.p.kind ?? '')) {
+      forbidden.push(`catalog:${input.data.p.kind}`);
       await route.fulfill({ status: 503, json: { error: { code: 'synthetic_slow_read' } } });
       return;
     }
@@ -104,21 +111,33 @@ async function referenceDashboardFixture(page: Page) {
   const homeCalendarQueries: string[] = [];
   fixture.state.profile.is_admin = true;
   await homeBNewsFixture(page, fixture);
+  const documentCatalog = () => {
+    const filings = fixture.control.emptyContent ? [] : referenceDocuments.map(item => ({
+      ...item, is_saved: fixture.state.saved.has(`${item.kind}:${item.id}`),
+    }));
+    return catalogSchema.parse({ items: filings, total: filings.length, counts: { document: filings.length },
+      markets: ['NASDAQ'], categories: ['10-Q', 'press_release', 'presentation'], next_offset: null });
+  };
+  const homeSnapshot = (today: string) => homeSnapshotSchema.parse({
+    ...fixture.homeSnapshot(today), documents: documentCatalog(),
+  });
   await page.route('**/api/workspace', async route => {
     const parsed = workspaceRequest.safeParse(route.request().postDataJSON());
-    if (!parsed.success || parsed.data.action !== 'catalog' || parsed.data.p.kind !== 'document') {
+    if (!parsed.success || (parsed.data.action !== 'home_snapshot'
+      && (parsed.data.action !== 'catalog' || parsed.data.p.kind !== 'document'))) {
       await route.fallback(); return;
     }
     expect(route.request().headers().authorization).toMatch(/^Bearer /);
     fixture.state.calls.push(parsed.data);
+    if (parsed.data.action === 'home_snapshot') {
+      expect(parsed.data.p).toEqual({ today: '2026-10-06' });
+      if (fixture.control.overviewError) {
+        await route.fulfill({ status: 503, json: { error: { code: 'service_unavailable' } } }); return;
+      }
+      await route.fulfill({ json: homeSnapshot(parsed.data.p.today) }); return;
+    }
     expect(parsed.data.p).toEqual({ kind: 'document', days: 30, sort: 'newest', limit: 50 });
-    const filings = fixture.control.emptyContent ? [] : referenceDocuments.map(item => ({
-      ...item, is_saved: fixture.state.saved.has(`${item.kind}:${item.id}`),
-    }));
-    await route.fulfill({ json: catalogSchema.parse({
-      items: filings, total: filings.length, counts: { document: filings.length },
-      markets: ['NASDAQ'], categories: ['10-Q', 'press_release', 'presentation'], next_offset: null,
-    }) });
+    await route.fulfill({ json: documentCatalog() });
   });
   await page.route('https://test-project.supabase.co/rest/v1/calendar_items?**', async route => {
     const headers = {
@@ -148,7 +167,7 @@ async function referenceDashboardFixture(page: Page) {
     // Return noisy data so the homepage must also apply its final date guard.
     await route.fulfill({ headers, json: fixture.control.emptyContent ? [] : referenceEvents });
   });
-  return { ...fixture, homeCalendarQueries };
+  return { ...fixture, homeCalendarQueries, homeSnapshot };
 }
 
 // Isolated synthetic browser fixtures only. Never run this suite against production.
@@ -231,6 +250,175 @@ test('administrator can compare A with the reference dashboard without changing 
   await expect(marker).toHaveAttribute('data-home-preview', 'false');
   await expect(page).toHaveURL(/\/today\?keep=1$/);
   await expect(page.locator('.rd-main > .rd-home')).toBeVisible();
+  clean(fixture);
+});
+
+test('cold A and B each use one shared snapshot while calendar, coverage and news remain independent', async ({ page }) => {
+  const fixture = await referenceDashboardFixture(page);
+  // Data Saver disables unrelated idle tab warming through the real product
+  // policy, so this test can reject every legacy default Home request. The
+  // primary-tabs test above still exercises normal idle warming end to end.
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'connection', { configurable: true, value: { saveData: true } });
+  });
+  const snapshots: string[] = [], legacy: string[] = [], newsRequests: string[] = [];
+  let coverageRequests = 0;
+  let initialHomeReady = false;
+  page.on('request', request => {
+    const url = new URL(request.url());
+    if (url.pathname === '/api/news') newsRequests.push(url.search);
+    if (url.pathname.endsWith('/rpc/sb_calendar_coverage') && request.method() === 'POST') coverageRequests++;
+  });
+  await page.route('**/v1/watchlist', async route => {
+    legacy.push('watchlist');
+    await route.fulfill({ status: 503, json: { error: { code: 'legacy_home_read_blocked' } } });
+  });
+  await page.route('**/api/workspace', async route => {
+    const request = workspaceRequest.parse(route.request().postDataJSON());
+    if (request.action === 'home_snapshot') {
+      expect(route.request().headers().authorization).toMatch(/^Bearer /);
+      expect(request.p).toEqual({ today: '2026-10-06' });
+      snapshots.push(request.p.today);
+      await route.fallback(); return;
+    }
+    const isLegacy = ['source_overview', 'design_dashboard'].includes(request.action)
+      || request.action === 'content_notifications' && !initialHomeReady
+      || request.action === 'catalog' && ['company', 'document', 'analysis'].includes(request.p.kind ?? '')
+      || request.action === 'saved_list' && request.p.kind === 'analysis';
+    if (isLegacy) {
+      legacy.push(request.action);
+      await route.fulfill({ status: 503, json: { error: { code: 'legacy_home_read_blocked' } } }); return;
+    }
+    await route.fallback();
+  });
+  for (const initial of ['A', 'B'] as const) {
+    const before = snapshots.length;
+    const coverageBefore = coverageRequests, newsBefore = newsRequests.length;
+    initialHomeReady = false;
+    await page.goto(`/today?home_preview=${initial}`);
+    for (const variant of [initial, initial === 'A' ? 'B' : 'A', initial] as const) {
+      await page.getByRole('button', { name: `${variant} 미리보기`, exact: true }).click();
+      await expect(page.locator('[data-home-experiment]')).toHaveAttribute('data-home-variant', variant);
+      if (variant === 'A') {
+        await expect(page.locator('.rd-home-following .rd-home-update')).toHaveCount(3);
+        await expect(page.locator('.rd-home-following')).toContainText(approved.title);
+      } else {
+        await expect(page.locator('.hb-documents .hb-document')).toHaveCount(3);
+        await expect(page.locator('.hb-calendar .hb-event')).toHaveCount(3);
+        await expect(page.locator('.hb-analyses')).toContainText(approved.title);
+        await expect(page.locator('.hb-news-row')).toContainText('Synthetic company news article');
+      }
+      await expect(page.locator('.rd-header').getByRole('link', { name: /^알림/ }))
+        .toHaveAttribute('aria-label', '알림 · 읽지 않음 1개');
+      // Initial unread state must come from the common snapshot. Subsequent
+      // legitimate focus/poll refreshes use the dedicated notifications API.
+      // The fixture's fixed Date also prevents cache TTLs expiring mid-test.
+      initialHomeReady = true;
+      expect(snapshots, 'Both preview renderers share the same authorized default data').toHaveLength(before + 1);
+      expect(legacy, 'No legacy default Home widget reads are needed').toEqual([]);
+    }
+    expect(coverageRequests, 'Coverage remains independently requested').toBeGreaterThan(coverageBefore);
+    expect(newsRequests.length, 'News remains independently requested').toBeGreaterThan(newsBefore);
+  }
+  expect(fixture.calendarQueries.some(query => new URLSearchParams(query).getAll('occurs_on').includes('lte.2026-11-05'))).toBe(true);
+  expect(fixture.homeCalendarQueries.length, 'B retains its independent seven-day official calendar query').toBeGreaterThan(0);
+  expect(newsRequests.some(query => new URLSearchParams(query).has('company_id'))).toBe(true);
+  expect(newsRequests.some(query => new URLSearchParams(query).get('q') === '증시')).toBe(true);
+  clean(fixture);
+});
+
+test('B keeps populated cards readable and controls separate across responsive widths', async ({ page }) => {
+  const fixture = await referenceDashboardFixture(page);
+  await page.goto('/today?home_preview=B');
+  const home = page.locator('.sb-home-b');
+  for (const selector of ['.hb-update', '.hb-document', '.hb-event', '.hb-analysis', '.hb-news-row']) {
+    await expect(home.locator(selector).first()).toBeVisible();
+  }
+
+  for (const width of [320, 768, 1024, 1280, 1440, 1920]) {
+    await test.step(`${width}px readable cards`, async () => {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.evaluate(async () => { await document.fonts.ready; });
+      for (const [selector, minimum] of [
+        ['.hb-card-heading h2', 20],
+        ['.hb-company strong, .hb-update-copy .hb-title, .hb-document .hb-row-copy strong, .hb-event .hb-row-copy > strong, .hb-analysis .hb-row-copy > strong, .hb-news-row .hb-row-copy', 15],
+        ['.hb-card-heading p, .hb-meta, .hb-badge, .hb-company > span, .hb-coverage-caption, .hb-news-credit', 12],
+        ['.hb-tabs button, .hb-more', 14],
+      ] as const) {
+        const sizes = await home.locator(selector).evaluateAll(elements => elements.map(element =>
+          parseFloat(getComputedStyle(element).fontSize)));
+        expect(sizes.length, `${selector} contains rendered content`).toBeGreaterThan(0);
+        for (const size of sizes) expect(size, `${selector} remains readable at ${width}px`).toBeGreaterThanOrEqual(minimum);
+      }
+      const layout = await home.evaluate(root => {
+        const bounds = (element: Element) => {
+          const box = element.getBoundingClientRect();
+          return { left: box.left, right: box.right, top: box.top, bottom: box.bottom, width: box.width, height: box.height };
+        };
+        const visible = (element: Element) => {
+          const box = element.getBoundingClientRect();
+          return box.width > 0 && box.height > 0;
+        };
+        const rows = Array.from(root.querySelectorAll('.hb-update, .hb-event, .hb-document, .hb-analysis, .hb-news-row, .hb-saved-row, .hb-alert'));
+        return {
+          main: bounds(root.querySelector('.hb-main')!),
+          sidebar: bounds(root.querySelector('.hb-sidebar')!),
+          panels: Array.from(root.querySelectorAll('.hb-panels > .hb-card'), bounds),
+          metrics: Array.from(root.querySelectorAll('.hb-metric'), bounds),
+          rows: rows.map(row => ({
+            name: row.className,
+            bounds: bounds(row),
+            children: Array.from(row.children).flatMap(child =>
+              getComputedStyle(child).display === 'contents' ? Array.from(child.children) : [child],
+            ).filter(visible).map(bounds),
+          })),
+          documentControls: Array.from(root.querySelectorAll('.hb-document .hb-icon-button, .hb-document .rd-save')).filter(visible).map(bounds),
+          overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        };
+      });
+      expect(layout.overflow, 'The page fits without horizontal scrolling').toBeLessThanOrEqual(1);
+      expect(layout.panels).toHaveLength(6);
+      expect(layout.metrics).toHaveLength(4);
+      for (const metric of layout.metrics) expect(metric.height, 'Summary cards have usable reading space').toBeGreaterThanOrEqual(100);
+      const [first, second] = layout.panels;
+      if (width <= 900) {
+        expect(second.top, 'Narrow screens stack the content cards').toBeGreaterThanOrEqual(first.bottom);
+        expect(first.width, 'A stacked card uses the available main width').toBeGreaterThanOrEqual(layout.main.width - 1);
+      } else {
+        expect(Math.abs(first.top - second.top), 'Wide screens keep paired cards aligned').toBeLessThanOrEqual(1);
+        expect(second.left - first.right, 'Card gutters do not consume reading space').toBeLessThanOrEqual(20);
+        expect(second.left - first.right, 'Card borders remain separate').toBeGreaterThanOrEqual(8);
+        for (const panel of layout.panels) expect(panel.width, 'Two-column cards remain usable').toBeGreaterThanOrEqual(430);
+      }
+      if (width >= 1100 && width <= 1400) {
+        for (const panel of layout.panels) expect(panel.width, 'Laptop cards gain room when the sidebar moves below').toBeGreaterThanOrEqual(540);
+      }
+      if (width <= 1400) expect(layout.sidebar.top, 'The sidebar follows the main cards at smaller widths').toBeGreaterThanOrEqual(layout.main.bottom);
+      else expect(layout.sidebar.left, 'The wide-screen sidebar stays beside the cards').toBeGreaterThanOrEqual(layout.main.right);
+      if (width <= 1000) expect(layout.metrics[2].top, 'Small-screen metrics form two rows').toBeGreaterThanOrEqual(layout.metrics[0].bottom);
+      else expect(Math.abs(layout.metrics[3].top - layout.metrics[0].top)).toBeLessThanOrEqual(1);
+
+      expect(layout.documentControls.length, 'Populated documents expose source and save controls').toBeGreaterThan(0);
+      for (const control of layout.documentControls) {
+        expect(control.width).toBeGreaterThanOrEqual(width <= 700 ? 44 : 40);
+        expect(control.height).toBeGreaterThanOrEqual(width <= 700 ? 44 : 40);
+      }
+      for (const row of layout.rows) {
+        for (const child of row.children) {
+          expect(child.left, `${row.name} content stays inside its row`).toBeGreaterThanOrEqual(row.bounds.left - 1);
+          expect(child.right, `${row.name} content stays inside its row`).toBeLessThanOrEqual(row.bounds.right + 1);
+        }
+        for (let firstIndex = 0; firstIndex < row.children.length; firstIndex++) {
+          for (let secondIndex = firstIndex + 1; secondIndex < row.children.length; secondIndex++) {
+            const a = row.children[firstIndex], b = row.children[secondIndex];
+            const overlapX = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+            const overlapY = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+            expect(overlapX > 1 && overlapY > 1, `${row.name} text and controls do not overlap`).toBe(false);
+          }
+        }
+      }
+    });
+  }
   clean(fixture);
 });
 
@@ -324,11 +512,16 @@ test('B opens an alert only after a confirmed read and synchronizes the shared b
   const writes: string[] = [];
   await page.route('**/api/workspace', async route => {
     const parsed = workspaceRequest.safeParse(route.request().postDataJSON());
-    if (!parsed.success || !['content_notifications', 'content_notification_read'].includes(parsed.data.action)) {
+    if (!parsed.success || !['home_snapshot', 'content_notifications', 'content_notification_read'].includes(parsed.data.action)) {
       await route.fallback(); return;
     }
     expect(route.request().headers().authorization).toMatch(/^Bearer /);
     fixture.state.calls.push(parsed.data);
+    if (parsed.data.action === 'home_snapshot') {
+      await route.fulfill({ json: homeSnapshotSchema.parse({ ...fixture.homeSnapshot(parsed.data.p.today),
+        notifications: { items: [notification], unread_count: notification.read_at === null ? 1 : 0 } }) });
+      return;
+    }
     if (parsed.data.action === 'content_notifications') {
       await route.fulfill({ json: contentNotificationsSchema.parse({
         items: [notification], unread_count: notification.read_at === null ? 1 : 0,

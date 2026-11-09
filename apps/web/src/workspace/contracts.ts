@@ -1,5 +1,6 @@
 import {z} from 'zod';
 import {officialCompanyOverviewSchema} from '@/lib/company-overview';
+import {isoDaySchema} from '@/redesign/calendar-utils';
 const uuid=z.string().uuid();
 export const resourceKind=z.enum(['company','event','document','filing','us_analysis','dart_analysis']);
 export const resourceSchema=z.object({id:z.string(),kind:resourceKind,title:z.string(),summary:z.string(),company_id:z.string(),company_name:z.string(),ticker:z.string(),market:z.string(),source_url:z.string().nullable(),published_at:z.string().nullable(),publication_precision:z.string(),category:z.string(),is_saved:z.boolean(),saved_at:z.string().optional(),provider:z.enum(['sec','dart']).optional(),reviewed_at:z.string().nullable().optional(),coverage:z.enum(['excerpt','event']).nullable().optional(),filing_id:z.string().nullable().optional(),official_overview:officialCompanyOverviewSchema.nullable().optional()});
@@ -42,6 +43,7 @@ const idPayload=z.object({id:uuid}).strict();
 const decimalString=z.string().regex(/^\d{1,20}(\.\d{1,8})?$/);
 const onboardingPosition=z.object({company_id:uuid,quantity:decimalString.refine(v=>/[1-9]/.test(v),'Quantity must be positive'),average_cost:decimalString.nullable(),currency:z.enum(['USD','KRW','EUR','JPY','GBP','AUD','CAD','HKD','CNY','CHF'])}).strict();
 export const workspaceRequest=z.discriminatedUnion('action',[
+ z.object({action:z.literal('home_snapshot'),p:z.object({today:isoDaySchema}).strict()}),
  z.object({action:z.literal('design_dashboard'),p:z.object({start_date:z.string().regex(/^\d{4}-\d{2}-\d{2}$/),end_date:z.string().regex(/^\d{4}-\d{2}-\d{2}$/),company_id:uuid.or(z.literal('')).optional()}).strict()}),
  z.object({action:z.literal('design_directory'),p:z.object({q:z.string().max(100).optional(),market_group:z.enum(['all','kospi','kosdaq','overseas','unclassified']).optional(),offset:z.number().int().min(0).max(10000).optional(),limit:z.number().int().min(1).max(50).optional()}).strict()}),
  z.object({action:z.literal('preferences'),p:empty}),

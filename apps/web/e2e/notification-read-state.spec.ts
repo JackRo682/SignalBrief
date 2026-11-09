@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { fixtureNow } from './mobile-fixture';
 import { approved, researchWorkspaceFixture, sourceId } from './research-workspace-fixture';
 import { contentNotificationsSchema, workspaceRequest } from '../src/workspace/contracts';
+import { homeSnapshotSchema } from '../src/redesign/home-snapshot-contract';
 
 // Persisted server state for isolated browser journeys only. Every request still
 // passes through the real UI/client, while production endpoints remain blocked.
@@ -21,12 +22,17 @@ async function notificationsFixture(page: Page, store = notificationStore()) {
   const fixture = await researchWorkspaceFixture(page, { following: true });
   await page.route('**/api/workspace', async route => {
     const parsed = workspaceRequest.safeParse(route.request().postDataJSON());
-    if (!parsed.success || !['content_notifications', 'content_notification_read'].includes(parsed.data.action)) {
+    if (!parsed.success || !['home_snapshot', 'content_notifications', 'content_notification_read'].includes(parsed.data.action)) {
       await route.fallback();
       return;
     }
     expect(route.request().headers().authorization).toMatch(/^Bearer /);
     fixture.state.calls.push(parsed.data);
+    if (parsed.data.action === 'home_snapshot') {
+      await route.fulfill({ json: homeSnapshotSchema.parse({ ...fixture.homeSnapshot(parsed.data.p.today),
+        notifications: { items: store.items, unread_count: store.items.filter(item => item.read_at === null).length } }) });
+      return;
+    }
     if (parsed.data.action === 'content_notifications') {
       store.reads++;
       await route.fulfill({ json: contentNotificationsSchema.parse({

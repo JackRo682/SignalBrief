@@ -6,6 +6,7 @@ import {
 } from './research-workspace-fixture';
 import { resourceSchema, sourceOverviewSchema, workspaceRequest } from '../src/workspace/contracts';
 import { calendarEntrySchema } from '../src/redesign/calendar-utils';
+import { homeSnapshotSchema } from '../src/redesign/home-snapshot-contract';
 
 // Synthetic browser fixtures only: no real account, provider, or production writes.
 // Keep the fixed authenticated fixture clock: moving it forward expires its JWT.
@@ -59,19 +60,19 @@ async function expectViewportFit(page: Page) {
 test('home keeps monitoring and explicitly followed-company events within the actual watchlist even when a response includes unrelated records', async ({ page }) => {
   const fixture = await researchWorkspaceFixture(page, { following: true });
   const homeCalendarQueries: string[] = [];
-  const followingOverviewCalls = () => fixture.state.calls.filter(call =>
-    call.action === 'source_overview' && call.p.scope === 'following');
+  const homeSnapshotCalls = () => fixture.state.calls.filter(call => call.action === 'home_snapshot');
   await page.clock.setFixedTime(new Date(homeNow));
   await page.route('**/api/workspace', async route => {
     const payload = workspaceRequest.parse(route.request().postDataJSON());
-    if (payload.action !== 'source_overview' || payload.p.scope !== 'following') {
+    if (payload.action !== 'home_snapshot'
+      && (payload.action !== 'source_overview' || payload.p.scope !== 'following')) {
       await route.fallback(); return;
     }
     expect(route.request().headers().authorization).toMatch(/^Bearer /);
     fixture.state.calls.push(payload);
-    // Reproduce an all-company fallback. The authoritative watchlist must still
-    // constrain the compact homepage rows, including newer unrelated entries.
-    await route.fulfill({ json: sourceOverviewSchema.parse({
+    // Keep an overbroad monitoring payload adversarial in both the new snapshot
+    // and retained Watchlist read. The actual membership must constrain Home.
+    const overbroad = sourceOverviewSchema.parse({
       companies: 2, filing_count: 2, published_count: 2,
       filings: [filing, otherFiling], analyses: [approved, otherAnalysis],
       historical_events: [], calendar: [upcoming], historical_calendar: [historical],
@@ -82,7 +83,10 @@ test('home keeps monitoring and explicitly followed-company events within the ac
         { company_id: otherCompany.id, latest_filing: otherFiling, latest_analysis: otherAnalysis,
           next_event: null, last_collected_at: homeNow },
       ],
-    }) });
+    });
+    await route.fulfill({ json: payload.action === 'home_snapshot'
+      ? homeSnapshotSchema.parse({ ...fixture.homeSnapshot(payload.p.today), monitoring: overbroad.monitoring })
+      : overbroad });
   });
   await page.route('https://test-project.supabase.co/rest/v1/calendar_items?**', async route => {
     const headers = cors(route);
@@ -128,9 +132,9 @@ test('home keeps monitoring and explicitly followed-company events within the ac
   await expect(updates).not.toContainText(otherFiling.title);
   await expect(updates).not.toContainText(otherAnalysis.title);
   await expect(updates).not.toContainText(otherCompany.name);
-  const followingCalls = followingOverviewCalls();
-  expect(followingCalls.length).toBeGreaterThan(0);
-  for (const call of followingCalls) expect(call.p).toEqual({ scope: 'following', days: 0 });
+  const snapshotCalls = homeSnapshotCalls();
+  expect(snapshotCalls).toHaveLength(1);
+  for (const call of snapshotCalls) expect(call.p).toEqual({ today: '2026-10-06' });
 
   await expect(scope.getByRole('button', { name: '전체 기업', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(dates.locator('.rd-home-event')).toHaveCount(2);
@@ -153,7 +157,7 @@ test('home keeps monitoring and explicitly followed-company events within the ac
 
   // Removing every follow clears monitoring. Home reloads in all-company mode;
   // explicitly selecting following again must clear dates without a broad query.
-  const overviewReads = followingOverviewCalls().length;
+  const snapshotReads = homeSnapshotCalls().length;
   fixture.state.watched.clear();
   await page.reload();
   await expect(page.getByRole('heading', { name: '첫 관심 기업을 추가해 보세요.', exact: true })).toBeVisible();
@@ -161,9 +165,9 @@ test('home keeps monitoring and explicitly followed-company events within the ac
   await expect(updates.locator('.rd-home-update')).toHaveCount(0);
   await expect(scope.getByRole('button', { name: '전체 기업', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(dates.locator('.rd-home-event')).toHaveCount(2);
-  // A fresh document starts the membership and overview reads together, even
-  // when membership resolves empty. Selecting empty Following adds neither read.
-  await expect.poll(() => followingOverviewCalls().length).toBe(overviewReads + 1);
+  // A fresh document gets one new authoritative snapshot even when membership
+  // is empty. Selecting empty Following never adds a snapshot or broad date read.
+  await expect.poll(() => homeSnapshotCalls().length).toBe(snapshotReads + 1);
   const calendarReads = homeCalendarQueries.length;
   await scope.getByRole('button', { name: '관심 기업', exact: true }).click();
   await expect(scope.getByRole('button', { name: '관심 기업', exact: true })).toHaveAttribute('aria-pressed', 'true');
@@ -172,7 +176,7 @@ test('home keeps monitoring and explicitly followed-company events within the ac
   await expect(updates).not.toContainText(filing.title);
   await expect(dates).not.toContainText(upcoming.title);
   expect(homeCalendarQueries).toHaveLength(calendarReads);
-  expect(followingOverviewCalls()).toHaveLength(overviewReads + 1);
+  expect(homeSnapshotCalls()).toHaveLength(snapshotReads + 1);
   expectClean(fixture);
 });
 
@@ -223,7 +227,7 @@ test('home shows unfollowed official events by default, supports an empty watchl
   await expect(dates).not.toContainText(/\b\d{1,2}:\d{2}\b|종일/);
   expect(homeCalendarQueries.length).toBeGreaterThan(0);
   for (const query of homeCalendarQueries) expect(new URLSearchParams(query).has('company_id')).toBe(false);
-  expect(fixture.state.calls.some(call => call.action === 'catalog' && call.p.kind === 'company')).toBe(true);
+  expect(fixture.state.calls.filter(call => call.action === 'home_snapshot')).toHaveLength(1);
 
   await following.click();
   await expect(following).toHaveAttribute('aria-pressed', 'true');

@@ -54,7 +54,7 @@ export class PageDataCache {
       try {
         const request = JSON.parse(path.slice('workspace:'.length));
         if (request.action === 'design_directory') return 60_000;
-        if (['catalog', 'source_overview', 'design_dashboard', 'content_notifications'].includes(request.action)) return 30_000;
+        if (['home_snapshot', 'catalog', 'source_overview', 'design_dashboard', 'content_notifications'].includes(request.action)) return 30_000;
         // History is consent-sensitive and is never prefetched or cached.
         if (request.action === 'saved_list' && request.p?.kind !== 'history') return 30_000;
         return 0;

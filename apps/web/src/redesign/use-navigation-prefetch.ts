@@ -12,14 +12,17 @@ export function useNavigationPrefetch(path: string) {
   const { value, loaded } = usePrefs();
   const userId = me?.id;
   const enabled = Boolean(token && me?.onboarding_completed && loaded);
-  const variant = resolveHomeVariant({
-    userId: userId ?? "", isAdmin: false, preview: null,
-    mode: homeRolloutMode(process.env.NEXT_PUBLIC_HOME_AB_MODE),
-  }).variant;
   const warm = useCallback((href: NavigationPath) => {
     if (!enabled || !token || !pageDataCache.isCurrent(token)) return Promise.resolve();
+    // Read the current preview at intent time; query-only preview switches do not
+    // change the pathname or rerun the shell's navigation effect.
+    const variant = resolveHomeVariant({
+      userId: userId ?? "", isAdmin: me?.is_admin ?? false,
+      preview: path === "/today" ? new URLSearchParams(window.location.search).get("home_preview") : null,
+      mode: homeRolloutMode(process.env.NEXT_PUBLIC_HOME_AB_MODE),
+    }).variant;
     return prefetchNavigation(token, href, { timezone: value.timezone, homeVariant: variant });
-  }, [enabled, token, value.timezone, variant]);
+  }, [enabled, token, value.timezone, userId, me?.is_admin, path]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -27,25 +30,58 @@ export function useNavigationPrefetch(path: string) {
     const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
     if (connection?.saveData || /(^|-)2g$/.test(connection?.effectiveType ?? "")) return;
     let active = true;
+    let running = false;
+    let resume = false;
+    let timer: number | undefined;
     let idle: number | undefined;
+    const visible = () => document.visibilityState !== "hidden";
     const run = async () => {
-      // Start with the next primary tab. Sequential groups avoid competing with
-      // the visible screen's initial requests or warming every route at once.
-      const index = navigationPaths.indexOf(path as NavigationPath);
-      const ordered = [...navigationPaths.slice(index + 1), ...navigationPaths.slice(0, Math.max(index, 0))];
-      for (const href of ordered) {
-        if (!active || document.visibilityState === "hidden") return;
-        await warm(href);
+      if (running || !active || !visible()) return;
+      running = true;
+      try {
+        // Home is the first destination to prepare on other routes. On Home this
+        // joins its critical requests before an expensive all-company overview.
+        const ordered = ["/today" as const, ...navigationPaths.filter(href => href !== "/today" && href !== path)];
+        for (const href of ordered) {
+          if (!active || !visible()) return;
+          await warm(href);
+        }
+      } finally {
+        running = false;
+        if (resume && active && visible()) {
+          resume = false;
+          schedule();
+        }
       }
     };
-    const timer = window.setTimeout(() => {
-      if ("requestIdleCallback" in window) idle = window.requestIdleCallback(() => { void run(); }, { timeout: 1500 });
-      else void run();
-    }, 500);
+    const schedule = () => {
+      if (!active || !visible() || timer !== undefined || idle !== undefined) return;
+      if (running) { resume = true; return; }
+      timer = window.setTimeout(() => {
+        timer = undefined;
+        if ("requestIdleCallback" in window) idle = window.requestIdleCallback(() => {
+          idle = undefined;
+          void run();
+        }, { timeout: 1500 });
+        else void run();
+      }, 500);
+    };
+    const visibility = () => {
+      if (visible()) schedule();
+      else {
+        window.clearTimeout(timer);
+        timer = undefined;
+        if (idle !== undefined) window.cancelIdleCallback(idle);
+        idle = undefined;
+      }
+    };
+    schedule();
+    document.addEventListener("visibilitychange", visibility);
     return () => {
       active = false;
       window.clearTimeout(timer);
       if (idle !== undefined) window.cancelIdleCallback(idle);
+      document.removeEventListener("visibilitychange", visibility);
     };
   }, [enabled, path, warm]);
   return warm;

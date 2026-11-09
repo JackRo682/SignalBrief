@@ -40,6 +40,7 @@ import {
   documentLabel,
 } from "./home-b-data";
 import { useHomeBNews } from "./home-b-news";
+import { homeSnapshotSlice, useHomeSnapshot } from "./home-snapshot";
 import {
   compareWatchlistCompanies,
   watchlistMonitoring,
@@ -319,46 +320,53 @@ export default function HomeB() {
     [savedTab, setSavedTab] =
       useState<(typeof savedTabs)[number][0]>("analysis"),
     [newsCompany, setNewsCompany] = useState("");
-  const watchlist = useResource("/v1/watchlist", watchlistSchema),
-    followed = watchlist.error ? [] : (watchlist.data?.items ?? []);
-  const overview = useData(
-    // Membership is resolved server-side; rendering still intersects the result
-    // with the watchlist, without waiting for that read to start this one.
-    { action: "source_overview", p: { scope: "following", days: 0 } },
+  const snapshot = useHomeSnapshot(today);
+  const fallbackWatchlist = useResource(snapshot.fallback ? "/v1/watchlist" : null, watchlistSchema);
+  const watchlist = snapshot.fallback ? fallbackWatchlist : homeSnapshotSlice(snapshot, "watchlist");
+  const followed = watchlist.error ? [] : (watchlist.data?.items ?? []);
+  const fallbackOverview = useData(
+    snapshot.fallback ? { action: "source_overview", p: { scope: "following", days: 0 } } : null,
     sourceOverviewSchema,
   );
-  const directory = useData(
-    { action: "catalog", p: { kind: "company", limit: 50 } },
+  const overview = snapshot.fallback ? {
+    ...fallbackOverview, data: fallbackOverview.data?.monitoring ?? null,
+  } : homeSnapshotSlice(snapshot, "monitoring");
+  const fallbackDirectory = useData(
+    snapshot.fallback ? { action: "catalog", p: { kind: "company", limit: 50 } } : null,
     catalogSchema,
   );
-  const documents = useData(
-    {
+  const fallbackDocuments = useData(
+    snapshot.fallback ? {
       action: "catalog",
       p: { kind: "document", days: 30, sort: "newest", limit: 50 },
-    },
+    } : null,
     catalogSchema,
   );
-  const analyses = useData(
-    { action: "catalog", p: { kind: "analysis", sort: "newest", limit: 2 } },
+  const fallbackAnalyses = useData(
+    snapshot.fallback ? { action: "catalog", p: { kind: "analysis", sort: "newest", limit: 2 } } : null,
     catalogSchema,
   );
+  const directory = snapshot.fallback ? fallbackDirectory : homeSnapshotSlice(snapshot, "directory");
+  const documents = snapshot.fallback ? fallbackDocuments : homeSnapshotSlice(snapshot, "documents");
+  const analyses = snapshot.fallback ? fallbackAnalyses : homeSnapshotSlice(snapshot, "analyses");
   const coverage = useCalendarCoverage(null);
   const upcoming = useCalendarData(
       { from: today, until, includePersonal: false },
       coverage.collectionRevision,
     ),
-    notifications = useContentNotifications(),
+    notifications = useContentNotifications(true, { homeToday: today }),
     alertsAction = useMutation();
   const historyAllowed =
     preferences.loaded && preferences.value.history_enabled;
-  const saved = useData(
-    savedTab !== "history" || historyAllowed
+  const otherSaved = useData(
+    (snapshot.fallback || savedTab !== "analysis") && (savedTab !== "history" || historyAllowed)
       ? { action: "saved_list", p: { kind: savedTab, sort: "newest" } }
       : null,
     savedSchema,
   );
+  const saved = snapshot.fallback || savedTab !== "analysis" ? otherSaved : homeSnapshotSlice(snapshot, "saved");
   const monitoring = watchlistMonitoring(
-    overview.error ? [] : (overview.data?.monitoring ?? []),
+    overview.error ? [] : (overview.data ?? []),
     followed,
   );
   const companies = [...followed]
@@ -423,8 +431,13 @@ export default function HomeB() {
         )
       : null;
   const reloadSaved = () => {
-    saved.reload();
-    documents.reload();
+    if (snapshot.fallback) {
+      saved.reload();
+      documents.reload();
+    } else {
+      snapshot.reload();
+      if (savedTab !== "analysis") otherSaved.reload();
+    }
   };
   return (
     <div
@@ -432,6 +445,7 @@ export default function HomeB() {
       data-home-layout="B"
       data-screen="redesign-home-b"
     >
+      {snapshot.error && <div data-home-snapshot-error><DataState loading={false} error={snapshot.error} retry={snapshot.reload} /></div>}
       <div className="hb-layout">
         <div className="hb-main">
           <header className="hb-intro">
@@ -512,7 +526,7 @@ export default function HomeB() {
                 error={watchlist.error ?? ""}
                 retry={watchlist.reload}
               />
-              <DataState {...overview} retry={overview.reload} />
+              <DataState {...overview} loading={overview.loading && !watchlist.loading} retry={overview.reload} />
               {!watchlist.error &&
                 companies.map((company) => {
                   const update = updates.find(

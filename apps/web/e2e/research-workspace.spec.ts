@@ -195,8 +195,12 @@ test('signed-in research journey connects company tabs, evidence, saved items an
  await expect(page.getByRole('combobox',{name:'기업 필터'})).toHaveValue('');
  await page.getByRole('combobox',{name:'기업 필터'}).selectOption(companyId);
  await expect.poll(()=>fixture.state.calls.some(call=>call.action==='design_dashboard'&&call.p.company_id===companyId)).toBe(true);
+ const filteredReads=fixture.state.calls.filter(call=>call.action==='design_dashboard').length;
  await page.getByRole('combobox',{name:'기업 필터'}).selectOption('');
- await expect.poll(()=>fixture.state.calls.some(call=>call.action==='design_dashboard'&&!call.p.company_id)).toBe(true);
+ await expect(page.getByRole('combobox',{name:'기업 필터'})).toHaveValue('');
+ await expect(page.locator('#home-activity-panel')).toContainText(approved.title);
+ expect(fixture.state.calls.some(call=>call.action==='home_snapshot')).toBe(true);
+ expect(fixture.state.calls.filter(call=>call.action==='design_dashboard')).toHaveLength(filteredReads);
  expect(fixture.state.saved.size).toBe(1);expect(fixture.state.watched.size).toBe(1);
  await page.goto(`/companies/${companyId}/timeline`);
  await expect(main(page).getByText(companies[0].name,{exact:true}).first()).toBeVisible();
@@ -394,6 +398,8 @@ test('service errors remain distinct from empty results and offer recovery witho
  await page.goto('/today');
  await expect(page.getByRole('heading',{name:'홈',exact:true})).toBeVisible();
  await expect(page.locator('.rd-kpis strong')).toHaveText(['조회 불가','조회 불가','조회 불가','조회 불가']);
+ const snapshotError=page.locator('[data-home-snapshot-error]');
+ await expect(snapshotError.getByRole('alert')).toBeVisible();
  await expect(page.locator('#news')).toContainText('뉴스 제공자에 연결하지 못했습니다.');
  await expect(page.locator('#news')).not.toContainText('최신 검색결과 0건');
  await screenshot(page,info,'unavailable');
@@ -401,6 +407,9 @@ test('service errors remain distinct from empty results and offer recovery witho
  await page.locator('#home-activity-panel > .ws-error').getByRole('button',{name:'Retry',exact:true}).click();
  await expect(homeMetric(page,'기간 내 공개 공시')).toHaveText('0건');
  await expect(homeMetric(page,'기간 내 승인 분석')).toHaveText('0건');
+ await expect(snapshotError.getByRole('alert')).toBeVisible();
+ await snapshotError.getByRole('button',{name:'Retry',exact:true}).click();
+ await expect(snapshotError.getByRole('alert')).toHaveCount(0);
  const homeTabs=page.getByRole('tablist',{name:'최근 소식 종류',exact:true});
  const homeActivity=page.locator('#home-activity-panel');
  await homeTabs.getByRole('tab',{name:'공시',exact:true}).click();

@@ -12,6 +12,7 @@ const state = vi.hoisted(() => ({
   notices: [] as { id: string; created_at: string; read_at: string | null; resource: Resource }[],
   coverageRevision: 1, calendarRead: vi.fn(),
   push: vi.fn(), reloadDocuments: vi.fn(), reloadSaved: vi.fn(),
+  snapshotRead: vi.fn(), reloadSnapshot: vi.fn(),
   markRead: vi.fn(), save: vi.fn(),
 }));
 
@@ -51,6 +52,27 @@ vi.mock('@/workspace/notification-state', () => ({
   markContentNotificationRead: (...args: unknown[]) => state.markRead(...args),
 }));
 vi.mock('@/workspace/client', () => ({ workspace: (...args: unknown[]) => state.save(...args) }));
+vi.mock('@/redesign/home-snapshot', async (original) => ({
+  ...(await original<typeof import('@/redesign/home-snapshot')>()),
+  useHomeSnapshot: (today: string) => {
+    state.snapshotRead(today);
+    const savedItem = (item: Resource) => ({ ...item, is_saved: state.saved.has(`${item.kind}:${item.id}`) });
+    const catalog = (items: Resource[]) => ({ items: items.map(savedItem), total: items.length, counts: {}, markets: [], next_offset: null });
+    const savedDocuments = state.documents.filter(item => state.saved.has(`${item.kind}:${item.id}`));
+    const savedAnalyses = state.analyses.filter(item => state.saved.has(`${item.kind}:${item.id}`));
+    return {
+      data: state.watchlistLoading || state.documentError ? null : {
+        today, as_of: '2026-10-06T08:00:00.000Z', watchlist: { items: [] }, directory: catalog([]),
+        monitoring: state.documents.map(item => ({ company_id: item.company_id, latest_filing: item, latest_analysis: null,
+          next_event: null, last_collected_at: null, filing_count: 1, analysis_count: 0 })),
+        documents: catalog(state.documents), analyses: catalog(state.analyses),
+        saved: { items: savedAnalyses.map(savedItem), counts: { document: savedDocuments.length, analysis: savedAnalyses.length, event: 0, history: 0 } },
+      },
+      loading: state.watchlistLoading, error: state.documentError ? 'Synthetic Home snapshot unavailable' : '',
+      fallback: Boolean(state.documentError), reload: state.reloadSnapshot,
+    };
+  },
+}));
 vi.mock('@/workspace/ui', async () => {
   const actual = await vi.importActual<typeof import('@/workspace/ui')>('@/workspace/ui');
   const savedItem = (item: Resource) => ({ ...item, is_saved: state.saved.has(`${item.kind}:${item.id}`) });
@@ -128,6 +150,7 @@ beforeEach(() => {
     read_at: null, resource: analysis,
   }];
   state.push.mockReset(); state.reloadDocuments.mockReset(); state.reloadSaved.mockReset();
+  state.snapshotRead.mockReset(); state.reloadSnapshot.mockReset();
   state.coverageRevision = 1; state.calendarRead.mockReset();
   state.save.mockReset().mockImplementation(async (_token, request) => {
     if (request.action !== 'save') throw new Error(`Unexpected write: ${request.action}`);
@@ -145,10 +168,11 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 
 describe('the real Home B dashboard with isolated service responses', () => {
-  it('starts following updates before watchlist resolves and never displays all-company fallback as followed', () => {
+  it('uses one pending snapshot and never displays all-company fallback as followed', () => {
     state.watchlistLoading = true;
     const view = render(<HomeB />);
-    expect(state.calls).toContainEqual({ action: 'source_overview', p: { scope: 'following', days: 0 } });
+    expect(state.snapshotRead).toHaveBeenCalledWith('2026-10-06');
+    expect(state.calls).toEqual([]);
     const following = within(screen.getByRole('region', { name: '관심기업 업데이트' }));
     expect(following.queryByText(document.title)).toBeNull();
     state.watchlistLoading = false;
@@ -183,7 +207,8 @@ describe('the real Home B dashboard with isolated service responses', () => {
     expect(calendar.queryByRole('link', { name: /Synthetic investor day/ })).toBeNull();
     expect(calendar.getByRole('link', { name: /Synthetic earnings announcement/ }).getAttribute('href'))
       .toBe(`/events/${earnings.id}?kind=calendar`);
-    expect(state.calls).toContainEqual({ action: 'catalog', p: { kind: 'document', days: 30, sort: 'newest', limit: 50 } });
+    expect(state.snapshotRead).toHaveBeenCalledWith('2026-10-06');
+    expect(state.calls).toEqual([]);
     expect(state.calendarRead).toHaveBeenLastCalledWith({ from: '2026-10-06', until: '2026-10-12', includePersonal: false }, 1);
     state.coverageRevision = 2;
     rerender(<HomeB />);
@@ -202,8 +227,9 @@ describe('the real Home B dashboard with isolated service responses', () => {
     state.rejectSave = false;
     fireEvent.click(documents.getByRole('button', { name: `${document.title} 저장` }));
     await waitFor(() => expect(documents.getByRole('button', { name: `${document.title} 저장 취소` }).getAttribute('aria-pressed')).toBe('true'));
-    expect(state.reloadSaved).toHaveBeenCalledTimes(1);
-    expect(state.reloadDocuments).toHaveBeenCalledTimes(1);
+    expect(state.reloadSnapshot).toHaveBeenCalledTimes(1);
+    expect(state.reloadSaved).not.toHaveBeenCalled();
+    expect(state.reloadDocuments).not.toHaveBeenCalled();
     const saved = within(screen.getByRole('region', { name: '저장한 항목' }));
     fireEvent.click(saved.getByRole('button', { name: /^문서/ }));
     expect(saved.getByRole('link', { name: /Synthetic source filing/ }).getAttribute('href'))
@@ -228,6 +254,7 @@ describe('the real Home B dashboard with isolated service responses', () => {
   it('honors disabled viewing history and shows a failed document count as unavailable rather than zero', () => {
     state.documentError = 'Synthetic document service unavailable';
     const { container } = render(<HomeB />);
+    expect(container.querySelector('[data-home-snapshot-error]')?.textContent).toContain('Synthetic Home snapshot unavailable');
     expect(screen.getByRole('link', { name: '신규 문서 조회 불가' })).toBeDefined();
     expect(container.querySelectorAll('.hb-document')).toHaveLength(0);
     const saved = within(screen.getByRole('region', { name: '저장한 항목' }));

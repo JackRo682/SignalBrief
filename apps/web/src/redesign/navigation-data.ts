@@ -7,9 +7,11 @@ import { pageDataCache } from "@/lib/page-data-cache";
 import { workspace } from "@/workspace/client";
 import { catalogSchema, savedSchema, sourceOverviewSchema, type WorkspaceRequest } from "@/workspace/contracts";
 import { loadCalendarData } from "./calendar-query";
+import { loadCalendarCoverage } from "./calendar-data";
 import { addDays, dayInZone, visibleDays } from "./calendar-utils";
-import { dashboardSchema, koreaDate, rangeStart } from "./dashboard-contract";
+import { koreaDate } from "./dashboard-contract";
 import type { HomeVariant } from "./home-variant";
+import { loadHomeSnapshot } from "./home-snapshot";
 
 export const navigationPaths = ["/today", "/explore", "/watchlist", "/calendar", "/saved"] as const;
 export type NavigationPath = (typeof navigationPaths)[number];
@@ -53,18 +55,12 @@ export async function prefetchNavigation(token: string, path: NavigationPath, op
     read({ action: "saved_list", p: { kind: "", sort: "newest" } }, savedSchema);
   } else if (path === "/today") {
     const homeDay = koreaDate(now);
-    jobs.push(resource("/v1/watchlist", watchlistSchema));
-    read({ action: "source_overview", p: { scope: "following", days: 0 } }, sourceOverviewSchema);
-    read({ action: "catalog", p: { kind: "company", limit: 50 } }, catalogSchema);
+    jobs.push(loadHomeSnapshot(token, homeDay));
     jobs.push(loadCalendarData(token, {
       from: homeDay, until: addDays(homeDay, options.homeVariant === "B" ? 6 : 30), includePersonal: false,
     }));
     if (options.homeVariant === "B") {
-      read({ action: "catalog", p: { kind: "document", days: 30, sort: "newest", limit: 50 } }, catalogSchema);
-      read({ action: "catalog", p: { kind: "analysis", sort: "newest", limit: 2 } }, catalogSchema);
-      read({ action: "saved_list", p: { kind: "analysis", sort: "newest" } }, savedSchema);
-    } else {
-      read({ action: "design_dashboard", p: { start_date: rangeStart(homeDay, 30), end_date: homeDay, company_id: "" } }, dashboardSchema);
+      jobs.push(loadCalendarCoverage(token, null));
     }
   }
   // A failed speculative read must not disturb the current page. The destination

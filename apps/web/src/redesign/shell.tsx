@@ -10,6 +10,7 @@ import { useContentNotifications } from "@/workspace/notification-state";
 import { Notice, useMutation } from "@/workspace/ui";
 import { SearchForm } from "./ui";
 import { useNavigationPrefetch } from "./use-navigation-prefetch";
+import { koreaDate } from "./dashboard-contract";
 import "./styles.css";
 
 const links = [
@@ -25,7 +26,9 @@ export default function RedesignShell({ children }: { children: ReactNode }) {
     router = useRouter(),
     action = useMutation(),
     profile = useRef<HTMLDetailsElement>(null);
-  const alerts = useContentNotifications(Boolean(auth.me?.onboarding_completed));
+  const alerts = useContentNotifications(path === "/today"
+    ? Boolean(auth.token && (!auth.me || auth.me.onboarding_completed)) : Boolean(auth.me?.onboarding_completed),
+    { homeToday: path === "/today" ? koreaDate() : undefined, homeReady: Boolean(auth.me?.onboarding_completed) });
   const prefetch = useNavigationPrefetch(path);
   useEffect(() => {
     if (!auth.loading && !auth.token)

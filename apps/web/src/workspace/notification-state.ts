@@ -6,6 +6,10 @@ import { useAuth } from "@/components/auth";
 import { pageDataCache } from "@/lib/page-data-cache";
 import { workspace } from "./client";
 import { contentNotificationsSchema } from "./contracts";
+import {
+  canFallbackFromHomeSnapshot, confirmHomeSnapshotReadiness, homeSnapshotKey, loadHomeSnapshot, updateHomeSnapshotNotifications,
+} from "@/redesign/home-snapshot";
+import type { HomeSnapshot } from "@/redesign/home-snapshot-contract";
 
 type Notifications = z.infer<typeof contentNotificationsSchema>;
 type ReadConfirmation = { token: string; id?: string; readAt: string };
@@ -16,9 +20,11 @@ const notificationKey = `workspace:${JSON.stringify(notificationRequest)}`;
 // A DOM event is delivered to every mounted notification consumer. Invalidate
 // once so the header and page share the same subsequent network request.
 const invalidatedEvents = new WeakSet<Event>();
+let notificationRevision = 0;
 
 function invalidateForEvent(scope: string | null, event: Event) {
   if (!scope || !pageDataCache.isCurrent(scope) || invalidatedEvents.has(event)) return;
+  notificationRevision++;
   pageDataCache.invalidate(scope, notificationKey);
   invalidatedEvents.add(event);
 }
@@ -49,8 +55,10 @@ export async function markContentNotificationRead(token: string | null, id?: str
   // Only a confirmed write may clear a row or badge. No credentials or notification
   // contents are stored in the cross-tab signal.
   const confirmation = { token, id, readAt: new Date().toISOString() };
+  if (pageDataCache.isCurrent(token)) notificationRevision++;
   pageDataCache.update<Notifications>(token, notificationKey,
     (data) => applyRead(data ?? null, confirmation) ?? undefined);
+  updateHomeSnapshotNotifications(token, data => applyRead(data, confirmation)!);
   const event = new CustomEvent<ReadConfirmation>(contentUpdated, { detail: confirmation });
   invalidatedEvents.add(event);
   window.dispatchEvent(event);
@@ -61,9 +69,11 @@ export async function markContentNotificationRead(token: string | null, id?: str
   }
 }
 
-export function useContentNotifications(enabled = true) {
+export function useContentNotifications(enabled = true, options: { homeToday?: string; homeReady?: boolean } = {}) {
   const { token } = useAuth();
   const scope = enabled ? token : null;
+  const homeToday = options.homeToday;
+  const homeReady = options.homeReady ?? true;
   const generation = useRef(0);
   const invalidatePending = useCallback(() => { ++generation.current; }, []);
   const [state, setState] = useState<{
@@ -73,7 +83,7 @@ export function useContentNotifications(enabled = true) {
     error: string;
   }>({ scope: null, data: null, loading: false, error: "" });
 
-  const revalidate = useCallback(() => {
+  const read = useCallback((initial = false) => {
     const requestId = ++generation.current;
     if (!scope) {
       setState({ scope, data: null, loading: false, error: "" });
@@ -86,23 +96,42 @@ export function useContentNotifications(enabled = true) {
       loading: true,
       error: "",
     }));
-    void pageDataCache.request(scope, notificationKey, "GET", () =>
-      workspace(scope, notificationRequest, contentNotificationsSchema))
-      .then((data) => {
-        if (generation.current === requestId)
-          setState({ scope, data, loading: false, error: "" });
-      })
+    // Start after AuthProvider's token-reset effects, including an early Home warm
+    // before the profile-dependent page has mounted.
+    void Promise.resolve().then(async () => {
+      if (generation.current !== requestId || !pageDataCache.isCurrent(scope)) return;
+      if (initial && homeToday && homeReady) confirmHomeSnapshotReadiness(scope, homeToday);
+      const data = await pageDataCache.request(scope, notificationKey, "GET", async () => {
+        const startedRevision = notificationRevision;
+        if (initial && homeToday && cached === undefined) {
+          try { return (await loadHomeSnapshot(scope, homeToday, homeReady)).notifications; }
+          catch (error) {
+            if (!canFallbackFromHomeSnapshot(error) || !pageDataCache.isCurrent(scope)) throw error;
+          }
+        }
+        const notifications = await workspace(scope, notificationRequest, contentNotificationsSchema);
+        if (startedRevision === notificationRevision && pageDataCache.isCurrent(scope))
+          updateHomeSnapshotNotifications(scope, () => notifications);
+        return notifications;
+      });
+      if (generation.current === requestId && pageDataCache.isCurrent(scope))
+        setState({ scope, data, loading: false, error: "" });
+    })
       .catch((error: unknown) => {
-        if (generation.current === requestId)
+        if (generation.current === requestId && pageDataCache.isCurrent(scope))
           setState((current) => ({
             ...current,
             loading: false,
             error: error instanceof Error ? error.message : "알림을 불러오지 못했습니다.",
           }));
       });
-  }, [scope]);
+  }, [scope, homeToday, homeReady]);
+  const revalidate = useCallback(() => read(false), [read]);
   const reload = useCallback(() => {
-    if (scope) pageDataCache.invalidate(scope, notificationKey);
+    if (scope && pageDataCache.isCurrent(scope)) {
+      notificationRevision++;
+      pageDataCache.invalidate(scope, notificationKey);
+    }
     revalidate();
   }, [scope, revalidate]);
 
@@ -131,7 +160,7 @@ export function useContentNotifications(enabled = true) {
     const storage = (event: StorageEvent) => {
       if (event.key === storageKey) refreshVisible(event);
     };
-    revalidate();
+    read(true);
     window.addEventListener(contentUpdated, update);
     window.addEventListener("focus", refreshVisible);
     document.addEventListener("visibilitychange", refreshVisible);
@@ -145,11 +174,13 @@ export function useContentNotifications(enabled = true) {
       document.removeEventListener("visibilitychange", refreshVisible);
       window.removeEventListener("storage", storage);
     };
-  }, [invalidatePending, revalidate, scope]);
+  }, [invalidatePending, read, revalidate, scope]);
 
   const current = state.scope === scope;
   const cached = scope ? pageDataCache.peek<Notifications>(scope, notificationKey) : undefined;
-  const data = current ? state.data ?? cached ?? null : cached ?? null;
+  const prepared = scope && homeToday
+    ? pageDataCache.peek<HomeSnapshot>(scope, homeSnapshotKey(homeToday))?.notifications : undefined;
+  const data = current ? state.data ?? cached ?? prepared ?? null : cached ?? prepared ?? null;
   return {
     data,
     loading: Boolean(scope && !data && (!current || state.loading)),
