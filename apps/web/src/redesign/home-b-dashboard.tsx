@@ -322,9 +322,9 @@ export default function HomeB() {
   const watchlist = useResource("/v1/watchlist", watchlistSchema),
     followed = watchlist.error ? [] : (watchlist.data?.items ?? []);
   const overview = useData(
-    followed.length
-      ? { action: "source_overview", p: { scope: "following", days: 0 } }
-      : null,
+    // Membership is resolved server-side; rendering still intersects the result
+    // with the watchlist, without waiting for that read to start this one.
+    { action: "source_overview", p: { scope: "following", days: 0 } },
     sourceOverviewSchema,
   );
   const directory = useData(
@@ -1054,8 +1054,9 @@ export default function HomeB() {
                   aria-disabled={alertsAction.busy}
                   onAuxClick={(event) => {
                     if (event.button === 1 && !item.read_at)
-                      void alertsAction.run(() =>
-                        markContentNotificationRead(token, item.id),
+                      void alertsAction.run(
+                        () => markContentNotificationRead(token, item.id),
+                        "", { invalidateCache: false },
                       );
                   }}
                   onClick={(event) => {
@@ -1067,8 +1068,9 @@ export default function HomeB() {
                       event.button !== 0
                     ) {
                       if (!item.read_at)
-                        void alertsAction.run(() =>
-                          markContentNotificationRead(token, item.id),
+                        void alertsAction.run(
+                          () => markContentNotificationRead(token, item.id),
+                          "", { invalidateCache: false },
                         );
                       return;
                     }
@@ -1077,7 +1079,7 @@ export default function HomeB() {
                       if (!item.read_at)
                         await markContentNotificationRead(token, item.id);
                       router.push(resourceHref(item.resource));
-                    });
+                    }, "", { invalidateCache: false });
                   }}
                 >
                   <span

@@ -7,6 +7,54 @@ import { calendarEntrySchema } from '../src/redesign/calendar-utils';
 import { catalogSchema, contentNotificationsSchema, resourceSchema, workspaceRequest } from '../src/workspace/contracts';
 import { newsResponse } from '../src/lib/news-contract';
 
+test('primary tabs retain prepared content without another content round trip', async ({ page }) => {
+  const fixture = await researchWorkspaceFixture(page, { following: true });
+  fixture.state.saved.add(`us_analysis:${sourceId}`);
+  await page.goto('/today');
+  await expect(page.locator('[data-screen="redesign-home"]')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '관심 기업 1곳의 주요 소식을 모았습니다.', exact: true })).toBeVisible();
+  // Saved is the final idle-prefetched destination from Home. Waiting for it
+  // establishes that the preceding directory/watchlist/calendar reads finished.
+  await expect.poll(() => fixture.state.calls.some(call => call.action === 'saved_list' && call.p.kind === '')).toBe(true);
+  const forbidden: string[] = [];
+  await page.route('**/api/workspace', async route => {
+    const input = workspaceRequest.safeParse(route.request().postDataJSON());
+    if (input.success && ['design_directory', 'source_overview', 'design_dashboard'].includes(input.data.action)) {
+      forbidden.push(input.data.action);
+      await route.fulfill({ status: 503, json: { error: { code: 'synthetic_slow_read' } } });
+      return;
+    }
+    if (input.success && input.data.action === 'saved_list' && input.data.p.kind !== 'history') {
+      forbidden.push('saved_list');
+      await route.fulfill({ status: 503, json: { error: { code: 'synthetic_slow_read' } } });
+      return;
+    }
+    await route.fallback();
+  });
+  await page.route('https://test-project.supabase.co/rest/v1/calendar_items?**', async route => {
+    if (route.request().method() === 'GET') {
+      forbidden.push('calendar_items');
+      await route.abort('failed');
+    } else await route.fallback();
+  });
+  const nav = page.getByRole('navigation', { name: '주 메뉴', exact: true });
+  await nav.getByRole('link', { name: '기업', exact: true }).click();
+  await expect(page.locator('.rd-company-card')).not.toHaveCount(0);
+  await expect(page.locator('[data-screen="redesign-companies"] .ws-loading')).toHaveCount(0);
+  await nav.getByRole('link', { name: '홈', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '관심 기업 1곳의 주요 소식을 모았습니다.', exact: true })).toBeVisible();
+  await nav.getByRole('link', { name: '관심 기업', exact: true }).click();
+  await expect(page.locator('.rd-w-card')).toHaveCount(1);
+  await expect(page.locator('.rd-w-list')).toHaveAttribute('aria-busy', 'false');
+  await nav.getByRole('link', { name: '캘린더', exact: true }).click();
+  await expect(page.locator('[data-screen="redesign-calendar"]')).toContainText('Synthetic historical official event');
+  await nav.getByRole('link', { name: '저장', exact: true }).click();
+  await expect(page.locator('[data-screen="redesign-saved"]')).toContainText(approved.title);
+  expect(forbidden).toEqual([]);
+  expect(fixture.state.runtimeErrors).toEqual([]);
+  expect(fixture.state.unexpected).toEqual([]);
+});
+
 // These records exist only in this isolated browser test. They deliberately sit
 // inside B's 30-day document / inclusive seven-day calendar windows. A keeps its
 // original fixtures and all of its original assertions below.
@@ -53,6 +101,7 @@ async function homeBNewsFixture(page: Page, fixture: ResearchFixture) {
 
 async function referenceDashboardFixture(page: Page) {
   const fixture = await researchWorkspaceFixture(page, { following: true });
+  const homeCalendarQueries: string[] = [];
   fixture.state.profile.is_admin = true;
   await homeBNewsFixture(page, fixture);
   await page.route('**/api/workspace', async route => {
@@ -83,13 +132,23 @@ async function referenceDashboardFixture(page: Page) {
     expect(route.request().method()).toBe('GET');
     expect(route.request().headers().authorization).toMatch(/^Bearer /);
     const url = new URL(route.request().url());
+    // The shared header also prepares Calendar and Watchlist ranges. Keep
+    // their real fixture behavior; only B's seven-day request gets noisy rows.
+    const bounds = url.searchParams.getAll('occurs_on');
+    if (!bounds.includes('gte.2026-10-06') || !bounds.includes('lte.2026-10-12')) {
+      await route.fallback(); return;
+    }
     fixture.calendarQueries.push(url.search);
+    homeCalendarQueries.push(url.search);
+    expect(bounds).toEqual(['gte.2026-10-06', 'lte.2026-10-12']);
     expect(url.searchParams.get('calendar_status')).toBe('eq.confirmed');
     expect(url.searchParams.get('origin')).toBe('neq.user');
+    expect(url.searchParams.has('company_id')).toBe(false);
+    expect(url.searchParams.has('or')).toBe(false);
     // Return noisy data so the homepage must also apply its final date guard.
     await route.fulfill({ headers, json: fixture.control.emptyContent ? [] : referenceEvents });
   });
-  return fixture;
+  return { ...fixture, homeCalendarQueries };
 }
 
 // Isolated synthetic browser fixtures only. Never run this suite against production.
@@ -211,8 +270,8 @@ test('B filters actual documents and seven-day calendar records and persists a b
   await expect(calendar.locator('.hb-event')).toHaveCount(3);
   await expect(calendar).not.toContainText('Synthetic event outside seven days');
   await expect(calendar).not.toContainText('Synthetic historical event');
-  expect(fixture.calendarQueries.length).toBeGreaterThan(0);
-  for (const query of fixture.calendarQueries) {
+  expect(fixture.homeCalendarQueries.length).toBeGreaterThan(0);
+  for (const query of fixture.homeCalendarQueries) {
     expect(new URLSearchParams(query).getAll('occurs_on')).toEqual(['gte.2026-10-06', 'lte.2026-10-12']);
   }
   await expect(calendar.getByRole('link', { name: new RegExp(referenceEvents[0].title) }))

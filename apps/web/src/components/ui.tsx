@@ -18,7 +18,7 @@ export function useResource<T>(path:string|null,schema:z.ZodType<T>) {
   const current=state.path===path&&state.scope===token;
   const data=current&&state.data!==null?state.data:cached??null;
   const loading=Boolean(token&&path&&!data&&(!current||state.loading));
-  const reload=useCallback(()=>{pageDataCache.reset(token);setRevision(v=>v+1);},[token]);
+  const reload=useCallback(()=>{if(path)pageDataCache.invalidate(token,path);setRevision(v=>v+1);},[token,path]);
   useEffect(()=>{
     if(!token||!path){setState({path,scope:token,data:null,loading:false,error:null});return;}
     let active=true;const controller=new AbortController();

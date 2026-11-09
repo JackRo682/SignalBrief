@@ -63,14 +63,16 @@ async function referenceFixture(page: Page) {
   base.state.preferences.muted_companies = [referenceCompanies[2].id];
   const control = { removeFails: false, preferenceFails: false, calendarFails: false };
   const servedWatchlistScopes = new Set<string>();
+  const watchlistCalendarQueries: string[] = [], navigationCalendarQueries: string[] = [];
   await page.route('**/v1/watchlist', async route => {
     expect(route.request().method()).toBe('GET');
     expect(route.request().headers().authorization).toMatch(/^Bearer /);
     base.state.apiCalls.push({ method: 'GET', path: '/v1/watchlist', body: null });
-    servedWatchlistScopes.add(`in.(${[...base.state.watched].sort().join(',')})`);
+    const items = referenceCompanies.filter(company => base.state.watched.has(company.id));
+    servedWatchlistScopes.add(`in.(${items.map(company => company.id).sort().join(',')})`);
     await route.fulfill({ json: {
       id: '10000000-0000-4000-8000-000000000002', name: 'Synthetic reference watchlist',
-      items: referenceCompanies.filter(company => base.state.watched.has(company.id)),
+      items,
     } });
   });
   await page.route('**/v1/companies?**', async route => {
@@ -117,18 +119,43 @@ async function referenceFixture(page: Page) {
     expect(route.request().headers().authorization).toMatch(/^Bearer /);
     const params = new URL(route.request().url()).searchParams;
     base.calendarQueries.push(params.toString());
+    expect(params.get('calendar_status')).toBe('eq.confirmed');
+    expect(params.has('or')).toBe(false);
+    expect(params.has('id')).toBe(false);
+    expect(params.get('limit')).toBe('501');
+    const bounds = params.getAll('occurs_on');
+    if (!params.has('company_id')) {
+      // Other primary tabs may prepare their own data while Watchlist remains
+      // visible. Accept only their explicit scopes, never a broadened personal
+      // one-year official-only query. All other transport violations still fail.
+      const signature = { bounds, origin: params.get('origin'), order: params.get('order') };
+      expect([
+        { bounds: ['gte.2026-09-27', 'lte.2026-10-31'], origin: null, order: 'occurs_on.asc,id.asc' },
+        { bounds: ['gte.2026-10-06', 'lte.2027-10-06'], origin: null, order: 'occurs_on.asc,id.asc' },
+        { bounds: ['gte.2026-07-08', 'lte.2026-10-05'], origin: null, order: 'occurs_on.desc,id.asc' },
+        { bounds: ['gte.2026-10-06', 'lte.2026-11-05'], origin: 'neq.user', order: 'occurs_on.asc,id.asc' },
+        { bounds: ['gte.2026-10-06', 'lte.2026-10-12'], origin: 'neq.user', order: 'occurs_on.asc,id.asc' },
+      ], 'Unscoped reads must match an actual Calendar or Home prefetch contract').toContainEqual(signature);
+      navigationCalendarQueries.push(params.toString());
+      const rows = dates.filter(item => item.occurs_on >= bounds[0].slice(4) &&
+        item.occurs_on <= bounds[1].slice(4) && (signature.origin !== 'neq.user' || item.origin !== 'user'));
+      rows.sort((a, b) => (signature.order?.startsWith('occurs_on.desc')
+        ? b.occurs_on.localeCompare(a.occurs_on) : a.occurs_on.localeCompare(b.occurs_on)) || a.id.localeCompare(b.id));
+      await route.fulfill({ headers, json: rows });
+      return;
+    }
     // A write can refresh the calendar while the replacement watchlist read is
     // pending. Each request must still use an actually returned personal scope.
     expect(servedWatchlistScopes.has(params.get('company_id') ?? '')).toBe(true);
     expect(params.get('origin')).toBe('neq.user');
-    expect(params.get('calendar_status')).toBe('eq.confirmed');
-    expect(params.has('or')).toBe(false);
-    expect(params.getAll('occurs_on')).toEqual(['gte.2026-10-06', 'lte.2027-10-06']);
+    expect(params.get('order')).toBe('occurs_on.asc,id.asc');
+    expect(bounds).toEqual(['gte.2026-10-06', 'lte.2027-10-06']);
+    watchlistCalendarQueries.push(params.toString());
     await route.fulfill(control.calendarFails
       ? { status: 503, headers, json: { message: 'Synthetic calendar outage' } }
       : { headers, json: [...dates, dates[2]] });
   });
-  return { ...base, referenceControl: control };
+  return { ...base, referenceControl: control, watchlistCalendarQueries, navigationCalendarQueries };
 }
 type ReferenceFixture = Awaited<ReturnType<typeof referenceFixture>>;
 
@@ -182,6 +209,10 @@ test('reference layout keeps personal data scoped, supports filters, and preserv
   const upcoming = watchlist.getByRole('region', { name: '다가오는 일정', exact: true });
   await expect(upcoming.locator('.rd-w-event')).toHaveCount(4);
   await expect(upcoming.locator('time')).toHaveText(['2026년 10월 10일', '2026년 10월 15일', '2026년 10월 22일', '2026년 10월 26일']);
+  expect(fixture.watchlistCalendarQueries.length, 'Personal dates used a returned watchlist scope').toBeGreaterThan(0);
+  await nav.getByRole('link', { name: '캘린더', exact: true }).focus();
+  await expect.poll(() => fixture.navigationCalendarQueries.length).toBeGreaterThan(0);
+  await expect(upcoming.locator('.rd-w-event')).toHaveCount(4);
   await expect(watchlist).not.toContainText(/must stay hidden|Unfollowed synthetic issuer/);
   await expect(upcoming.locator('time').first()).toHaveAttribute('datetime', '2026-10-10');
   await expect(cards.first().getByRole('link', { name: `다음 일정 ${dates[0].title}`, exact: true }))
@@ -306,20 +337,28 @@ test('calendar errors retry independently and an empty watchlist never exposes t
   await expect(upcoming.getByRole('alert')).toContainText('일정을 불러오지 못했습니다.');
   await expect(upcoming).not.toContainText('확인된 관심 기업 일정이 없습니다.');
   await expect(watchlist.locator('.rd-w-ranking')).toHaveCount(4);
+  const failedReads = fixture.watchlistCalendarQueries.length;
+  expect(failedReads).toBeGreaterThan(0);
   fixture.referenceControl.calendarFails = false;
   await upcoming.getByRole('button', { name: '다시 시도', exact: true }).click();
   await expect(upcoming.locator('.rd-w-event')).toHaveCount(4);
   await expect(upcoming.getByRole('alert')).toHaveCount(0);
-  const reads = fixture.calendarQueries.length;
+  expect(fixture.watchlistCalendarQueries.length, 'Retry makes a fresh personal calendar read').toBeGreaterThan(failedReads);
+  const reads = fixture.watchlistCalendarQueries.length;
+  const navigationReads = fixture.navigationCalendarQueries.length;
   fixture.state.watched.clear();
   await page.reload();
   await expect(watchlist.getByText('첫 관심 기업을 추가해 보세요.', { exact: true })).toBeVisible();
+  await page.getByRole('navigation', { name: '주 메뉴', exact: true })
+    .getByRole('link', { name: '캘린더', exact: true }).focus();
+  await expect.poll(() => fixture.navigationCalendarQueries.length).toBeGreaterThan(navigationReads);
   await expect(watchlist.locator('.rd-w-card')).toHaveCount(0);
   await expect(watchlist.locator('.rd-w-ranking')).toHaveCount(0);
   await expect(upcoming.locator('.rd-w-event')).toHaveCount(0);
   await expect(upcoming).toContainText('관심 기업을 추가하면 예정 일정을 확인할 수 있습니다.');
   await expect(watchlist).not.toContainText(/검증용 분기 공시|검증용 승인 분석|must stay hidden/);
-  expect(fixture.calendarQueries.length, 'An empty watchlist must not make a broad calendar request').toBe(reads);
+  expect(fixture.watchlistCalendarQueries.length,
+    'An empty Watchlist makes no calendar read, even while other tabs prepare their own dates').toBe(reads);
   expect(fixture.state.apiCalls.filter(call => call.method !== 'GET')).toEqual([]);
   await viewportFits(page);
   expectClean(fixture);

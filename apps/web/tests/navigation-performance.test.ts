@@ -42,6 +42,50 @@ describe('template links', () => {
   });
 });
 describe('page data cache', () => {
+  it.each(['design_directory', 'source_overview', 'design_dashboard', 'saved_list', 'content_notifications'])('retains and deduplicates %s across tab visits', async action => {
+    const cache = new PageDataCache(), key = 'workspace:' + JSON.stringify({action, p:{}});
+    const load = vi.fn().mockResolvedValue({items:['confirmed']});
+    await Promise.all([cache.request('a',key,'GET',load),cache.request('a',key,'GET',load)]);
+    expect(load).toHaveBeenCalledTimes(1);
+    expect(cache.peek('a',key)).toEqual({items:['confirmed']});
+    await cache.request('a',key,'GET',load);
+    expect(load).toHaveBeenCalledTimes(1);
+  });
+  it.each(['preferences', 'security', 'account', 'export', 'tickets', 'saved_list'])('never retains sensitive %s reads', async action => {
+    const cache = new PageDataCache(), key = 'workspace:' + JSON.stringify({action, p:{kind:'history'}});
+    const load = vi.fn().mockResolvedValue({private:true});
+    await cache.request('a',key,'GET',load);
+    expect(cache.peek('a',key)).toBeUndefined();
+    await cache.request('a',key,'GET',load);
+    expect(load).toHaveBeenCalledTimes(2);
+  });
+  it('refreshes only the requested key and rejects its older pending response', async () => {
+    const cache = new PageDataCache(), key = '/v1/watchlist';
+    let finish!: (value:string)=>void;
+    const pending=cache.request('a',key,'GET',()=>new Promise<string>(resolve=>{finish=resolve;}));
+    await Promise.resolve();
+    await cache.request('a','/v1/companies','GET',async()=>['cached directory']);
+    cache.invalidate('a',key);
+    await cache.request('a',key,'GET',async()=>'fresh');
+    finish('obsolete'); await pending;
+    expect(cache.peek('a',key)).toBe('fresh');
+    expect(cache.isFresh('a','/v1/companies')).toBe(true);
+    cache.invalidate('old-account',key);
+    expect(cache.isFresh('a',key)).toBe(true);
+  });
+  it('keeps confirmed updates visible while sharing the following refresh', async () => {
+    const cache = new PageDataCache(), key = 'workspace:' + JSON.stringify({action:'content_notifications',p:{}});
+    await cache.request('a',key,'GET',async()=>({unread:1}));
+    cache.update<{unread:number}>('a',key,value=>value?{unread:0}:undefined);
+    expect(cache.peek('a',key)).toEqual({unread:0});
+    expect(cache.isFresh('a',key)).toBe(false);
+    const load=vi.fn().mockResolvedValue({unread:0});
+    await Promise.all([cache.request('a',key,'GET',load),cache.request('a',key,'GET',load)]);
+    expect(load).toHaveBeenCalledTimes(1);
+    cache.reset('b');
+    cache.update<{unread:number}>('a',key,()=>({unread:99}));
+    expect(cache.peek('b',key)).toBeUndefined();
+  });
   it('deduplicates loads and discards data on account changes and mutations', async () => {
     const cache = new PageDataCache(), load = vi.fn().mockResolvedValue({ items: [1] });
     await Promise.all([cache.request('alice', '/v1/watchlist', 'GET', load), cache.request('alice', '/v1/watchlist', 'GET', load)]);
