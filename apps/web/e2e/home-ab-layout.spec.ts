@@ -101,6 +101,7 @@ async function homeBNewsFixture(page: Page, fixture: ResearchFixture) {
 
 async function referenceDashboardFixture(page: Page) {
   const fixture = await researchWorkspaceFixture(page, { following: true });
+  const homeCalendarQueries: string[] = [];
   fixture.state.profile.is_admin = true;
   await homeBNewsFixture(page, fixture);
   await page.route('**/api/workspace', async route => {
@@ -131,13 +132,23 @@ async function referenceDashboardFixture(page: Page) {
     expect(route.request().method()).toBe('GET');
     expect(route.request().headers().authorization).toMatch(/^Bearer /);
     const url = new URL(route.request().url());
+    // The shared header also prepares Calendar and Watchlist ranges. Keep
+    // their real fixture behavior; only B's seven-day request gets noisy rows.
+    const bounds = url.searchParams.getAll('occurs_on');
+    if (!bounds.includes('gte.2026-10-06') || !bounds.includes('lte.2026-10-12')) {
+      await route.fallback(); return;
+    }
     fixture.calendarQueries.push(url.search);
+    homeCalendarQueries.push(url.search);
+    expect(bounds).toEqual(['gte.2026-10-06', 'lte.2026-10-12']);
     expect(url.searchParams.get('calendar_status')).toBe('eq.confirmed');
     expect(url.searchParams.get('origin')).toBe('neq.user');
+    expect(url.searchParams.has('company_id')).toBe(false);
+    expect(url.searchParams.has('or')).toBe(false);
     // Return noisy data so the homepage must also apply its final date guard.
     await route.fulfill({ headers, json: fixture.control.emptyContent ? [] : referenceEvents });
   });
-  return fixture;
+  return { ...fixture, homeCalendarQueries };
 }
 
 // Isolated synthetic browser fixtures only. Never run this suite against production.
@@ -259,8 +270,8 @@ test('B filters actual documents and seven-day calendar records and persists a b
   await expect(calendar.locator('.hb-event')).toHaveCount(3);
   await expect(calendar).not.toContainText('Synthetic event outside seven days');
   await expect(calendar).not.toContainText('Synthetic historical event');
-  expect(fixture.calendarQueries.length).toBeGreaterThan(0);
-  for (const query of fixture.calendarQueries) {
+  expect(fixture.homeCalendarQueries.length).toBeGreaterThan(0);
+  for (const query of fixture.homeCalendarQueries) {
     expect(new URLSearchParams(query).getAll('occurs_on')).toEqual(['gte.2026-10-06', 'lte.2026-10-12']);
   }
   await expect(calendar.getByRole('link', { name: new RegExp(referenceEvents[0].title) }))

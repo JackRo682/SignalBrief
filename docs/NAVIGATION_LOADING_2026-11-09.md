@@ -99,6 +99,15 @@ The browser case in `home-ab-layout.spec.ts` prepares the primary tabs, rejects
 subsequent content requests, and verifies the actual lists still render. It runs
 in both desktop and mobile projects through the existing release-suite selection.
 
+The first exact-commit CI run passed that new case on both viewport projects.
+It also exposed existing browser fixtures that assumed every calendar request
+belonged to the visible page, and counters that assumed a return visit always
+made another request. Those fixtures now distinguish the visible screen's query
+from background preparation, while retaining their authorization, personal-event,
+watchlist membership, error, mutation and displayed-content assertions. The
+collection test separately checks cached initial coverage and the unchanged
+bounded polling budget. The complete browser gate must pass after these changes.
+
 Local checks, exact-commit CI, Vercel deployment readiness and authenticated
 production acceptance are separate evidence. Their final statuses belong to the
 release PR and `/api/release`; a successful local build alone is not a deployment.

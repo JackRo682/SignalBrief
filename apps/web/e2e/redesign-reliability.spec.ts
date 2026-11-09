@@ -646,8 +646,13 @@ test('calendar collection keeps scope honest and stops polling until an explicit
   const selected = main.getByRole('radio', { name: '특정 기업 선택', exact: true });
   const refresh = main.getByRole('button', { name: '일정 새로고침', exact: true });
   const collecting = main.getByText('공식 일정을 수집하고 있습니다. 완료되면 이 화면에 자동으로 표시됩니다.', { exact: true });
+  await expect(refresh).toBeEnabled();
+  // Let the page load normally, then advance polling only through runFor below.
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await nvidia.check();
   await expect(selected).toBeChecked();
+  await expect.poll(() => fixture.state.coverageQueries.at(-1)).toBe(companies[0].id);
+  await expect(collecting).toBeVisible();
   await all.check();
   await expect(nvidia).not.toBeChecked();
   await expect(appleChoice).not.toBeChecked();
@@ -666,7 +671,9 @@ test('calendar collection keeps scope honest and stops polling until an explicit
   // followed companies remain unchanged. Refresh is a read, never a follow.
   fixture.state.collectionCompanyId = externalId;
   await expect(refresh).toBeEnabled();
+  const beforeScopeRefresh = fixture.state.coverageQueries.length;
   await refresh.click();
+  await expect.poll(() => fixture.state.coverageQueries.length).toBe(beforeScopeRefresh + 1);
   await expect(refresh).toBeEnabled();
   await expect(collecting).toHaveCount(0);
   await expect(panels.past.getByRole('heading')).toHaveText(/지난 일정\s*0/);
@@ -674,14 +681,19 @@ test('calendar collection keeps scope honest and stops polling until an explicit
   expect(fixture.state.collectionPending).toBe(true);
   expectNoCalendarWrites(fixture, followed);
   fixture.state.collectionCompanyId = companies[0].id;
+  const beforeCachedReturns = fixture.state.coverageQueries.length;
   await nvidia.check();
   await expect(selected).toBeChecked();
   await expect(nvidia).toBeChecked();
   await expect(appleChoice).not.toBeChecked();
-  await expect.poll(() => fixture.state.coverageQueries.at(-1)).toBe(companies[0].id);
+  await expect(collecting).toBeVisible();
+  // Both scopes have fresh coverage. Waiting for another initial RPC here would
+  // consume the first 10-second poll before the bounded polling assertion starts.
+  expect(fixture.state.coverageQueries).toHaveLength(beforeCachedReturns);
   await all.check();
   await expect(nvidia).not.toBeChecked();
-  await expect.poll(() => fixture.state.coverageQueries.at(-1)).toBe(null);
+  await expect(collecting).toBeVisible();
+  expect(fixture.state.coverageQueries).toHaveLength(beforeCachedReturns);
   await expect(refresh).toBeEnabled();
   await expect(panels.grid.getByRole('link', { name: /Synthetic October official event/ })).toBeVisible();
   await expect(panels.past.getByRole('heading')).toHaveText(/지난 일정\s*…/);
@@ -701,7 +713,9 @@ test('calendar collection keeps scope honest and stops polling until an explicit
   const before = fixture.state.calendarQueries.length;
   fixture.state.collectionPending = false;
   fixture.state.collectionReady = true;
+  const beforeCompletionRefresh = fixture.state.coverageQueries.length;
   await refresh.click();
+  await expect.poll(() => fixture.state.coverageQueries.length).toBe(beforeCompletionRefresh + 1);
   await expectCollectedCalendar(page);
   await expect(panels.grid.getByRole('link', { name: /Synthetic October official event/ })).toBeVisible();
   expect([...new Set(fixture.state.calendarQueries.slice(before))].sort()).toEqual(initialRanges);
