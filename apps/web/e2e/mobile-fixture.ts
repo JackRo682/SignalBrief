@@ -2,7 +2,9 @@ import {type Page, type Route} from '@playwright/test';
 import {z} from 'zod';
 import {researchRequest} from '../src/research/contracts';
 import {answerSchema, calendarSchema, detailSchema, eventSchema, meSchema, notificationsSchema, portfolioSchema, type Company} from '../src/lib/contracts';
-import {companyDetailSchema, contentNotificationsSchema, documentDetailSchema, defaults, preferenceSchema, resourceSchema, workspaceRequest, type Preferences, type Resource, type WorkspaceRequest} from '../src/workspace/contracts';
+import {catalogSchema, companyDetailSchema, contentNotificationsSchema, documentDetailSchema, defaults, preferenceSchema, resourceSchema, workspaceRequest, type Preferences, type Resource, type WorkspaceRequest} from '../src/workspace/contracts';
+import {homeSnapshotSchema} from '../src/redesign/home-snapshot-contract';
+import {koreaDate, rangeStart} from '../src/redesign/dashboard-contract';
 
 // All prices, disclosures, accounts and mutations below are synthetic, local to this E2E suite.
 // The browser never reads or writes a production account or a live financial provider.
@@ -209,6 +211,38 @@ export async function mobileFixture(page: Page, options: Options = {}) {
     })}});
   });
   const savedResource = (resource: Resource) => ({...resource, is_saved: state.saved.has(`${resource.kind}:${resource.id}`)});
+  const watchlistResponse = () => ({ id: uid(1, 2), name: '관심종목', items: companies.filter(company => state.watched.has(company.id)) });
+  const homeSnapshot = (today: string) => {
+    const start = rangeStart(today, 30);
+    const inRange = (day: string) => day >= start && day <= today;
+    const orderedDocuments = documents.filter(item => !item.published_at ||
+      Date.parse(item.published_at) >= Date.parse(fixtureNow) - 30 * 86400000)
+      .sort((a, b) => (b.published_at ?? '').localeCompare(a.published_at ?? ''));
+    const catalog = (items: Resource[], limit: number) => catalogSchema.parse({
+      items: items.slice(0, limit).map(savedResource), total: items.length,
+      counts: items.reduce<Record<string, number>>((counts, item) => {
+        counts[item.kind] = (counts[item.kind] ?? 0) + 1; return counts;
+      }, {}), markets: ['NASDAQ'], next_offset: items.length > limit ? limit : null,
+    });
+    const bookmarks = resources.filter(item => state.saved.has(`${item.kind}:${item.id}`));
+    const filings = documents.filter(item => item.published_at && inRange(koreaDate(new Date(item.published_at)))).map(savedResource);
+    const calendar = state.calendar.filter(item => item.origin !== 'user' && item.company_id && item.source_url && inRange(item.occurs_on))
+      .map(item => ({ ...item, company_name: companies.find(company => company.id === item.company_id)!.name,
+        source_timezone: null, verified_at: fixtureNow }));
+    return homeSnapshotSchema.parse({
+      as_of: fixtureNow, today,
+      watchlist: watchlistResponse(),
+      monitoring: [], directory: catalog(companyResources, 50), documents: catalog(orderedDocuments, 50), analyses: catalog([], 2),
+      saved: { items: [], counts: { event: bookmarks.filter(item => item.kind === 'event').length,
+        document: bookmarks.filter(item => ['document', 'filing'].includes(item.kind)).length,
+        analysis: 0, history: state.preferences.history_enabled ? state.visits.size : 0 } },
+      notifications: { items: state.notifications.map(item => ({ id: item.id, created_at: item.created_at,
+        read_at: item.read_at, resource: savedResource(eventResources.find(resource => resource.id === item.event.id)!) })),
+        unread_count: state.notifications.filter(item => !item.read_at).length },
+      dashboard: { as_of: fixtureNow, timezone: 'Asia/Seoul', start_date: start, end_date: today,
+        filing_count: filings.length, analysis_count: 0, event_count: calendar.length, filings, analyses: [], events: calendar },
+    });
+  };
   const upsertPosition = (id: string, data: {quantity: string; average_cost: string | null; currency: string}) => {
     const company = companies.find(item => item.id === id);
     if (!company) throw new Error(`Unknown fixture company ${id}`);
@@ -225,7 +259,7 @@ export async function mobileFixture(page: Page, options: Options = {}) {
     else if (path === '/v1/me') {if(method==='PATCH')Object.assign(state.profile,data);response = meSchema.parse(state.profile);}
     else if (path === '/v1/preferences') {if (method === 'PATCH') Object.assign(state.onboardingPreferences, data); response = state.onboardingPreferences;}
     else if (path === '/v1/companies') {const q = (url.searchParams.get('q') ?? '').toLowerCase(); response = companies.filter(c => `${c.name} ${c.ticker}`.toLowerCase().includes(q));}
-    else if (path === '/v1/watchlist') response = {id: uid(1, 2), name: '관심종목', items: companies.filter(c => state.watched.has(c.id))};
+    else if (path === '/v1/watchlist') response = watchlistResponse();
     else if (/^\/v1\/watchlist\/[^/]+$/.test(path) && ['PUT', 'DELETE'].includes(method)) {const id = path.split('/').at(-1)!; if (method === 'PUT') state.watched.add(id); else state.watched.delete(id); await route.fulfill({status: 204}); return;}
     else if (path === '/v1/portfolio') response = portfolioSchema.parse({id: uid(1, 3), name: '내 포트폴리오', weighting_note: '입력한 보유 수량 기준', positions: [...state.positions.values()]});
     else if (/^\/v1\/portfolio\/positions\/[^/]+$/.test(path) && ['PUT', 'DELETE'].includes(method)) {const id = path.split('/').at(-1)!; if (method === 'PUT') upsertPosition(id, data); else state.positions.delete(id); await route.fulfill({status: 204}); return;}
@@ -256,6 +290,12 @@ export async function mobileFixture(page: Page, options: Options = {}) {
     state.calls.push(parsed.data);
     let response: unknown;
     switch (action) {
+      case 'home_snapshot': {
+        if (route.request().method() !== 'POST' || route.request().headers().authorization !== 'Bearer ' + token) {
+          await unknown(route, 'invalid home snapshot authorization'); return;
+        }
+        response = homeSnapshot(p.today); break;
+      }
       case 'preferences': response = preferenceSchema.parse({value: state.preferences, version: state.preferenceVersion}); break;
       case 'preferences_save': {
         if (p.version !== state.preferenceVersion) {await route.fulfill({status: 409, json: {error: {code: 'version_conflict'}}}); return;}
@@ -313,7 +353,7 @@ export async function mobileFixture(page: Page, options: Options = {}) {
     if (response === undefined) {await unknown(route, `missing workspace resource ${action}`); return;}
     await route.fulfill({json: response});
   });
-  return {state, upsertPosition};
+  return {state, upsertPosition, homeSnapshot, watchlistResponse};
 }
 
 export type MobileFixture = Awaited<ReturnType<typeof mobileFixture>>;

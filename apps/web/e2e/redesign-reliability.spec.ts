@@ -4,8 +4,9 @@ import {
   catalogSchema, companyDetailSchema, resourceSchema, sourceOverviewSchema,
   workspaceRequest, type Resource,
 } from '../src/workspace/contracts';
-import { dashboardSchema } from '../src/redesign/dashboard-contract';
+import { dashboardSchema, rangeStart } from '../src/redesign/dashboard-contract';
 import { calendarEntrySchema } from '../src/redesign/calendar-utils';
+import { homeSnapshotSchema } from '../src/redesign/home-snapshot-contract';
 
 // Synthetic, isolated regression fixtures. The inherited catch-all rejects every
 // unmocked API/provider request; no production session or provider is contacted.
@@ -82,6 +83,17 @@ async function reliabilityFixture(page: Page) {
   };
   const directory = () => [companyResources[0], apple, ...(state.externalRegistered ? [external] : [])];
   const resources = () => [...directory(), filing, approved];
+  const dashboardResponse = (p: Record<string, unknown>) => {
+    const inRange = (day: string) => day >= String(p.start_date) && day <= String(p.end_date);
+    const included = !p.company_id || p.company_id === appleId;
+    const filings = included && inRange('2026-10-02') ? [filing] : [];
+    const analyses = included && inRange('2026-10-03') ? [approved] : [];
+    const events = calendarEntries.filter(item => inRange(item.occurs_on)
+      && (!p.company_id || item.company_id === p.company_id))
+      .map(item => ({ ...item, company_name: item.company_id === appleId ? 'Apple' : companies[0].name }));
+    return dashboardSchema.parse({ as_of: fixtureNow, timezone: 'Asia/Seoul', start_date: p.start_date, end_date: p.end_date,
+      filing_count: filings.length, analysis_count: analyses.length, event_count: events.length, filings, analyses, events });
+  };
 
   await page.route('**/api/news?**', route => route.fulfill({ json: {
     provider: 'NAVER', query: '엔비디아', retrievedAt: fixtureNow, items: [],
@@ -240,6 +252,25 @@ async function reliabilityFixture(page: Page) {
     workspaceRequest.parse(payload);
     const { action, p } = payload;
     state.workspaceCalls.push(payload);
+    if (action === 'home_snapshot') {
+      expect(route.request().method()).toBe('POST');
+      expect(route.request().headers().authorization).toMatch(/^Bearer /);
+      if (state.dashboardFails) {
+        await route.fulfill({ status: 503, json: { error: { code: 'temporarily_unavailable' } } }); return;
+      }
+      const today = String(p.today);
+      const catalog = (items: Resource[], limit: number) => catalogSchema.parse({
+        items: items.slice(0, limit).map(item => ({ ...item, is_saved: base.state.saved.has(`${item.kind}:${item.id}`) })),
+        total: items.length, counts: items.reduce<Record<string, number>>((counts, item) => {
+          counts[item.kind] = (counts[item.kind] ?? 0) + 1; return counts;
+        }, {}), markets: ['NASDAQ', 'US'], next_offset: items.length > limit ? limit : null,
+      });
+      await route.fulfill({ json: homeSnapshotSchema.parse({ ...base.homeSnapshot(today),
+        directory: catalog(directory(), 50), documents: catalog([filing], 50), analyses: catalog([approved], 2),
+        dashboard: dashboardResponse({ start_date: rangeStart(today, 30), end_date: today, company_id: '' }),
+      }) });
+      return;
+    }
     if (action === 'catalog' || action === 'design_directory') {
       const kind = String(p.kind ?? '');
       let matches = (action === 'design_directory' ? directory() : resources()).filter(item =>
@@ -267,18 +298,7 @@ async function reliabilityFixture(page: Page) {
         await route.fulfill({ status: 503, json: { error: { code: 'temporarily_unavailable' } } });
         return;
       }
-      const inRange = (day: string) => day >= String(p.start_date) && day <= String(p.end_date);
-      const included = !p.company_id || p.company_id === appleId;
-      const filings = included && inRange('2026-10-02') ? [filing] : [];
-      const analyses = included && inRange('2026-10-03') ? [approved] : [];
-      const events = calendarEntries.filter(item => inRange(item.occurs_on)
-        && (!p.company_id || item.company_id === p.company_id))
-        .map(item => ({ ...item, company_name: item.company_id === appleId ? 'Apple' : companies[0].name }));
-      await route.fulfill({ json: dashboardSchema.parse({
-        as_of: fixtureNow, timezone: 'Asia/Seoul', start_date: p.start_date, end_date: p.end_date,
-        filing_count: filings.length, analysis_count: analyses.length, event_count: events.length,
-        filings, analyses, events,
-      }) });
+      await route.fulfill({ json: dashboardResponse(p) });
       return;
     }
     if (action === 'source_overview') {
@@ -379,9 +399,11 @@ test('a dashboard request failure remains an error instead of becoming a zero co
   const metric = main.getByRole('link', { name: /기간 내 공개 공시/ });
   await expect(metric).toContainText('조회 불가');
   await expect(metric).not.toContainText('0건');
-  await expect(main.getByRole('alert')).toBeVisible();
+  const snapshotError = main.locator('[data-home-snapshot-error]');
+  await expect(snapshotError.getByRole('alert')).toBeVisible();
+  await expect(main.locator('#home-activity-panel > .ws-error')).toBeVisible();
   fixture.state.dashboardFails = false;
-  await main.getByRole('alert').getByRole('button', { name: '다시 시도', exact: true }).click();
+  await snapshotError.getByRole('button', { name: '다시 시도', exact: true }).click();
   await expect(metric).toContainText('1건');
   await expect(main.getByRole('alert')).toHaveCount(0);
   await finish(page, info, fixture);
@@ -703,8 +725,14 @@ test('calendar collection keeps scope honest and stops polling until an explicit
   expect(initialRanges).toHaveLength(3);
   const initialCoverage = fixture.state.coverageQueries.length;
   for (let poll = 1; poll <= 12; poll++) {
+    const beforeRanges = fixture.state.calendarQueries.length;
     await page.clock.runFor(10000);
     await expect.poll(() => fixture.state.coverageQueries.length).toBe(initialCoverage + poll);
+    // The RPC is recorded before its response reaches the hook. Its three date
+    // refreshes prove collectionRevision was applied and the next poll was
+    // scheduled before the fake clock advances again.
+    await expect.poll(() => fixture.state.calendarQueries.slice(beforeRanges)
+      .filter(query => initialRanges.includes(query)).sort()).toEqual(initialRanges);
     await expect(refresh).toBeEnabled();
   }
   await expect(main.getByText('공식 일정 수집이 계속 진행 중입니다. 잠시 후 일정 새로고침을 눌러 확인해 주세요.', { exact: true })).toBeVisible();

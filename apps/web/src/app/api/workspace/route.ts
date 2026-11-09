@@ -27,7 +27,9 @@ export async function POST(req:Request){
   // never invokes the older operation that also deletes browsing history.
   const customerActions=new Set(['source_overview','catalog','resource','company','document_detail','saved_list','save','visit','content_notifications','content_notification_read']);
   const rpcName=parsed.data.action==='design_dashboard'||parsed.data.action==='design_directory'?'sb_redesign_workspace':customerActions.has(parsed.data.action)?'sb_customer_workspace':parsed.data.action==='search_delete'||parsed.data.action==='searches_clear'?'sb_workspace_searches':'sb_workspace';
-  const {data,error}=await (parsed.data.action==='onboarding_complete'
+  const {data,error}=await (parsed.data.action==='home_snapshot'
+   ?db.rpc('sb_home_snapshot',{p:parsed.data.p})
+   :parsed.data.action==='onboarding_complete'
    ?db.rpc('sb_mobile_onboarding',{p:parsed.data.p})
    :db.rpc(rpcName,parsed.data));
   if(error){const status=/^PT\d{3}$/.test(error.code)?Number(error.code.slice(2)):error.code==='42501'?403:error.code==='PGRST202'?503:422;

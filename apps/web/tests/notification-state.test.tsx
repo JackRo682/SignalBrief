@@ -6,6 +6,9 @@ import { contentNotificationsSchema, type WorkspaceRequest } from "../src/worksp
 import { markContentNotificationRead, useContentNotifications } from "../src/workspace/notification-state";
 import { DesktopShell } from "../src/desktop/shell";
 import { pageDataCache } from "../src/lib/page-data-cache";
+import { homeSnapshotKey, loadHomeSnapshot, useHomeSnapshot } from "../src/redesign/home-snapshot";
+import { homeSnapshotSchema } from "../src/redesign/home-snapshot-contract";
+import { rangeStart } from "../src/redesign/dashboard-contract";
 
 const mocks = vi.hoisted(() => ({ workspace: vi.fn(), token: "synthetic-account-a" }));
 vi.mock("@/components/auth", () => ({ useAuth: () => ({
@@ -52,8 +55,19 @@ const read: Notifications = {
   items: unread.items.map((item) => ({ ...item, read_at: "2026-11-02T00:00:00Z" })),
 };
 
-function Consumer({ name }: { name: string }) {
-  const state = useContentNotifications();
+const today = "2026-11-09";
+function homeSnapshot(notifications: Notifications = unread) {
+  const catalog = { items: [], total: 0, counts: {}, markets: [], next_offset: null };
+  return homeSnapshotSchema.parse({
+    as_of: "2026-11-09T00:30:00Z", today, watchlist: { id: "list", name: "Watchlist", items: [] },
+    monitoring: [], directory: catalog, documents: catalog, analyses: catalog,
+    saved: { items: [], counts: { event: 0, document: 0, analysis: 0, history: 0 } }, notifications,
+    dashboard: { as_of: "2026-11-09T00:30:00Z", timezone: "Asia/Seoul", start_date: rangeStart(today, 30), end_date: today,
+      filing_count: 0, analysis_count: 0, event_count: 0, filings: [], analyses: [], events: [] },
+  });
+}
+function Consumer({ name, home = false, ready = true }: { name: string; home?: boolean; ready?: boolean }) {
+  const state = useContentNotifications(true, home ? { homeToday: today, homeReady: ready } : {});
   return <div data-testid={name}>
     <output aria-label={`${name} unread`}>{state.data?.unread_count ?? "loading"}</output>
     <output aria-label={`${name} rows`}>{state.data?.items.filter((item) => !item.read_at).length ?? "loading"}</output>
@@ -63,8 +77,13 @@ function Consumer({ name }: { name: string }) {
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
-  const promise = new Promise<T>((done) => { resolve = done; });
-  return { promise, resolve };
+  let reject!: (error: unknown) => void;
+  const promise = new Promise<T>((done, fail) => { resolve = done; reject = fail; });
+  return { promise, resolve, reject };
+}
+function HomeReader() {
+  const snapshot = useHomeSnapshot(today);
+  return <output aria-label="Home state">{snapshot.data ? "ready" : "loading"}</output>;
 }
 
 beforeEach(() => {
@@ -74,7 +93,8 @@ beforeEach(() => {
   mocks.token = "synthetic-account-a";
   localStorage.clear();
   mocks.workspace.mockImplementation(async (_token: string, request: WorkspaceRequest) =>
-    request.action === "content_notifications" ? structuredClone(unread) : { updated: true });
+    request.action === "content_notifications" ? structuredClone(unread)
+      : request.action === "home_snapshot" ? homeSnapshot() : { updated: true });
 });
 afterEach(() => cleanup());
 
@@ -183,6 +203,89 @@ describe("confirmed notification read state", () => {
 });
 
 describe("shared notification reads", () => {
+  it("uses one Home snapshot for the header, list, and default widgets, then dedicated notification refresh", async () => {
+    render(<><Consumer name="bell" home /><Consumer name="list" home /><HomeReader /></>);
+    await waitFor(() => expect(screen.getByLabelText("Home state")).toHaveTextContent("ready"));
+    expect(screen.getByLabelText("bell unread")).toHaveTextContent("2");
+    expect(screen.getByLabelText("list unread")).toHaveTextContent("2");
+    expect(mocks.workspace.mock.calls.map(([, request]) => request.action)).toEqual(["home_snapshot"]);
+    mocks.workspace.mockResolvedValue(read);
+    fireEvent.focus(window);
+    await waitFor(() => expect(screen.getByLabelText("list unread")).toHaveTextContent("0"));
+    expect(mocks.workspace.mock.calls.map(([, request]) => request.action)).toEqual(["home_snapshot", "content_notifications"]);
+    expect(pageDataCache.peek<ReturnType<typeof homeSnapshot>>(mocks.token, homeSnapshotKey(today))?.notifications.unread_count).toBe(0);
+  });
+
+  it("renders prepared snapshot notifications synchronously before a notification consumer has mounted", async () => {
+    pageDataCache.reset(mocks.token);
+    await loadHomeSnapshot(mocks.token, today);
+    render(<Consumer name="prepared" home />);
+    expect(screen.getByLabelText("prepared unread")).toHaveTextContent("2");
+    await act(async () => {});
+    expect(mocks.workspace).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not let a pending pre-ack Home response restore unread rows", async () => {
+    const old = deferred<ReturnType<typeof homeSnapshot>>(), fresh = deferred<Notifications>();
+    mocks.workspace.mockImplementation((_token: string, request: WorkspaceRequest) =>
+      request.action === "home_snapshot" ? old.promise : request.action === "content_notifications" ? fresh.promise : Promise.resolve({ updated: true }));
+    render(<><Consumer name="bell" home /><Consumer name="list" home /><HomeReader /></>);
+    await waitFor(() => expect(mocks.workspace).toHaveBeenCalledTimes(1));
+    await act(() => markContentNotificationRead(mocks.token));
+    await waitFor(() => expect(mocks.workspace.mock.calls.some(([, request]) => request.action === "content_notifications")).toBe(true));
+    await act(async () => { old.resolve(homeSnapshot()); await old.promise; });
+    expect(screen.getByLabelText("bell unread")).not.toHaveTextContent("2");
+    expect(screen.getByLabelText("list unread")).not.toHaveTextContent("2");
+    expect(pageDataCache.peek(mocks.token, homeSnapshotKey(today))).toBeUndefined();
+    await act(async () => { fresh.resolve(read); await fresh.promise; });
+    expect(screen.getByLabelText("bell unread")).toHaveTextContent("0");
+    expect(screen.getByLabelText("list unread")).toHaveTextContent("0");
+  });
+
+  it("does not let an older dedicated notification response overwrite the acknowledged Home snapshot", async () => {
+    render(<Consumer name="bell" home />);
+    await waitFor(() => expect(screen.getByLabelText("bell unread")).toHaveTextContent("2"));
+    const old = deferred<Notifications>(), fresh = deferred<Notifications>();
+    mocks.workspace.mockImplementation((_token: string, request: WorkspaceRequest) =>
+      request.action === "content_notifications" ? fresh.promise : Promise.resolve({ updated: true }));
+    mocks.workspace.mockReturnValueOnce(old.promise);
+    fireEvent.focus(window);
+    await waitFor(() => expect(mocks.workspace).toHaveBeenCalledTimes(2));
+    await act(() => markContentNotificationRead(mocks.token));
+    expect(screen.getByLabelText("bell unread")).toHaveTextContent("0");
+    await act(async () => { old.resolve(unread); await old.promise; });
+    expect(pageDataCache.peek<ReturnType<typeof homeSnapshot>>(mocks.token, homeSnapshotKey(today))?.notifications.unread_count).toBe(0);
+    await act(async () => { fresh.resolve(read); await fresh.promise; });
+    expect(screen.getByLabelText("bell unread")).toHaveTextContent("0");
+  });
+
+  it("retries an early onboarding prerequisite only after the profile is confirmed", async () => {
+    mocks.token = "early-header"; pageDataCache.reset(mocks.token);
+    const early = deferred<ReturnType<typeof homeSnapshot>>();
+    mocks.workspace.mockReturnValueOnce(early.promise);
+    const view = render(<Consumer name="bell" home ready={false} />);
+    await waitFor(() => expect(mocks.workspace).toHaveBeenCalledTimes(1));
+    view.rerender(<Consumer name="bell" home ready />);
+    await act(async () => {});
+    await act(async () => { early.reject(Object.assign(new Error("onboarding_required"), { status: 403, code: "onboarding_required" })); });
+    await waitFor(() => expect(screen.getByLabelText("bell unread")).toHaveTextContent("2"));
+    expect(mocks.workspace.mock.calls.map(([, request]) => request.action)).toEqual(["home_snapshot", "home_snapshot"]);
+  });
+
+  it.each([401, 403, 429])("does not fall back to another notification endpoint after Home rejects with %s", async status => {
+    mocks.workspace.mockRejectedValue(Object.assign(new Error("protected Home read"), { status, code: "access_denied" }));
+    render(<Consumer name="bell" home />);
+    expect(await screen.findByRole("alert")).toHaveTextContent("protected Home read");
+    expect(mocks.workspace.mock.calls.map(([, request]) => request.action)).toEqual(["home_snapshot"]);
+  });
+
+  it("falls back to the independent notification read for a recoverable Home service outage", async () => {
+    mocks.workspace.mockRejectedValueOnce(Object.assign(new Error("Home unavailable"), { status: 503, code: "workspace_unavailable" }));
+    render(<Consumer name="bell" home />);
+    await waitFor(() => expect(screen.getByLabelText("bell unread")).toHaveTextContent("2"));
+    expect(mocks.workspace.mock.calls.map(([, request]) => request.action)).toEqual(["home_snapshot", "content_notifications"]);
+  });
+
   it("shares one initial request and one event refresh between the header and page", async () => {
     const pending = deferred<Notifications>();
     mocks.workspace.mockReturnValueOnce(pending.promise);

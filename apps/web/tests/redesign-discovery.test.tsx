@@ -26,6 +26,7 @@ const mocks = vi.hoisted(() => ({
   fetch: vi.fn(),
   resource: vi.fn(),
   calendar: vi.fn(),
+  snapshot: vi.fn(),
 }));
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mocks.push }),
@@ -55,6 +56,10 @@ vi.mock("../src/redesign/calendar-data", () => ({
 }));
 vi.mock("@/workspace/client", () => ({
   workspace: (...args: unknown[]) => mocks.workspace(...args),
+}));
+vi.mock("../src/redesign/home-snapshot", async (original) => ({
+  ...(await original<typeof import("../src/redesign/home-snapshot")>()),
+  useHomeSnapshot: (today: string) => mocks.snapshot(today),
 }));
 const id = "22000000-0000-4000-8000-000000000001";
 const company: Resource = {
@@ -150,6 +155,25 @@ beforeEach(() => {
       reload: mocks.reload,
     }),
   );
+  mocks.snapshot.mockImplementation((today: string) => {
+    // The snapshot and legacy fallback fixture expose the same synthetic records.
+    // Calling the implementations directly does not pretend a legacy hook read ran.
+    const read = mocks.data.getMockImplementation()!;
+    const watchlist = mocks.resource.getMockImplementation()!();
+    const directory = read({ action: "catalog", p: { kind: "company", limit: 50 } });
+    const monitoring = read({ action: "source_overview", p: { scope: "following", days: 0 } });
+    const dashboard = read({ action: "design_dashboard", p: { start_date: rangeStart(today, 30), end_date: today, company_id: "" } });
+    const parts = [watchlist, directory, monitoring, dashboard];
+    const failed = parts.some(part => part.error);
+    const loading = parts.some(part => part.loading);
+    return {
+      data: failed || loading ? null : {
+        today, as_of: new Date().toISOString(), watchlist: watchlist.data,
+        directory: directory.data, monitoring: monitoring.data?.monitoring ?? [], dashboard: dashboard.data,
+      },
+      loading, error: failed ? "Synthetic Home snapshot unavailable" : "", fallback: failed, reload: mocks.reload,
+    };
+  });
 });
 afterEach(() => {
   cleanup();
@@ -165,6 +189,9 @@ describe("screenshot discovery behavior", () => {
   });
   it("uses server totals instead of five-row previews and applies exact date boundaries", async () => {
     render(<Home />);
+    expect(mocks.snapshot).toHaveBeenCalledWith(koreaDate());
+    expect(mocks.data.mock.calls.every(([request]) => request === null)).toBe(true);
+    expect(mocks.resource.mock.calls.every(([path]) => path === null)).toBe(true);
     fireEvent.click(screen.getByRole("button", { name: "조회 설정" }));
     expect(screen.getByText("42")).toBeVisible();
     fireEvent.change(screen.getByLabelText("시작일"), {
@@ -189,7 +216,8 @@ describe("screenshot discovery behavior", () => {
       3,
     );
     expect(screen.queryByText("Synthetic filing")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "다시 시도" }));
+    expect(document.querySelector("[data-home-snapshot-error]")).toHaveTextContent("Synthetic Home snapshot unavailable");
+    fireEvent.click(within(screen.getByRole("tabpanel")).getByRole("button", { name: "다시 시도" }));
     expect(mocks.reload).toHaveBeenCalled();
     await waitFor(() => expect(mocks.fetch).toHaveBeenCalled());
   });
@@ -265,10 +293,11 @@ describe("screenshot discovery behavior", () => {
     expect(mocks.calendar.mock.calls.at(-1)?.[0]).toMatchObject({companyIds:[],includePersonal:false});
     expect(upcoming.queryByText(event.title)).not.toBeInTheDocument();
     expect(upcoming.getByText("관심 기업을 추가하면 다가오는 일정을 확인할 수 있습니다.")).toBeVisible();
-    expect(mocks.data).toHaveBeenCalledWith({action:"source_overview",p:{scope:"following",days:0}});
+    expect(mocks.snapshot).toHaveBeenCalledWith(koreaDate());
+    expect(mocks.data).not.toHaveBeenCalledWith({action:"source_overview",p:{scope:"following",days:0}});
     await waitFor(() => expect(mocks.fetch).toHaveBeenCalled());
   });
-  it("starts following updates while the watchlist is pending without exposing fallback records", async () => {
+  it("waits on one Home snapshot without starting legacy reads or exposing fallback records", () => {
     mocks.resource.mockReturnValue({data:null,loading:true,error:null,reload:mocks.reload});
     const original=mocks.data.getMockImplementation()!;
     mocks.data.mockImplementation(req => req?.action === "source_overview" ? {
@@ -276,11 +305,13 @@ describe("screenshot discovery behavior", () => {
       loading:false,error:"",reload:mocks.reload,
     } : original(req));
     render(<Home />);
-    expect(mocks.data).toHaveBeenCalledWith({action:"source_overview",p:{scope:"following",days:0}});
+    expect(mocks.snapshot).toHaveBeenCalledWith(koreaDate());
+    expect(mocks.data.mock.calls.every(([request]) => request === null)).toBe(true);
+    expect(mocks.resource).toHaveBeenCalledWith(null, expect.anything());
     const following=within(document.querySelector(".rd-home-following") as HTMLElement);
     expect(following.queryByText(filing.title)).not.toBeInTheDocument();
     expect(following.getByRole("status", {name:"불러오는 중"})).toBeVisible();
-    await waitFor(() => expect(mocks.fetch).toHaveBeenCalled());
+    expect(mocks.fetch).not.toHaveBeenCalled();
   });
   it("isolates followed monitoring and verified future dates from unrelated and personal records", async () => {
     const watched={id,name:company.company_name,ticker:company.ticker,market:"KRX",provider:"dart",is_demo:false,last_ingested_at:null};
@@ -392,6 +423,13 @@ describe("screenshot discovery behavior", () => {
     const following = within(document.querySelector(".rd-home-following") as HTMLElement);
     expect(following.getByRole("status", { name: "불러오는 중" })).toBeVisible();
     expect(following.queryByText("아직 수집된 최신 소식이 없습니다.")).not.toBeInTheDocument();
+
+    hasMonitoring = true;
+    view.rerender(<Home />);
+    expect(following.getByText(followedFiling.title)).toBeVisible();
+    expect(following.queryByRole("status")).not.toBeInTheDocument();
+    expect(within(screen.getByRole("tabpanel")).getByText(filing.title)).toBeVisible();
+    expect(within(screen.getByRole("tabpanel")).queryByRole("status")).not.toBeInTheDocument();
 
     respond({ ok: false, status: 500 });
     expect(await following.findByRole("alert")).toHaveTextContent("뉴스 제공자에 연결하지 못했습니다.");

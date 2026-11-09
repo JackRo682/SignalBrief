@@ -17,6 +17,7 @@ import {
   type ActivityKind, type HomeActivity,
 } from "./home-data";
 import BriefingIllustration from "./home-illustration";
+import { homeSnapshotSlice, useHomeSnapshot } from "./home-snapshot";
 import { CompanyLogo, Heading, More, Panel, SearchForm, formatSourceDate } from "./ui";
 import "./home.css";
 
@@ -98,20 +99,26 @@ export default function Home() {
     [tab, setTab] = useState<ActivityTab>("all"),
     [eventScope, setEventScope] = useState<"all" | "following">("all"),
     [filtersOpen, setFiltersOpen] = useState(false);
-  const directory = useData(
-    { action: "catalog", p: { kind: "company", limit: 50 } }, catalogSchema,
+  const snapshot = useHomeSnapshot(today);
+  const fallbackDirectory = useData(
+    snapshot.fallback ? { action: "catalog", p: { kind: "company", limit: 50 } } : null, catalogSchema,
   );
-  const data = useData({ action: "design_dashboard", p: {
+  const defaultDashboard = !company && range.start === rangeStart(today, 30) && range.end === today;
+  const filteredDashboard = useData(snapshot.fallback || !defaultDashboard ? { action: "design_dashboard", p: {
     start_date: range.start, end_date: range.end, company_id: company,
-  } }, dashboardSchema);
-  const watchlist = useResource("/v1/watchlist", watchlistSchema);
+  } } : null, dashboardSchema);
+  const fallbackWatchlist = useResource(snapshot.fallback ? "/v1/watchlist" : null, watchlistSchema);
+  const directory = snapshot.fallback ? fallbackDirectory : homeSnapshotSlice(snapshot, "directory");
+  const data = snapshot.fallback || !defaultDashboard ? filteredDashboard : homeSnapshotSlice(snapshot, "dashboard");
+  const watchlist = snapshot.fallback ? fallbackWatchlist : homeSnapshotSlice(snapshot, "watchlist");
   const followed = watchlist.data && !watchlist.error ? watchlist.data.items : [];
-  const overview = useData(
-    // The server resolves membership; visible updates are intersected with the
-    // authoritative watchlist below, so both reads can start together.
-    { action: "source_overview", p: { scope: "following", days: 0 } },
+  const fallbackOverview = useData(
+    snapshot.fallback ? { action: "source_overview", p: { scope: "following", days: 0 } } : null,
     sourceOverviewSchema,
   );
+  const overview = snapshot.fallback ? {
+    ...fallbackOverview, data: fallbackOverview.data?.monitoring ?? null,
+  } : homeSnapshotSlice(snapshot, "monitoring");
   const until = addDays(today, 30);
   const eventScopeReady = eventScope === "all" || Boolean(watchlist.data && !watchlist.error);
   const upcoming = useCalendarData(eventScopeReady ? {
@@ -127,7 +134,7 @@ export default function Home() {
   const news = useNews(selected?.id ?? "");
   const includesFollowingNews = !!selected && followed.some((item) => item.id === selected.id);
   const newsItems = newsActivities(news.error ? null : news.data, selected);
-  const updates = followingActivities(overview.error ? [] : overview.data?.monitoring ?? [], followed, newsItems);
+  const updates = followingActivities(overview.error ? [] : overview.data ?? [], followed, newsItems);
   const upcomingItems = upcomingCompanyEvents(upcoming.error ? [] : upcoming.data?.items ?? [],
     eventScope === "following" ? followed : null, today, until);
   const upcomingLoading = upcoming.loading || (eventScope === "following" && watchlist.loading);
@@ -160,6 +167,7 @@ export default function Home() {
   return (
     <div className="rd-home" data-screen="redesign-home">
       <Heading title="홈" description="관심 기업의 최신 공시, 분석, 일정, 뉴스를 한눈에 확인합니다." />
+      {snapshot.error && <div data-home-snapshot-error><DataState loading={false} error={snapshot.error} retry={snapshot.reload} /></div>}
       <div className="rd-home-search"><SearchForm /></div>
       <div className="rd-home-overview">
         <section className="rd-home-briefing" aria-labelledby="home-briefing-title">
@@ -192,8 +200,8 @@ export default function Home() {
       <div className="rd-home-panels">
         <Panel title="관심 기업 업데이트" className="rd-home-following" action={<More href="/watchlist" label="전체 보기" />}>
           <DataState loading={watchlist.loading} error={watchlist.error ?? ""} retry={watchlist.reload} />
-          <DataState {...overview} retry={overview.reload} />
-          {includesFollowingNews && <DataState {...news} retry={news.reload} />}
+          <DataState {...overview} loading={overview.loading && !watchlist.loading} retry={overview.reload} />
+          {includesFollowingNews && <DataState {...news} loading={news.loading && !updates.length} retry={news.reload} />}
           {!!updates.length && <div className="rd-home-updates">
             {updates.slice(0, 3).map((item) => <ActivityLink item={item} key={item.key} className="rd-home-update"
               label={`${item.companyName} ${activityLabels[item.kind]} ${item.title}`}>
@@ -303,10 +311,10 @@ export default function Home() {
           </div>
           {rangeError && <p role="alert" className="rd-note">{rangeError}</p>}
         </div>
-        <DataState {...directory} retry={directory.reload} />
+        <DataState {...directory} loading={directory.loading && !visibleRecent.length} retry={directory.reload} />
         <div role="tabpanel" id="home-activity-panel" aria-labelledby={`home-tab-${tab}`} tabIndex={0}>
-          {tab !== "news" && <DataState {...data} retry={data.reload} />}
-          {(tab === "all" || tab === "news") && <div id="news"><DataState {...news} retry={news.reload} /></div>}
+          {tab !== "news" && <DataState {...data} loading={data.loading && !visibleRecent.length} retry={data.reload} />}
+          {(tab === "all" || tab === "news") && <div id="news"><DataState {...news} loading={news.loading && !visibleRecent.length} retry={news.reload} /></div>}
           {!!visibleRecent.length && <div className="rd-home-table-wrap">
             <table className="rd-table rd-home-table" role="table">
               <thead role="rowgroup"><tr role="row">
