@@ -4,7 +4,7 @@ import {randomUUID} from 'node:crypto';
 import {PGlite} from '@electric-sql/pglite';
 import {beforeAll,beforeEach,afterAll,describe,it,expect} from 'vitest';
 import {trafficSummary} from '../src/acquisition/contracts';
-const sql=readFileSync(new URL('../../../supabase/migrations/20261110061643_launch_acquisition_analytics.sql',import.meta.url),'utf8');
+const sql=readFileSync(new URL('../../../supabase/migrations/20261110064509_launch_acquisition_analytics.sql',import.meta.url),'utf8');
 const admin='10000000-0000-4000-8000-000000000001',member='10000000-0000-4000-8000-000000000002',session='20000000-0000-4000-8000-000000000001';
 let db:PGlite,visitor:string;const secret='a'.repeat(64);
 const call=async(p:Record<string,unknown>)=>(await db.query<{data:unknown}>('SELECT public.sb_traffic($1::jsonb) data',[JSON.stringify(p)])).rows[0].data;
