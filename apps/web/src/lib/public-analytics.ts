@@ -3,6 +3,7 @@ export const CONSENT_KEY='sb.public.analytics.v1';
 const SIGNUP_KEY='sb.public.signup.v1';
 const PENDING_KEY='sb.public.signup-confirmed.v1';
 const ORIGIN='https://signalbrief.online';
+let consentRevision=0;
 export const publicScreens:Record<string,string>={'/':'home','/features':'features','/about':'about','/pricing':'pricing','/privacy':'privacy','/terms':'terms','/signup':'signup','/login':'login'};
 type AnalyticsWindow=Window & {dataLayer?:unknown[];gtag?:(...args:unknown[])=>void};
 function browser(){return typeof window==='undefined'?null:window as AnalyticsWindow;}
@@ -12,6 +13,7 @@ function optedOut(){const w=browser();return !w||w.navigator.doNotTrack==='1'||(
 export function mayMeasure(){return !optedOut()&&consentChoice()==='granted';}
 function store(key:string,value:string|null){try{if(value===null)browser()?.localStorage.removeItem(key);else browser()?.localStorage.setItem(key,value);}catch{/* Storage denial fails closed. */}}
 export function setMeasurementConsent(granted:boolean){
+ consentRevision++;
  store(CONSENT_KEY,granted?'granted':'denied');
  if(!granted){store(SIGNUP_KEY,null);store(PENDING_KEY,null);}
  const w=browser(),id=measurementId();if(w&&id){Reflect.set(w,'ga-disable-'+id,!granted);
@@ -30,9 +32,10 @@ function start(){
   w.gtag('consent','default',{analytics_storage:'granted',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});
   w.gtag('js',new Date());
   w.gtag('config',id,{send_page_view:false,allow_google_signals:false,allow_ad_personalization_signals:false,cookie_domain:'none',page_location:ORIGIN+'/',page_referrer:'',page_title:'SignalBrief'});
-  const script=document.createElement('script');script.id='sb-google-analytics';script.async=true;script.src='https://www.googletagmanager.com/gtag/js?id='+id;document.head.appendChild(script);
+  const script=document.createElement('script');script.onload=()=>{script.dataset.ready='1';};script.id='sb-google-analytics';script.async=true;script.src='https://www.googletagmanager.com/gtag/js?id='+id;document.head.appendChild(script);
  }
- return w.gtag??null;
+ const tag=document.getElementById('sb-google-analytics') as HTMLScriptElement;
+ return (...args:unknown[])=>{const revision=consentRevision;const send=()=>{if(revision===consentRevision&&mayMeasure()&&Reflect.get(w,'ga-disable-'+id)!==true)w.gtag?.(...args);};if(tag.dataset.ready==='1')send();else tag.addEventListener('load',send,{once:true});};
 }
 export function safeReferrer(value:string){try{const u=new URL(value);return u.protocol==='https:'||u.protocol==='http:'?u.origin+'/':'';}catch{return '';}}
 export function trackPublicPage(path:string,referrer:string){
