@@ -320,7 +320,13 @@
 }
 
 .v-page-features .v-feature-card .v-sample-notice {
-  margin-top: 12px;
+  position: static;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  box-shadow: none;
+  /* The shared miniature preview sets a 10px !important legacy notice. */
+  font-size: 13px !important;
+  line-height: 1.7;
 }
 
 .v-page-features .v-feature-card .v-calendar-tabs {
