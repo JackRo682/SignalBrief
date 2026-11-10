@@ -707,3 +707,62 @@
     gap: 20px;
   }
 }
+
+/* Tighten the four-card desktop rows without changing type or horizontal layout. */
+@media (min-width: 1251px) {
+  .v-public-design .v-page-features .v-feature-card {
+    padding-block: 14px;
+  }
+
+  .v-public-design .v-page-features .v-feature-card > header {
+    row-gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .v-public-design .v-page-features .v-feature-card .v-widget {
+    min-height: 240px;
+    padding-block: 10px;
+  }
+
+  .v-page-features .v-feature-card .v-widget-heading {
+    margin-bottom: 8px;
+  }
+
+  .v-page-features .v-feature-card .v-stock-row,
+  .v-page-features .v-feature-card .v-watch-row,
+  .v-page-features .v-feature-card .v-issue-row,
+  .v-page-features .v-feature-card .v-evidence-row,
+  .v-page-features .v-feature-card .v-timeline li,
+  .v-page-features .v-feature-card .v-calendar-row {
+    padding-block: 7px;
+  }
+
+  .v-page-features .v-feature-card .v-timeline li::before {
+    top: 15px;
+  }
+
+  .v-page-features .v-feature-card .v-portfolio-total {
+    margin-block: 8px 12px;
+  }
+
+  .v-page-features .v-feature-card .v-widget h4 {
+    margin-bottom: 10px;
+  }
+
+  .v-page-features .v-feature-card .v-event-intro {
+    margin-bottom: 10px;
+  }
+
+  .v-page-features .v-feature-card .v-chat-user {
+    margin-block: 8px 10px;
+  }
+
+  .v-page-features .v-feature-card .v-chat-answer {
+    padding-bottom: 10px;
+  }
+
+  .v-page-features .v-feature-card .v-calendar-tabs {
+    padding-block: 5px;
+    margin-bottom: 8px;
+  }
+}
