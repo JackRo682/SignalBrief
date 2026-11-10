@@ -3,7 +3,7 @@ import {CONSENT_KEY,consentChoice,flushVerifiedSignup,isNewSignup,markSignupAtte
 import {publicMetadata,publicPages} from '../src/lib/public-seo';
 import sitemap from '../src/app/sitemap';
 import robots from '../src/app/robots';
-type GAWindow=Window & {dataLayer?:unknown[];gtag?:(...args:unknown[])=>void;[key:string]:unknown};
+type GAWindow=Window & {dataLayer?:unknown[];gtag?:(...args:unknown[])=>void;'ga-disable-G-TEST123'?:boolean};
 const w=window as GAWindow;
 beforeEach(()=>{vi.stubEnv('NEXT_PUBLIC_GA_MEASUREMENT_ID','G-TEST123');localStorage.clear();document.getElementById('sb-google-analytics')?.remove();delete w.gtag;delete w.dataLayer;});
 afterEach(()=>{vi.unstubAllEnvs();vi.restoreAllMocks();vi.unstubAllGlobals();});
