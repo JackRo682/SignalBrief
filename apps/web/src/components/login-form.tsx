@@ -7,7 +7,7 @@ import { useAuth } from "./auth";
 import { initializeSupabase } from "@/lib/supabase";
 import { siteOrigin } from "@/lib/site-url";
 import { signInReturnFromUrl } from "@/lib/auth-return";
-import {markSignupAttempt,recordVerifiedSignup,flushVerifiedSignup} from "@/lib/public-analytics";
+import {markSignupAttempt,recordVerifiedSignup} from "@/lib/public-analytics";
 import { Icon } from "./icons";
 import {Brand} from "./marketing/layout";
 import {SecurityPicture,PasswordEye} from "./marketing/screenshot-preview";
@@ -113,7 +113,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
         if (result.error) throw result.error;
 
         if (result.data.session) {
-          recordVerifiedSignup(result.data.user);flushVerifiedSignup();
+          recordVerifiedSignup(result.data.user);
           router.replace("/onboarding");
         } else {
           setMessage("가입 요청을 접수했습니다. 가입 가능한 이메일이라면 인증 메일이 도착합니다. 이메일의 링크를 열어 가입을 완료해 주세요.");

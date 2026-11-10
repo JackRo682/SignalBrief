@@ -51,7 +51,8 @@ export function recordVerifiedSignup(user:{created_at?:string}|null|undefined){
  if(!isNewSignup(user.created_at,attempt,Date.now())){store(SIGNUP_KEY,null);return;}
  store(SIGNUP_KEY,null);store(PENDING_KEY,'1');
 }
-export function flushVerifiedSignup(){
- if(!mayMeasure())return;let pending=false;try{pending=browser()?.localStorage.getItem(PENDING_KEY)==='1';}catch{return;}
- if(!pending)return;const send=start();if(send){store(PENDING_KEY,null);send('event','sign_up',{method:'supabase',page_location:ORIGIN+'/signup',page_title:'SignalBrief · signup',page_referrer:''});}
+export function flushVerifiedSignup(pauseAfter=false){
+ if(!mayMeasure())return false;let pending=false;try{pending=browser()?.localStorage.getItem(PENDING_KEY)==='1';}catch{return false;}
+ if(!pending)return false;const send=start();if(!send)return false;
+ store(PENDING_KEY,null);send('event','sign_up',{method:'supabase',page_location:ORIGIN+'/signup',page_title:'SignalBrief · signup',page_referrer:'',...(pauseAfter?{event_callback:pauseMeasurement,event_timeout:1000}:{})});return true;
 }
