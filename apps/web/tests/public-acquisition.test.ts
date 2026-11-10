@@ -1,0 +1,20 @@
+import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
+import {CONSENT_KEY,consentChoice,flushVerifiedSignup,isNewSignup,markSignupAttempt,mayMeasure,pauseMeasurement,recordVerifiedSignup,safeReferrer,setMeasurementConsent,trackPublicPage} from '../src/lib/public-analytics';
+import {publicMetadata,publicPages} from '../src/lib/public-seo';
+import sitemap from '../src/app/sitemap';
+import robots from '../src/app/robots';
+type GAWindow=Window & {dataLayer?:unknown[];gtag?:(...args:unknown[])=>void;[key:string]:unknown};
+const w=window as GAWindow;
+beforeEach(()=>{vi.stubEnv('NEXT_PUBLIC_GA_MEASUREMENT_ID','G-TEST123');localStorage.clear();document.getElementById('sb-google-analytics')?.remove();delete w.gtag;delete w.dataLayer;});
+afterEach(()=>{vi.unstubAllEnvs();vi.restoreAllMocks();vi.unstubAllGlobals();});
+describe('public indexing',()=>{
+ it('lists only the four public marketing pages, never account or record routes',()=>{expect(sitemap().map(p=>new URL(p.url).pathname)).toEqual(['/','/features','/about','/pricing']);for(const p of publicPages){const m=publicMetadata(p.path);expect(m.robots).toEqual({index:true,follow:true});expect(m.alternates?.canonical).toBe('https://signalbrief.online'+p.path);}expect(robots().sitemap).toBe('https://signalbrief.online/sitemap.xml');expect(()=>publicMetadata('/ops')).toThrow();});
+});
+describe('consented and minimized Google analytics',()=>{
+ it('loads no Google script or commands before consent or after refusal',()=>{trackPublicPage('/','');expect(document.getElementById('sb-google-analytics')).toBeNull();expect(w.dataLayer).toBeUndefined();setMeasurementConsent(false);trackPublicPage('/','');expect(consentChoice()).toBe('denied');expect(w.dataLayer).toBeUndefined();});
+ it('fails closed when storage is unavailable',()=>{vi.spyOn(Storage.prototype,'getItem').mockImplementation(()=>{throw new Error('denied');});expect(mayMeasure()).toBe(false);trackPublicPage('/','');expect(w.dataLayer).toBeUndefined();});
+ it('sends canonical public paths and referrer origins, never URL queries or private routes',()=>{setMeasurementConsent(true);trackPublicPage('/features','https://google.com/search?q=PRIVATE');const commands=Array.from(w.dataLayer??[],item=>Array.from(item as ArrayLike<unknown>));const view=commands.find(c=>c[0]==='event'&&c[1]==='page_view');expect(view?.[2]).toEqual({page_location:'https://signalbrief.online/features',page_title:'SignalBrief · features',page_referrer:'https://google.com/'});const count=commands.length;trackPublicPage('/auth/callback?code=SECRET','');trackPublicPage('/companies/PRIVATE','');expect(w.dataLayer).toHaveLength(count);expect(w['ga-disable-G-TEST123']).toBe(true);expect(JSON.stringify(commands)).not.toMatch(/PRIVATE|SECRET/);expect(safeReferrer('javascript:alert(1)')).toBe('');});
+ it('disables future collection and removes host cookies when revoked',()=>{setMeasurementConsent(true);trackPublicPage('/','');document.cookie='_ga=test; Path=/';setMeasurementConsent(false);expect(w['ga-disable-G-TEST123']).toBe(true);expect(document.cookie).not.toContain('_ga=');expect(localStorage.getItem(CONSENT_KEY)).toBe('denied');pauseMeasurement();});
+ it('respects Do Not Track even after an earlier grant',()=>{setMeasurementConsent(true);vi.stubGlobal('navigator',{doNotTrack:'1'});expect(mayMeasure()).toBe(false);});
+ it('counts verified new signup once and never an existing account or failed attempt',()=>{setMeasurementConsent(true);markSignupAttempt();recordVerifiedSignup({created_at:new Date().toISOString()});flushVerifiedSignup();flushVerifiedSignup();const events=()=>Array.from(w.dataLayer??[],item=>Array.from(item as ArrayLike<unknown>)).filter(c=>c[1]==='sign_up');expect(events()).toHaveLength(1);markSignupAttempt();recordVerifiedSignup({created_at:'2020-01-01T00:00:00Z'});flushVerifiedSignup();expect(events()).toHaveLength(1);expect(isNewSignup(undefined,Date.now(),Date.now())).toBe(false);expect(isNewSignup(new Date().toISOString(),Date.now()+1000,Date.now())).toBe(false);});
+});
