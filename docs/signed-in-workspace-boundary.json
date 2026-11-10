@@ -194,7 +194,7 @@
     "apps/web/src/screens/ops-run.tsx": "e7a9fdec46f7685f327ae967bf5c817cfadad9448bb5ec5609f2b10276ed8252",
     "apps/web/src/screens/ops.tsx": "56250236ec473c19999af7154628106ae84edc4fdb8f55685904c9289412ff4d",
     "apps/web/src/lib/public-seo.ts": "3d62185bdc469092a225f5bb93052cc8334b76e33e3ee94fc014419004432dd9",
-    "apps/web/src/lib/public-analytics.ts": "df6ec46b0f75e8d31523a6e0f04e046fb057e7046942fc0ec3a4703d56025177",
+    "apps/web/src/lib/public-analytics.ts": "f745affcf79256f8229db82c2f122d5675b6bd792a60700342f414c2b9125be7",
     "apps/web/src/components/public-analytics.tsx": "0f486fd740bddb6a0dc0639728ace13c4a51b8a80f55ffaada48b1f918135be5",
     "apps/web/src/components/public-analytics.css": "0443f6935b148caa0c1d20e4547ddb52a7bdb249e9a9374b0304a83d425a6f19",
     "apps/web/src/app/robots.ts": "5207c4f4db824484914f96b818ad22defbb9390c54693dfbdba8a09f739739e3",
