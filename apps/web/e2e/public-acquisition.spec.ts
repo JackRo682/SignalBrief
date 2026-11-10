@@ -1,3 +1,4 @@
+import {openPublicMenu} from './public-navigation';
 import {test,expect,type Page} from '@playwright/test';
 async function anonymous(page:Page){
  await page.route('**/v1/config',r=>r.fulfill({json:{auth_mode:'supabase',demo_mode:false,demo_admin_enabled:false}}));
@@ -14,7 +15,7 @@ test('public indexing, consent, client navigation and refusal protect private co
  const consent=page.getByRole('complementary',{name:'방문 통계 설정'});
  await expect(consent).toBeVisible();expect(await page.locator('#sb-google-analytics').count()).toBe(0);
  await consent.getByRole('button',{name:'동의',exact:true}).click();await expect(page.locator('#sb-google-analytics')).toHaveCount(1);
- await page.locator('.public-info-nav').getByRole('link',{name:'주요 기능',exact:true}).click();
+ await openPublicMenu(page);await page.locator('.public-info-nav').getByRole('link',{name:'주요 기능',exact:true}).click();
  await expect(page).toHaveURL(/\/features$/);
  await expect.poll(()=>page.evaluate(()=>JSON.stringify((window as Window & {dataLayer?:unknown[]}).dataLayer))).toContain('SignalBrief · features');
  await consent.getByRole('button',{name:'방문 통계 설정',exact:true}).click();
