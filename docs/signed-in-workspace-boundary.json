@@ -77,6 +77,26 @@
         "description": "Only features.css changes under apps/web/src. Existing content, shared components, auth, analytics, routing, signed-in screens, APIs and database logic remain identical to the production baseline."
       },
       "release_status": "Presentation scope reviewed. Exact-source release verification is recorded by the pull request checks and Vercel deployment."
+    },
+    {
+      "date": "2026-11-10",
+      "authorization": "The user requested a modest reduction in the vertical height of the existing four-card desktop rows, retaining the current layout and readability.",
+      "production_baseline_commit": "b53aac82348f9eb21b593c7fec099e2c9c5b97c7",
+      "reviewed_files": {
+        "apps/web/src/app/features/features.css": {
+          "before_sha256": "48d866bf7dee5cab2aeda9cb2ce03675f2f92d205ff6f5d7ba2426b0202a77f4",
+          "after_sha256": "5d78e3ae7acd46ed34ab00a39630c625f489cfc72ebf1daeb65c4dc74cb37d88",
+          "normalization": "CRLF to LF, matching scripts/verify_workspace_scope.py",
+          "scope": "Desktop-only vertical spacing adjustments above 1250px: tighter card, preview and list-row padding, smaller vertical margins and preview minimum height. Card widths, four-column structure, typography, controls and smaller-screen layouts are retained."
+        }
+      },
+      "source_preservation": {
+        "source_additions": 0,
+        "source_deletions": 0,
+        "unreviewed_source_changes": 0,
+        "description": "Only features.css changes under apps/web/src. Existing content, shared components, auth, analytics, routing, signed-in screens, APIs and database logic are unchanged."
+      },
+      "release_status": "Presentation scope reviewed. Exact-source release verification is recorded by the pull request checks and Vercel deployment."
     }
   ],
   "protected_paths": [
@@ -175,7 +195,7 @@
     "apps/web/src/app/auth/callback/page.tsx": "20579813c7118a8cdf30560dc1c04a7deab2edf91928793159118f9730bb934f",
     "apps/web/src/app/customers/page.tsx": "934e66999f46b8f23a4ac794aecb8d2bbd0d942f170e4fbcb64c2eb1599aeb36",
     "apps/web/src/app/disclaimer/page.tsx": "96eca0662914f839d8d219f97eaa72a949c58d0bd9b66cc09caace61d43aec5c",
-    "apps/web/src/app/features/features.css": "48d866bf7dee5cab2aeda9cb2ce03675f2f92d205ff6f5d7ba2426b0202a77f4",
+    "apps/web/src/app/features/features.css": "5d78e3ae7acd46ed34ab00a39630c625f489cfc72ebf1daeb65c4dc74cb37d88",
     "apps/web/src/app/features/page.tsx": "c5d412cd5b6232309b758f88f51ee03aff11106868d8955478b5937bbb907420",
     "apps/web/src/app/forgot-password/page.tsx": "785871f399d0f82d201b64089708ac1bef1a41098ef4eea62496c6b46da69aa0",
     "apps/web/src/app/globals.css": "622aab68e02a9ace329b78e2f4db2a800e328521ae2ec730512b4f2e8191392a",
