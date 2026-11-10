@@ -11,10 +11,24 @@ export type CalendarSourcePayload={kind:'calendar_source';url:string;nonce:strin
 export const CALENDAR_SOURCE_MAX_BYTES=2_000_000;
 export const CALENDAR_SOURCE_TIMEOUT_MS=10_000;
 type Resolver=(hostname:string)=>Promise<LookupAddress[]>;
-type DownloadOptions={resolve?:Resolver;request?:typeof httpsRequest;signal?:AbortSignal};
+type DownloadOptions={resolve?:Resolver;request?:typeof httpsRequest;signal?:AbortSignal;backoff?:CalendarSourceBackoff};
 type DownloadOutcome={bytes:Buffer;type:string}|{redirect:string};
 export const CALENDAR_SOURCE_MAX_REDIRECTS=2;
 const failure=(code:string)=>new Error(code);
+/** Small per-instance cooldown; never caches content or bypasses provider restrictions. */
+export class CalendarSourceBackoff{
+ private entries=new Map<string,{until:number;status:number}>();
+ constructor(private readonly clock=Date.now){}
+ check(url:string){const entry=this.entries.get(url);if(!entry)return;
+  if(entry.until<=this.clock()){this.entries.delete(url);return;}
+  throw Object.assign(failure('source_http_error'),{upstreamStatus:entry.status,retryAfter:Math.ceil((entry.until-this.clock())/1000)});
+ }
+ restrict(url:string,status:number){if(![403,429].includes(status))return;
+  if(this.entries.size>=128)this.entries.delete(this.entries.keys().next().value!);
+  this.entries.set(url,{until:this.clock()+300000,status});
+ }
+}
+const sourceBackoff=new CalendarSourceBackoff();
 
 export function verifyCalendarSource(body:string,timestamp:string,signature:string,secret:string,now=Date.now()):CalendarSourcePayload{
  if(secret.length<64||!/^\d{13}$/.test(timestamp)||Math.abs(now-Number(timestamp))>60_000
@@ -48,6 +62,7 @@ function resolveBounded(hostname:string,resolve:Resolver,signal:AbortSignal):Pro
 /** A new HTTPS socket uses only the address already verified here. No second DNS lookup. */
 export async function downloadCalendarSource(value:string|URL,options:DownloadOptions={}):Promise<{bytes:Buffer;type:string}>{
  const url=calendarURL(typeof value==='string'?value:value.href),deadline=new AbortController();
+ const backoff=options.backoff??(!options.request&&!options.resolve?sourceBackoff:undefined);backoff?.check(url.href);
  const timer=setTimeout(()=>deadline.abort(),CALENDAR_SOURCE_TIMEOUT_MS);
  const signal=options.signal?AbortSignal.any([options.signal,deadline.signal]):deadline.signal;
  try{
@@ -113,5 +128,5 @@ export async function downloadCalendarSource(value:string|URL,options:DownloadOp
   // Resolve and pin again for each same-origin redirect within the original total deadline.
   }
   throw failure('source_redirect_limit');
- }finally{clearTimeout(timer);}
+ }catch(error){if(error instanceof Error&&'upstreamStatus' in error&&typeof error.upstreamStatus==='number')backoff?.restrict(url.href,error.upstreamStatus);throw error;}finally{clearTimeout(timer);}
 }

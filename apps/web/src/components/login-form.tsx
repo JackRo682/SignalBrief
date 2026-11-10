@@ -1,5 +1,6 @@
 "use client";
 
+import {recordAcquisition} from '@/acquisition/client';
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -103,6 +104,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
       }
 
       if (mode === "signup") {
+        void recordAcquisition('signup_start','signup');
         const result = await supabase.auth.signUp({
           email,
           password,
@@ -110,6 +112,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
         });
         if (result.error) throw result.error;
 
+        void recordAcquisition('signup_requested','signup');
         if (result.data.session) {
           router.replace("/onboarding");
         } else {
@@ -206,7 +209,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
                 setError("서비스 이용 안내와 개인정보 처리 안내를 먼저 확인해 주세요.");
                 return;
               }
-              void run(() => auth.googleLogin());
+              void run(async () => {await recordAcquisition('signup_start',mode==='signup'?'signup':'login');await auth.googleLogin();});
             }}
           >
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24"><path fill="#4285f4" d="M22 12.2c0-.7-.1-1.4-.2-2.1H12v4h5.6a4.8 4.8 0 0 1-2.1 3.1v2.6h3.4c2-1.8 3.1-4.5 3.1-7.6Z"/><path fill="#34a853" d="M12 22c2.8 0 5.2-.9 6.9-2.4l-3.4-2.6c-.9.6-2.1 1-3.5 1a6 6 0 0 1-5.6-4.1H2.9v2.7A10 10 0 0 0 12 22Z"/><path fill="#fbbc05" d="M6.4 13.9a6 6 0 0 1 0-3.8V7.4H2.9a10 10 0 0 0 0 9.2Z"/><path fill="#ea4335" d="M12 6c1.6 0 3 .5 4.1 1.6l3.1-3.1A10 10 0 0 0 2.9 7.4l3.5 2.7A6 6 0 0 1 12 6Z"/></svg>

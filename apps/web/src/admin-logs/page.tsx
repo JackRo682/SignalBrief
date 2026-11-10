@@ -1,5 +1,6 @@
 'use client';
 
+import AcquisitionPanel from '@/acquisition/panel';
 import { Fragment, useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -104,6 +105,7 @@ function UserLogContent({ unified }: { unified: boolean }) {
   const [selected, setSelected] = useState<{ filters: UserLogsFilters; cursors: (UserLogCursor | null)[] }>(() => ({ filters: defaultLogFilters(), cursors: [null] }));
   const [today] = useState(koreanDate);
   const [validation, setValidation] = useState('');
+  const [trafficRevision,setTrafficRevision]=useState(0);
   const [switching, setSwitching] = useState(false);
   const [switchError, setSwitchError] = useState('');
   const initialAnchorHandled = useRef(false);
@@ -147,6 +149,7 @@ function UserLogContent({ unified }: { unified: boolean }) {
     if (apply({ ...selected.filters, from: draft.from, to: draft.to, include_admin: draft.include_admin })) overview.reload();
   }
   function refresh() {
+    setTrafficRevision(v=>v+1);
     setSelected(value => ({ ...value, cursors: [null] }));
     result.reload();
     overview.reload();
@@ -224,6 +227,7 @@ function UserLogContent({ unified }: { unified: boolean }) {
             </>}
           </Panel>
         </section>
+        {unified && <AcquisitionPanel from={selected.filters.from} to={selected.filters.to} revision={trafficRevision}/>}
         {overview.loading && <OverviewLoading/>}
         {overview.error && <section className="user-log-error" role="alert"><h2>핵심 지표를 불러오지 못했습니다</h2><p>이용 지표를 확인할 수 없습니다. 활동 기록은 별도로 조회할 수 있습니다.</p><LogError error={overview.error} retry={overview.reload} reauthenticate={() => void reauthenticate()} busy={switching} actionError={switchError}/></section>}
         {overview.data && <OverviewPanels data={overview.data}/>}
@@ -232,7 +236,7 @@ function UserLogContent({ unified }: { unified: boolean }) {
       </>}
       <details className="user-log-scope"><summary>측정 기준·수집 범위</summary>
         <p>관리자로 확인된 계정만 조회할 수 있습니다. 선택적 이용 통계에 동의한 로그인 사용자의 최근 90일을 집계하며, 동의를 철회한 사용자는 제외합니다. 수집을 시작하기 전의 방문과 행동 기록은 복원하지 않습니다.</p>
-        <p>비로그인 방문자와 가입 시작 기록이 없어 전체 방문자 수와 회원가입 전환율은 측정하지 않습니다. 오류율은 별도로 기록된 인증 API 요청의 최근 30일 이내 집계이며, 관리자 요청을 포함합니다.</p>
+        <p>외부 유입·회원가입 영역은 별도 동의한 공개 페이지 방문 브라우저와 서버에서 확인한 신규 가입을 집계합니다. 기존 로그인 활동 지표와 집계 범위가 다릅니다. 오류율은 별도로 기록된 인증 API 요청의 최근 30일 이내 집계이며, 관리자 요청을 포함합니다.</p>
         <p>요약 지표의 세션은 같은 사용자의 기록된 세션 ID 안에서 30분 이상 활동 공백이 생기면 나눕니다. 상세 로그의 세션 ID 수는 원래 기록된 식별자 수여서 요약 세션 수와 다를 수 있습니다.</p>
       </details>
     </div>
