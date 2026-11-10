@@ -64,6 +64,18 @@ jobs:
           # and legacy unit suites; it is deliberately hidden in this release.
           # See docs/SIGNED_IN_RELEASE_CHECKS.md for the replacement coverage.
           E2E_BASE_URL=http://localhost:3000 npm run test:e2e -- research-workspace.spec.ts home-dashboard.spec.ts home-ab-layout.spec.ts watchlist-reference.spec.ts auth-navigation.spec.ts marketing-pages.spec.ts ui-refinement.spec.ts responsive-design.spec.ts news.spec.ts career-analytics.spec.ts research.spec.ts daily-digest.spec.ts company-profile.spec.ts redesign-reliability.spec.ts notification-read-state.spec.ts
+      - name: Public SEO and consented acquisition on desktop and mobile
+        working-directory: apps/web
+        run: |
+          NEXT_PUBLIC_GA_MEASUREMENT_ID=G-TEST123 NEXT_PUBLIC_API_URL=/api NEXT_PUBLIC_SUPABASE_URL=https://test-project.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_isolated_fixture setsid npm run dev -- --hostname 127.0.0.1 --port 3001 > /tmp/signalbrief-acquisition.log 2>&1 &
+          acquisition_pid=$!
+          trap 'kill -- -"$acquisition_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3001/login > /dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:3001/login > /dev/null
+          E2E_BASE_URL=http://localhost:3001 npm run test:e2e -- public-acquisition.spec.ts
       - uses: actions/upload-artifact@v4
         if: always()
         with:

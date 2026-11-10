@@ -1,5 +1,6 @@
 "use client";
 
+import {markSignupAttempt,recordVerifiedSignup} from '@/lib/public-analytics';
 import {recordAcquisition} from '@/acquisition/client';
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
@@ -104,6 +105,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
       }
 
       if (mode === "signup") {
+        markSignupAttempt();
         void recordAcquisition('signup_start','signup');
         const result = await supabase.auth.signUp({
           email,
@@ -114,6 +116,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
 
         void recordAcquisition('signup_requested','signup');
         if (result.data.session) {
+          recordVerifiedSignup(result.data.user);
           router.replace("/onboarding");
         } else {
           setMessage("가입 요청을 접수했습니다. 가입 가능한 이메일이라면 인증 메일이 도착합니다. 이메일의 링크를 열어 가입을 완료해 주세요.");
@@ -209,6 +212,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
                 setError("서비스 이용 안내와 개인정보 처리 안내를 먼저 확인해 주세요.");
                 return;
               }
+              if(mode === 'signup')markSignupAttempt();
               void run(async () => {await recordAcquisition('signup_start',mode==='signup'?'signup':'login');await auth.googleLogin();});
             }}
           >

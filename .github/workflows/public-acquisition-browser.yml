@@ -1,0 +1,46 @@
+name: Public acquisition browser checks
+on:
+  push:
+    branches: [fix/public-seo-ga4-20261110]
+  pull_request:
+    paths:
+      - 'apps/web/src/acquisition/**'
+      - 'apps/web/src/lib/public-analytics.ts'
+      - 'apps/web/src/components/public-analytics.tsx'
+      - 'apps/web/e2e/public-acquisition.spec.ts'
+      - 'apps/web/e2e/research.spec.ts'
+      - '.github/workflows/public-acquisition-browser.yml'
+permissions:
+  contents: read
+jobs:
+  acquisition-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - working-directory: apps/web
+        run: npm ci
+      - working-directory: apps/web
+        run: npx playwright install --with-deps chromium
+      - name: Consent, indexing, admin summaries and date-scope regressions
+        working-directory: apps/web
+        run: |
+          NEXT_PUBLIC_GA_MEASUREMENT_ID=G-TEST123 NEXT_PUBLIC_API_URL=/api NEXT_PUBLIC_SUPABASE_URL=https://test-project.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_isolated_fixture setsid npm run dev -- --hostname 127.0.0.1 > /tmp/acquisition-web.log 2>&1 &
+          acquisition_pid=$!
+          trap 'kill -- -"$acquisition_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3000/login > /dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:3000/login > /dev/null
+          E2E_BASE_URL=http://localhost:3000 npm run test:e2e -- research.spec.ts public-acquisition.spec.ts --grep "one admin page keeps|unified operations preserve|operations permission denial|temporary operations source failure|legacy audit view|public indexing"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: public-acquisition-browser-results
+          path: |
+            apps/web/test-results/
+            apps/web/playwright-report/
+            /tmp/acquisition-web.log
