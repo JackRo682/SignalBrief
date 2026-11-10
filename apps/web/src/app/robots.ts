@@ -1,3 +1,7 @@
 import type {MetadataRoute} from 'next';
-import {SITE_ORIGIN} from '@/lib/public-seo';
-export default function robots():MetadataRoute.Robots{return {rules:{userAgent:'*',allow:'/',disallow:['/api/','/auth/','/ops','/today','/explore','/search','/watchlist','/portfolio','/timeline','/questions','/calendar','/alerts','/saved','/settings','/onboarding','/companies/','/events/','/documents/','/billing','/login','/signup','/forgot-password','/reset-password','/study/']},sitemap:SITE_ORIGIN+'/sitemap.xml'};}
+import {PUBLIC_ORIGIN,publicIndexing} from '@/lib/public-seo';
+export default function robots():MetadataRoute.Robots{
+ if(!publicIndexing())return {rules:{userAgent:'*',disallow:'/'}};
+ // Private HTML remains noindex and authorization-protected. Let bots read that directive.
+ return {rules:{userAgent:'*',allow:'/',disallow:['/api/']},sitemap:`${PUBLIC_ORIGIN}/sitemap.xml`,host:PUBLIC_ORIGIN};
+}

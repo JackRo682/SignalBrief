@@ -1,14 +1,15 @@
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {CONSENT_KEY,consentChoice,flushVerifiedSignup,isNewSignup,markSignupAttempt,mayMeasure,pauseMeasurement,recordVerifiedSignup,safeReferrer,setMeasurementConsent,trackPublicPage} from '../src/lib/public-analytics';
+import {chooseConsent} from '../src/acquisition/client';
 import {publicMetadata,publicPages} from '../src/lib/public-seo';
 import sitemap from '../src/app/sitemap';
 import robots from '../src/app/robots';
 type GAWindow=Window & {dataLayer?:unknown[];gtag?:(...args:unknown[])=>void;'ga-disable-G-TEST123'?:boolean};
 const w=window as GAWindow;
-beforeEach(()=>{vi.stubEnv('NEXT_PUBLIC_GA_MEASUREMENT_ID','G-TEST123');localStorage.clear();document.getElementById('sb-google-analytics')?.remove();delete w.gtag;delete w.dataLayer;});
+beforeEach(()=>{vi.stubEnv('NEXT_PUBLIC_GA_MEASUREMENT_ID','G-TEST123');localStorage.clear();chooseConsent(true);document.getElementById('sb-google-analytics')?.remove();delete w.gtag;delete w.dataLayer;});
 afterEach(()=>{vi.unstubAllEnvs();vi.restoreAllMocks();vi.unstubAllGlobals();});
 describe('public indexing',()=>{
- it('lists only the four public marketing pages, never account or record routes',()=>{expect(sitemap().map(p=>new URL(p.url).pathname)).toEqual(['/','/features','/about','/pricing']);for(const p of publicPages){const m=publicMetadata(p.path);expect(m.robots).toEqual({index:true,follow:true});expect(m.alternates?.canonical).toBe('https://signalbrief.online'+p.path);}expect(robots().sitemap).toBe('https://signalbrief.online/sitemap.xml');expect(()=>publicMetadata('/ops')).toThrow();});
+ it('lists only public marketing pages, never account or record routes',()=>{expect(sitemap().map(p=>new URL(p.url).pathname)).toEqual(Object.keys(publicPages));for(const path of Object.keys(publicPages)){const m=publicMetadata(path as keyof typeof publicPages);expect(m.robots).toEqual({index:true,follow:true});expect(m.alternates?.canonical).toBe('https://signalbrief.online'+path);}expect(robots().sitemap).toBe('https://signalbrief.online/sitemap.xml');expect(()=>publicMetadata('/ops' as keyof typeof publicPages)).toThrow();});
 });
 describe('consented and minimized Google analytics',()=>{
  it('loads no Google script or commands before consent or after refusal',()=>{trackPublicPage('/','');expect(document.getElementById('sb-google-analytics')).toBeNull();expect(w.dataLayer).toBeUndefined();setMeasurementConsent(false);trackPublicPage('/','');expect(consentChoice()).toBe('denied');expect(w.dataLayer).toBeUndefined();});

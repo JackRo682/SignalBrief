@@ -1,26 +1,29 @@
+import {readConsent} from '@/acquisition/client';
 // Only explicit public routes and fixed event names cross the Google boundary.
 export const CONSENT_KEY='sb.public.analytics.v1';
 const SIGNUP_KEY='sb.public.signup.v1';
 const PENDING_KEY='sb.public.signup-confirmed.v1';
 const ORIGIN='https://signalbrief.online';
 let consentRevision=0;
-export const publicScreens:Record<string,string>={'/':'home','/features':'features','/about':'about','/pricing':'pricing','/privacy':'privacy','/terms':'terms','/signup':'signup','/login':'login'};
+export const publicScreens:Record<string,string>={'/':'home','/sources':'sources','/customers':'customers','/disclaimer':'disclaimer','/features':'features','/about':'about','/pricing':'pricing','/privacy':'privacy','/terms':'terms','/signup':'signup','/login':'login'};
 type AnalyticsWindow=Window & {dataLayer?:unknown[];gtag?:(...args:unknown[])=>void};
 function browser(){return typeof window==='undefined'?null:window as AnalyticsWindow;}
 export function measurementId(){const id=process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID??'';return /^G-[A-Z0-9]+$/.test(id)?id:null;}
 export function consentChoice():string|null{try{return browser()?.localStorage.getItem(CONSENT_KEY)??null;}catch{return null;}}
 function optedOut(){const w=browser();return !w||w.navigator.doNotTrack==='1'||(w.navigator as Navigator & {globalPrivacyControl?:boolean}).globalPrivacyControl===true;}
-export function mayMeasure(){return !optedOut()&&consentChoice()==='granted';}
+export function mayMeasure(){return !optedOut()&&consentChoice()==='granted'&&readConsent()?.choice==='yes';}
 function store(key:string,value:string|null){try{if(value===null)browser()?.localStorage.removeItem(key);else browser()?.localStorage.setItem(key,value);}catch{/* Storage denial fails closed. */}}
 export function setMeasurementConsent(granted:boolean){
  consentRevision++;
  store(CONSENT_KEY,granted?'granted':'denied');
  if(!granted){store(SIGNUP_KEY,null);store(PENDING_KEY,null);}
+ browser()?.dispatchEvent(new Event('sb:google-consent'));
  const w=browser(),id=measurementId();if(w&&id){Reflect.set(w,'ga-disable-'+id,!granted);
   w.gtag?.('consent','update',{analytics_storage:granted?'granted':'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});
   if(!granted)for(const cookie of document.cookie.split(';')){const name=cookie.split('=')[0].trim();if(name==='_ga'||name.startsWith('_ga_'))document.cookie=name+'=; Max-Age=0; Path=/; SameSite=Lax';}
  }
 }
+export function resumeMeasurement(){return Boolean(start());}
 export function pauseMeasurement(){const w=browser(),id=measurementId();if(w&&id)Reflect.set(w,'ga-disable-'+id,true);}
 function start(){
  const w=browser(),id=measurementId();if(!w||!id||!mayMeasure())return null;
@@ -58,5 +61,5 @@ export function recordVerifiedSignup(user:{created_at?:string}|null|undefined){
 export function flushVerifiedSignup(pauseAfter=false){
  if(!mayMeasure())return false;let pending=false;try{pending=browser()?.localStorage.getItem(PENDING_KEY)==='1';}catch{return false;}
  if(!pending)return false;const send=start();if(!send)return false;
- store(PENDING_KEY,null);send('event','sign_up',{method:'supabase',page_location:ORIGIN+'/signup',page_title:'SignalBrief · signup',page_referrer:'',...(pauseAfter?{event_callback:pauseMeasurement,event_timeout:1000}:{})});return true;
+ store(PENDING_KEY,null);send('event','sign_up',{method:'supabase',page_location:ORIGIN+'/signup',page_title:'SignalBrief · signup',page_referrer:'',...(pauseAfter?{event_callback:()=>{if(!publicScreens[browser()?.location.pathname??''])pauseMeasurement();},event_timeout:1000}:{})});return true;
 }

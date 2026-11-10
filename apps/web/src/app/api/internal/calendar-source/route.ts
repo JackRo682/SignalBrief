@@ -27,9 +27,10 @@ export async function POST(req:Request):Promise<Response>{
  }catch(error){
   const code=error instanceof Error?error.message:'';
   const upstreamStatus=code==='source_http_error'&&error instanceof Error&&'upstreamStatus' in error?error.upstreamStatus:null;
-  if(authorized)console.error('CALENDAR_SOURCE_FAILURE',{operation:'calendar_source',code:diagnostics.has(code)?code:'source_unavailable',
+  const restricted=authorized&&(upstreamStatus===403||upstreamStatus===429);
+  if(authorized)(restricted?console.warn:console.error)(restricted?'CALENDAR_SOURCE_RESTRICTED':'CALENDAR_SOURCE_FAILURE',{operation:'calendar_source',code:diagnostics.has(code)?code:'source_unavailable',
    ...(typeof upstreamStatus==='number'&&Number.isInteger(upstreamStatus)&&upstreamStatus>=100&&upstreamStatus<=599?{upstream_status:upstreamStatus}:{})});
   return Response.json({error:code==='relay_unauthorized'?'relay_unauthorized':code==='relay_invalid_request'?'relay_invalid_request':'calendar_source_failed'},
-   {status:code==='relay_unauthorized'?401:code==='relay_invalid_request'?422:502,headers});
+   {status:code==='relay_unauthorized'?401:code==='relay_invalid_request'?422:502,headers:{...headers,...(restricted?{'Retry-After':'300','X-SignalBrief-Upstream-Status':String(upstreamStatus)}:{})}});
  }
 }

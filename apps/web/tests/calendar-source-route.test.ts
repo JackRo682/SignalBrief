@@ -14,7 +14,7 @@ function request(value:unknown=payload,options:{unsigned?:boolean;stale?:boolean
 beforeEach(()=>{
  vi.clearAllMocks();vi.stubEnv('DART_RELAY_SECRET',secret);vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL','https://synthetic.supabase.co');vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY','synthetic-public');
  mocks.rpc.mockResolvedValue({data:true,error:null});mocks.download.mockResolvedValue({bytes:Buffer.from('<html>Original bytes</html>'),type:'text/html; charset=utf-8'});
- vi.spyOn(console,'error').mockImplementation(()=>{});
+ vi.spyOn(console,'error').mockImplementation(()=>{});vi.spyOn(console,'warn').mockImplementation(()=>{});
 });
 afterEach(()=>{vi.unstubAllEnvs();vi.restoreAllMocks();});
 describe('private calendar source relay',()=>{
@@ -51,7 +51,9 @@ describe('private calendar source relay',()=>{
  it('records only a bounded upstream HTTP status without exposing provider URLs or response bodies',async()=>{
   mocks.download.mockRejectedValue(Object.assign(new Error('source_http_error'),{upstreamStatus:403,url:'https://private.example/?token=private-value',body:'private response'}));
   const response=await POST(request());expect(await response.json()).toEqual({error:'calendar_source_failed'});
-  expect(console.error).toHaveBeenCalledExactlyOnceWith('CALENDAR_SOURCE_FAILURE',{operation:'calendar_source',code:'source_http_error',upstream_status:403});
+  expect(console.warn).toHaveBeenCalledExactlyOnceWith('CALENDAR_SOURCE_RESTRICTED',{operation:'calendar_source',code:'source_http_error',upstream_status:403});
+  expect(console.error).not.toHaveBeenCalled();expect(response.headers.get('Retry-After')).toBe('300');
+  expect(response.headers.get('X-SignalBrief-Upstream-Status')).toBe('403');
   expect(JSON.stringify(vi.mocked(console.error).mock.calls)).not.toMatch(/private-value|private\.example|private response/);
  });
  it.each(['403',NaN,0,600])('omits malformed diagnostic HTTP status %s',async upstreamStatus=>{
