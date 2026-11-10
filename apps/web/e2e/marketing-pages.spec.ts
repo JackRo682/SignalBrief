@@ -29,7 +29,7 @@ test('public desktop content aligns with its header and keeps explanatory text r
  await anonymous(page);
  const screens=[
   {path:'/',label:null,containers:['.v-hero-grid','.v-home-features>.v-container','.v-home-sources>.v-container','.v-home-plans>.v-container'],copy:[['.v-home-features .v-card>div>p',15]]},
-  {path:'/features',label:'주요 기능',containers:['.v-feature-title','.v-feature-cards'],copy:[['.v-feature-card>header p',15]]},
+  {path:'/features',label:'주요 기능',containers:['.v-feature-title','.v-feature-cards'],copy:[['.v-feature-card>header p',16]]},
   {path:'/sources',label:'데이터 출처',containers:['.v-hero-grid','.v-sources-list>.v-container','.v-sources-process>.v-container','.v-source-bottom'],copy:[['.v-source-seven .v-card>div>p',14]]},
   {path:'/pricing',label:'요금제',containers:['.v-pricing-title','.v-pricing-cards','.v-comparison>.v-container'],copy:[['.v-plan-intro>p,.v-plan-benefits li,.v-plan-benefits>small',14]]},
  ] as const;
@@ -68,6 +68,34 @@ test('public desktop content aligns with its header and keeps explanatory text r
     const sizes=await page.locator(selector).evaluateAll(elements=>elements.map(element=>parseFloat(getComputedStyle(element).fontSize)));
     expect(sizes.length,`${selector} is present`).toBeGreaterThan(0);
     for(const size of sizes)expect(size,`${selector} remains readable`).toBeGreaterThanOrEqual(minimum);
+   }
+   if(screen.path==='/features'){
+    const cards=await page.locator('.v-feature-card').evaluateAll(elements=>elements.map(element=>{
+     const box=element.getBoundingClientRect(),widget=element.querySelector('.v-widget');
+     if(!widget)throw new Error('Missing feature preview');
+     return {left:box.left,right:box.right,top:box.top,bottom:box.bottom,
+      overflow:element.scrollWidth-element.clientWidth,widgetOverflow:widget.scrollWidth-widget.clientWidth};
+    }));
+    expect(cards,'All eight features remain present').toHaveLength(8);
+    const rows=[cards.slice(0,4),cards.slice(4)];
+    for(const [rowIndex,row] of rows.entries()){
+     for(const [column,card] of row.entries()){
+      expect(Math.abs(card.top-row[0].top),`Feature row ${rowIndex+1} has four cards at ${width}px`).toBeLessThanOrEqual(1);
+      expect(card.overflow,`Feature ${rowIndex*4+column+1} has no horizontal overflow`).toBeLessThanOrEqual(1);
+      expect(card.widgetOverflow,`Feature preview ${rowIndex*4+column+1} has no horizontal overflow`).toBeLessThanOrEqual(1);
+      if(column>0){
+       const gap=card.left-row[column-1].right;
+       expect(gap,'Adjacent feature cards do not overlap').toBeGreaterThan(0);
+       expect(gap,'Feature cards use compact horizontal spacing').toBeLessThanOrEqual(16);
+      }
+     }
+    }
+    for(let column=0;column<4;column++){
+     const gap=rows[1][column].top-rows[0][column].bottom;
+     expect(gap,'Feature cards form two separate rows').toBeGreaterThan(0);
+     expect(gap,'Feature cards use compact vertical spacing').toBeLessThanOrEqual(16);
+     expect(Math.abs(rows[1][column].left-rows[0][column].left),'Feature columns align across both rows').toBeLessThanOrEqual(1);
+    }
    }
    expect(layout.overflow,'No horizontal document overflow').toBeLessThanOrEqual(1);
    expect(await page.evaluate(()=>(window as Window&{__publicLayoutMarker?:string}).__publicLayoutMarker)).toBe('retained');

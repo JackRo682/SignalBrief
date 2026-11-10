@@ -1,4 +1,9 @@
 /* Feature-page presentation only: shared previews also appear on other routes. */
+.v-public-design:has(.v-page-features) {
+  --public-content-width: 1760px;
+  --public-content-gutters: 48px;
+}
+
 .v-public-design .v-page-features {
   padding-bottom: 24px;
   background: linear-gradient(180deg, #fff 0, #f8fafc 420px, #f8fafc 100%);
@@ -25,16 +30,17 @@
 }
 
 .v-public-design .v-page-features .v-feature-cards {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
   align-items: stretch;
 }
 
 .v-public-design .v-page-features .v-feature-card {
   display: flex;
   flex-direction: column;
+  container: feature-card / inline-size;
   min-width: 0;
-  padding: 26px;
+  padding: 20px;
   border: 1px solid #dfe6ef;
   border-radius: 18px;
   background: #fff;
@@ -43,21 +49,25 @@
 
 .v-public-design .v-page-features .v-feature-card > header {
   display: grid;
-  grid-template-columns: 48px minmax(0, 1fr);
-  align-items: start;
-  gap: 16px;
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
   min-height: 0;
-  margin-bottom: 22px;
+  margin-bottom: 20px;
+}
+
+.v-public-design .v-page-features .v-feature-card > header > div {
+  display: contents;
 }
 
 .v-public-design .v-page-features .v-feature-card > header .v-icon {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 14px;
 }
 
 .v-public-design .v-page-features .v-feature-card h2 {
-  margin: 0 0 8px;
+  margin: 0;
   font-size: 24px;
   line-height: 1.4;
   letter-spacing: -.4px;
@@ -66,6 +76,7 @@
 }
 
 .v-public-design .v-page-features .v-feature-card > header p {
+  grid-column: 1 / -1;
   margin: 0;
   font-size: 16px;
   line-height: 1.75;
@@ -80,7 +91,7 @@
   height: auto;
   min-height: 280px;
   margin-top: 0;
-  padding: 20px;
+  padding: 14px;
   overflow: visible;
   border: 1px solid #e4eaf2;
   border-radius: 12px;
@@ -90,7 +101,8 @@
 }
 
 .v-page-features .v-feature-card .v-widget-heading {
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 6px 12px;
   min-height: 32px;
   margin-bottom: 14px;
 }
@@ -125,7 +137,7 @@
 }
 
 .v-page-features .v-feature-card .v-portfolio-total {
-  gap: 16px;
+  gap: 10px;
   margin-block: 12px 18px;
 }
 
@@ -154,7 +166,7 @@
 .v-page-features .v-feature-card .v-stock-row,
 .v-page-features .v-feature-card .v-watch-row {
   grid-template-columns: 32px minmax(0, 1fr) auto auto;
-  gap: 12px;
+  gap: 8px;
   padding-block: 12px;
   font-size: 14px;
   line-height: 1.5;
@@ -218,7 +230,7 @@
 .v-page-features .v-feature-card .v-event-intro {
   grid-template-columns: minmax(0, 1fr) 30%;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
   margin-bottom: 16px;
 }
 
@@ -414,7 +426,12 @@
   word-break: keep-all;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1250px) {
+  .v-public-design .v-page-features .v-feature-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
   .v-public-design .v-page-features .v-feature-card {
     padding: 22px;
   }
@@ -441,6 +458,112 @@
 
   .v-page-features .v-process-features {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* A narrow desktop card needs the same readable rows as a narrow phone card. */
+@container feature-card (max-width: 330px) {
+  .v-page-features .v-feature-card .v-stock-row,
+  .v-page-features .v-feature-card .v-watch-row {
+    grid-template-columns: 28px minmax(0, 1fr) auto;
+    gap: 2px 8px;
+  }
+
+  .v-page-features .v-feature-card .v-stock-mark {
+    width: 28px;
+    height: 28px;
+  }
+
+  .v-page-features .v-feature-card .v-stock-row > .v-stock-mark,
+  .v-page-features .v-feature-card .v-watch-row > .v-stock-mark {
+    grid-row: 1 / 3;
+  }
+
+  .v-page-features .v-feature-card .v-stock-row > span:nth-child(2),
+  .v-page-features .v-feature-card .v-watch-row > span:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .v-page-features .v-feature-card .v-stock-row > span:nth-child(3),
+  .v-page-features .v-feature-card .v-watch-row > span:nth-child(3) {
+    grid-column: 2;
+    grid-row: 2;
+    white-space: nowrap;
+  }
+
+  .v-page-features .v-feature-card .v-stock-row > em,
+  .v-page-features .v-feature-card .v-watch-row > em {
+    grid-column: 3;
+    grid-row: 1 / 3;
+    justify-self: end;
+  }
+
+  .v-page-features .v-feature-card .v-portfolio-total {
+    flex-wrap: wrap;
+  }
+
+  .v-page-features .v-feature-card .v-portfolio-total .v-chart {
+    width: 100%;
+    height: 56px;
+  }
+
+  .v-page-features .v-feature-card .v-event-intro {
+    grid-template-columns: minmax(0, 1fr) 24%;
+    gap: 10px;
+  }
+
+  .v-page-features .v-feature-card .v-evidence-row {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 6px 8px;
+  }
+
+  .v-page-features .v-feature-card .v-evidence-row > .v-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .v-page-features .v-feature-card .v-evidence-row > .v-tag {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .v-page-features .v-feature-card .v-timeline li,
+  .v-page-features .v-feature-card .v-calendar-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 8px;
+  }
+
+  .v-page-features .v-feature-card .v-timeline time,
+  .v-page-features .v-feature-card .v-calendar-row time {
+    grid-column: 1 / -1;
+  }
+
+  .v-page-features .v-feature-card .v-chat-user,
+  .v-page-features .v-feature-card .v-chat-answer p {
+    padding: 10px 12px;
+  }
+
+  .v-page-features .v-feature-card .v-chat-answer .v-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .v-page-features .v-feature-card .v-month {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) 36px;
+  }
+
+  .v-page-features .v-feature-card .v-month b {
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .v-page-features .v-feature-card .v-month > .v-more {
+    grid-column: 1 / -1;
+    justify-self: end;
+    margin-left: 0;
   }
 }
 
@@ -533,28 +656,11 @@
 
   .v-page-features .v-feature-card .v-stock-row,
   .v-page-features .v-feature-card .v-watch-row {
-    grid-template-columns: 26px minmax(0, 1fr) auto auto;
-    gap: 6px;
-    font-size: 12px;
-  }
-
-  .v-page-features .v-feature-card .v-stock-mark {
-    width: 26px;
-    height: 26px;
-  }
-
-  .v-page-features .v-feature-card .v-stock-row em,
-  .v-page-features .v-feature-card .v-watch-row em {
-    padding-inline: 4px;
-    font-size: 11px;
+    font-size: 14px;
   }
 
   .v-page-features .v-feature-card .v-portfolio-total strong {
     font-size: 24px;
-  }
-
-  .v-page-features .v-feature-card .v-portfolio-total .v-chart {
-    width: 30%;
   }
 
   .v-page-features .v-feature-card .v-event-intro {
