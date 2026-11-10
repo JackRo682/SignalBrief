@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
+import {trafficRequest,trafficSummary} from '../src/acquisition/contracts';
 import {fixtureNow,mobileFixture} from './mobile-fixture';
 import {emptyActivityFixture,overviewFixture} from './admin-overview-fixture';
 import type {AdminOverviewRequest} from '../src/admin-logs/overview-contracts';
@@ -45,6 +46,14 @@ function operationsSnapshot(period:OperationsPeriod,populated:boolean,reviewed:b
 async function fixture(page:Page,admin=true){
  const base=await mobileFixture(page);base.state.profile.is_admin=admin;
  const overviewCalls:AdminOverviewRequest[]=[],activityCalls:UserLogsRequest[]=[];
+ const trafficCalls:{action:'summary';from:string;to:string}[]=[];
+ await page.route('**/api/traffic',async route=>{
+  const request=route.request();expect(request.method()).toBe('POST');expect(request.headers().authorization).toMatch(/^Bearer /);
+  const p=trafficRequest.parse(request.postDataJSON());if(p.action!=='summary')throw new Error('Unexpected acquisition action in admin fixture');
+  if(!base.state.profile.is_admin){await route.fulfill({status:403,json:{error:'admin_required'}});return;}
+  trafficCalls.push(p);const counts={visitors:0,pageviews:0,starts:0,requests:0,signups:0,onboarded:0};
+  await route.fulfill({json:trafficSummary.parse({generated_at:fixtureNow,totals:counts,daily:[],sources:[]})});
+ });
  const operations={populated:false,auditStatus:200,reviewed:false,calls:[] as string[],periods:[] as OperationsPeriod[],actions:[] as {path:string;body:unknown}[]};
  await page.route('**/api/admin/overview',async route=>{
   const p=route.request().postDataJSON();overviewCalls.push(p);
@@ -106,7 +115,7 @@ async function fixture(page:Page,admin=true){
    case 'experiment_create':expect(p.config.A.answer).toBeTruthy();result={id};break;
    default:throw new Error(`Unexpected research action ${action}`);
   }await route.fulfill({json:result});
- });return {base,calls,overviewCalls,activityCalls,operations,get withdrawn(){return withdrawn;}};
+ });return {base,calls,overviewCalls,activityCalls,trafficCalls,operations,get withdrawn(){return withdrawn;}};
 }
 test('nine admin pages render real empty states and responsive navigation',async({page})=>{
  const f=await fixture(page);
@@ -223,6 +232,9 @@ test('one admin page keeps usage and operations, shared dates, errors, and activ
  await expect.poll(()=>f.activityCalls.at(-1)?.from).toBe(nextFrom);
  await expect.poll(()=>f.operations.periods.at(-1)?.start).toBe(nextFrom);
  expect(overviewQueries.at(-1)?.to).toBe(f.activityCalls.at(-1)?.to);
+ await expect.poll(()=>f.trafficCalls.at(-1)?.from).toBe(nextFrom);
+ expect(f.trafficCalls.at(-1)?.to).toBe(f.activityCalls.at(-1)?.to);
+ await expect(page.getByRole('region',{name:'외부 유입 · 회원가입',exact:true})).toContainText('방문 → 신규 가입 전환율: 측정 대기');
  expect(f.operations.periods.at(-1)?.end).toBe(f.activityCalls.at(-1)?.to);
  const beforeFilter=overviewQueries.length;
  const operationsBeforeFilter=f.operations.periods.length;
