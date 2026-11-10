@@ -29,6 +29,34 @@
       },
       "evidence": "docs/SIGNED_IN_RELEASE_CHECKS.md#november-4-public-only-desktop-presentation-revision",
       "release_status": "Full local verification and the unchanged scope guard passed. Preview visual checks passed on public landing/features/sources/pricing/login/signup/terms; the observed 17px public logo inset was corrected and visually verified. Follow-up customer header alignment and privacy decoration containment fixes await final preview and exact-commit CI. Final exact-commit browser and PostgreSQL CI are pending. Not deployed."
+    },
+    {
+      "date": "2026-11-10",
+      "authorization": "The user requested design improvements specifically to /features because the text is cramped, the gaps between boxes feel too wide, and the boxes are too small. This review authorizes the page-scoped presentation revision and its stylesheet import, preserving existing content, controls, authentication, routing, APIs and database behavior.",
+      "production_baseline_commit": "449ae0acf4914c5ea16feabe6c1263ea2069d0bf",
+      "reviewed_files": {
+        "apps/web/src/app/features/page.tsx": {
+          "before_sha256": "1c429096497901e278c64d038fdba33395dd3ac6a0017ae2843184f51e6d30b4",
+          "after_sha256": "c5d412cd5b6232309b758f88f51ee03aff11106868d8955478b5937bbb907420",
+          "normalization": "CRLF to LF, matching scripts/verify_workspace_scope.py",
+          "scope": "Imports the dedicated features.css stylesheet; metadata and ReferencePage component behavior are retained."
+        },
+        "apps/web/src/app/features/features.css": {
+          "before_sha256": null,
+          "after_sha256": "d2cfb82c73bdcd208191f15d6d9057b18a4adfc773324a4e0ee83ff3ba580d38",
+          "normalization": "CRLF to LF, matching scripts/verify_workspace_scope.py",
+          "scope": "New presentation rules positively scoped to .v-page-features, including responsive two-column/one-column cards, readable preview text and tighter card spacing."
+        }
+      },
+      "source_preservation": {
+        "tracked_web_source_files": 359,
+        "unchanged_web_source_files": 358,
+        "source_additions": 1,
+        "source_deletions": 0,
+        "unreviewed_source_changes": 0,
+        "description": "All baseline apps/web/src files were compared byte-for-byte. Only the /features stylesheet import changes; the new stylesheet is limited to .v-page-features. Shared marketing components, signed-in screens, auth, analytics, API and administrative source remain identical."
+      },
+      "release_status": "Presentation source reviewed. Full local verifier and browser checks are in progress; real PostgreSQL checks and exact-commit CI remain separate release gates. Not deployed."
     }
   ],
   "protected_paths": [
@@ -127,7 +155,8 @@
     "apps/web/src/app/auth/callback/page.tsx": "20579813c7118a8cdf30560dc1c04a7deab2edf91928793159118f9730bb934f",
     "apps/web/src/app/customers/page.tsx": "934e66999f46b8f23a4ac794aecb8d2bbd0d942f170e4fbcb64c2eb1599aeb36",
     "apps/web/src/app/disclaimer/page.tsx": "96eca0662914f839d8d219f97eaa72a949c58d0bd9b66cc09caace61d43aec5c",
-    "apps/web/src/app/features/page.tsx": "1c429096497901e278c64d038fdba33395dd3ac6a0017ae2843184f51e6d30b4",
+    "apps/web/src/app/features/features.css": "d2cfb82c73bdcd208191f15d6d9057b18a4adfc773324a4e0ee83ff3ba580d38",
+    "apps/web/src/app/features/page.tsx": "c5d412cd5b6232309b758f88f51ee03aff11106868d8955478b5937bbb907420",
     "apps/web/src/app/forgot-password/page.tsx": "785871f399d0f82d201b64089708ac1bef1a41098ef4eea62496c6b46da69aa0",
     "apps/web/src/app/globals.css": "622aab68e02a9ace329b78e2f4db2a800e328521ae2ec730512b4f2e8191392a",
     "apps/web/src/app/layout.tsx": "a8733cfa5b6e2a0b5019fddde771eef1bcbb1aa3290ebe435a43b51440d4dccc",

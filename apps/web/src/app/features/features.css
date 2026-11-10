@@ -1,0 +1,603 @@
+/* Feature-page presentation only: shared previews also appear on other routes. */
+.v-public-design .v-page-features {
+  padding-bottom: 24px;
+  background: linear-gradient(180deg, #fff 0, #f8fafc 420px, #f8fafc 100%);
+}
+
+.v-page-features .v-feature-title {
+  padding-block: 36px 28px;
+}
+
+.v-page-features .v-feature-title h1 {
+  margin-block: 12px 16px;
+  letter-spacing: -1.2px;
+}
+
+.v-page-features .v-feature-title .v-lead {
+  max-width: 720px;
+  line-height: 1.8;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.v-page-features .v-feature-title .v-handnote {
+  display: none;
+}
+
+.v-public-design .v-page-features .v-feature-cards {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
+.v-public-design .v-page-features .v-feature-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 26px;
+  border: 1px solid #dfe6ef;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 3px 12px #22345104;
+}
+
+.v-public-design .v-page-features .v-feature-card > header {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+  min-height: 0;
+  margin-bottom: 22px;
+}
+
+.v-public-design .v-page-features .v-feature-card > header .v-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+}
+
+.v-public-design .v-page-features .v-feature-card h2 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  line-height: 1.4;
+  letter-spacing: -.4px;
+  text-wrap: pretty;
+  word-break: keep-all;
+}
+
+.v-public-design .v-page-features .v-feature-card > header p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.75;
+  letter-spacing: 0;
+  color: #566579;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.v-public-design .v-page-features .v-feature-card .v-widget {
+  flex: 1;
+  height: auto;
+  min-height: 280px;
+  margin-top: 0;
+  padding: 20px;
+  overflow: visible;
+  border: 1px solid #e4eaf2;
+  border-radius: 12px;
+  background: #fbfcfe;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.v-page-features .v-feature-card .v-widget-heading {
+  gap: 12px;
+  min-height: 32px;
+  margin-bottom: 14px;
+}
+
+.v-page-features .v-feature-card .v-widget-heading > b,
+.v-page-features .v-feature-card .v-calendar-tabs > b {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.v-page-features .v-feature-card .v-widget small,
+.v-page-features .v-feature-card .v-timeline time,
+.v-page-features .v-feature-card .v-calendar-row time {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #66758b;
+}
+
+.v-page-features .v-feature-card .v-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 32px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #3563c4;
+}
+
+.v-page-features .v-feature-card .v-widget > .v-more {
+  display: flex;
+  margin-top: 10px;
+}
+
+.v-page-features .v-feature-card .v-portfolio-total {
+  gap: 16px;
+  margin-block: 12px 18px;
+}
+
+.v-page-features .v-feature-card .v-portfolio-total strong {
+  font-size: 28px;
+  line-height: 1.35;
+  letter-spacing: -.6px;
+}
+
+.v-page-features .v-feature-card .v-portfolio-total > div {
+  min-width: max-content;
+}
+
+.v-page-features .v-feature-card .v-portfolio-total span {
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.v-page-features .v-feature-card .v-portfolio-total .v-chart {
+  flex-shrink: 1;
+  min-width: 0;
+  width: 38%;
+  height: 76px;
+}
+
+.v-page-features .v-feature-card .v-stock-row,
+.v-page-features .v-feature-card .v-watch-row {
+  grid-template-columns: 32px minmax(0, 1fr) auto auto;
+  gap: 12px;
+  padding-block: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+.v-page-features .v-feature-card .v-stock-mark {
+  width: 32px;
+  height: 32px;
+  font-size: 13px;
+}
+
+.v-page-features .v-feature-card .v-stock-row em,
+.v-page-features .v-feature-card .v-watch-row em,
+.v-page-features .v-feature-card .v-tag {
+  padding: 3px 7px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.v-page-features .v-feature-card .v-filters {
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.v-page-features .v-feature-card .v-filters button {
+  min-height: 36px;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+
+.v-page-features .v-feature-card .v-filters button span {
+  margin-left: 2px;
+  font-size: 11px;
+}
+
+.v-page-features .v-feature-card .v-issue-row {
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  gap: 12px;
+  padding-block: 12px;
+}
+
+.v-page-features .v-feature-card .v-issue-row b {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.v-page-features .v-feature-card .v-issue-row small {
+  margin-top: 3px;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.v-page-features .v-feature-card .v-widget h4 {
+  margin-block: 0 14px;
+  font-size: 18px;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+.v-page-features .v-feature-card .v-event-intro {
+  grid-template-columns: minmax(0, 1fr) 30%;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+.v-page-features .v-feature-card .v-widget p {
+  font-size: 14px;
+  line-height: 1.75;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.v-page-features .v-feature-card .v-checkline {
+  margin-block: 8px;
+  align-items: flex-start;
+}
+
+.v-page-features .v-feature-card .v-checkline > span {
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  font-size: 11px;
+}
+
+.v-page-features .v-feature-card .v-evidence-row {
+  gap: 12px;
+  margin: 0;
+  padding-block: 12px;
+}
+
+.v-page-features .v-feature-card .v-evidence-row > .v-icon {
+  width: 36px;
+  height: 36px;
+}
+
+.v-page-features .v-feature-card .v-evidence-row > span:nth-child(2) {
+  font-size: 14px;
+  line-height: 1.65;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.v-page-features .v-feature-card .v-timeline li {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 12px 0 12px 16px;
+  font-size: 14px;
+  line-height: 1.65;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.v-page-features .v-feature-card .v-timeline li::before {
+  top: 20px;
+}
+
+.v-page-features .v-feature-card .v-chat-user {
+  padding: 12px 16px;
+  margin-block: 12px 16px;
+}
+
+.v-page-features .v-feature-card .v-chat-answer {
+  gap: 10px;
+  padding-bottom: 16px;
+}
+
+.v-page-features .v-feature-card .v-chat-answer .v-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.v-page-features .v-feature-card .v-chat-answer p {
+  padding: 14px 16px;
+  background: #f0f4fa;
+}
+
+.v-page-features .v-feature-card .v-chat-input {
+  min-height: 48px;
+  padding: 4px;
+  background: #fff;
+  border-radius: 10px;
+}
+
+.v-page-features .v-feature-card .v-chat-input:focus-within {
+  outline: 2px solid #5675da;
+  outline-offset: 2px;
+}
+
+.v-page-features .v-feature-card .v-chat-input input {
+  padding: 8px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.v-page-features .v-feature-card .v-chat-input button {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+}
+
+.v-page-features .v-feature-card .v-sample-notice {
+  position: static;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  box-shadow: none;
+  /* The shared miniature preview sets a 10px !important legacy notice. */
+  font-size: 13px !important;
+  line-height: 1.7;
+}
+
+.v-page-features .v-feature-card .v-calendar-tabs {
+  justify-content: space-between;
+  margin: 0 0 12px;
+  padding: 8px 12px;
+}
+
+.v-page-features .v-feature-card .v-month {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.v-page-features .v-feature-card .v-month button {
+  width: 36px;
+  height: 36px;
+  font-size: 22px;
+}
+
+.v-page-features .v-feature-card .v-calendar-row {
+  grid-template-columns: 88px minmax(0, 1fr) auto;
+  gap: 12px;
+  padding-block: 12px;
+  font-size: 14px;
+  line-height: 1.65;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.v-public-design .v-page-features .v-feature-flow {
+  margin-top: 24px;
+  padding: 28px;
+  border: 1px solid #e0e7f1;
+  border-radius: 18px;
+  background: #f0f5fc;
+}
+
+.v-public-design .v-page-features .v-feature-flow .v-strip-grid {
+  width: 100%;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.v-page-features .v-feature-flow .v-strip-title h2 {
+  font-size: 24px;
+  line-height: 1.45;
+  margin-bottom: 8px;
+}
+
+.v-page-features .v-feature-flow .v-strip-title p {
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.v-page-features .v-process-features {
+  gap: 24px;
+}
+
+.v-page-features .v-process-features .v-process-card {
+  padding: 0 0 0 32px;
+  gap: 12px;
+}
+
+.v-page-features .v-process-features h3 {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-block: 2px 6px;
+}
+
+.v-page-features .v-process-features p {
+  font-size: 14px;
+  line-height: 1.7;
+  word-break: keep-all;
+}
+
+.v-page-features .v-process-features .v-process-arrow {
+  display: none;
+}
+
+.v-page-features .v-small-note {
+  padding-block: 18px 0;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #66758b;
+  word-break: keep-all;
+}
+
+@media (max-width: 1100px) {
+  .v-public-design .v-page-features .v-feature-card {
+    padding: 22px;
+  }
+
+  .v-public-design .v-page-features .v-feature-card .v-widget {
+    padding: 16px;
+  }
+
+  .v-page-features .v-feature-card .v-stock-row,
+  .v-page-features .v-feature-card .v-watch-row {
+    gap: 8px;
+  }
+
+  .v-page-features .v-feature-card .v-timeline li,
+  .v-page-features .v-feature-card .v-calendar-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 10px;
+  }
+
+  .v-page-features .v-feature-card .v-timeline time,
+  .v-page-features .v-feature-card .v-calendar-row time {
+    grid-column: 1 / -1;
+  }
+
+  .v-page-features .v-process-features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 800px) {
+  .v-public-design .v-page-features .v-feature-cards {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .v-public-design .v-page-features .v-feature-title,
+  .v-public-design .v-page-features .v-feature-cards,
+  .v-public-design .v-page-features .v-feature-flow,
+  .v-public-design .v-page-features .v-small-note {
+    width: calc(100% - 32px);
+  }
+
+  .v-public-design .v-page-features .v-feature-title {
+    padding-block: 28px 24px;
+  }
+
+  .v-public-design .v-page-features .v-feature-title h1 {
+    font-size: clamp(28px, 5.7vw, 38px);
+    line-height: 1.3;
+    letter-spacing: -.8px;
+    margin-block: 10px 14px;
+  }
+
+  .v-public-design .v-page-features .v-feature-title .v-eyebrow {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .v-public-design .v-page-features .v-feature-title .v-lead {
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  .v-page-features .v-feature-title .v-lead br {
+    display: initial;
+  }
+
+  .v-public-design .v-page-features .v-feature-card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .v-public-design .v-page-features .v-feature-card > header {
+    grid-template-columns: 44px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .v-public-design .v-page-features .v-feature-card > header > div {
+    display: contents;
+  }
+
+  .v-public-design .v-page-features .v-feature-card > header p {
+    grid-column: 1 / -1;
+  }
+
+  .v-public-design .v-page-features .v-feature-card > header .v-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .v-public-design .v-page-features .v-feature-card h2 {
+    font-size: 22px;
+    margin: 0;
+  }
+
+  .v-public-design .v-page-features .v-feature-card .v-widget {
+    flex: auto;
+    min-height: 0;
+  }
+
+  .v-public-design .v-page-features .v-feature-flow {
+    padding: 22px 20px;
+  }
+}
+
+@media (max-width: 420px) {
+  .v-public-design .v-page-features .v-feature-card {
+    padding: 18px 16px;
+  }
+
+  .v-public-design .v-page-features .v-feature-card .v-widget {
+    padding: 14px 12px;
+  }
+
+  .v-page-features .v-feature-card .v-stock-row,
+  .v-page-features .v-feature-card .v-watch-row {
+    grid-template-columns: 26px minmax(0, 1fr) auto auto;
+    gap: 6px;
+    font-size: 12px;
+  }
+
+  .v-page-features .v-feature-card .v-stock-mark {
+    width: 26px;
+    height: 26px;
+  }
+
+  .v-page-features .v-feature-card .v-stock-row em,
+  .v-page-features .v-feature-card .v-watch-row em {
+    padding-inline: 4px;
+    font-size: 11px;
+  }
+
+  .v-page-features .v-feature-card .v-portfolio-total strong {
+    font-size: 24px;
+  }
+
+  .v-page-features .v-feature-card .v-portfolio-total .v-chart {
+    width: 30%;
+  }
+
+  .v-page-features .v-feature-card .v-event-intro {
+    grid-template-columns: minmax(0, 1fr) 26%;
+    gap: 12px;
+  }
+
+  .v-page-features .v-feature-card .v-evidence-row {
+    gap: 8px;
+  }
+
+  .v-page-features .v-feature-card .v-evidence-row > .v-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .v-page-features .v-feature-card .v-filters button {
+    padding-inline: 8px;
+  }
+
+  .v-page-features .v-feature-card .v-month {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) 40px;
+  }
+
+  .v-page-features .v-feature-card .v-month button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .v-page-features .v-feature-card .v-month b {
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .v-page-features .v-feature-card .v-month > .v-more {
+    grid-column: 1 / -1;
+    justify-self: end;
+    margin-left: 0;
+  }
+
+  .v-page-features .v-process-features {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
