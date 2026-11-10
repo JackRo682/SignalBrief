@@ -57,6 +57,26 @@
         "description": "All baseline apps/web/src files were compared byte-for-byte. Only the /features stylesheet import changes; the new stylesheet is limited to .v-page-features. Shared marketing components, signed-in screens, auth, analytics, API and administrative source remain identical."
       },
       "release_status": "Presentation source reviewed. Full local verifier and browser checks are in progress; real PostgreSQL checks and exact-commit CI remain separate release gates. Not deployed."
+    },
+    {
+      "date": "2026-11-10",
+      "authorization": "The user clarified that the original four-card-per-row desktop framework must be retained while enlarging cards and text and reducing excess gaps. This revision corrects the earlier two-column presentation on /features.",
+      "production_baseline_commit": "c5d74f1765c94e705c19833379fc9e82f6eb8996",
+      "reviewed_files": {
+        "apps/web/src/app/features/features.css": {
+          "before_sha256": "d2cfb82c73bdcd208191f15d6d9057b18a4adfc773324a4e0ee83ff3ba580d38",
+          "after_sha256": "48d866bf7dee5cab2aeda9cb2ce03675f2f92d205ff6f5d7ba2426b0202a77f4",
+          "normalization": "CRLF to LF, matching scripts/verify_workspace_scope.py",
+          "scope": "Restores four desktop columns with a wider 1760px page canvas and 12px gaps. Feature-page-only container variables align its header and footer. Preserves readable text, responsive two/one-column layouts, and adapts preview rows to their card width."
+        }
+      },
+      "source_preservation": {
+        "source_additions": 0,
+        "source_deletions": 0,
+        "unreviewed_source_changes": 0,
+        "description": "Only features.css changes under apps/web/src. Existing content, shared components, auth, analytics, routing, signed-in screens, APIs and database logic remain identical to the production baseline."
+      },
+      "release_status": "Presentation scope reviewed. Exact-source release verification is recorded by the pull request checks and Vercel deployment."
     }
   ],
   "protected_paths": [
@@ -155,7 +175,7 @@
     "apps/web/src/app/auth/callback/page.tsx": "20579813c7118a8cdf30560dc1c04a7deab2edf91928793159118f9730bb934f",
     "apps/web/src/app/customers/page.tsx": "934e66999f46b8f23a4ac794aecb8d2bbd0d942f170e4fbcb64c2eb1599aeb36",
     "apps/web/src/app/disclaimer/page.tsx": "96eca0662914f839d8d219f97eaa72a949c58d0bd9b66cc09caace61d43aec5c",
-    "apps/web/src/app/features/features.css": "d2cfb82c73bdcd208191f15d6d9057b18a4adfc773324a4e0ee83ff3ba580d38",
+    "apps/web/src/app/features/features.css": "48d866bf7dee5cab2aeda9cb2ce03675f2f92d205ff6f5d7ba2426b0202a77f4",
     "apps/web/src/app/features/page.tsx": "c5d412cd5b6232309b758f88f51ee03aff11106868d8955478b5937bbb907420",
     "apps/web/src/app/forgot-password/page.tsx": "785871f399d0f82d201b64089708ac1bef1a41098ef4eea62496c6b46da69aa0",
     "apps/web/src/app/globals.css": "622aab68e02a9ace329b78e2f4db2a800e328521ae2ec730512b4f2e8191392a",
