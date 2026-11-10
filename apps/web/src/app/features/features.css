@@ -135,12 +135,18 @@
   letter-spacing: -.6px;
 }
 
+.v-page-features .v-feature-card .v-portfolio-total > div {
+  min-width: max-content;
+}
+
 .v-page-features .v-feature-card .v-portfolio-total span {
   margin-top: 6px;
   font-size: 14px;
 }
 
 .v-page-features .v-feature-card .v-portfolio-total .v-chart {
+  flex-shrink: 1;
+  min-width: 0;
   width: 38%;
   height: 76px;
 }
@@ -467,7 +473,7 @@
   }
 
   .v-page-features .v-feature-title .v-lead br {
-    display: none;
+    display: initial;
   }
 
   .v-public-design .v-page-features .v-feature-card {
@@ -477,8 +483,17 @@
 
   .v-public-design .v-page-features .v-feature-card > header {
     grid-template-columns: 44px minmax(0, 1fr);
+    align-items: center;
     gap: 12px;
     margin-bottom: 20px;
+  }
+
+  .v-public-design .v-page-features .v-feature-card > header > div {
+    display: contents;
+  }
+
+  .v-public-design .v-page-features .v-feature-card > header p {
+    grid-column: 1 / -1;
   }
 
   .v-public-design .v-page-features .v-feature-card > header .v-icon {
@@ -488,7 +503,7 @@
 
   .v-public-design .v-page-features .v-feature-card h2 {
     font-size: 22px;
-    margin-bottom: 7px;
+    margin: 0;
   }
 
   .v-public-design .v-page-features .v-feature-card .v-widget {
@@ -552,6 +567,27 @@
 
   .v-page-features .v-feature-card .v-filters button {
     padding-inline: 8px;
+  }
+
+  .v-page-features .v-feature-card .v-month {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) 40px;
+  }
+
+  .v-page-features .v-feature-card .v-month button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .v-page-features .v-feature-card .v-month b {
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .v-page-features .v-feature-card .v-month > .v-more {
+    grid-column: 1 / -1;
+    justify-self: end;
+    margin-left: 0;
   }
 
   .v-page-features .v-process-features {
