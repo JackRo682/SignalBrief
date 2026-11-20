@@ -168,7 +168,7 @@ export default function Home() {
     <div className="rd-home" data-screen="redesign-home">
       <Heading title="홈" description="관심 기업의 최신 공시, 분석, 일정, 뉴스를 한눈에 확인합니다." />
       {snapshot.error && <div data-home-snapshot-error><DataState loading={false} error={snapshot.error} retry={snapshot.reload} /></div>}
-      <div className="rd-home-search"><SearchForm /></div>
+      <div className="rd-home-search"><SearchForm analyticsScreen="today" /></div>
       <div className="rd-home-overview">
         <section className="rd-home-briefing" aria-labelledby="home-briefing-title">
           <div className="rd-home-briefing-copy">

@@ -9,8 +9,11 @@ import {companyResources, eventDetails, eventId} from '../e2e/mobile-fixture';
 
 const auth = vi.hoisted(() => ({
   token: 'synthetic-token' as string | null,
-  me: {id: 'synthetic-user', analytics_consent: false}, track: vi.fn(),
+  me: {id: 'synthetic-user', analytics_consent: false, demo_mode: false}, track: vi.fn(),
 }));
+const product = vi.hoisted(() => ({ track: vi.fn() }));
+const calendarView = vi.hoisted(() => ({ origin: 'user', id: null as string | null, loading: false, error: '', missing: false }));
+vi.mock('../src/lib/use-product-analytics', () => ({useProductAnalytics: () => product.track}));
 const view = vi.hoisted(() => ({
   data: null as EventDetail | null, loading: false, error: null as string | null,
 }));
@@ -40,15 +43,61 @@ vi.mock('../src/lib/supabase', () => ({initializeSupabase: async () => ({
   rpc: () => ({abortSignal: async () => ({data: [], error: null})}),
 })}));
 vi.mock('../src/redesign/calendar-data', () => ({useCalendarData: (input: {id?: string} | null) => ({
-  data: {items: input?.id ? [{
-    id: input.id, title: 'Synthetic personal calendar item', occurs_on: '2026-11-01',
-    company_id: null, event_id: null, origin: 'user', quote: null,
+  data: {items: input?.id && !calendarView.missing ? [{
+    id: calendarView.id ?? input.id, title: 'Synthetic calendar item', occurs_on: '2026-11-01',
+    company_id: null, event_id: null, origin: calendarView.origin, quote: null,
     source_url: 'https://example.org/synthetic-calendar-source', source_timezone: null, verified_at: null,
-  }] : [], truncated: false}, loading: false, error: '', reload: vi.fn(),
+  }] : [], truncated: false}, loading: calendarView.loading, error: calendarView.error, reload: vi.fn(),
 })}));
 beforeEach(() => {
-  auth.token='synthetic-token'; auth.me={id:'synthetic-user',analytics_consent:false}; vi.clearAllMocks();
+  auth.token='synthetic-token'; auth.me={id:'synthetic-user',analytics_consent:false,demo_mode:false}; vi.clearAllMocks();
   view.data=structuredClone(eventDetails.get(eventId)!); view.loading=false; view.error=null;
+  calendarView.origin='user'; calendarView.id=null; calendarView.loading=false; calendarView.error=''; calendarView.missing=false;
+});
+
+describe('successful event-detail funnel views', () => {
+  it('records one successful published view across strict effects, tabs and rerenders', () => {
+    const rendered=render(<StrictMode><RedesignEvent id={eventId}/></StrictMode>);
+    fireEvent.click(screen.getByRole('tab',{name:'문서'}));
+    rendered.rerender(<StrictMode><RedesignEvent id={eventId}/></StrictMode>);
+    expect(product.track.mock.calls).toEqual([['event_detail_view',{screen:'event_detail',event_kind:'published'}]]);
+    expect(JSON.stringify(product.track.mock.calls)).not.toContain(eventId);
+  });
+
+  it.each(['loading','failed','missing','wrong event','unpublished','demo','demo account'])('does not count an ineligible published detail: %s', state => {
+    if(state==='loading')view.loading=true;
+    if(state==='failed')view.error='Synthetic failed request';
+    if(state==='missing')view.data=null;
+    if(state==='wrong event')view.data!.event.id='another-event';
+    if(state==='unpublished')view.data!.event.state='needs_review';
+    if(state==='demo')view.data!.event.is_demo=true;
+    if(state==='demo account')auth.me.demo_mode=true;
+    render(<RedesignEvent id={eventId}/>);
+    expect(product.track).not.toHaveBeenCalled();
+  });
+
+  it('records an official calendar detail after successful loading, once and without its ID', async () => {
+    const calendarId='90000000-0000-4000-8000-000000000001';
+    calendarView.origin='official'; calendarView.loading=true;
+    const rendered=render(<RedesignEvent id={calendarId} kind="calendar"/>);
+    expect(product.track).not.toHaveBeenCalled();
+    calendarView.loading=false;
+    rendered.rerender(<RedesignEvent id={calendarId} kind="calendar"/>);
+    await act(async () => {});
+    rendered.rerender(<RedesignEvent id={calendarId} kind="calendar"/>);
+    expect(product.track.mock.calls).toEqual([['event_detail_view',{screen:'event_detail',event_kind:'calendar'}]]);
+    expect(JSON.stringify(product.track.mock.calls)).not.toContain(calendarId);
+  });
+
+  it.each(['personal','failed','missing','wrong event'])('does not count an ineligible calendar detail: %s', async state => {
+    calendarView.origin=state==='personal'?'user':'official';
+    if(state==='failed')calendarView.error='Synthetic failed request';
+    if(state==='missing')calendarView.missing=true;
+    if(state==='wrong event')calendarView.id='90000000-0000-4000-8000-000000000002';
+    render(<RedesignEvent id="90000000-0000-4000-8000-000000000001" kind="calendar"/>);
+    await act(async () => {});
+    expect(product.track).not.toHaveBeenCalled();
+  });
 });
 afterEach(cleanup);
 

@@ -10,7 +10,8 @@ import { pageDataCache } from "../src/lib/page-data-cache";
 import type { Company } from "../src/lib/contracts";
 
 // Named user journeys with synthetic identities/transports, not provider accuracy claims.
-const mocks = vi.hoisted(() => ({ request: vi.fn(), workspace: vi.fn(), push: vi.fn(), coverage: vi.fn(), dates: vi.fn() }));
+const mocks = vi.hoisted(() => ({ request: vi.fn(), workspace: vi.fn(), push: vi.fn(), coverage: vi.fn(), dates: vi.fn(), productAnalytics: vi.fn() }));
+vi.mock("@/lib/use-product-analytics", () => ({ useProductAnalytics: () => mocks.productAnalytics }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: mocks.push }), usePathname: () => "/calendar", useSearchParams: () => new URLSearchParams(window.location.search) }));
 vi.mock("@/components/auth", () => ({ useAuth: () => ({ token: "synthetic-picker-token", me: { id: "synthetic-user" } }) }));
 vi.mock("@/lib/api", async original => ({ ...await original<typeof import("../src/lib/api")>(), request: mocks.request }));
@@ -54,8 +55,64 @@ beforeEach(() => {
     return Response.json({ items, total: items.length, source_status: "ready" });
   }));
 });
-afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+afterEach(() => { cleanup(); vi.useRealTimers(); vi.unstubAllGlobals(); });
 const writes = () => mocks.request.mock.calls.filter(([, , , init]) => ["POST", "PUT", "DELETE"].includes(init?.method));
+
+describe("calendar funnel interactions", () => {
+  it("waits for settled company search, deduplicates normalized input, and omits personal fields", async () => {
+    vi.useFakeTimers();
+    render(<Calendar />);
+    await act(async () => {});
+    expect(mocks.productAnalytics).not.toHaveBeenCalled();
+    const search = screen.getByLabelText("기업명 또는 티커 검색");
+    fireEvent.change(search, { target: { value: "Private first query" } });
+    await act(async () => { await vi.advanceTimersByTimeAsync(499); });
+    expect(mocks.productAnalytics).not.toHaveBeenCalled();
+    fireEvent.change(search, { target: { value: "Private settled query" } });
+    await act(async () => { await vi.advanceTimersByTimeAsync(500); });
+    fireEvent.change(search, { target: { value: "Private settled query " } });
+    await act(async () => { await vi.advanceTimersByTimeAsync(500); });
+    fireEvent.click(screen.getByRole("button", { name: "개인 일정 추가" }));
+    const form = within(screen.getByRole("dialog"));
+    fireEvent.change(form.getByLabelText("제목"), { target: { value: "Private personal title" } });
+    fireEvent.change(form.getByLabelText("관련 기업 검색"), { target: { value: "Private personal query" } });
+    await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+    expect(mocks.productAnalytics.mock.calls).toEqual([["search_used", { screen: "calendar" }]]);
+    expect(JSON.stringify(mocks.productAnalytics.mock.calls)).not.toContain("Private");
+  });
+
+  it("counts actual scope/view changes and ignores repeated active selections", async () => {
+    render(<Calendar />);
+    await act(async () => {});
+    fireEvent.click(screen.getByRole("radio", { name: "전체 기업" }));
+    fireEvent.click(screen.getByRole("button", { name: /^월$/ }));
+    expect(mocks.productAnalytics).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("radio", { name: "관심 기업" }));
+    fireEvent.click(screen.getByRole("radio", { name: "관심 기업" }));
+    fireEvent.click(screen.getByRole("button", { name: /^주$/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^주$/ }));
+    expect(mocks.productAnalytics.mock.calls).toEqual([
+      ["filter_used", { screen: "calendar", filter_type: "scope" }],
+      ["filter_used", { screen: "calendar", filter_type: "view" }],
+    ]);
+  });
+
+  it("counts official event clicks but excludes private calendar entries", async () => {
+    mocks.dates.mockReturnValue({ data: { items: [
+      { id: "31000000-0000-4000-8000-000000000011", company_id: null, event_id: null, title: "Public calendar entry", occurs_on: "2026-11-11", origin: "official", quote: "Published date", source_url: "https://example.org/official" },
+      { id: "31000000-0000-4000-8000-000000000012", company_id: null, event_id: null, title: "Private calendar entry", occurs_on: "2026-11-11", origin: "user", quote: null, source_url: null },
+    ], truncated: false }, loading: false, error: "", reload: vi.fn() });
+    render(<Calendar />);
+    const upcoming = within(screen.getByRole("heading", { name: /^다가오는 일정/ }).closest("section")!);
+    for (const name of ["Private calendar entry", "Public calendar entry"]) {
+      const link = upcoming.getByRole("link", { name: new RegExp(name) });
+      link.addEventListener("click", event => event.preventDefault());
+      fireEvent.click(link);
+    }
+    await act(async () => {});
+    expect(mocks.productAnalytics.mock.calls).toEqual([["event_detail_click", { screen: "calendar", event_kind: "calendar" }]]);
+  });
+});
 
 describe("official company selection in each product surface", () => {
   it("distinguishes official date-based entries from all-day personal entries in calendar lists", async () => {

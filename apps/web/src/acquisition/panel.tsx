@@ -2,6 +2,7 @@
 import {useEffect,useState} from 'react';
 import {useAuth} from '@/components/auth';
 import {trafficSummary,type TrafficSummary} from './contracts';
+import ProductFunnelPanel from './product-panel';
 import './traffic.css';
 const labels:Record<string,string>={direct:'직접·내부 이동',google:'Google',naver:'네이버',disquiet:'디스콰이엇',geeknews:'GeekNews',youtube:'YouTube',x:'X / Twitter',other:'기타'};
 export default function AcquisitionPanel({from,to,revision=0}:{from:string;to:string;revision?:number}){
@@ -23,6 +24,7 @@ export default function AcquisitionPanel({from,to,revision=0}:{from:string;to:st
  <p className="overview-note">기간 내 인증된 신규 가입 브라우저 ÷ 기간 내 방문 브라우저입니다. 이메일 인증 전 요청, 기존 계정의 로그인, 인증된 관리자 활동은 가입 완료에서 제외합니다. 최초 가입 시작 후 7일 이내 생성된 계정만 연결하며, 브라우저·기기를 바꾸거나 동의하지 않으면 연결되지 않을 수 있습니다.</p>
  {data.totals.visitors===0&&<p role="status">아직 이 기간에 수집된 방문 기록이 없습니다. 설치 이전 기록은 복원하지 않습니다.</p>}
  <div className="traffic-tables"><div><h3>일간 방문 · 한국 시간</h3><table><thead><tr><th>날짜</th><th>브라우저</th><th>페이지 조회</th><th>신규 가입</th></tr></thead><tbody>{data.daily.map(row=><tr key={row.day}><td>{row.day}</td><td>{row.visitors}</td><td>{row.pageviews}</td><td>{row.signups}</td></tr>)}</tbody></table></div><div><h3>최초 유입 경로</h3><table><thead><tr><th>경로</th><th>브라우저</th><th>신규 가입</th><th>전환율</th></tr></thead><tbody>{data.sources.map(row=><tr key={row.source}><td>{labels[row.source]}</td><td>{row.visitors}</td><td>{row.signups}</td><td>{row.visitors?(100*row.signups/row.visitors).toFixed(1)+'%':'—'}</td></tr>)}</tbody></table></div></div>
- <p className="overview-note">사람 수가 아닌 브라우저 수이며, 날짜별 합계와 기간 내 중복 제거 수는 다릅니다. 미동의 방문·광고 차단·자동화·방문자의 자기 신고 이벤트로 오차가 생길 수 있습니다. 원문 URL이나 UTM 전체 값을 저장하지 않고 정해진 출처 분류만 기록합니다.</p></>}
+ <p className="overview-note">사람 수가 아닌 브라우저 수이며, 날짜별 합계와 기간 내 중복 제거 수는 다릅니다. 미동의 방문·광고 차단·자동화·방문자의 자기 신고 이벤트로 오차가 생길 수 있습니다. 원문 URL이나 UTM 전체 값을 저장하지 않고 정해진 출처 분류만 기록합니다.</p>
+ {data.product&&<ProductFunnelPanel data={data.product}/>}</>}
  </section>;
 }

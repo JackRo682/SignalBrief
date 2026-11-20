@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { z } from "zod";
 import { useAuth } from "@/components/auth";
 import { Icon } from "@/components/icons";
@@ -13,6 +13,7 @@ import {
   watchlistSchema,
 } from "@/lib/contracts";
 import { downloadText } from "@/lib/product";
+import { useProductAnalytics } from "@/lib/use-product-analytics";
 import { PcLogo, PcModal } from "@/desktop/ui";
 import { DataState, Notice, useMutation } from "@/workspace/ui";
 import { usePrefs } from "@/workspace/preferences";
@@ -47,6 +48,8 @@ export default function RedesignCalendar() {
   const { token } = useAuth(),
     { value: preferences, date: formatDate } = usePrefs(),
     action = useMutation();
+  const trackProduct = useProductAnalytics();
+  const lastTrackedSearch = useRef("");
   const [now] = useState(() => Date.now());
   const today = dayInZone(now, preferences.timezone);
   const [anchorOverride, setAnchor] = useState<string | null>(null),
@@ -83,6 +86,16 @@ export default function RedesignCalendar() {
     const timer = setTimeout(() => setCompanyQuery(normalizeCompanyQuery(query)), 250);
     return () => clearTimeout(timer);
   }, [query]);
+  useEffect(() => {
+    const normalized = normalizeCompanyQuery(query);
+    if (!normalized) { lastTrackedSearch.current = ""; return; }
+    if (normalized === lastTrackedSearch.current) return;
+    const timer = setTimeout(() => {
+      lastTrackedSearch.current = normalized;
+      trackProduct("search_used", { screen: "calendar" });
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [query, trackProduct]);
   useEffect(() => {
     const timer = setTimeout(() => setPersonalSearch(normalizeCompanyQuery(personalQuery)), 250);
     return () => clearTimeout(timer);
@@ -158,6 +171,7 @@ export default function RedesignCalendar() {
         ? `${visible[0]} ~ ${visible[6]}`
         : anchor;
   function chooseCompany(id: string) {
+    trackProduct("filter_used", { screen: "calendar", filter_type: "company" });
     if (scope !== "selected") {
       setScope("selected");
       setSelectedCompanies(new Set([id]));
@@ -175,6 +189,16 @@ export default function RedesignCalendar() {
     setConnectedCompanies(previous => [...previous.filter(row => row.id !== company.id), company]);
     catalog.reload();
     companySearch.reload();
+  }
+  function eventClick(item: CalendarEntry) {
+    if (item.origin === "official")
+      trackProduct("event_detail_click", { screen: "calendar", event_kind: "calendar" });
+  }
+  function changeView(next: CalendarView, day?: string) {
+    if (next === view && (day === undefined || day === anchor)) return;
+    trackProduct("filter_used", { screen: "calendar", filter_type: next !== view ? "view" : "period" });
+    setView(next);
+    if (day !== undefined) setAnchor(day);
   }
   async function addPersonal(event: FormEvent) {
     event.preventDefault();
@@ -228,6 +252,7 @@ export default function RedesignCalendar() {
               className="rd-calendar-list-row"
               key={item.id}
               href={calendarHref(item)}
+              onClick={() => eventClick(item)}
             >
               <time className="rd-date-tile" dateTime={item.occurs_on}>
                 <span>{Number(item.occurs_on.slice(5, 7))}월</span>
@@ -310,7 +335,10 @@ export default function RedesignCalendar() {
                   type="radio"
                   name="rd-calendar-scope"
                   checked={scope === key}
-                  onChange={() => setScope(key)}
+                  onChange={() => {
+                    if (scope !== key) trackProduct("filter_used", { screen: "calendar", filter_type: "scope" });
+                    setScope(key);
+                  }}
                 />
                 {label}
               </label>
@@ -351,6 +379,8 @@ export default function RedesignCalendar() {
           {!searchPending && <CompanyDiscovery query={companyQuery} existingCompanies={shownCompanies}
             selectedCompanyIds={[...selectedCompanies]} selectionLabel="일정 조회 기업으로 선택"
             onSelect={(company) => {
+              if (scope !== "selected" || !selectedCompanies.has(company.id))
+                trackProduct("filter_used", { screen: "calendar", filter_type: "company" });
               rememberCompany(company);
               setScope("selected");
               setSelectedCompanies(previous => new Set([...(scope === "selected" ? previous : []), company.id]));
@@ -433,21 +463,21 @@ export default function RedesignCalendar() {
                 <button
                   type="button"
                   aria-label="이전 기간"
-                  onClick={() => setAnchor(moveAnchor(anchor, view, -1))}
+                  onClick={() => changeView(view, moveAnchor(anchor, view, -1))}
                 >
                   ‹
                 </button>
                 <button
                   type="button"
                   aria-label="다음 기간"
-                  onClick={() => setAnchor(moveAnchor(anchor, view, 1))}
+                  onClick={() => changeView(view, moveAnchor(anchor, view, 1))}
                 >
                   ›
                 </button>
                 <h2>{heading}</h2>
               </div>
               <div className="rd-calendar-view">
-                <button type="button" onClick={() => setAnchor(today)}>
+                <button type="button" onClick={() => changeView(view, today)}>
                   오늘
                 </button>
                 <div role="group" aria-label="캘린더 표시 단위">
@@ -462,7 +492,7 @@ export default function RedesignCalendar() {
                       key={key}
                       type="button"
                       aria-pressed={view === key}
-                      onClick={() => setView(key)}
+                      onClick={() => changeView(key)}
                     >
                       {label}
                     </button>
@@ -478,8 +508,7 @@ export default function RedesignCalendar() {
                 {scope === "selected" && !selectedCompanies.size && <p>왼쪽에서 기업을 선택해 주세요.</p>}
                 {nearest && (
                   <button className="rd-calendar-button" type="button" onClick={() => {
-                    setAnchor(nearest.occurs_on);
-                    setView("month");
+                    changeView("month", nearest.occurs_on);
                   }}>
                     가장 가까운 일정 보기 · {nearest.occurs_on}
                   </button>
@@ -506,8 +535,7 @@ export default function RedesignCalendar() {
                       className="rd-calendar-day-number"
                       aria-label={`${day} 일 보기`}
                       onClick={() => {
-                        setAnchor(day);
-                        setView("day");
+                        changeView("day", day);
                       }}
                     >
                       <time dateTime={day}>
@@ -522,6 +550,7 @@ export default function RedesignCalendar() {
                           className={`rd-calendar-chip rd-calendar-chip-${item.origin === "user" ? "personal" : String(item.company_id ?? "").charCodeAt(0) % 4}`}
                           key={item.id}
                           href={calendarHref(item)}
+                          onClick={() => eventClick(item)}
                         >
                           <strong>
                             {item.company_id
@@ -537,8 +566,7 @@ export default function RedesignCalendar() {
                         className="rd-calendar-overflow"
                         type="button"
                         onClick={() => {
-                          setAnchor(day);
-                          setView("day");
+                          changeView("day", day);
                         }}
                       >
                         +{daily.length - 3}개 더 보기
@@ -568,7 +596,11 @@ export default function RedesignCalendar() {
                 <input
                   type="checkbox"
                   checked={includePersonal}
-                  onChange={(event) => setIncludePersonal(event.target.checked)}
+                  onChange={(event) => {
+                    if (includePersonal !== event.target.checked)
+                      trackProduct("filter_used", { screen: "calendar", filter_type: "personal" });
+                    setIncludePersonal(event.target.checked);
+                  }}
                 />{" "}
                 개인 일정 표시
               </label>

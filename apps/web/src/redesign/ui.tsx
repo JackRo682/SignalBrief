@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useProductAnalytics } from "@/lib/use-product-analytics";
 import Image from "next/image";
 import { useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
@@ -106,11 +107,14 @@ export function SearchForm({
   initial = "",
   onSubmit,
   compact = false,
+  analyticsScreen = "search",
 }: {
   initial?: string;
   onSubmit?: (q: string) => void;
   compact?: boolean;
+  analyticsScreen?: "search" | "today";
 }) {
+  const trackProduct = useProductAnalytics();
   const [query, setQuery] = useState(initial),
     router = useRouter();
   useEffect(() => setQuery(initial), [initial]);
@@ -122,7 +126,10 @@ export function SearchForm({
         e.preventDefault();
         const q = query.trim();
         if (onSubmit) onSubmit(q);
-        else router.push(`/search?${new URLSearchParams({ q })}`);
+        else {
+          if (q) trackProduct("search_used", { screen: analyticsScreen });
+          router.push(`/search?${new URLSearchParams({ q })}`);
+        }
       }}
     >
       <label>

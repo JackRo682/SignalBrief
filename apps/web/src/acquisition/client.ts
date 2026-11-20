@@ -1,4 +1,5 @@
 import {sources,trafficSource,type TrafficKind,type TrafficPage} from './contracts';
+import {enqueueTraffic} from './queue';
 export const CONSENT_KEY='sb.acquisition.v1';
 const MAX_AGE=90*86400000;
 type Identity={visitor_id:string;secret:string};
@@ -27,12 +28,11 @@ export function chooseConsent(allow:boolean):boolean{
  const bytes=crypto.getRandomValues(new Uint8Array(32)),secret=Array.from(bytes,v=>v.toString(16).padStart(2,'0')).join('');
  return save({choice:'yes',at:Date.now(),identity:{visitor_id:crypto.randomUUID(),secret},source:trafficSource(location.href,document.referrer)});
 }
-let queue:Promise<unknown>=Promise.resolve();
 export function recordAcquisition(kind:TrafficKind,page:TrafficPage,token?:string|null):Promise<boolean>{
  const initial=readConsent();if(initial?.choice!=='yes'||privacySignal())return Promise.resolve(false);
  const event={action:'record',...initial.identity,id:crypto.randomUUID(),kind,page,source:initial.source};
- const task=queue.then(async()=>{
+ return enqueueTraffic(async()=>{
   const current=readConsent();if(current?.choice!=='yes'||current.identity.visitor_id!==initial.identity.visitor_id||privacySignal())return false;
   try{const response=await fetch('/api/traffic',{method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify(event),keepalive:true,signal:AbortSignal.timeout(2500)});return response.ok;}catch{return false;}
- });queue=task.catch(()=>false);return task;
+ });
 }

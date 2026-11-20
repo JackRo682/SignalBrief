@@ -3,13 +3,32 @@ export const pages=['home','about','features','sources','pricing','customers','p
 export const sources=['direct','google','naver','disquiet','geeknews','youtube','x','other'] as const;
 export const kinds=['page_view','signup_start','signup_requested','signup_complete','onboarding_complete'] as const;
 const identity={visitor_id:z.uuid(),secret:z.string().regex(/^[a-f0-9]{64}$/)};
-export const trafficRequest=z.discriminatedUnion('action',[
+export const productKinds=['search_used','filter_used','event_detail_click','event_detail_view'] as const;
+export const productPages=['search','calendar','app_home','today','event_detail'] as const;
+export const productFilterTypes=['kind','source','period','sort','market','company','category','scope','view','personal','reset'] as const;
+export const PRODUCT_CONSENT_VERSION='2026-11-20';
+const productBase={action:z.literal('record'),...identity,id:z.uuid(),source:z.enum(sources),product_consent_version:z.literal(PRODUCT_CONSENT_VERSION)};
+const actionPage=z.enum(['search','calendar','app_home','today']);
+export const productRecord=z.discriminatedUnion('kind',[
+ z.object({...productBase,kind:z.literal('search_used'),page:actionPage}).strict(),
+ z.object({...productBase,kind:z.literal('filter_used'),page:actionPage,filter_type:z.enum(productFilterTypes)}).strict(),
+ z.object({...productBase,kind:z.literal('event_detail_click'),page:actionPage,event_kind:z.enum(['published','calendar'])}).strict(),
+ z.object({...productBase,kind:z.literal('event_detail_view'),page:z.literal('event_detail'),event_kind:z.enum(['published','calendar'])}).strict(),
+]);
+export const trafficRequest=z.union([
  z.object({action:z.literal('record'),...identity,id:z.uuid(),kind:z.enum(kinds),page:z.enum(pages),source:z.enum(sources)}).strict(),
+ productRecord,
  z.object({action:z.literal('erase'),...identity}).strict(),
  z.object({action:z.literal('summary'),from:z.iso.date(),to:z.iso.date()}).strict(),
 ]);
 const counts={visitors:z.number().int().nonnegative(),pageviews:z.number().int().nonnegative(),starts:z.number().int().nonnegative(),requests:z.number().int().nonnegative(),signups:z.number().int().nonnegative(),onboarded:z.number().int().nonnegative()};
-export const trafficSummary=z.object({generated_at:z.iso.datetime({offset:true}),totals:z.object(counts),daily:z.array(z.object({day:z.iso.date(),...counts})),sources:z.array(z.object({source:z.enum(sources),...counts}))});
+const productCount=z.number().int().nonnegative();
+export const productSummary=z.object({landing_visitors:productCount,engaged_visitors:productCount,detail_click_visitors:productCount,detail_view_visitors:productCount,search_events:productCount,filter_events:productCount,detail_click_events:productCount,detail_view_events:productCount}).refine(value=>value.engaged_visitors<=value.landing_visitors&&value.detail_click_visitors<=value.engaged_visitors&&value.detail_view_visitors<=value.detail_click_visitors,'Funnel stages must be nested within the landing cohort');
+export const trafficSummary=z.object({generated_at:z.iso.datetime({offset:true}),totals:z.object(counts),daily:z.array(z.object({day:z.iso.date(),...counts})),sources:z.array(z.object({source:z.enum(sources),...counts})),product:productSummary.optional()});
+export type ProductKind=typeof productKinds[number];
+export type ProductPage=typeof productPages[number];
+export type ProductRecord=z.infer<typeof productRecord>;
+export type ProductSummary=z.infer<typeof productSummary>;
 export type TrafficSummary=z.infer<typeof trafficSummary>;
 export type TrafficKind=typeof kinds[number];
 export type TrafficPage=typeof pages[number];

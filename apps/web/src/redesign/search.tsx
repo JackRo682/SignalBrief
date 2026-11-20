@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useAuth } from "@/components/auth";
+import { useProductAnalytics } from "@/lib/use-product-analytics";
 import { Icon } from "@/components/icons";
 import { workspace } from "@/workspace/client";
 import {
@@ -27,10 +28,14 @@ import {
 } from "./ui";
 
 const searchKind = resourceKind.or(z.literal("analysis")).or(z.literal(""));
-function ResultRow({ item }: { item: Resource }) {
+const filterTypes = {
+  kind: "kind", source: "source", days: "period", sort: "sort",
+  market: "market", company_id: "company", category: "category",
+} as const;
+function ResultRow({ item, onEventClick }: { item: Resource; onEventClick: () => void }) {
   return (
     <div className="rd-result">
-      <Link href={resourceHref(item)}>
+      <Link href={resourceHref(item)} onClick={item.kind === "event" ? onEventClick : undefined}>
         {item.kind === "company" ? (
           <CompanyLogo ticker={item.ticker} />
         ) : (
@@ -72,6 +77,8 @@ export default function Search({
     prefs = usePrefs(),
     router = useRouter(),
     recorded = useRef("");
+  const trackProduct = useProductAnalytics();
+  const eventClick = () => trackProduct("event_detail_click", { screen: "search", event_kind: "published" });
   const kind = searchKind.safeParse(initialKind).success
     ? searchKind.parse(initialKind)
     : "";
@@ -159,9 +166,18 @@ export default function Search({
       });
     }
   }, [token, initial, prefs.loaded, prefs.value.history_enabled]);
-  function change(patch: Record<string, string | number>) {
+  function change(patch: Record<string, string | number>, reset = false) {
     const pending = pendingNavigation.current;
     const base = pending?.value ?? { ...filters, kind, offset: initialOffset };
+    // Track only deliberate filter changes; new searches may clear scope and
+    // pagination changes the result page without constituting a filter action.
+    const changedFilters = (Object.keys(filterTypes) as Array<keyof typeof filterTypes>)
+      .filter((key) => key in patch && patch[key] !== base[key]);
+    if (patch.q === undefined && changedFilters.length) {
+      if (reset) trackProduct("filter_used", { screen: "search", filter_type: "reset" });
+      else for (const key of changedFilters)
+        trackProduct("filter_used", { screen: "search", filter_type: filterTypes[key] });
+    }
     const next = {
       ...base,
       offset: 0,
@@ -198,7 +214,9 @@ export default function Search({
     <div data-screen="redesign-search">
       <Heading title="검색" />
       <SearchForm initial={initial} onSubmit={(value) => {
-        change({ q: normalizeCompanyQuery(value) });
+        const query = normalizeCompanyQuery(value);
+        if (query) trackProduct("search_used", { screen: "search" });
+        change({ q: query });
       }} />
       <nav className="rd-tabs" aria-label="검색 유형">
         {tabs.map(([key, title, n]) => (
@@ -263,7 +281,7 @@ export default function Search({
           <button
             className="rd-btn"
             onClick={() =>
-              change(resetScope)
+              change(resetScope, true)
             }
           >
             필터 초기화
@@ -276,7 +294,7 @@ export default function Search({
           {initialMarket && <>{company ? " · " : ""}시장: {initialMarket}</>}
           {initialCategory && <>{company || initialMarket ? " · " : ""}자료 유형: {initialCategory}</>}
         </p>
-        <button className="rd-btn" onClick={() => change({ ...resetScope, kind: "" })}>전체 기업에서 검색</button>
+        <button className="rd-btn" onClick={() => change({ ...resetScope, kind: "" }, true)}>전체 기업에서 검색</button>
       </div>}
       <DataState {...result} retry={result.reload} />
       {(grouped || kind === "company") && !company && <CompanyDiscovery
@@ -308,7 +326,7 @@ export default function Search({
               <DataState {...group.data} retry={group.data.reload} />
               <div className="rd-results">
                 {group.data.data?.items.map((item) => (
-                  <ResultRow key={`${item.kind}:${item.id}`} item={item} />
+                  <ResultRow key={`${item.kind}:${item.id}`} item={item} onEventClick={eventClick} />
                 ))}
               </div>
               {group.data.data && !group.data.data.items.length && (
@@ -321,7 +339,7 @@ export default function Search({
         <Panel title="검색 결과">
           <div className="rd-results">
             {result.data?.items.map((item) => (
-              <ResultRow key={`${item.kind}:${item.id}`} item={item} />
+              <ResultRow key={`${item.kind}:${item.id}`} item={item} onEventClick={eventClick} />
             ))}
           </div>
           {result.data && !result.data.items.length && (

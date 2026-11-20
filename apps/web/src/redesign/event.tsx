@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { z } from "zod";
 import { useAuth } from "@/components/auth";
 import { CompanySnapshotIntroduction } from "@/components/company-snapshot-introduction";
@@ -13,6 +13,7 @@ import { detailSchema } from "@/lib/contracts";
 import { downloadText } from "@/lib/product";
 import { initializeSupabase } from "@/lib/supabase";
 import { useEventAnalytics } from "@/lib/use-event-analytics";
+import { useProductAnalytics } from "@/lib/use-product-analytics";
 import { PcLogo, PcModal } from "@/desktop/ui";
 import { workspace } from "@/workspace/client";
 import {
@@ -71,9 +72,11 @@ function EventContent({
   kind: "event" | "calendar";
   panel?: string;
 }) {
-  const { token } = useAuth(),
+  const { token, me } = useAuth(),
     router = useRouter(),
     { date: formatDate, value: preferences } = usePrefs();
+  const trackProduct = useProductAnalytics();
+  const trackedDetail = useRef(false);
   const action = useMutation(),
     [tab, setTab] = useState<Tab>(
       panel === "evidence" ? "documents" : "overview",
@@ -95,6 +98,13 @@ function EventContent({
   const analyticsEventId = !isCalendar && !published.loading && !published.error &&
     eventDetail?.event.id === id && eventDetail.event.state === "published" && !eventDetail.event.is_demo
     ? eventDetail.event.id : null;
+  const officialCalendarLoaded = isCalendar && !scheduled.loading && !scheduled.error &&
+    occurrence?.id === id && occurrence.origin === "official";
+  useEffect(() => {
+    if (!token || !me || trackedDetail.current || me.demo_mode || (!analyticsEventId && !officialCalendarLoaded)) return;
+    trackedDetail.current = true;
+    trackProduct("event_detail_view", { screen: "event_detail", event_kind: isCalendar ? "calendar" : "published" });
+  }, [analyticsEventId, officialCalendarLoaded, isCalendar, token, me, trackProduct]);
   const engageEvidence = useEventAnalytics(
     analyticsEventId,
     panel === "evidence" && (tab === "overview" || tab === "documents") && Boolean(eventDetail?.evidence.length),
