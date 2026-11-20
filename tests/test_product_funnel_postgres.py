@@ -297,11 +297,17 @@ def test_inflight_product_write_cannot_race_past_consent_withdrawal(funnel_db):
     db = funnel_db
     started = threading.Event()
     worker_pid = []
-    blocker = psycopg.connect(db.info.dsn)
+    # Connection.info.dsn omits passwords. Reuse the fixture's validated test
+    # connection URL and select its isolated database for both extra sessions.
+    connection_info = make_conninfo(
+        os.environ["SB_TEST_POSTGRES_URL"].replace("postgresql+psycopg://", "postgresql://"),
+        dbname=db.info.dbname,
+    )
+    blocker = psycopg.connect(connection_info)
     blocker.execute("UPDATE public.users SET analytics_consent=false WHERE id=%s", (MEMBER,))
 
     def record():
-        with psycopg.connect(db.info.dsn, autocommit=True) as writer:
+        with psycopg.connect(connection_info, autocommit=True) as writer:
             role(writer, MEMBER)
             worker_pid.append(writer.info.backend_pid)
             started.set()

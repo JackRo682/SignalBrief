@@ -96,6 +96,33 @@ wrapper to the retained acquisition helper without deleting stored records.
 Release verification and deployment status are recorded in the completion update
 below. Test fixtures are synthetic and are not sent to production analytics.
 
-### Completion update
+### Verification record
 
-Implementation complete; integrated release checks and deployment pending.
+The integrated local run passed 1,281 backend tests, 2,326 frontend tests,
+Python and frontend lint, TypeScript, and OpenAPI export. The 27 product-funnel
+PostgreSQL tests also passed against a disposable database using SCRAM password
+authentication, including the actual concurrent consent-withdrawal test.
+
+The production build completed successfully on a normal retry after an existing
+Next.js dependency advisory reminder. Vercel also built the implementation preview
+successfully. Browser checks run in the normal GitHub Actions environment because
+the local execution sandbox could not start Chromium. Current release and browser
+results are recorded in the
+[verification workflow](https://github.com/JackRo682/SignalBrief/actions/workflows/ci.yml).
+The deployed commit is available from `/api/release`.
+
+The first CI PostgreSQL run exposed a test-only connection issue: psycopg omits
+the password from `Connection.info.dsn`. The concurrency test now reuses the
+validated disposable test URL and changes only the isolated database name. Its
+locking and consent assertions are unchanged; password-authenticated execution
+passed after this correction.
+
+### Existing dependency follow-up
+
+The unchanged Next.js 16.4.3 production dependency has seven moderate advisories
+fixed in [Next.js 16.4.5](https://github.com/vercel/next.js/releases/tag/v16.4.5).
+The production dependency audit found no high or critical findings. Inspection
+found no matching documented execution path in this app: Cache Components and
+the affected cache APIs are unused, the build contains no Edge functions, and
+the deployment is hosted on Vercel. This does not remove the dependency finding;
+a separate tested patch upgrade remains advisable.
