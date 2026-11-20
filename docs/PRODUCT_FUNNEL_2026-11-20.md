@@ -87,7 +87,7 @@ sample sizes and use qualitative usability observations alongside these metrics.
 
 ## Deployment and verification
 
-Migration: `supabase/migrations/20261120035803_product_funnel_analytics.sql`.
+Migration: `supabase/migrations/20261120043507_product_funnel_analytics.sql`.
 The migration adds a private product-event table, retains the old acquisition
 implementation as a private helper, and extends the existing RPC. No historic
 acquisition rows are rewritten. An operational rollback can repoint the public
