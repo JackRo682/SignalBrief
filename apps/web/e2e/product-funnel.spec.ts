@@ -1,8 +1,9 @@
 import {expect, test, type Page} from '@playwright/test';
-import {fixtureNow, mobileFixture, userId} from './mobile-fixture';
+import {companies, companyResources, fixtureNow, mobileFixture, userId} from './mobile-fixture';
 import {emptyActivityFixture, overviewFixture} from './admin-overview-fixture';
 import {operationMetricKeys, operationsSnapshotSchema} from '../src/admin-logs/operations-contracts';
 import {trafficRequest, trafficSummary} from '../src/acquisition/contracts';
+import {catalogSchema, workspaceRequest} from '../src/workspace/contracts';
 
 // Fixture-only browser checks. Requests to analytics vendors and live accounts
 // are intercepted; the product funnel is sent exclusively to /api/traffic.
@@ -10,6 +11,36 @@ const productKinds = new Set(['search_used', 'filter_used', 'event_detail_click'
 type Captured = {payload: Record<string, unknown>; authorization: string | undefined};
 const consentBanner = (page: Page) => page.getByRole('complementary', {name: '선택적 방문 통계'});
 const productEvents = (calls: Captured[]) => calls.filter(call => productKinds.has(String(call.payload.kind)));
+
+async function productFixture(page: Page, options: Parameters<typeof mobileFixture>[1] = {}) {
+  const fixture = await mobileFixture(page, options);
+  await page.route('**/api/company-discovery**', async route => {
+    const request = route.request();
+    expect(request.method()).toBe('GET');
+    expect(request.headers().authorization).toMatch(/^Bearer /);
+    const query = (new URL(request.url()).searchParams.get('q') ?? '').toLowerCase();
+    const items = companies.filter(company => `${company.name} ${company.ticker}`.toLowerCase().includes(query))
+      .map((company, index) => ({provider: 'sec', provider_company_id: String(index + 1).padStart(10, '0'),
+        ticker: company.ticker, name: company.name, market: company.market, company_id: company.id}));
+    await route.fulfill({json: {items, total: items.length, source_status: 'ready'}});
+  });
+  await page.route('**/api/workspace', async route => {
+    const request = workspaceRequest.parse(route.request().postDataJSON());
+    if (request.action !== 'design_directory') {
+      await route.fallback();
+      return;
+    }
+    expect(route.request().method()).toBe('POST');
+    expect(route.request().headers().authorization).toMatch(/^Bearer /);
+    fixture.state.calls.push(request);
+    const {p} = request, query = (p.q ?? '').toLowerCase(), offset = p.offset ?? 0, limit = p.limit ?? 20;
+    const items = companyResources.filter(item => `${item.title} ${item.ticker}`.toLowerCase().includes(query)
+      && ['all', 'overseas'].includes(p.market_group ?? 'all'));
+    await route.fulfill({json: catalogSchema.parse({items: items.slice(offset, offset + limit), total: items.length,
+      counts: {company: items.length}, markets: ['NASDAQ'], next_offset: offset + limit < items.length ? offset + limit : null})});
+  });
+  return fixture;
+}
 
 async function captureTraffic(page: Page, calls: Captured[]) {
   await page.route('**/api/traffic', async route => {
@@ -69,7 +100,7 @@ test('a consented visitor reaches search, filtering and an official detail witho
   const landing = calls.find(call => call.payload.kind === 'page_view' && call.payload.page === 'home')!;
   expect(landing.authorization).toBeUndefined();
 
-  const fixture = await mobileFixture(page, {analyticsConsent: true});
+  const fixture = await productFixture(page, {analyticsConsent: true});
   await captureTraffic(page, calls);
   await page.goto('/search');
   await expect(page.getByRole('heading', {name: '검색', exact: true})).toBeVisible();
@@ -116,7 +147,7 @@ test('a consented visitor reaches search, filtering and an official detail witho
 });
 
 test('missing or denied browser consent, disabled account analytics and admins suppress the product funnel', async ({page}) => {
-  const fixture = await mobileFixture(page, {analyticsConsent: true});
+  const fixture = await productFixture(page, {analyticsConsent: true});
   const calls: Captured[] = [];
   await captureTraffic(page, calls);
   await page.goto('/search');
@@ -146,7 +177,7 @@ test('missing or denied browser consent, disabled account analytics and admins s
 });
 
 test('late consent does not replay a viewed detail and failed detail loading is not a conversion', async ({page}) => {
-  const fixture = await mobileFixture(page, {analyticsConsent: true});
+  const fixture = await productFixture(page, {analyticsConsent: true});
   const calls: Captured[] = [];
   await captureTraffic(page, calls);
   const occurrence = fixture.state.calendar[0];
@@ -168,7 +199,7 @@ test('late consent does not replay a viewed detail and failed detail loading is 
     await route.fulfill({status: 400, headers: {'Access-Control-Allow-Origin': '*'}, json: {message: 'isolated calendar failure'}});
   });
   await page.goto(`/events/${failed.id}?kind=calendar`);
-  await expect(page.getByRole('alert')).toContainText('일정을 불러오지 못했습니다.');
+  await expect(page.getByRole('alert').filter({hasText: '일정을 불러오지 못했습니다.'})).toBeVisible();
   await expect(page.getByRole('heading', {level: 1, name: failed.title, exact: true})).toHaveCount(0);
   expect(productEvents(calls)).toEqual([]);
   expect(fixture.state.unexpected).toEqual([]);
@@ -176,7 +207,7 @@ test('late consent does not replay a viewed detail and failed detail loading is 
 });
 
 test('the administrator sees ordered browser conversion separately from total consented actions', async ({page}, info) => {
-  const fixture = await mobileFixture(page);
+  const fixture = await productFixture(page);
   fixture.state.profile.is_admin = true;
   const queries: {from: string; to: string}[] = [];
   await page.route('**/api/admin/overview', async route => {
