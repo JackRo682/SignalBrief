@@ -26,3 +26,31 @@ test('public indexing, consent, client navigation and refusal protect private co
  expect(await page.locator('#sb-google-analytics').count()).toBe(0);
  await page.screenshot({path:testInfo.outputPath('public-consent-refused.png'),fullPage:true});
 });
+
+test('public indexing measures consented pre-login CTA and arrival in order on real links',async({page})=>{
+ await anonymous(page);
+ const events:{id:string;session:string;seq:number;page:string;step:string;source:string}[]=[];
+ await page.route('**/api/traffic',async route=>{
+  const body=route.request().postDataJSON();
+  if(body.action==='prelogin')events.push(body);
+  await route.fulfill({json:{ok:true,recorded:true}});
+ });
+ await page.goto('/?utm_source=kakao');
+ const banner=page.getByRole('complementary',{name:'선택적 방문 통계'});
+ await expect(banner).toBeVisible();
+ expect(events).toHaveLength(0);
+ await banner.getByRole('button',{name:'동의',exact:true}).click();
+ await expect.poll(()=>events.filter(e=>e.step==='view').length).toBe(1);
+ await page.getByRole('link',{name:'서비스 둘러보기',exact:true}).click();
+ await expect.poll(()=>events.some(e=>e.step==='view'&&e.page==='features')).toBe(true);
+ const ordered=[...events].sort((a,b)=>a.seq-b.seq);
+ expect(ordered.map(e=>[e.page,e.step])).toEqual([['home','view'],['home','features_cta'],['features','view']]);
+ expect(new Set(ordered.map(e=>e.session)).size).toBe(1);
+ expect(new Set(ordered.map(e=>e.id)).size).toBe(3);
+ expect(ordered.every(e=>e.source==='kakao')).toBe(true);
+ await page.goto('/privacy');await page.getByRole('button',{name:'방문 통계 설정',exact:true}).click();
+ await banner.getByRole('button',{name:'거절 / 동의 철회',exact:true}).click();
+ const before=events.length;
+ await page.goto('/pricing');await expect(page.getByRole('heading',{level:1})).toBeVisible();
+ expect(events).toHaveLength(before);
+});

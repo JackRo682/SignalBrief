@@ -1,6 +1,7 @@
 "use client";
 
 import {markSignupAttempt,recordVerifiedSignup} from '@/lib/public-analytics';
+import {notifyAuthAttempt} from '@/acquisition/prelogin-journey';
 import {recordAcquisition} from '@/acquisition/client';
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
@@ -98,6 +99,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
       const supabase = await initializeSupabase();
 
       if (mode === "login") {
+        notifyAuthAttempt('login_submit');
         const result = await supabase.auth.signInWithPassword({ email, password });
         if (result.error) throw result.error;
         router.replace(signInReturnFromUrl(location.href));
@@ -105,6 +107,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
       }
 
       if (mode === "signup") {
+        notifyAuthAttempt('signup_submit');
         markSignupAttempt();
         void recordAcquisition('signup_start','signup');
         const result = await supabase.auth.signUp({
@@ -213,7 +216,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
                 return;
               }
               if(mode === 'signup')markSignupAttempt();
-              void run(async () => {await recordAcquisition('signup_start',mode==='signup'?'signup':'login');await auth.googleLogin();});
+              void run(async () => {notifyAuthAttempt('google_start');await recordAcquisition('signup_start',mode==='signup'?'signup':'login');await auth.googleLogin();});
             }}
           >
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24"><path fill="#4285f4" d="M22 12.2c0-.7-.1-1.4-.2-2.1H12v4h5.6a4.8 4.8 0 0 1-2.1 3.1v2.6h3.4c2-1.8 3.1-4.5 3.1-7.6Z"/><path fill="#34a853" d="M12 22c2.8 0 5.2-.9 6.9-2.4l-3.4-2.6c-.9.6-2.1 1-3.5 1a6 6 0 0 1-5.6-4.1H2.9v2.7A10 10 0 0 0 12 22Z"/><path fill="#fbbc05" d="M6.4 13.9a6 6 0 0 1 0-3.8V7.4H2.9a10 10 0 0 0 0 9.2Z"/><path fill="#ea4335" d="M12 6c1.6 0 3 .5 4.1 1.6l3.1-3.1A10 10 0 0 0 2.9 7.4l3.5 2.7A6 6 0 0 1 12 6Z"/></svg>
@@ -243,14 +246,14 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
       {mode === "login" && (
         <div className="auth-links">
           <span>계정이 없으신가요?</span>
-          <Link href="/signup" aria-label="회원가입하기">회원가입</Link>
+          <Link data-sb-journey="signup_cta" href="/signup" aria-label="회원가입하기">회원가입</Link>
         </div>
       )}
 
       {mode === "signup" && (
         <div className="auth-links">
           <span>이미 계정이 있으신가요?</span>
-          <Link href="/login">로그인</Link>
+          <Link data-sb-journey="login_cta" href="/login">로그인</Link>
 
         </div>
       )}
@@ -258,7 +261,7 @@ export default function LoginForm({ mode }: { mode: AuthMode }) {
       {mode === "reset" && <div className="v-recovery-info"><span>i</span><p>가입하신 이메일 주소로 재설정 링크가 발송됩니다.<br/>이메일이 보이지 않으면 스팸 메일함을 확인해주세요.</p></div>}
       {mode === "reset" && (
         <div className="auth-links">
-          <Link href="/login">← 로그인으로 돌아가기</Link>
+          <Link data-sb-journey="login_cta" href="/login">← 로그인으로 돌아가기</Link>
         </div>
       )}
 

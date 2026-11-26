@@ -51,7 +51,7 @@ def funnel_db():
             CREATE FUNCTION public.sb_require_mfa() RETURNS void LANGUAGE sql AS $$SELECT NULL::void$$;
             CREATE FUNCTION public.sb_rate_limit() RETURNS void LANGUAGE sql AS $$SELECT NULL::void$$;
         """)
-        for filename in ["20261110064509_launch_acquisition_analytics.sql", "20261120043507_product_funnel_analytics.sql"]:
+        for filename in ["20261110064509_launch_acquisition_analytics.sql", "20261120043507_product_funnel_analytics.sql", "20261126063502_kakao_surface_measurement.sql", "20261126064808_prelogin_session_funnel.sql"]:
             connection.execute((ROOT / "supabase/migrations" / filename).read_text())
         connection.execute("INSERT INTO auth.users(id) VALUES(%s),(%s)", (ADMIN, MEMBER))
         connection.execute("INSERT INTO public.users(id,analytics_consent) VALUES(%s,true),(%s,true)", (ADMIN, MEMBER))
@@ -335,3 +335,80 @@ def test_inflight_product_write_cannot_race_past_consent_withdrawal(funnel_db):
         blocker.rollback()
         blocker.close()
     assert db.execute("SELECT count(*) FROM app_private.traffic_product_events").fetchone()[0] == 0
+
+def test_kakao_surface_time_zero_denominator_idempotency_and_erasure(funnel_db):
+    db = funnel_db
+    visitor = str(uuid4())
+    view = {"action": "surface", "visitor_id": visitor, "secret": SECRET, "id": str(uuid4()),
+            "source": "kakao", "surface": "home", "release": "1234567",
+            "consent_version": "2026-11-26", "active_ms": 0}
+    role(db)
+    page = event(visitor, "page_view", page="home", source="kakao")
+    del page["product_consent_version"]
+    assert call(db, page)["recorded"]
+    assert call(db, view)["recorded"]
+    assert call(db, {**view, "active_ms": 4000})["recorded"]
+    assert call(db, {**view, "active_ms": 1000})["recorded"]
+    assert call(db, {**view, "id": str(uuid4())})["recorded"]
+    product = {**view, "surface": "search", "id": str(uuid4())}
+    with pytest.raises(psycopg.Error) as err:
+        call(db, product)
+    assert err.value.sqlstate == "PT401"
+    role(db, MEMBER)
+    assert call(db, product)["recorded"]
+    assert call(db, event(visitor, source="kakao"))["recorded"]
+    result = summary(db)
+    home = next(row for row in result["surface_times"] if row["surface"] == "home")
+    assert home == {"views": 2, "browsers": 1, "surface": "home", "release": "1234567", "source": "kakao", "audience": "signed_out",
+                    "mean_ms": 2000, "median_ms": 2000}
+    assert result["feature_actions"] == [{"page": "search", "kind": "search_used", "events": 1, "browsers": 1}]
+    assert result["sources"][0]["source"] == "kakao"
+    db.execute("RESET ROLE")
+    db.execute("UPDATE public.users SET analytics_consent=false WHERE id=%s", (MEMBER,))
+    assert len(summary(db)["surface_times"]) == 1
+    role(db)
+    call(db, {"action": "erase", "visitor_id": visitor, "secret": SECRET})
+    assert not call(db, view)["recorded"]
+    assert summary(db)["surface_times"] == []
+
+
+def test_prelogin_ordered_sessions_direct_entries_closure_and_withdrawal(funnel_db):
+    db = funnel_db
+    visitor = str(uuid4())
+    sessions = [str(uuid4()) for _ in range(4)]
+
+    def track(index, seq, page, step):
+        return {"action": "prelogin", "visitor_id": visitor, "secret": SECRET, "session": sessions[index],
+                "seq": seq, "id": str(uuid4()), "page": page, "step": step, "source": "kakao",
+                "consent_version": "2026-11-26.prelogin"}
+
+    role(db)
+    start = track(0, 1, "home", "view")
+    assert call(db, start)["recorded"]
+    assert not call(db, start)["recorded"]
+    # Delivery order differs from the client sequence.
+    assert call(db, track(0, 4, "signup", "signup_submit"))["recorded"]
+    assert call(db, track(0, 2, "home", "signup_cta"))["recorded"]
+    assert call(db, track(0, 3, "signup", "view"))["recorded"]
+    assert call(db, track(1, 1, "login", "view"))["recorded"]
+    assert call(db, track(1, 2, "login", "login_submit"))["recorded"]
+    assert call(db, track(2, 1, "home", "view"))["recorded"]
+    assert call(db, track(2, 2, "home", "features_cta"))["recorded"]
+    assert call(db, track(2, 3, "features", "view"))["recorded"]
+    assert call(db, track(3, 1, "home", "view"))["recorded"]
+    assert call(db, track(3, 2, "home", "signup_cta"))["recorded"]
+    assert call(db, track(3, 3, "login", "view"))["recorded"]
+    role(db, MEMBER)
+    with pytest.raises(psycopg.Error) as err:
+        call(db, track(1, 3, "login", "login_cta"))
+    assert err.value.sqlstate == "PT403"
+    db.execute("RESET ROLE")
+    db.execute("UPDATE app_private.prelogin_events SET created_at=now()-interval '40 minutes' WHERE session_id=%s", (sessions[2],))
+    result = summary(db)
+    assert result["journeys"] == [{"source": "kakao", "sessions": 4, "auth_cta": 2, "auth_arrived": 1,
+                                  "auth_attempt": 1, "closed": 1, "closed_without_attempt": 1, "direct_auth_entries": 1}]
+    assert result["journey_exits"] == [{"source": "kakao", "page": "features", "step": "view", "sessions": 1}]
+    role(db)
+    call(db, {"action": "erase", "visitor_id": visitor, "secret": SECRET})
+    assert not call(db, start)["recorded"]
+    assert summary(db)["journeys"] == []

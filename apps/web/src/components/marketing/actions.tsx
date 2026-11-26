@@ -6,7 +6,7 @@ import {Icon} from '@/components/icons';
 
 export function AccountLink({href='/signup',destination='/today',children,className,ariaLabel}:{href?:'/signup'|'/login';destination?:string;children:ReactNode;className?:string;ariaLabel?:string}){
  const {me}=useAuth();
- return <Link href={me?destination:href} className={className} aria-label={ariaLabel}>{children}</Link>;
+ return <Link data-sb-journey={me?undefined:href==='/signup'?'signup_cta':'login_cta'} href={me?destination:href} className={className} aria-label={ariaLabel}>{children}</Link>;
 }
 const tabs=[['today','오늘의 변화','home'],['watchlist','관심종목','star'],['portfolio','포트폴리오','pie'],['timeline','기업 타임라인','timeline'],['calendar','캘린더','calendar'],['alerts','알림','bell']] as const;
 const copy={
