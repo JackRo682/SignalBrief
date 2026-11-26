@@ -16,6 +16,11 @@ test('all thirteen reference designs render semantic, responsive content without
   await page.goto('/'+path);await expect(page.getByRole('heading',{level:1})).toHaveCount(1);await expect(page.getByRole('heading',{level:1})).toBeVisible();
   await expect(page.locator('[data-design="prelogin-20261005"]')).toHaveCount(1);
   await expect(page.locator('.v-footer')).toBeVisible();
+  if (path === '') {
+    const footer = page.getByRole('contentinfo');
+    await expect(footer.getByText('통신판매업 신고번호 2022-부산부산진-1668')).toBeVisible();
+    await expect(footer.getByRole('link', {name: '010-3201-4155'})).toHaveAttribute('href', 'tel:01032014155');
+  }
   await page.evaluate(()=>document.fonts.ready);expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual((page.viewportSize()?.width??0)+2);
   await expect(page.locator('canvas,img[src^="data:"]')).toHaveCount(0);
   if(!['login','signup'].includes(path))await expect(page.locator('.public-info-nav a')).toHaveCount(5);
