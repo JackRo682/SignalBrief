@@ -183,7 +183,9 @@
     "apps/web/src/lib/use-product-analytics.ts",
     "apps/web/src/acquisition/active-clock.ts",
     "apps/web/src/acquisition/surface-tracker.ts",
-    "apps/web/src/acquisition/surface-panel.tsx"
+    "apps/web/src/acquisition/surface-panel.tsx",
+    "apps/web/src/acquisition/prelogin-journey.ts",
+    "apps/web/src/acquisition/journey-panel.tsx"
   ],
   "protected_files": {
     "apps/web/src/admin-logs/client.ts": "652ce7e53eba31a809ccdff087fa98089bf1f111281d725896f588edc82e65e0",
@@ -240,16 +242,16 @@
     "apps/web/src/app/terms/page.tsx": "b39d11bc1394e7eadb1f8ccad9bf169c07750da631aa79f8bdcbda79107ccb60",
     "apps/web/src/components/auth-layout.tsx": "2592f83a1ef65eabf0d342edc81572710e724ea922b8d307b767646fb0316f9f",
     "apps/web/src/components/auth.tsx": "9ce10b4bfef03b3259e5305900bd3515eb434921c93c1b575d80c07c09f93da0",
-    "apps/web/src/components/login-form.tsx": "3f90465dd9bccca4776129f2ff7d62577fd9dba3ed373014942f1ef820d9c45c",
-    "apps/web/src/components/marketing/actions.tsx": "16c728a7d9a037a22832115cc0e0ebdebe25097f265ef508df88ea53c92e2e14",
+    "apps/web/src/components/login-form.tsx": "4d440054ff32fbe5b75258ddfae8ac7f89e84ecbbf80f510e736d99a5bb7c6f7",
+    "apps/web/src/components/marketing/actions.tsx": "3c7ecfe172c24e8e73b5b8e9337b84043f10f547ba7c8a50a3e5fc915055187d",
     "apps/web/src/components/marketing/design.tsx": "7835ae7837e9b758acc721252544566d5f7c250848bca76e2cf8707768a057bb",
-    "apps/web/src/components/marketing/header.tsx": "8b4c4c1576e2b857a5e7a2eef2a517870e84415e3977a8bc9b4cbdc9c6d809dd",
+    "apps/web/src/components/marketing/header.tsx": "c50a27950fb487b8225e79149c086f5a867212cff7f21ed9b03f94b983d4bff6",
     "apps/web/src/components/marketing/interactive.tsx": "5f594bd9b4add02866c9e7d411800392e094638ffbf8e56dd290869f04db3b52",
     "apps/web/src/components/marketing/layout.tsx": "04a33a9f8c3bd00b44f2780a082caf3e5c1d85fce30122cdbde467a3e16fdb66",
-    "apps/web/src/components/marketing/legal-reference.tsx": "57e5f6592abe7ba7c936ca6db8f5f55284a6592ba026ff2912edaafdf7ff2340",
+    "apps/web/src/components/marketing/legal-reference.tsx": "31181913ad488199d886e1e59bd100c8ac90725e451ea5cafa94d374a1752461",
     "apps/web/src/components/marketing/legal.tsx": "e324d38cae829336c5b8d54fd209f6835d1f3de3d4a27f8c6d88625250513514",
     "apps/web/src/components/marketing/marketing.css": "f5edeae90633c5db20dc35548c0455d89d996b6aae1e9b84e454cfe5f4a7bcd0",
-    "apps/web/src/components/marketing/reference-pages.tsx": "aa478834a30a568362c78d777e40c48065ecd2ad70102b6dbede62a65e5ad0f9",
+    "apps/web/src/components/marketing/reference-pages.tsx": "b9ffccd238ec05b30a9a42e567a7ff63453daf749206ca1348766f3bb13ddf2c",
     "apps/web/src/components/marketing/reference.css": "cef130d07822c7f60412d566c31c02bbb62f4a1dc62ca73dd553870da5a83278",
     "apps/web/src/components/marketing/refinement.css": "e7ad5d708c03d4d69324bf2f9637e05ed09f413396dce7b94af73486c591c053",
     "apps/web/src/components/marketing/responsive-design.css": "a44b90cc9c3a7c1aeeeece9cb22533f0ba100aeaf3a6b275ec412863b764d117",
@@ -293,15 +295,15 @@
     "apps/web/src/screens/ops-document.tsx": "c397e426e84b623a3706eb1815f86f512b742dac0f4e8093eb26f1322748b0c4",
     "apps/web/src/screens/ops-run.tsx": "e7a9fdec46f7685f327ae967bf5c817cfadad9448bb5ec5609f2b10276ed8252",
     "apps/web/src/screens/ops.tsx": "56250236ec473c19999af7154628106ae84edc4fdb8f55685904c9289412ff4d",
-    "apps/web/src/acquisition/client.ts": "b62edfb3a48cbc346a709fb6be0fff73d1eec94c1b63e223a01889541387d05b",
-    "apps/web/src/acquisition/contracts.ts": "636ac9a4f54f640d1e557fd7566279b81ac5a09b125be807771ccb4a135c5ed1",
-    "apps/web/src/acquisition/panel.tsx": "2447f14589fc057f4d33c10de62c9985c04e570fd152a1303a7c4e1d6a840c6a",
-    "apps/web/src/acquisition/tracker.tsx": "76076661262b672f6d5a8131a424d3f84819f97796d0a790332dce74141a484f",
+    "apps/web/src/acquisition/client.ts": "a408aa34b370c66d979d9c66a15c3fac3922c9a4d3919d9bd3f003d7abffc8ec",
+    "apps/web/src/acquisition/contracts.ts": "fde61d25f6fdbc0881a55e915ffa94c27eed4a73915029071a5caf216619fe40",
+    "apps/web/src/acquisition/panel.tsx": "84b17946c4be7d0895e4747b7f324d71be4b3c411d194ace598f919bdafeef90",
+    "apps/web/src/acquisition/tracker.tsx": "5bcdec0df2b64f4b3320e38f0e0b308d0a4aec2026194627a4b08942d92aba0d",
     "apps/web/src/acquisition/traffic.css": "469c483e3141791e1ced095a4e1605122bebb10d3d35b596cc75b83b55bba9e0",
     "apps/web/src/lib/public-seo.ts": "af2d59d7c0b7425b56cbfdb012d9237136a02575427d8962c00b9b2284e9be5d",
     "apps/web/src/app/sitemap.ts": "9b55ca0d6d02d6a0659e45df8855dc00b6b6ca39f3113a8456d9e09cba815f69",
     "apps/web/src/app/robots.ts": "906e3b34bd48513f348f25094bebad40e07259bedf3be23b6e7d31415a29012b",
-    "apps/web/src/app/api/traffic/route.ts": "6479a00b513546a64ac890d8d826305090bbe0338e80943f906ff28832aab6c2",
+    "apps/web/src/app/api/traffic/route.ts": "ae780e2585fed9cc0e20e768e2b63e9ea5e6eb3fa2802364ff93f8a712d74814",
     "apps/web/src/components/public-analytics.tsx": "d9c266c4d353accad11503724c86448c8d2820a85c7187adf176151ae9070dbb",
     "apps/web/src/lib/public-analytics.ts": "9a326e876673d79e14603904b6f8025b82bab64b3108b64dbe7981213c2e39f0",
     "apps/web/src/acquisition/product-client.ts": "ab804c0787d4d96d0e1590aceb2f9f4ccbed7c8340dd33e41a0f0536e05e6942",
@@ -310,7 +312,9 @@
     "apps/web/src/lib/use-product-analytics.ts": "37dc50a3d4f5222266e8e36c30e9162a9c29dad1db3f9c664a024fb92f7e1037",
     "apps/web/src/acquisition/active-clock.ts": "aa6624c9a529c8451060e0765439d837e6500f28206bf2a3aab7b6b7a124109f",
     "apps/web/src/acquisition/surface-tracker.ts": "34ef4164e5063c9689654afaf76047a81ec364a4d14552b1f7136fc9d3938ed4",
-    "apps/web/src/acquisition/surface-panel.tsx": "f6a413b3c29b717f43ff75359de3c9b0c298e4d8d46ae90e0bc26e7c84f52777"
+    "apps/web/src/acquisition/surface-panel.tsx": "fe2999bfba8b3ae5c262f7632af7e2d5318a1404d1dddaf9c83d1d9625146331",
+    "apps/web/src/acquisition/prelogin-journey.ts": "49f3d261b32f09b1b93dd6db5237c66f61698da9fe9c1b8378f590d29e54dc6e",
+    "apps/web/src/acquisition/journey-panel.tsx": "ba4a42794c8afc21e1a6eb7b1a46125d19bd75a7bb0a6f7f7aca5c727c0848f3"
   },
   "retained_files": {
     "apps/web/src/desktop/today-legacy.tsx": "f00178cb723ad8b0ab3ca646586f130861aa0b2a914fa8b01694bacea964e919",
@@ -607,6 +611,66 @@
         "apps/web/src/app/api/traffic/route.ts": {
           "before_sha256": "0f08295f28d6dc5ea06622b7059e7d39ea111585974571f2e1d88868016dbc67",
           "after_sha256": "6479a00b513546a64ac890d8d826305090bbe0338e80943f906ff28832aab6c2"
+        }
+      },
+      "normalization": "CRLF to LF",
+      "evidence": "docs/VERIFICATION.md"
+    },
+    {
+      "date": "2026-11-26",
+      "authorization": "Requested signed-out session progression, CTA sequence and source-level last observed behavior for portfolio measurement.",
+      "reviewed_files": {
+        "apps/web/src/acquisition/contracts.ts": {
+          "before_sha256": "636ac9a4f54f640d1e557fd7566279b81ac5a09b125be807771ccb4a135c5ed1",
+          "after_sha256": "fde61d25f6fdbc0881a55e915ffa94c27eed4a73915029071a5caf216619fe40"
+        },
+        "apps/web/src/acquisition/client.ts": {
+          "before_sha256": "b62edfb3a48cbc346a709fb6be0fff73d1eec94c1b63e223a01889541387d05b",
+          "after_sha256": "a408aa34b370c66d979d9c66a15c3fac3922c9a4d3919d9bd3f003d7abffc8ec"
+        },
+        "apps/web/src/acquisition/panel.tsx": {
+          "before_sha256": "2447f14589fc057f4d33c10de62c9985c04e570fd152a1303a7c4e1d6a840c6a",
+          "after_sha256": "84b17946c4be7d0895e4747b7f324d71be4b3c411d194ace598f919bdafeef90"
+        },
+        "apps/web/src/acquisition/tracker.tsx": {
+          "before_sha256": "76076661262b672f6d5a8131a424d3f84819f97796d0a790332dce74141a484f",
+          "after_sha256": "5bcdec0df2b64f4b3320e38f0e0b308d0a4aec2026194627a4b08942d92aba0d"
+        },
+        "apps/web/src/components/marketing/legal-reference.tsx": {
+          "before_sha256": "57e5f6592abe7ba7c936ca6db8f5f55284a6592ba026ff2912edaafdf7ff2340",
+          "after_sha256": "31181913ad488199d886e1e59bd100c8ac90725e451ea5cafa94d374a1752461"
+        },
+        "apps/web/src/acquisition/surface-panel.tsx": {
+          "before_sha256": "f6a413b3c29b717f43ff75359de3c9b0c298e4d8d46ae90e0bc26e7c84f52777",
+          "after_sha256": "fe2999bfba8b3ae5c262f7632af7e2d5318a1404d1dddaf9c83d1d9625146331"
+        },
+        "apps/web/src/app/api/traffic/route.ts": {
+          "before_sha256": "6479a00b513546a64ac890d8d826305090bbe0338e80943f906ff28832aab6c2",
+          "after_sha256": "ae780e2585fed9cc0e20e768e2b63e9ea5e6eb3fa2802364ff93f8a712d74814"
+        },
+        "apps/web/src/components/marketing/actions.tsx": {
+          "before_sha256": "16c728a7d9a037a22832115cc0e0ebdebe25097f265ef508df88ea53c92e2e14",
+          "after_sha256": "3c7ecfe172c24e8e73b5b8e9337b84043f10f547ba7c8a50a3e5fc915055187d"
+        },
+        "apps/web/src/components/marketing/header.tsx": {
+          "before_sha256": "8b4c4c1576e2b857a5e7a2eef2a517870e84415e3977a8bc9b4cbdc9c6d809dd",
+          "after_sha256": "c50a27950fb487b8225e79149c086f5a867212cff7f21ed9b03f94b983d4bff6"
+        },
+        "apps/web/src/components/marketing/reference-pages.tsx": {
+          "before_sha256": "aa478834a30a568362c78d777e40c48065ecd2ad70102b6dbede62a65e5ad0f9",
+          "after_sha256": "b9ffccd238ec05b30a9a42e567a7ff63453daf749206ca1348766f3bb13ddf2c"
+        },
+        "apps/web/src/components/login-form.tsx": {
+          "before_sha256": "3f90465dd9bccca4776129f2ff7d62577fd9dba3ed373014942f1ef820d9c45c",
+          "after_sha256": "4d440054ff32fbe5b75258ddfae8ac7f89e84ecbbf80f510e736d99a5bb7c6f7"
+        },
+        "apps/web/src/acquisition/prelogin-journey.ts": {
+          "before_sha256": null,
+          "after_sha256": "49f3d261b32f09b1b93dd6db5237c66f61698da9fe9c1b8378f590d29e54dc6e"
+        },
+        "apps/web/src/acquisition/journey-panel.tsx": {
+          "before_sha256": null,
+          "after_sha256": "ba4a42794c8afc21e1a6eb7b1a46125d19bd75a7bb0a6f7f7aca5c727c0848f3"
         }
       },
       "normalization": "CRLF to LF",

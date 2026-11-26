@@ -21,7 +21,14 @@ export const surfaceRequest=z.object({
  surface:z.enum(surfaces),release:z.string().regex(/^(?:[0-9a-f]{7,40}|unversioned)$/),
  active_ms:z.number().int().min(0).max(86400000),consent_version:z.literal('2026-11-26'),
 }).strict();
+export const journeySteps=['view','features_cta','pricing_cta','signup_cta','login_cta','signup_submit','login_submit','google_start'] as const;
+export const journeyPages=['home','about','features','sources','pricing','customers','privacy','terms','disclaimer','signup','login'] as const;
+export const journeyRequest=z.object({
+ action:z.literal('prelogin'),...identity,id:z.uuid(),session:z.uuid(),seq:z.number().int().min(1).max(100000),
+ page:z.enum(journeyPages),step:z.enum(journeySteps),source:z.enum(sources),consent_version:z.literal('2026-11-26.prelogin'),
+}).strict();
 export const trafficRequest=z.union([
+ journeyRequest,
  surfaceRequest,
  z.object({action:z.literal('record'),...identity,id:z.uuid(),kind:z.enum(kinds),page:z.enum(pages),source:z.enum(sources)}).strict(),
  productRecord,
@@ -32,7 +39,10 @@ const counts={visitors:z.number().int().nonnegative(),pageviews:z.number().int()
 const productCount=z.number().int().nonnegative();
 export const productSummary=z.object({landing_visitors:productCount,engaged_visitors:productCount,detail_click_visitors:productCount,detail_view_visitors:productCount,search_events:productCount,filter_events:productCount,detail_click_events:productCount,detail_view_events:productCount}).refine(value=>value.engaged_visitors<=value.landing_visitors&&value.detail_click_visitors<=value.engaged_visitors&&value.detail_view_visitors<=value.detail_click_visitors,'Funnel stages must be nested within the landing cohort');
 export const trafficSummary=z.object({generated_at:z.iso.datetime({offset:true}),totals:z.object(counts),daily:z.array(z.object({day:z.iso.date(),...counts})),sources:z.array(z.object({source:z.enum(sources),...counts})),product:productSummary.optional(),
- surface_times:z.array(z.object({surface:z.enum(surfaces),release:z.string(),source:z.enum(sources),views:productCount,browsers:productCount,mean_ms:productCount,median_ms:productCount})).optional(),
+ surface_times:z.array(z.object({surface:z.enum(surfaces),release:z.string(),source:z.enum(sources),audience:z.enum(['signed_out','signed_in','unknown']).optional(),views:productCount,browsers:productCount,mean_ms:productCount,median_ms:productCount})).optional(),
+ journeys:z.array(z.object({source:z.enum(sources),sessions:productCount,auth_cta:productCount,auth_arrived:productCount,auth_attempt:productCount,closed:productCount,closed_without_attempt:productCount,direct_auth_entries:productCount})).optional(),
+ journey_exits:z.array(z.object({source:z.enum(sources),page:z.enum(journeyPages),step:z.enum(journeySteps),sessions:productCount})).optional(),
+ journey_actions:z.array(z.object({source:z.enum(sources),page:z.enum(journeyPages),step:z.enum(journeySteps),events:productCount,sessions:productCount})).optional(),
  feature_actions:z.array(z.object({page:z.enum(productPages),kind:z.enum(productKinds),events:productCount,browsers:productCount})).optional()});
 export type ProductKind=typeof productKinds[number];
 export type ProductPage=typeof productPages[number];

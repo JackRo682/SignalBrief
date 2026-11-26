@@ -16,6 +16,7 @@ export async function POST(req:Request){
   let raw:unknown;try{raw=JSON.parse(Buffer.concat(chunks).toString('utf8'));}catch{return fail(422,'invalid_json');}
   const parsed=trafficRequest.safeParse(raw);if(!parsed.success)return fail(422,'invalid_input');
   const p=parsed.data,authorization=req.headers.get('authorization');
+  if(p.action==='prelogin'&&authorization)return fail(403,'signed_out_only');
   const privateSurface=p.action==='surface'&&(productPages as readonly string[]).includes(p.surface);
   const required=privateSurface||p.action==='summary'||p.action==='record'&&('product_consent_version' in p||['signup_complete','onboarding_complete'].includes(p.kind));
   if(required&&!authorization)return fail(401,'authentication_required');
