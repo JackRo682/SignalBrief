@@ -51,7 +51,7 @@ def funnel_db():
             CREATE FUNCTION public.sb_require_mfa() RETURNS void LANGUAGE sql AS $$SELECT NULL::void$$;
             CREATE FUNCTION public.sb_rate_limit() RETURNS void LANGUAGE sql AS $$SELECT NULL::void$$;
         """)
-        for filename in ["20261110064509_launch_acquisition_analytics.sql", "20261120043507_product_funnel_analytics.sql", "20261126063502_kakao_surface_measurement.sql", "20261126064500_prelogin_session_funnel.sql"]:
+        for filename in ["20261110064509_launch_acquisition_analytics.sql", "20261120043507_product_funnel_analytics.sql", "20261126063502_kakao_surface_measurement.sql", "20261126064808_prelogin_session_funnel.sql"]:
             connection.execute((ROOT / "supabase/migrations" / filename).read_text())
         connection.execute("INSERT INTO auth.users(id) VALUES(%s),(%s)", (ADMIN, MEMBER))
         connection.execute("INSERT INTO public.users(id,analytics_consent) VALUES(%s,true),(%s,true)", (ADMIN, MEMBER))
