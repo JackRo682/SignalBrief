@@ -663,3 +663,14 @@
     padding-inline: 28px;
   }
 }
+
+.v-footer > .v-seller-details {
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  min-height: 0;
+  padding-block: 0 14px;
+  color: #475569;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.v-seller-details a { color: inherit; }

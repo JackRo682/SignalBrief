@@ -14,7 +14,27 @@ export type GlyphName=IconName|'bars'|'user'|'target'|'database'|'cookie'|'mail'
 const glyphs:Partial<Record<GlyphName,string>>={bars:'M4 14h3v7H4ZM10 8h3v13h-3ZM16 3h3v18h-3Z',user:'M12 3a4 4 0 1 1 0 8 4 4 0 0 1 0-8M4 21v-3c0-6 16-6 16 0v3Z',target:'M19 10a8 8 0 1 1-5-6M16 3v5h5M12 12l9-9M15 11a3 3 0 1 1-3-2',database:'M3 6c0-5 18-5 18 0s-18 5-18 0ZM3 6v12c0 5 18 5 18 0V6M3 12c0 5 18 5 18 0',cookie:'M21 12a9 9 0 1 1-9-9c0 5 4 9 9 9ZM8 8h.1M7 14h.1M12 17h.1M14 11h.1',mail:'M3 5h18v14H3ZM3 5l9 7 9-7',globe:'M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18M3 12h18M12 3c-5 5-5 13 0 18 5-5 5-13 0-18',grid:'M3 3h7v7H3ZM14 3h7v7h-7ZM3 14h7v7H3ZM14 14h7v7h-7Z',book:'M12 6v15M3 4c4-1 6 0 9 2 3-2 5-3 9-2v15c-4-1-6 0-9 2-3-2-5-3-9-2Z','credit-off':'M3 3l18 18M3 9h18M4 5h16v14h-2M14 19H4V5',infinity:'M12 12c-8-13-14 8-6 6 4-1 8-13 12-12 8 2 2 19-6 6',megaphone:'M3 9h5l12-5v16L8 15H3ZM8 15l2 6H6l-2-6',warning:'M12 3 2 21h20ZM12 9v5M12 17h.1',lock:'M5 10h14v11H5ZM8 10V7a4 4 0 1 1 8 0v3M12 14v3'};
 export function Glyph({name,size=24}:{name:GlyphName;size?:number}){const path=glyphs[name];return path?<svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d={path}/></svg>:<Icon name={name as IconName} size={size}/>;}
 export function Brand(){return <Link href="/" className="public-info-brand" aria-label="SignalBrief 홈"><span className="public-info-mark"/>SignalBrief</Link>;}
-export function PublicFooter(){return <footer className="v-footer"><div className="v-container"><Brand/><p>더 나은 정보가, 더 나은 투자를 만듭니다.</p><nav aria-label="하단 안내"><Link href="/terms">이용약관</Link><Link href="/privacy">개인정보처리방침</Link><Link href="/disclaimer">투자 유의사항</Link><Link href="/status" aria-label="서비스 상태 확인">서비스 상태</Link></nav></div></footer>;}
+export function PublicFooter() {
+  return (
+    <footer className="v-footer">
+      <div className="v-container">
+        <Brand/>
+        <p>더 나은 정보가, 더 나은 투자를 만듭니다.</p>
+        <nav aria-label="하단 안내">
+          <Link href="/terms">이용약관</Link>
+          <Link href="/privacy">개인정보처리방침</Link>
+          <Link href="/disclaimer">투자 유의사항</Link>
+          <Link href="/status" aria-label="서비스 상태 확인">서비스 상태</Link>
+        </nav>
+      </div>
+      <div className="v-container v-seller-details">
+        <span>운영사 종합상사 루비</span>
+        <span>통신판매업 신고번호 2022-부산부산진-1668</span>
+        <span>사업자 연락처 <a href="tel:01032014155">010-3201-4155</a></span>
+      </div>
+    </footer>
+  );
+}
 export default function MarketingLayout({current,children}:{current:MarketingRoute;children:ReactNode}){return <div className="public-info-page v-public-design"><a href="#public-info-main" className="public-info-skip">본문으로 건너뛰기</a><MarketingHeader current={current}/><main id="public-info-main">{children}</main><PublicFooter/></div>;}
 export function Hero({eyebrow,title,description,art='dashboard',secondary={href:'/about#story',label:'서비스 소개 보기'},stats,hideActions=false}:{eyebrow:string;title:ReactNode;description:ReactNode;art?:'dashboard'|'sources'|'customers'|'privacy';secondary?:{href:string;label:string};stats?:readonly {value:string;label:string}[];hideActions?:boolean}){return <section className={'public-info-hero hero-'+art}><div className="public-info-container public-info-hero-grid"><div className="public-info-hero-copy"><p className="public-info-eyebrow">{eyebrow}</p><h1>{title}</h1><p className="public-info-lead">{description}</p>{!hideActions&&<div className="public-info-actions"><AccountLink className="public-info-button primary">무료로 시작하기 <Icon name="arrow" size={16}/></AccountLink><Link className="public-info-button secondary" href={secondary.href}>{secondary.label}</Link></div>}{stats&&<div className="public-info-stats">{stats.map(stat=><div key={stat.value}><strong>{stat.value}</strong><span>{stat.label}</span></div>)}</div>}</div><div className="public-info-hero-art"><p className="public-info-art-label"><span/> FACT · CHANGE · EVIDENCE</p>{art==='dashboard'?<DashboardPreview/>:art==='privacy'?<PrivacyArt/>:art==='sources'?<SourcesArt/>:<CustomerArt/>}</div></div></section>;}
 function PrivacyArt(){return <div className="public-info-privacy-art"><span className="privacy-shield d-vector-shield"><Glyph name="shield" size={150}/></span><span className="privacy-art-badge badge-storage"><Glyph name="shield"/>안전한 보관</span><span className="privacy-art-badge badge-purpose"><Glyph name="file"/>투명한 운영</span><span className="privacy-art-badge badge-rights"><Glyph name="user"/>사용자 권리 존중</span><span className="privacy-art-badge badge-lock"><Glyph name="lock"/>계정별 접근 보호</span></div>;}
