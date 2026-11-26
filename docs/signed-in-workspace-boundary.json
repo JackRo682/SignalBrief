@@ -180,7 +180,10 @@
     "apps/web/src/acquisition/product-client.ts",
     "apps/web/src/acquisition/product-panel.tsx",
     "apps/web/src/acquisition/queue.ts",
-    "apps/web/src/lib/use-product-analytics.ts"
+    "apps/web/src/lib/use-product-analytics.ts",
+    "apps/web/src/acquisition/active-clock.ts",
+    "apps/web/src/acquisition/surface-tracker.ts",
+    "apps/web/src/acquisition/surface-panel.tsx"
   ],
   "protected_files": {
     "apps/web/src/admin-logs/client.ts": "652ce7e53eba31a809ccdff087fa98089bf1f111281d725896f588edc82e65e0",
@@ -243,7 +246,7 @@
     "apps/web/src/components/marketing/header.tsx": "8b4c4c1576e2b857a5e7a2eef2a517870e84415e3977a8bc9b4cbdc9c6d809dd",
     "apps/web/src/components/marketing/interactive.tsx": "5f594bd9b4add02866c9e7d411800392e094638ffbf8e56dd290869f04db3b52",
     "apps/web/src/components/marketing/layout.tsx": "04a33a9f8c3bd00b44f2780a082caf3e5c1d85fce30122cdbde467a3e16fdb66",
-    "apps/web/src/components/marketing/legal-reference.tsx": "02bc3c64a3218383d92aabce6917c1225eb5a8f2e9c1a0b0c0b4ab50b64a9895",
+    "apps/web/src/components/marketing/legal-reference.tsx": "57e5f6592abe7ba7c936ca6db8f5f55284a6592ba026ff2912edaafdf7ff2340",
     "apps/web/src/components/marketing/legal.tsx": "e324d38cae829336c5b8d54fd209f6835d1f3de3d4a27f8c6d88625250513514",
     "apps/web/src/components/marketing/marketing.css": "f5edeae90633c5db20dc35548c0455d89d996b6aae1e9b84e454cfe5f4a7bcd0",
     "apps/web/src/components/marketing/reference-pages.tsx": "aa478834a30a568362c78d777e40c48065ecd2ad70102b6dbede62a65e5ad0f9",
@@ -290,21 +293,24 @@
     "apps/web/src/screens/ops-document.tsx": "c397e426e84b623a3706eb1815f86f512b742dac0f4e8093eb26f1322748b0c4",
     "apps/web/src/screens/ops-run.tsx": "e7a9fdec46f7685f327ae967bf5c817cfadad9448bb5ec5609f2b10276ed8252",
     "apps/web/src/screens/ops.tsx": "56250236ec473c19999af7154628106ae84edc4fdb8f55685904c9289412ff4d",
-    "apps/web/src/acquisition/client.ts": "deb0636db401ad768c7c1762dc13d990366e1108a22c6f397c9732988805ef86",
-    "apps/web/src/acquisition/contracts.ts": "0ebce72de00ecbff808b0e52565d42e636520b89586f63377250b1a16a7bae4f",
-    "apps/web/src/acquisition/panel.tsx": "7a47b9402ca9ba678c875f8bb041cca6bfe9dd01739f2f868116393f0dcb8e14",
-    "apps/web/src/acquisition/tracker.tsx": "b33f3ce9b721553c52121b64351b0cd910e2cb4186cb6cb4136b218081abb394",
+    "apps/web/src/acquisition/client.ts": "b62edfb3a48cbc346a709fb6be0fff73d1eec94c1b63e223a01889541387d05b",
+    "apps/web/src/acquisition/contracts.ts": "636ac9a4f54f640d1e557fd7566279b81ac5a09b125be807771ccb4a135c5ed1",
+    "apps/web/src/acquisition/panel.tsx": "2447f14589fc057f4d33c10de62c9985c04e570fd152a1303a7c4e1d6a840c6a",
+    "apps/web/src/acquisition/tracker.tsx": "76076661262b672f6d5a8131a424d3f84819f97796d0a790332dce74141a484f",
     "apps/web/src/acquisition/traffic.css": "469c483e3141791e1ced095a4e1605122bebb10d3d35b596cc75b83b55bba9e0",
     "apps/web/src/lib/public-seo.ts": "af2d59d7c0b7425b56cbfdb012d9237136a02575427d8962c00b9b2284e9be5d",
     "apps/web/src/app/sitemap.ts": "9b55ca0d6d02d6a0659e45df8855dc00b6b6ca39f3113a8456d9e09cba815f69",
     "apps/web/src/app/robots.ts": "906e3b34bd48513f348f25094bebad40e07259bedf3be23b6e7d31415a29012b",
-    "apps/web/src/app/api/traffic/route.ts": "0f08295f28d6dc5ea06622b7059e7d39ea111585974571f2e1d88868016dbc67",
+    "apps/web/src/app/api/traffic/route.ts": "6479a00b513546a64ac890d8d826305090bbe0338e80943f906ff28832aab6c2",
     "apps/web/src/components/public-analytics.tsx": "d9c266c4d353accad11503724c86448c8d2820a85c7187adf176151ae9070dbb",
     "apps/web/src/lib/public-analytics.ts": "9a326e876673d79e14603904b6f8025b82bab64b3108b64dbe7981213c2e39f0",
     "apps/web/src/acquisition/product-client.ts": "ab804c0787d4d96d0e1590aceb2f9f4ccbed7c8340dd33e41a0f0536e05e6942",
     "apps/web/src/acquisition/product-panel.tsx": "103554e684d517f60b5b0a6d4c4c9bc6d33b176a11914220e08848125cd3b0a1",
     "apps/web/src/acquisition/queue.ts": "454c4e828af75958901c6cd4397173e07bb6ef7b2dc4e14972301c9a3146bba3",
-    "apps/web/src/lib/use-product-analytics.ts": "37dc50a3d4f5222266e8e36c30e9162a9c29dad1db3f9c664a024fb92f7e1037"
+    "apps/web/src/lib/use-product-analytics.ts": "37dc50a3d4f5222266e8e36c30e9162a9c29dad1db3f9c664a024fb92f7e1037",
+    "apps/web/src/acquisition/active-clock.ts": "aa6624c9a529c8451060e0765439d837e6500f28206bf2a3aab7b6b7a124109f",
+    "apps/web/src/acquisition/surface-tracker.ts": "34ef4164e5063c9689654afaf76047a81ec364a4d14552b1f7136fc9d3938ed4",
+    "apps/web/src/acquisition/surface-panel.tsx": "f6a413b3c29b717f43ff75359de3c9b0c298e4d8d46ae90e0bc26e7c84f52777"
   },
   "retained_files": {
     "apps/web/src/desktop/today-legacy.tsx": "f00178cb723ad8b0ab3ca646586f130861aa0b2a914fa8b01694bacea964e919",
@@ -560,6 +566,51 @@
       "normalization": "CRLF to LF, matching the unchanged scripts/verify_workspace_scope.py",
       "evidence": "docs/OPS_LOGS_ONLY_2026-11-06.md",
       "guard_changes": "No verifier assertions or retained feature protections changed."
+    },
+    {
+      "date": "2026-11-26",
+      "authorization": "Requested first-touch Kakao attribution, measurement of feature use and comparison of active time across UX releases.",
+      "production_baseline_commit": "df1f8f578623daf19a3a147403db5dc69db068a7",
+      "reviewed_files": {
+        "apps/web/src/acquisition/contracts.ts": {
+          "before_sha256": "0ebce72de00ecbff808b0e52565d42e636520b89586f63377250b1a16a7bae4f",
+          "after_sha256": "636ac9a4f54f640d1e557fd7566279b81ac5a09b125be807771ccb4a135c5ed1"
+        },
+        "apps/web/src/acquisition/client.ts": {
+          "before_sha256": "deb0636db401ad768c7c1762dc13d990366e1108a22c6f397c9732988805ef86",
+          "after_sha256": "b62edfb3a48cbc346a709fb6be0fff73d1eec94c1b63e223a01889541387d05b"
+        },
+        "apps/web/src/acquisition/panel.tsx": {
+          "before_sha256": "7a47b9402ca9ba678c875f8bb041cca6bfe9dd01739f2f868116393f0dcb8e14",
+          "after_sha256": "2447f14589fc057f4d33c10de62c9985c04e570fd152a1303a7c4e1d6a840c6a"
+        },
+        "apps/web/src/acquisition/tracker.tsx": {
+          "before_sha256": "b33f3ce9b721553c52121b64351b0cd910e2cb4186cb6cb4136b218081abb394",
+          "after_sha256": "76076661262b672f6d5a8131a424d3f84819f97796d0a790332dce74141a484f"
+        },
+        "apps/web/src/components/marketing/legal-reference.tsx": {
+          "before_sha256": "02bc3c64a3218383d92aabce6917c1225eb5a8f2e9c1a0b0c0b4ab50b64a9895",
+          "after_sha256": "57e5f6592abe7ba7c936ca6db8f5f55284a6592ba026ff2912edaafdf7ff2340"
+        },
+        "apps/web/src/acquisition/active-clock.ts": {
+          "before_sha256": null,
+          "after_sha256": "aa6624c9a529c8451060e0765439d837e6500f28206bf2a3aab7b6b7a124109f"
+        },
+        "apps/web/src/acquisition/surface-tracker.ts": {
+          "before_sha256": null,
+          "after_sha256": "34ef4164e5063c9689654afaf76047a81ec364a4d14552b1f7136fc9d3938ed4"
+        },
+        "apps/web/src/acquisition/surface-panel.tsx": {
+          "before_sha256": null,
+          "after_sha256": "f6a413b3c29b717f43ff75359de3c9b0c298e4d8d46ae90e0bc26e7c84f52777"
+        },
+        "apps/web/src/app/api/traffic/route.ts": {
+          "before_sha256": "0f08295f28d6dc5ea06622b7059e7d39ea111585974571f2e1d88868016dbc67",
+          "after_sha256": "6479a00b513546a64ac890d8d826305090bbe0338e80943f906ff28832aab6c2"
+        }
+      },
+      "normalization": "CRLF to LF",
+      "evidence": "docs/VERIFICATION.md"
     }
   ]
 }
