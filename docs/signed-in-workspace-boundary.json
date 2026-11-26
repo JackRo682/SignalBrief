@@ -97,6 +97,25 @@
         "description": "Only features.css changes under apps/web/src. Existing content, shared components, auth, analytics, routing, signed-in screens, APIs and database logic are unchanged."
       },
       "release_status": "Presentation scope reviewed. Exact-source release verification is recorded by the pull request checks and Vercel deployment."
+    },
+    {
+      "date": "2026-11-26",
+      "authorization": "Publish verified seller registration and the existing public business telephone number for Kakao landing-page review.",
+      "production_baseline_commit": "9550c1baa70abbde0c3965a15d9a71d201a713e9",
+      "reviewed_files": {
+        "apps/web/src/components/marketing/layout.tsx": {
+          "before_sha256": "32d849302596b523312f721c7fdb75c1bb3ff0de64c37db96b875647ecc7a7cd",
+          "after_sha256": "04a33a9f8c3bd00b44f2780a082caf3e5c1d85fce30122cdbde467a3e16fdb66",
+          "normalization": "CRLF to LF",
+          "scope": "Display the verified seller name, registration number and business contact in the public footer."
+        },
+        "apps/web/src/components/marketing/screenshot-design.css": {
+          "before_sha256": "f9ecf9f877076798b117381ec8b0c621558c7d3c26f0a96e425bcd9eeb9355d5",
+          "after_sha256": "dec1850b872e0c41a467839c9bc0f158ff32e440656a7311c4fe0e3e02e6d644",
+          "normalization": "CRLF to LF",
+          "scope": "Allow the seller disclosure to wrap and keep its text legible on small screens."
+        }
+      }
     }
   ],
   "protected_paths": [
@@ -223,7 +242,7 @@
     "apps/web/src/components/marketing/design.tsx": "7835ae7837e9b758acc721252544566d5f7c250848bca76e2cf8707768a057bb",
     "apps/web/src/components/marketing/header.tsx": "8b4c4c1576e2b857a5e7a2eef2a517870e84415e3977a8bc9b4cbdc9c6d809dd",
     "apps/web/src/components/marketing/interactive.tsx": "5f594bd9b4add02866c9e7d411800392e094638ffbf8e56dd290869f04db3b52",
-    "apps/web/src/components/marketing/layout.tsx": "32d849302596b523312f721c7fdb75c1bb3ff0de64c37db96b875647ecc7a7cd",
+    "apps/web/src/components/marketing/layout.tsx": "04a33a9f8c3bd00b44f2780a082caf3e5c1d85fce30122cdbde467a3e16fdb66",
     "apps/web/src/components/marketing/legal-reference.tsx": "02bc3c64a3218383d92aabce6917c1225eb5a8f2e9c1a0b0c0b4ab50b64a9895",
     "apps/web/src/components/marketing/legal.tsx": "e324d38cae829336c5b8d54fd209f6835d1f3de3d4a27f8c6d88625250513514",
     "apps/web/src/components/marketing/marketing.css": "f5edeae90633c5db20dc35548c0455d89d996b6aae1e9b84e454cfe5f4a7bcd0",
@@ -232,7 +251,7 @@
     "apps/web/src/components/marketing/refinement.css": "e7ad5d708c03d4d69324bf2f9637e05ed09f413396dce7b94af73486c591c053",
     "apps/web/src/components/marketing/responsive-design.css": "a44b90cc9c3a7c1aeeeece9cb22533f0ba100aeaf3a6b275ec412863b764d117",
     "apps/web/src/components/marketing/screenshot-accessibility.css": "311f457009f56da6c96f0280eaec747716c89493d8b7cea770f5c255156aad2c",
-    "apps/web/src/components/marketing/screenshot-design.css": "f9ecf9f877076798b117381ec8b0c621558c7d3c26f0a96e425bcd9eeb9355d5",
+    "apps/web/src/components/marketing/screenshot-design.css": "dec1850b872e0c41a467839c9bc0f158ff32e440656a7311c4fe0e3e02e6d644",
     "apps/web/src/components/marketing/screenshot-preview.tsx": "71459ea352be49ac2fc48f1b311709aff3ae8708527154a0be4e057a7f99a12a",
     "apps/web/src/components/mfa-challenge.css": "c18698c432954eae605e73f5a30eb1cdd7f0915ea5b10658158e0e6cf4ac0e80",
     "apps/web/src/components/mfa-challenge.tsx": "cd870c74965b039359578c306690700cbfceb0dadc6680ec4ddb0bff6b2497e6",
