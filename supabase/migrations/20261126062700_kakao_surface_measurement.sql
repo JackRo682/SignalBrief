@@ -113,10 +113,11 @@ BEGIN
   -- Existing function above verifies the admin, MFA, rate limit, and date range.
   from_at:=greatest((p->>'from')::date::timestamp AT TIME ZONE 'Asia/Seoul',now()-interval '90 days');
   to_at:=least(((p->>'to')::date+1)::timestamp AT TIME ZONE 'Asia/Seoul',now());
-  SELECT coalesce(jsonb_agg(to_jsonb(s) ORDER BY s.surface,s.release),'[]'::jsonb) INTO times FROM (
-   SELECT v.surface,v.release,count(*) AS views,count(DISTINCT v.visitor_id) AS browsers,
+  SELECT coalesce(jsonb_agg(to_jsonb(s) ORDER BY s.surface,s.source,s.release),'[]'::jsonb) INTO times FROM (
+   SELECT v.surface,v.release,first_touch.source,count(*) AS views,count(DISTINCT v.visitor_id) AS browsers,
     round(avg(v.active_ms))::int AS mean_ms,round(percentile_cont(0.5) WITHIN GROUP(ORDER BY v.active_ms))::int AS median_ms
-   FROM app_private.traffic_surface_views v WHERE v.started_at>=from_at AND v.started_at<to_at GROUP BY v.surface,v.release
+   FROM app_private.traffic_surface_views v JOIN app_private.traffic_visitors first_touch ON first_touch.id=v.visitor_id AND first_touch.withdrawn_at IS NULL
+   WHERE v.started_at>=from_at AND v.started_at<to_at GROUP BY v.surface,v.release,first_touch.source
   ) s;
   SELECT coalesce(jsonb_agg(to_jsonb(s) ORDER BY s.page,s.kind),'[]'::jsonb) INTO features FROM (
    SELECT e.page,e.kind,count(*) AS events,count(DISTINCT e.visitor_id) AS browsers

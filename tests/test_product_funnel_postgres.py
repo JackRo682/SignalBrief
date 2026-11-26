@@ -359,7 +359,7 @@ def test_kakao_surface_time_zero_denominator_idempotency_and_erasure(funnel_db):
     assert call(db, event(visitor, source="kakao"))["recorded"]
     result = summary(db)
     home = next(row for row in result["surface_times"] if row["surface"] == "home")
-    assert home == {"views": 2, "browsers": 1, "surface": "home", "release": "1234567",
+    assert home == {"views": 2, "browsers": 1, "surface": "home", "release": "1234567", "source": "kakao",
                     "mean_ms": 2000, "median_ms": 2000}
     assert result["feature_actions"] == [{"page": "search", "kind": "search_used", "events": 1, "browsers": 1}]
     assert result["sources"][0]["source"] == "kakao"

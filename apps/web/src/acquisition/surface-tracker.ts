@@ -30,17 +30,12 @@ export function useSurfaceTracking(path: string, consent: Consent | null, token:
         && !privacySignal() && (!privatePage || productConsentChoice() === 'granted') ? current : null;
     }
     function publish() {
-      const elapsed = clock.sample(performance.now()), current = eligible();
-      const active = acknowledged < 0 ? 0 : elapsed;
+      const active = clock.sample(performance.now()), current = eligible();
       if (!opened || !current || active <= acknowledged) return;
       const payload = {action:'surface', ...current.identity, id, source:current.source, surface, release, active_ms:active, consent_version:SURFACE_CONSENT_VERSION};
       void fetch('/api/traffic', {method:'POST', headers:{'Content-Type':'application/json', ...(token ? {Authorization:'Bearer '+token} : {})},
         body:JSON.stringify(payload), keepalive:true}).then(async response => {
-        if (response.ok && (await response.json()).recorded) {
-          const initial = acknowledged < 0;
-          acknowledged=Math.max(acknowledged,active);
-          if(initial && elapsed > 0) publish();
-        }
+        if (response.ok && (await response.json()).recorded) acknowledged=Math.max(acknowledged,active);
       }).catch(() => {/* The next checkpoint replays this cumulative measurement. */});
     }
     function change(on: boolean) {
