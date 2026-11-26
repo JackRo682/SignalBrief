@@ -313,7 +313,7 @@
     "apps/web/src/acquisition/active-clock.ts": "aa6624c9a529c8451060e0765439d837e6500f28206bf2a3aab7b6b7a124109f",
     "apps/web/src/acquisition/surface-tracker.ts": "34ef4164e5063c9689654afaf76047a81ec364a4d14552b1f7136fc9d3938ed4",
     "apps/web/src/acquisition/surface-panel.tsx": "fe2999bfba8b3ae5c262f7632af7e2d5318a1404d1dddaf9c83d1d9625146331",
-    "apps/web/src/acquisition/prelogin-journey.ts": "49f3d261b32f09b1b93dd6db5237c66f61698da9fe9c1b8378f590d29e54dc6e",
+    "apps/web/src/acquisition/prelogin-journey.ts": "36c323332a2f54bba8b0f7bdef63c4aeffe6b96d02af0585a1be9ccfab77cad5",
     "apps/web/src/acquisition/journey-panel.tsx": "ba4a42794c8afc21e1a6eb7b1a46125d19bd75a7bb0a6f7f7aca5c727c0848f3"
   },
   "retained_files": {
@@ -666,7 +666,7 @@
         },
         "apps/web/src/acquisition/prelogin-journey.ts": {
           "before_sha256": null,
-          "after_sha256": "49f3d261b32f09b1b93dd6db5237c66f61698da9fe9c1b8378f590d29e54dc6e"
+          "after_sha256": "36c323332a2f54bba8b0f7bdef63c4aeffe6b96d02af0585a1be9ccfab77cad5"
         },
         "apps/web/src/acquisition/journey-panel.tsx": {
           "before_sha256": null,

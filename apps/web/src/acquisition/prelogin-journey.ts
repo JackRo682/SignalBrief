@@ -62,8 +62,9 @@ export function usePreloginJourney(path:string,consent:Consent|null,anonymous:bo
     }
     function observe(step:Step){
       if(!permitted())return;
-      let {session,first}=reserve(visitor!);
-      if(first&&step!=='view'){
+      const reserved=reserve(visitor!);
+      let session=reserved.session;
+      if(reserved.first&&step!=='view'){
         send('view',session);
         session=reserve(visitor!).session;
       }
