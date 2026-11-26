@@ -51,7 +51,7 @@ def funnel_db():
             CREATE FUNCTION public.sb_require_mfa() RETURNS void LANGUAGE sql AS $$SELECT NULL::void$$;
             CREATE FUNCTION public.sb_rate_limit() RETURNS void LANGUAGE sql AS $$SELECT NULL::void$$;
         """)
-        for filename in ["20261110064509_launch_acquisition_analytics.sql", "20261120043507_product_funnel_analytics.sql"]:
+        for filename in ["20261110064509_launch_acquisition_analytics.sql", "20261120043507_product_funnel_analytics.sql", "20261126062700_kakao_surface_measurement.sql"]:
             connection.execute((ROOT / "supabase/migrations" / filename).read_text())
         connection.execute("INSERT INTO auth.users(id) VALUES(%s),(%s)", (ADMIN, MEMBER))
         connection.execute("INSERT INTO public.users(id,analytics_consent) VALUES(%s,true),(%s,true)", (ADMIN, MEMBER))
@@ -335,3 +335,38 @@ def test_inflight_product_write_cannot_race_past_consent_withdrawal(funnel_db):
         blocker.rollback()
         blocker.close()
     assert db.execute("SELECT count(*) FROM app_private.traffic_product_events").fetchone()[0] == 0
+
+def test_kakao_surface_time_zero_denominator_idempotency_and_erasure(funnel_db):
+    db = funnel_db
+    visitor = str(uuid4())
+    view = {"action": "surface", "visitor_id": visitor, "secret": SECRET, "id": str(uuid4()),
+            "source": "kakao", "surface": "home", "release": "1234567",
+            "consent_version": "2026-11-26", "active_ms": 0}
+    role(db)
+    page = event(visitor, "page_view", page="home", source="kakao")
+    del page["product_consent_version"]
+    assert call(db, page)["recorded"]
+    assert call(db, view)["recorded"]
+    assert call(db, {**view, "active_ms": 4000})["recorded"]
+    assert call(db, {**view, "active_ms": 1000})["recorded"]
+    assert call(db, {**view, "id": str(uuid4())})["recorded"]
+    product = {**view, "surface": "search", "id": str(uuid4())}
+    with pytest.raises(psycopg.Error) as err:
+        call(db, product)
+    assert err.value.sqlstate == "PT401"
+    role(db, MEMBER)
+    assert call(db, product)["recorded"]
+    assert call(db, event(visitor, source="kakao"))["recorded"]
+    result = summary(db)
+    home = next(row for row in result["surface_times"] if row["surface"] == "home")
+    assert home == {"views": 2, "browsers": 1, "surface": "home", "release": "1234567",
+                    "mean_ms": 2000, "median_ms": 2000}
+    assert result["feature_actions"] == [{"page": "search", "kind": "search_used", "events": 1, "browsers": 1}]
+    assert result["sources"][0]["source"] == "kakao"
+    db.execute("RESET ROLE")
+    db.execute("UPDATE public.users SET analytics_consent=false WHERE id=%s", (MEMBER,))
+    assert len(summary(db)["surface_times"]) == 1
+    role(db)
+    call(db, {"action": "erase", "visitor_id": visitor, "secret": SECRET})
+    assert not call(db, view)["recorded"]
+    assert summary(db)["surface_times"] == []

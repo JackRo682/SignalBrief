@@ -12,6 +12,16 @@ describe('public discovery',()=>{
 describe('acquisition data minimization and consent',()=>{
  it.each(['/search?q=secret','/company/123','/ops','/today','/auth/callback'])('does not send private routes %s',path=>expect(trafficPage(path)).toBeNull());
  it('classifies known sources without returning raw queries or hosts',()=>{expect(trafficSource('https://signalbrief.online/?utm_source=geeknews&email=private','')).toBe('geeknews');expect(trafficSource('https://signalbrief.online/','https://news.hada.io/topic?id=123')).toBe('geeknews');expect(trafficSource('https://signalbrief.online/','https://private.example/user')).toBe('other');expect(trafficSource('https://signalbrief.online/','https://google.com.evil.example/')).toBe('other');expect(trafficSource('https://signalbrief.online/?utm_source=person@email.com','')).toBe('other');});
+ it('retains the Kakao first-touch category without sending campaign details',()=>{
+  expect(trafficSource('https://signalbrief.online/?utm_source=KAKAO&utm_medium=display&utm_content=filings_a','')).toBe('kakao');
+  expect(trafficSource('https://signalbrief.online/?utm_source=kakao.example','')).toBe('other');
+ });
+ it('retries a transient result with the same event ID',async()=>{
+  chooseConsent(true);
+  vi.mocked(fetch).mockResolvedValueOnce(new Response(null,{status:503})).mockResolvedValueOnce(new Response('{}'));
+  expect(await recordAcquisition('page_view','home')).toBe(true);
+  expect(vi.mocked(fetch).mock.calls.map(call=>call[1]?.body)[0]).toBe(vi.mocked(fetch).mock.calls[1][1]?.body);
+ });
  it('collects nothing before consent or after declining',async()=>{expect(readConsent()).toBeNull();await recordAcquisition('page_view','home');expect(fetch).not.toHaveBeenCalled();chooseConsent(false);await recordAcquisition('page_view','home');expect(fetch).not.toHaveBeenCalled();});
  it('records only validated bounded events after opt-in',async()=>{expect(chooseConsent(true)).toBe(true);await recordAcquisition('page_view','home');const call=vi.mocked(fetch).mock.calls[0];const body=JSON.parse(String(call[1]?.body));expect(trafficRequest.safeParse(body).success).toBe(true);expect(body).not.toHaveProperty('url');expect(body).not.toHaveProperty('email');});
  it('honors browser tracking protection',async()=>{Object.defineProperty(navigator,'doNotTrack',{configurable:true,value:'1'});expect(chooseConsent(true)).toBe(false);await recordAcquisition('page_view','home');expect(fetch).not.toHaveBeenCalled();Object.defineProperty(navigator,'doNotTrack',{configurable:true,value:undefined});});
