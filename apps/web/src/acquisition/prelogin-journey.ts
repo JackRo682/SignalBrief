@@ -28,6 +28,11 @@ function reserve(visitor:string):{session:Session;first:boolean}{
 export function notifyAuthAttempt(step:'signup_submit'|'login_submit'|'google_start'){
   window.dispatchEvent(new CustomEvent('sb:prelogin-attempt',{detail:step}));
 }
+/** Only a broad viewport class leaves the browser, never its width or User-Agent. */
+export function journeyDevice(width:number):'mobile'|'tablet'|'desktop'|undefined{
+  if(!Number.isFinite(width)||width<=0)return undefined;
+  return width<768?'mobile':width<1024?'tablet':'desktop';
+}
 export function usePreloginJourney(path:string,consent:Consent|null,anonymous:boolean,signedIn:boolean){
   const visitor=consent?.choice==='yes'&&consent.journeyVersion===JOURNEY_CONSENT_VERSION?consent.identity.visitor_id:null;
   const allowed=!!visitor&&anonymous;
@@ -47,7 +52,8 @@ export function usePreloginJourney(path:string,consent:Consent|null,anonymous:bo
     }
     function send(step:Step,session:Session){
       const grant=permitted(); if(!grant)return;
-      const payload={action:'prelogin',...grant.identity,id:crypto.randomUUID(),session:session.id,seq:session.seq,page,step,source:grant.source,consent_version:JOURNEY_CONSENT_VERSION};
+      const device=journeyDevice(window.innerWidth);
+      const payload={action:'prelogin',...grant.identity,id:crypto.randomUUID(),session:session.id,seq:session.seq,page,step,source:grant.source,consent_version:JOURNEY_CONSENT_VERSION,...(device?{device}:{})};
       async function deliver(){
         for(let attempt=0;attempt<2;attempt++){
           if(!permitted())return;

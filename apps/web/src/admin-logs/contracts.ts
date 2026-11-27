@@ -77,7 +77,7 @@ export function koreanDate(now = new Date()): string {
   return new Date(now.getTime() + 9 * 60 * 60 * 1_000).toISOString().slice(0, 10);
 }
 
-export function recentLogDates(days: 7 | 30 = 7, now = new Date()): { from: string; to: string } {
+export function recentLogDates(days: 7 | 30 | 90 = 7, now = new Date()): { from: string; to: string } {
   const to = koreanDate(now);
   const from = new Date(Date.parse(`${to}T00:00:00Z`) - (days - 1) * 86_400_000).toISOString().slice(0, 10);
   return { from, to };
