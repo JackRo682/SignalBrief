@@ -1,13 +1,13 @@
 'use client';
 
 import AcquisitionPanel from '@/acquisition/panel';
-import { Fragment, useEffect, useRef, useState, type FormEvent } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth';
 import { Loading } from '@/components/ui';
 import { Heading, Panel, Field } from '@/research/ui';
-import { useUserLogs, type UserLogsError } from './client';
+import { useUserLogs, UserLogsError } from './client';
 import {
   defaultLogFilters, koreanDate, recentLogDates, userLogEvents, userLogScreens,
   userLogsRequestSchema, type UserLog, type UserLogCursor, type UserLogsFilters,
@@ -113,6 +113,8 @@ function UserLogContent({ unified }: { unified: boolean }) {
   const result = useUserLogs({ ...selected.filters, cursor });
   const overview = useAdminOverview({ from: selected.filters.from, to: selected.filters.to, include_admin: selected.filters.include_admin });
   const operations = useOperationsData({ from: selected.filters.from, to: selected.filters.to }, unified);
+  const denyOperations = operations.deny;
+  const denyTraffic = useCallback((status: 401 | 403) => denyOperations(new UserLogsError(status, status === 401 ? 'authentication_required' : 'admin_required')), [denyOperations]);
   const accessError = [result.error, overview.error, operations.accessError].find(error => error?.status === 401 || error?.status === 403) ?? null;
   const response = accessError ? null : result.data;
   const oldest = new Date(Date.parse(`${today}T00:00:00Z`) - 89 * 86_400_000).toISOString().slice(0, 10);
@@ -121,7 +123,7 @@ function UserLogContent({ unified }: { unified: boolean }) {
     if (!unified || initialAnchorHandled.current || accessError || result.loading || overview.loading || operations.loading) return;
     initialAnchorHandled.current = true;
     const target = window.location.hash.slice(1);
-    if (/^(overview-|operations-|activity-logs$)/.test(target)) document.getElementById(target)?.scrollIntoView?.({ block: 'start' });
+    if (/^(traffic-|overview-|operations-|activity-logs$)/.test(target)) document.getElementById(target)?.scrollIntoView?.({ block: 'start' });
   }, [unified, accessError, result.loading, overview.loading, operations.loading]);
 
   function apply(filters: UserLogsFilters) {
@@ -169,9 +171,10 @@ function UserLogContent({ unified }: { unified: boolean }) {
 
   return (
     <div className={`user-log-page${unified ? ' unified-ops-page' : ''}`}>
-      <Heading tag="SIGNALBRIEF · ADMIN" title={unified ? '운영 현황' : '운영 현황 · 사용자 로그'} description={unified ? '사이트에서 수집 중인 사용자 활동·오류·처리·감사 기록을 한 화면에서 확인합니다.' : '방문부터 재방문, 기능 이용, 오류와 활동 기록까지 한 페이지에서 확인합니다.'}>
+      <Heading tag="SIGNALBRIEF · ADMIN" title={unified ? '운영 현황' : '운영 현황 · 사용자 로그'} description={unified ? '방문자가 어디서 들어와 무엇을 이용했는지 확인하고, 활동 기록과 운영 상태를 살펴보세요.' : '방문부터 재방문, 기능 이용, 오류와 활동 기록까지 한 페이지에서 확인합니다.'}>
         <button type="button" className="button secondary" onClick={refresh} disabled={result.loading || overview.loading || operations.loading}>새로고침</button>
       </Heading>
+      {unified && <nav className="overview-jump-links" aria-label="이 페이지 바로가기"><a href="#traffic-analytics">방문·행동 분석</a><a href="#traffic-sessions">세션별 경로</a><a href="#overview-metrics">로그인 후 이용</a><a href="#activity-logs">상세 활동 기록</a><a href="#operations-pipeline">수집·운영 상태</a></nav>}
       {!unified && <nav className="overview-jump-links" aria-label="이 페이지 바로가기">
         <a href="#overview-metrics">핵심 지표</a><a href="#overview-usage">방문·전환</a><a href="#overview-pages">화면·이탈</a><a href="#overview-errors">오류</a><a href="#activity-logs">활동 로그</a>
       </nav>}
@@ -180,7 +183,7 @@ function UserLogContent({ unified }: { unified: boolean }) {
           <div className="overview-period-main">
             <div className="user-log-presets" role="group" aria-label="빠른 날짜 선택">
               <button type="button" className="button secondary" onClick={() => apply({ ...selected.filters, from: today, to: today })}>오늘</button>
-              {([7, 30] as const).map(days => <button type="button" key={days} className="button secondary" onClick={() => apply({ ...selected.filters, ...recentLogDates(days) })}>최근 {days}일</button>)}
+              {([7, 30, 90] as const).map(days => <button type="button" key={days} className="button secondary" onClick={() => apply({ ...selected.filters, ...recentLogDates(days) })}>최근 {days}일</button>)}
             </div>
             <div className="overview-date-fields">
               <Field label="시작일"><input type="date" value={draft.from} min={oldest} max={today} required onChange={event => setDraft(value => ({ ...value, from: event.target.value }))}/></Field>
@@ -198,6 +201,11 @@ function UserLogContent({ unified }: { unified: boolean }) {
       </section>
 
       {accessError ? <LogError error={accessError} retry={refresh} reauthenticate={() => void reauthenticate()} busy={switching} actionError={switchError}/> : <>
+        {unified && <AcquisitionPanel from={selected.filters.from} to={selected.filters.to} revision={trafficRevision} onDenied={denyTraffic}/>}
+        {unified && <div className="overview-section-heading"><div><h2>로그인 후 이용 통계</h2><p className="overview-note">계정의 선택적 이용 통계에 동의한 사용자 기준입니다. 위의 브라우저·세션 수와 합산하지 않습니다.</p></div></div>}
+        {overview.loading && <OverviewLoading/>}
+        {overview.error && <section className="user-log-error" role="alert"><h2>핵심 지표를 불러오지 못했습니다</h2><p>이용 지표를 확인할 수 없습니다. 활동 기록은 별도로 조회할 수 있습니다.</p><LogError error={overview.error} retry={overview.reload} reauthenticate={() => void reauthenticate()} busy={switching} actionError={switchError}/></section>}
+        {overview.data && <OverviewPanels data={overview.data}/>}
         <section id="activity-logs" className="overview-section" aria-label="상세 활동 로그">
           <Panel title="활동 기록" aside={<span className="user-log-small">최근 기록 순 · 페이지당 50개</span>}>
             <p className="overview-note user-log-filter-intro">활동 유형·화면·기기·사용자 조건은 이 목록에만 적용됩니다. 이용 지표는 상단 조회 기간과 관리자 포함 설정을 따릅니다. {unified && <>관리자 처리 이력은 <a className="user-log-link" href="#operations-audit">감사 로그</a>에서 확인할 수 있습니다.</>}</p>
@@ -227,11 +235,6 @@ function UserLogContent({ unified }: { unified: boolean }) {
             </>}
           </Panel>
         </section>
-        {unified && <AcquisitionPanel from={selected.filters.from} to={selected.filters.to} revision={trafficRevision}/>}
-        {overview.loading && <OverviewLoading/>}
-        {overview.error && <section className="user-log-error" role="alert"><h2>핵심 지표를 불러오지 못했습니다</h2><p>이용 지표를 확인할 수 없습니다. 활동 기록은 별도로 조회할 수 있습니다.</p><LogError error={overview.error} retry={overview.reload} reauthenticate={() => void reauthenticate()} busy={switching} actionError={switchError}/></section>}
-        {overview.data && <OverviewPanels data={overview.data}/>}
-
         {unified && <OperationsPanels resources={operations.resources} reload={operations.reload} refresh={refresh} deny={operations.deny}/>}
       </>}
       <details className="user-log-scope"><summary>측정 기준·수집 범위</summary>

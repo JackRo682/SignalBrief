@@ -6,6 +6,7 @@ import UserActivityLogs from '../src/admin-logs/page';
 import { useOperationsData } from '../src/admin-logs/operations-client';
 import { collectionMetricKeys, deliveryMetricKeys, operationMetricKeys, publicationMetricKeys, operationsSnapshotSchema, type OperationsSnapshot } from '../src/admin-logs/operations-contracts';
 import { overviewFixture } from '../e2e/admin-overview-fixture';
+import { trafficSummary } from '../src/acquisition/contracts';
 import OpsPage from '../src/app/(workspace)/ops/page';
 import OldLogsPage from '../src/app/(workspace)/ops/user-logs/page';
 import OldAnalyticsPage from '../src/app/(workspace)/ops/analytics/page';
@@ -68,6 +69,14 @@ function userLogs() {
     retention_days: 90, timezone: 'Asia/Seoul', consented_users: 0, generated_at: timestamp,
   };
 }
+function trafficSummaryFixture() {
+  return trafficSummary.parse({
+    generated_at: timestamp,
+    totals: {visitors: 2, pageviews: 3, starts: 1, requests: 1, signups: 1, onboarded: 1},
+    daily: [], sources: [],
+    journeys: [{source: 'direct', sessions: 2, auth_cta: 1, auth_arrived: 1, auth_attempt: 1, closed: 1, closed_without_attempt: 0, direct_auth_entries: 0}],
+  });
+}
 function rpcResponse(name: string) {
   return { status: 200, error: null, data: name === 'sb_reference_ops' ? snapshot() : [
     { display_name: 'Synthetic member', created_at: timestamp, onboarding_completed: true, email: 'must-not-display@example.invalid' },
@@ -77,6 +86,12 @@ async function fetchResponse(input: string, init?: RequestInit) {
   const path = new URL(input, 'http://localhost').pathname;
   if (path === '/api/admin/user-logs') return Response.json(userLogs());
   if (path === '/api/admin/overview') return Response.json(overviewFixture(JSON.parse(String(init?.body)), true));
+  if (path === '/api/traffic') {
+    const request = JSON.parse(String(init?.body));
+    if (request.action === 'summary') return Response.json(trafficSummaryFixture());
+    if (request.action === 'sessions') return Response.json({generated_at: timestamp, total: 0, rows: []});
+    throw new Error(`Unexpected synthetic analytics action ${request.action}`);
+  }
   if (path === '/v1/ops/documents') return Response.json([{ id: documentId, title: 'Synthetic original document', provider: 'sec', state: 'parsed', publication_date: '2026-11-05' }]);
   if (path === '/v1/ops/queues') return Response.json({ failed_runs: [{ id: runId, model: 'Synthetic model', status: 'failed', prompt_version: 'synthetic-v1', error_code: 'synthetic_failure', created_at: timestamp }] });
   if (path === '/v1/ops/audit') return Response.json([{ id: '60000000-0000-4000-8000-000000000001', action: 'synthetic_review', target_id: eventId, details: { reason: 'Synthetic audit reason', private_trace: 'must-not-display-trace' }, created_at: timestamp }]);
@@ -192,6 +207,59 @@ describe('private operations request lifecycle', () => {
 });
 
 describe('one continuous operations page', () => {
+  it.each([
+    {status: 401, child: 'sessions', button: '세션별 경로 보기'},
+    {status: 403, child: 'sessions', button: '세션별 경로 보기'},
+    {status: 401, child: 'summary', button: '이전 기간 비교'},
+    {status: 403, child: 'summary', button: '이전 기간 비교'},
+  ])('removes every protected panel when the analytics $child child returns $status', async ({status, child, button}) => {
+    const logUser = '70000000-0000-4000-8000-000000000007';
+    let denyChild = false;
+    mock.fetch.mockImplementation(async (input: string, init?: RequestInit) => {
+      const path = new URL(input, 'http://localhost').pathname;
+      if (path === '/api/traffic' && denyChild && JSON.parse(String(init?.body)).action === child) {
+        return Response.json({error: 'synthetic-analytics-denial'}, {status});
+      }
+      if (path === '/api/admin/user-logs') return Response.json({...userLogs(),
+        items: [{id: 'usage:synthetic-protected-log', created_at: timestamp, user_id: logUser, event: 'view', screen: 'calendar', device: 'desktop', session_id: null, page_id: null, active_ms: 0, source: 'usage', is_admin: false}],
+        summary: {events: 1, users: 1, sessions: 0, active_ms: 0}, consented_users: 1,
+      });
+      return fetchResponse(input, init);
+    });
+    render(<UserActivityLogs unified/>);
+    await screen.findByText('Synthetic audit reason');
+    await screen.findByRole('article', {name: '방문 브라우저'});
+    const logButton = `사용자 ${logUser}로 필터`;
+    expect(screen.getByRole('button', {name: logButton})).toBeVisible();
+    expect(screen.getByText('Synthetic member')).toBeVisible();
+    expect(screen.getByText('Synthetic original document')).toBeVisible();
+    expect(screen.getByRole('region', {name: '핵심 지표'})).toBeVisible();
+    denyChild = true;
+    fireEvent.click(screen.getByRole('button', {name: button}));
+    expect(await screen.findByRole('alert')).toHaveTextContent(status === 401 ? '로그인이 만료되었습니다' : '사용자 로그에 접근할 수 없습니다');
+    for (const name of ['사람들이 어디까지 이용했나요?', '핵심 지표', '상세 활동 로그', '수집·AI 처리 현황', '검토·실패 기록', '원문·모델 실행', '가입 사용자', '운영 감사 로그']) {
+      expect(screen.queryByRole('region', {name})).toBeNull();
+    }
+    expect(screen.queryByRole('button', {name: 'CSV 저장'})).toBeNull();
+    expect(screen.queryByRole('button', {name: logButton})).toBeNull();
+    for (const text of ['Synthetic member', 'Synthetic original document', 'Synthetic audit reason', 'Synthetic model · failed']) expect(screen.queryByText(text)).toBeNull();
+  });
+  it.each([401, 403])('propagates refreshed primary analytics denial %s to the entire operations page', async status => {
+    let denySummary = false;
+    mock.fetch.mockImplementation((input: string, init?: RequestInit) => new URL(input, 'http://localhost').pathname === '/api/traffic' && denySummary
+      ? Promise.resolve(Response.json({error: 'synthetic-primary-denial'}, {status})) : fetchResponse(input, init));
+    render(<UserActivityLogs unified/>);
+    await screen.findByText('Synthetic audit reason');
+    await screen.findByRole('article', {name: '방문 브라우저'});
+    expect(screen.getByText('Synthetic member')).toBeVisible();
+    denySummary = true;
+    fireEvent.click(screen.getByRole('button', {name: '새로고침'}));
+    expect(await screen.findByRole('alert')).toHaveTextContent(status === 401 ? '로그인이 만료되었습니다' : '사용자 로그에 접근할 수 없습니다');
+    for (const name of ['사람들이 어디까지 이용했나요?', '핵심 지표', '상세 활동 로그', '수집·AI 처리 현황', '가입 사용자', '운영 감사 로그']) expect(screen.queryByRole('region', {name})).toBeNull();
+    expect(screen.queryByText('Synthetic member')).toBeNull();
+    expect(screen.queryByText('Synthetic audit reason')).toBeNull();
+    expect(screen.queryByRole('button', {name: 'CSV 저장'})).toBeNull();
+  });
   it('accepts live additive v2 metrics and preserves provider/activity rows without unsafe legacy actions', async () => {
     mock.rpc.mockImplementation(async name => name === 'sb_reference_ops'
       ? { error: null, status: 200, data: snapshotV2() } : rpcResponse(name));

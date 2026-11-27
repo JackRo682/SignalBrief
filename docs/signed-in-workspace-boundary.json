@@ -185,11 +185,15 @@
     "apps/web/src/acquisition/surface-tracker.ts",
     "apps/web/src/acquisition/surface-panel.tsx",
     "apps/web/src/acquisition/prelogin-journey.ts",
-    "apps/web/src/acquisition/journey-panel.tsx"
+    "apps/web/src/acquisition/journey-panel.tsx",
+    "apps/web/src/acquisition/comparison-panel.tsx",
+    "apps/web/src/acquisition/report-client.ts",
+    "apps/web/src/acquisition/report.ts",
+    "apps/web/src/acquisition/sessions-panel.tsx"
   ],
   "protected_files": {
     "apps/web/src/admin-logs/client.ts": "652ce7e53eba31a809ccdff087fa98089bf1f111281d725896f588edc82e65e0",
-    "apps/web/src/admin-logs/contracts.ts": "df165e9d5c6b50fb7bf7a71ce677d29e7e644c097061ebb916555258b580e78f",
+    "apps/web/src/admin-logs/contracts.ts": "f8146a1a01fc18f081cdd701288dd9664c2bd60d6b77d69a98a73d66547db2aa",
     "apps/web/src/admin-logs/display.ts": "60182577284c2332f56df3c01238501098294f7fc1306b15087736f7eec7d3fe",
     "apps/web/src/admin-logs/operations-client.ts": "3e1b388af786503502fdfb30408885fc05eaf74bd78949a59b34c5fd2c0e8ca9",
     "apps/web/src/admin-logs/operations-contracts.ts": "1c3b1091658d67475942728f6078d32d383640555dc579cb9f81957bfac3e79b",
@@ -197,7 +201,7 @@
     "apps/web/src/admin-logs/overview-client.ts": "bb8f693c8914c62593b8a390c9108eead281a9cb14fa599b6eb09852ae26c0e0",
     "apps/web/src/admin-logs/overview-contracts.ts": "b00f635fc4b5b83e686ada1ef56e101f49651084a97e8658b0382c26b92a4b2b",
     "apps/web/src/admin-logs/overview.tsx": "f3495c93115e503133605cefce038d3556c3e1afe8d60f80e8a913db791b3ea7",
-    "apps/web/src/admin-logs/page.tsx": "4b0f1fe33554d4a9b72e868b8d7437a708c53fedbc12a378b3f5009b6d2792b6",
+    "apps/web/src/admin-logs/page.tsx": "c61b7f4d8fe53df33459e855500017de8aad86badd9c747aa2b53b1237bbf89b",
     "apps/web/src/admin-logs/styles.css": "a3f6f62daaa14e45b8c30dbaace41f898a6d6ca451ffefa14de9270d82813fb8",
     "apps/web/src/app/(workspace)/ops/analytics/page.tsx": "3ea74b58112af7a3d1755558373ec276ee2c9706a74d5fffd44a77b4207be5e9",
     "apps/web/src/app/(workspace)/ops/documents/[id]/page.tsx": "8a092635af6adfba1bd2b3e6fb5efadfd75e4104b94a53a123190360a4e85504",
@@ -248,7 +252,7 @@
     "apps/web/src/components/marketing/header.tsx": "c50a27950fb487b8225e79149c086f5a867212cff7f21ed9b03f94b983d4bff6",
     "apps/web/src/components/marketing/interactive.tsx": "5f594bd9b4add02866c9e7d411800392e094638ffbf8e56dd290869f04db3b52",
     "apps/web/src/components/marketing/layout.tsx": "04a33a9f8c3bd00b44f2780a082caf3e5c1d85fce30122cdbde467a3e16fdb66",
-    "apps/web/src/components/marketing/legal-reference.tsx": "31181913ad488199d886e1e59bd100c8ac90725e451ea5cafa94d374a1752461",
+    "apps/web/src/components/marketing/legal-reference.tsx": "b8858328a033a34cb0d352d864fd50ec94d1b99155349e30c0ae560f64af94e8",
     "apps/web/src/components/marketing/legal.tsx": "e324d38cae829336c5b8d54fd209f6835d1f3de3d4a27f8c6d88625250513514",
     "apps/web/src/components/marketing/marketing.css": "f5edeae90633c5db20dc35548c0455d89d996b6aae1e9b84e454cfe5f4a7bcd0",
     "apps/web/src/components/marketing/reference-pages.tsx": "b9ffccd238ec05b30a9a42e567a7ff63453daf749206ca1348766f3bb13ddf2c",
@@ -295,15 +299,15 @@
     "apps/web/src/screens/ops-document.tsx": "c397e426e84b623a3706eb1815f86f512b742dac0f4e8093eb26f1322748b0c4",
     "apps/web/src/screens/ops-run.tsx": "e7a9fdec46f7685f327ae967bf5c817cfadad9448bb5ec5609f2b10276ed8252",
     "apps/web/src/screens/ops.tsx": "56250236ec473c19999af7154628106ae84edc4fdb8f55685904c9289412ff4d",
-    "apps/web/src/acquisition/client.ts": "a408aa34b370c66d979d9c66a15c3fac3922c9a4d3919d9bd3f003d7abffc8ec",
-    "apps/web/src/acquisition/contracts.ts": "fde61d25f6fdbc0881a55e915ffa94c27eed4a73915029071a5caf216619fe40",
-    "apps/web/src/acquisition/panel.tsx": "84b17946c4be7d0895e4747b7f324d71be4b3c411d194ace598f919bdafeef90",
-    "apps/web/src/acquisition/tracker.tsx": "5bcdec0df2b64f4b3320e38f0e0b308d0a4aec2026194627a4b08942d92aba0d",
-    "apps/web/src/acquisition/traffic.css": "469c483e3141791e1ced095a4e1605122bebb10d3d35b596cc75b83b55bba9e0",
+    "apps/web/src/acquisition/client.ts": "a0add746bc808dcf560812769b33afdf7ea8fdcc57ff3d6795a2db9f000c5d4c",
+    "apps/web/src/acquisition/contracts.ts": "00a0d5e5e23596312690e4cfba5e6ec95f9447ebefc7d1d5736ba866d3cbfd19",
+    "apps/web/src/acquisition/panel.tsx": "7b68c21d6f5ebe44f880ccf8ba56967d07e376aa6f9c532771b2ee27f3990c97",
+    "apps/web/src/acquisition/tracker.tsx": "b57e8e7c140ae326f05ebac42a33d36935678d14abd019a48594e688a67aedeb",
+    "apps/web/src/acquisition/traffic.css": "d698163829982c53e1fbc0d25a255e0030dd68d9e2129dc0173705302105d1fe",
     "apps/web/src/lib/public-seo.ts": "af2d59d7c0b7425b56cbfdb012d9237136a02575427d8962c00b9b2284e9be5d",
     "apps/web/src/app/sitemap.ts": "9b55ca0d6d02d6a0659e45df8855dc00b6b6ca39f3113a8456d9e09cba815f69",
     "apps/web/src/app/robots.ts": "906e3b34bd48513f348f25094bebad40e07259bedf3be23b6e7d31415a29012b",
-    "apps/web/src/app/api/traffic/route.ts": "ae780e2585fed9cc0e20e768e2b63e9ea5e6eb3fa2802364ff93f8a712d74814",
+    "apps/web/src/app/api/traffic/route.ts": "a2f49ca6b79589b3d48287a39dac8ae24222d0611cc81a2e9a1789e904d224f7",
     "apps/web/src/components/public-analytics.tsx": "d9c266c4d353accad11503724c86448c8d2820a85c7187adf176151ae9070dbb",
     "apps/web/src/lib/public-analytics.ts": "9a326e876673d79e14603904b6f8025b82bab64b3108b64dbe7981213c2e39f0",
     "apps/web/src/acquisition/product-client.ts": "ab804c0787d4d96d0e1590aceb2f9f4ccbed7c8340dd33e41a0f0536e05e6942",
@@ -313,8 +317,12 @@
     "apps/web/src/acquisition/active-clock.ts": "aa6624c9a529c8451060e0765439d837e6500f28206bf2a3aab7b6b7a124109f",
     "apps/web/src/acquisition/surface-tracker.ts": "34ef4164e5063c9689654afaf76047a81ec364a4d14552b1f7136fc9d3938ed4",
     "apps/web/src/acquisition/surface-panel.tsx": "fe2999bfba8b3ae5c262f7632af7e2d5318a1404d1dddaf9c83d1d9625146331",
-    "apps/web/src/acquisition/prelogin-journey.ts": "36c323332a2f54bba8b0f7bdef63c4aeffe6b96d02af0585a1be9ccfab77cad5",
-    "apps/web/src/acquisition/journey-panel.tsx": "ba4a42794c8afc21e1a6eb7b1a46125d19bd75a7bb0a6f7f7aca5c727c0848f3"
+    "apps/web/src/acquisition/prelogin-journey.ts": "e0893e82f60c15490a657438bb50c2edd39a7105a6e69ef83b522d7675a11104",
+    "apps/web/src/acquisition/journey-panel.tsx": "ba4a42794c8afc21e1a6eb7b1a46125d19bd75a7bb0a6f7f7aca5c727c0848f3",
+    "apps/web/src/acquisition/comparison-panel.tsx": "573cebf236e838f44096489266b53c830f47f96c7bab15ddc2258b6326fe08f1",
+    "apps/web/src/acquisition/report-client.ts": "017ed957780dae75fcd2d824b2b9c2e7869669fbd70968c00b2979abbcb955b0",
+    "apps/web/src/acquisition/report.ts": "235d8552194ae46702d37424486421cd275d934d8a89912669709a6475ab2886",
+    "apps/web/src/acquisition/sessions-panel.tsx": "7ebcf373af09bf6925ada8b1242da814371306a7bba5c346da61174f825cc5dc"
   },
   "retained_files": {
     "apps/web/src/desktop/today-legacy.tsx": "f00178cb723ad8b0ab3ca646586f130861aa0b2a914fa8b01694bacea964e919",
@@ -675,6 +683,85 @@
       },
       "normalization": "CRLF to LF",
       "evidence": "docs/VERIFICATION.md"
+    },
+    {
+      "date": "2026-11-27",
+      "authorization": "Owner requested tracking/reporting at SignalBrief /ops comparable to GetOpenPrism /analytics. This revision covers consented visitor/session analytics, the administrator dashboard and exports, a guarded session explorer, and disclosed viewport categories with renewed consent.",
+      "production_baseline_commit": "d36ad4ac4da86bea2dfc78f5d730f201b77d5214",
+      "reviewed_files": {
+        "apps/web/src/admin-logs/contracts.ts": {
+          "before_sha256": "df165e9d5c6b50fb7bf7a71ce677d29e7e644c097061ebb916555258b580e78f",
+          "after_sha256": "f8146a1a01fc18f081cdd701288dd9664c2bd60d6b77d69a98a73d66547db2aa",
+          "normalization": "CRLF to LF, matching the unchanged scope guard"
+        },
+        "apps/web/src/admin-logs/page.tsx": {
+          "before_sha256": "4b0f1fe33554d4a9b72e868b8d7437a708c53fedbc12a378b3f5009b6d2792b6",
+          "after_sha256": "c61b7f4d8fe53df33459e855500017de8aad86badd9c747aa2b53b1237bbf89b",
+          "normalization": "CRLF to LF, matching the unchanged scope guard"
+        },
+        "apps/web/src/components/marketing/legal-reference.tsx": {
+          "before_sha256": "31181913ad488199d886e1e59bd100c8ac90725e451ea5cafa94d374a1752461",
+          "after_sha256": "b8858328a033a34cb0d352d864fd50ec94d1b99155349e30c0ae560f64af94e8",
+          "normalization": "CRLF to LF, matching the unchanged scope guard"
+        },
+        "apps/web/src/acquisition/client.ts": {
+          "before_sha256": "a408aa34b370c66d979d9c66a15c3fac3922c9a4d3919d9bd3f003d7abffc8ec",
+          "after_sha256": "a0add746bc808dcf560812769b33afdf7ea8fdcc57ff3d6795a2db9f000c5d4c",
+          "normalization": "CRLF to LF, matching the unchanged scope guard"
+        },
+        "apps/web/src/acquisition/contracts.ts": {
+          "before_sha256": "fde61d25f6fdbc0881a55e915ffa94c27eed4a73915029071a5caf216619fe40",
+          "after_sha256": "00a0d5e5e23596312690e4cfba5e6ec95f9447ebefc7d1d5736ba866d3cbfd19",
+          "normalization": "CRLF to LF, matching the unchanged scope guard"
+        },
+        "apps/web/src/acquisition/panel.tsx": {
+          "before_sha256": "84b17946c4be7d0895e4747b7f324d71be4b3c411d194ace598f919bdafeef90",
+          "after_sha256": "7b68c21d6f5ebe44f880ccf8ba56967d07e376aa6f9c532771b2ee27f3990c97",
+          "normalization": "CRLF to LF, matching the unchanged scope guard"
+        },
+        "apps/web/src/acquisition/tracker.tsx": {
+          "before_sha256": "5bcdec0df2b64f4b3320e38f0e0b308d0a4aec2026194627a4b08942d92aba0d",
+          "after_sha256": "b57e8e7c140ae326f05ebac42a33d36935678d14abd019a48594e688a67aedeb",
+          "normalization": "CRLF to LF, matching the unchanged scope guard"
+        },
+        "apps/web/src/acquisition/traffic.css": {
+          "before_sha256": "469c483e3141791e1ced095a4e1605122bebb10d3d35b596cc75b83b55bba9e0",
+          "after_sha256": "d698163829982c53e1fbc0d25a255e0030dd68d9e2129dc0173705302105d1fe",
+          "normalization": "CRLF to LF, matching the unchanged scope guard"
+        },
+        "apps/web/src/app/api/traffic/route.ts": {
+          "before_sha256": "ae780e2585fed9cc0e20e768e2b63e9ea5e6eb3fa2802364ff93f8a712d74814",
+          "after_sha256": "a2f49ca6b79589b3d48287a39dac8ae24222d0611cc81a2e9a1789e904d224f7",
+          "normalization": "CRLF to LF, matching the unchanged scope guard"
+        },
+        "apps/web/src/acquisition/prelogin-journey.ts": {
+          "before_sha256": "36c323332a2f54bba8b0f7bdef63c4aeffe6b96d02af0585a1be9ccfab77cad5",
+          "after_sha256": "e0893e82f60c15490a657438bb50c2edd39a7105a6e69ef83b522d7675a11104",
+          "normalization": "CRLF to LF, matching the unchanged scope guard"
+        },
+        "apps/web/src/acquisition/comparison-panel.tsx": {
+          "before_sha256": null,
+          "after_sha256": "573cebf236e838f44096489266b53c830f47f96c7bab15ddc2258b6326fe08f1",
+          "normalization": "CRLF to LF, matching the unchanged scope guard"
+        },
+        "apps/web/src/acquisition/report-client.ts": {
+          "before_sha256": null,
+          "after_sha256": "017ed957780dae75fcd2d824b2b9c2e7869669fbd70968c00b2979abbcb955b0",
+          "normalization": "CRLF to LF, matching the unchanged scope guard"
+        },
+        "apps/web/src/acquisition/report.ts": {
+          "before_sha256": null,
+          "after_sha256": "235d8552194ae46702d37424486421cd275d934d8a89912669709a6475ab2886",
+          "normalization": "CRLF to LF, matching the unchanged scope guard"
+        },
+        "apps/web/src/acquisition/sessions-panel.tsx": {
+          "before_sha256": null,
+          "after_sha256": "7ebcf373af09bf6925ada8b1242da814371306a7bba5c346da61174f825cc5dc",
+          "normalization": "CRLF to LF, matching the unchanged scope guard"
+        }
+      },
+      "evidence": "docs/OPS_VISITOR_ANALYTICS_2026-11-27.md",
+      "release_status": "Code scope reviewed; exact release verification and production acceptance recorded separately."
     }
   ]
 }

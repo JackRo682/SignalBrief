@@ -51,7 +51,13 @@ def funnel_db():
             CREATE FUNCTION public.sb_require_mfa() RETURNS void LANGUAGE sql AS $$SELECT NULL::void$$;
             CREATE FUNCTION public.sb_rate_limit() RETURNS void LANGUAGE sql AS $$SELECT NULL::void$$;
         """)
-        for filename in ["20261110064509_launch_acquisition_analytics.sql", "20261120043507_product_funnel_analytics.sql", "20261126063502_kakao_surface_measurement.sql", "20261126064808_prelogin_session_funnel.sql"]:
+        for filename in [
+            "20261110064509_launch_acquisition_analytics.sql",
+            "20261120043507_product_funnel_analytics.sql",
+            "20261126063502_kakao_surface_measurement.sql",
+            "20261126064808_prelogin_session_funnel.sql",
+            "20261127075639_prelogin_analytics_dashboard.sql",
+        ]:
             connection.execute((ROOT / "supabase/migrations" / filename).read_text())
         connection.execute("INSERT INTO auth.users(id) VALUES(%s),(%s)", (ADMIN, MEMBER))
         connection.execute("INSERT INTO public.users(id,analytics_consent) VALUES(%s,true),(%s,true)", (ADMIN, MEMBER))
@@ -412,3 +418,236 @@ def test_prelogin_ordered_sessions_direct_entries_closure_and_withdrawal(funnel_
     call(db, {"action": "erase", "visitor_id": visitor, "secret": SECRET})
     assert not call(db, start)["recorded"]
     assert summary(db)["journeys"] == []
+
+
+def prelogin(visitor=None, session=None, seq=1, page="home", step="view", **extra):
+    return {
+        "action": "prelogin", "visitor_id": visitor or str(uuid4()), "secret": SECRET,
+        "session": session or str(uuid4()), "seq": seq, "id": str(uuid4()),
+        "page": page, "step": step, "source": "kakao", "consent_version": "2026-11-27.prelogin",
+        **extra,
+    }
+
+
+def session_report(db, **extra):
+    day = db.execute("SELECT (now() AT TIME ZONE 'Asia/Seoul')::date").fetchone()[0]
+    return call(db, {"action": "sessions", "from": str(day-timedelta(days=1)), "to": str(day), **extra})
+
+
+@pytest.mark.parametrize("device", ["mobile", "tablet", "desktop"])
+def test_prelogin_device_is_explicit_and_entry_scoped(funnel_db, device):
+    db = funnel_db
+    role(db)
+    start = prelogin(device=device)
+    assert call(db, start)["recorded"]
+    assert not call(db, start)["recorded"]
+    call(db, prelogin(start["visitor_id"], start["session"], seq=2, page="features", device="tablet"))
+    old = prelogin(consent_version="2026-11-26.prelogin")
+    assert call(db, old)["recorded"]
+    # Upgrading during a session cannot manufacture device information for its entry.
+    call(db, prelogin(old["visitor_id"], old["session"], seq=2, device=device))
+    result = summary(db)
+    assert {row["device"]: row["sessions"] for row in result["journey_devices"]} == {device: 1, "unknown": 1}
+    rows = session_report(db)["rows"]
+    assert next(row for row in rows if row["session_id"] == start["session"])["device"] == device
+    assert next(row for row in rows if row["session_id"] == old["session"])["device"] == "unknown"
+    db.execute("RESET ROLE")
+    assert db.execute("SELECT device FROM app_private.prelogin_events WHERE id=%s", (old["id"],)).fetchone()[0] is None
+
+
+@pytest.mark.parametrize("extra", [
+    {"consent_version": "2026-11-26.prelogin", "device": "mobile"},
+    {"device": "unknown"}, {"device": "phone"}, {"device": None}, {"device": 1}, {"device": []},
+    {"consent_version": None}, {"consent_version": "2026-11-28.prelogin"},
+    {"user_agent": "private browser detail"}, {"ip": "192.0.2.1"}, {"url": "https://private.invalid"},
+])
+def test_prelogin_device_rejects_invalid_or_undeclared_fields(funnel_db, extra):
+    role(funnel_db)
+    with pytest.raises(psycopg.Error) as denied:
+        call(funnel_db, prelogin(**extra))
+    assert denied.value.sqlstate == "PT422"
+
+
+def test_prelogin_daily_and_explorer_follow_entry_cohorts_across_midnight(funnel_db):
+    db = funnel_db
+    first = prelogin(device="mobile")
+    role(db)
+    call(db, first)
+    # Arrival order is deliberately different from the tab's sequence order.
+    for seq, page, step in [(4, "signup", "signup_submit"), (2, "home", "signup_cta"), (3, "signup", "view")]:
+        call(db, prelogin(first["visitor_id"], first["session"], seq, page, step, device="mobile"))
+    before = prelogin(source="naver")
+    call(db, before)
+    orphan = prelogin(seq=2, source="google")
+    call(db, orphan)
+    db.execute("RESET ROLE")
+    day = db.execute("SELECT (now() AT TIME ZONE 'Asia/Seoul')::date-2").fetchone()[0]
+    db.execute("""UPDATE app_private.prelogin_events
+        SET created_at=(%s::date::timestamp AT TIME ZONE 'Asia/Seoul')+interval '23 hours 59 minutes'
+        WHERE id=%s""", (day, first["id"]))
+    db.execute("""UPDATE app_private.prelogin_events
+        SET created_at=(%s::date::timestamp AT TIME ZONE 'Asia/Seoul')+interval '24 hours 2 minutes'
+        WHERE session_id=%s AND seq>1""", (day, first["session"]))
+    db.execute("""UPDATE app_private.prelogin_events
+        SET created_at=(%s::date::timestamp AT TIME ZONE 'Asia/Seoul')-interval '1 microsecond'
+        WHERE id=%s""", (day, before["id"]))
+    db.execute("""UPDATE app_private.prelogin_events
+        SET created_at=(%s::date::timestamp AT TIME ZONE 'Asia/Seoul')+interval '1 hour'
+        WHERE id=%s""", (day, orphan["id"]))
+    role(db, ADMIN)
+    result = call(db, {"action": "summary", "from": str(day), "to": str(day)})
+    expected = {"source": "kakao", "sessions": 1, "auth_cta": 1, "auth_arrived": 1,
+                "auth_attempt": 1, "closed": 1, "closed_without_attempt": 0, "direct_auth_entries": 0}
+    assert result["journeys"] == [expected]
+    assert result["journey_daily"] == [{"day": str(day), **expected}]
+    assert result["journey_devices"] == [{"device": "mobile", "sessions": 1}]
+    report = session_report(db, **{"from": str(day), "to": str(day)})
+    assert report["total"] == 1
+    row = report["rows"][0]
+    assert row["session_id"] == first["session"]
+    assert row["events"] == 4 and row["any_auth_attempt"] and row["closed"]
+    assert [step["seq"] for step in row["steps"]] == [1, 2, 3, 4]
+    assert row["last_step"] == "signup_submit" and row["last_page"] == "signup"
+    assert not row["steps_truncated"]
+
+
+@pytest.mark.parametrize("actor,code", [(None, "PT401"), (MEMBER, "PT403")])
+def test_prelogin_session_explorer_requires_administrator(funnel_db, actor, code):
+    role(funnel_db, actor)
+    with pytest.raises(psycopg.Error) as denied:
+        session_report(funnel_db)
+    assert denied.value.sqlstate == code
+
+
+@pytest.mark.parametrize("change", [
+    "DELETE FROM auth.sessions WHERE user_id='{admin}'",
+    "UPDATE auth.sessions SET not_after=now()-interval '1 minute' WHERE user_id='{admin}'",
+    "UPDATE auth.users SET email_confirmed_at=NULL WHERE id='{admin}'",
+    "UPDATE auth.users SET deleted_at=now() WHERE id='{admin}'",
+    "UPDATE auth.users SET banned_until=now()+interval '1 day' WHERE id='{admin}'",
+])
+def test_prelogin_session_explorer_rejects_revoked_admin(funnel_db, change):
+    funnel_db.execute(change.format(admin=ADMIN))
+    role(funnel_db, ADMIN)
+    with pytest.raises(psycopg.Error) as denied:
+        session_report(funnel_db)
+    assert denied.value.sqlstate == "PT401"
+
+
+@pytest.mark.parametrize("function,code", [("sb_require_mfa", "PT403"), ("sb_rate_limit", "PT429")])
+def test_prelogin_session_explorer_preserves_mfa_and_rate_checks(funnel_db, function, code):
+    funnel_db.execute(sql.SQL("""CREATE OR REPLACE FUNCTION public.{}() RETURNS void
+        LANGUAGE plpgsql AS $$BEGIN RAISE EXCEPTION 'test_guard' USING ERRCODE={}; END$$""").format(
+            sql.Identifier(function), sql.Literal(code)))
+    role(funnel_db, ADMIN)
+    with pytest.raises(psycopg.Error) as denied:
+        session_report(funnel_db)
+    assert denied.value.sqlstate == code
+
+
+@pytest.mark.parametrize("extra", [
+    {"source": ""}, {"source": None}, {"source": "private source"},
+    {"offset": -1}, {"offset": 10001}, {"offset": "1"}, {"offset": 1.5}, {"offset": None},
+    {"limit": 0}, {"limit": 51}, {"limit": "1"}, {"limit": None},
+    {"visitor_id": str(uuid4())}, {"include_admin": True}, {"from": "not-a-date"},
+    {"from": "2026-02-30"}, {"from": "2026-11-27", "to": "2026-11-26"},
+    {"from": "2026-01-01", "to": "2026-12-31"},
+])
+def test_prelogin_session_explorer_validates_filters_and_bounds(funnel_db, extra):
+    role(funnel_db, ADMIN)
+    with pytest.raises(psycopg.Error) as denied:
+        session_report(funnel_db, **extra)
+    assert denied.value.sqlstate == "PT422"
+
+
+def test_prelogin_session_pagination_filter_redaction_and_erasure(funnel_db):
+    db = funnel_db
+    role(db)
+    starts = [prelogin(source=source) for source in ["kakao", "kakao", "naver"]]
+    for start in starts:
+        call(db, start)
+    role(db, ADMIN)
+    full = session_report(db)
+    assert full["total"] == 3 and len(full["rows"]) == 3
+    first = session_report(db, limit=1)
+    second = session_report(db, limit=1, offset=1)
+    assert first["total"] == second["total"] == 3
+    assert first["rows"] == full["rows"][:1]
+    assert second["rows"] == full["rows"][1:2]
+    assert session_report(db, offset=10000)["rows"] == []
+    assert session_report(db, source="kakao")["total"] == 2
+    assert session_report(db, source="google")["total"] == 0
+    serialized = json.dumps(full)
+    for forbidden in ["visitor_id", "secret", "user_id", "email", SECRET, *[s["visitor_id"] for s in starts]]:
+        assert forbidden not in serialized
+    assert all(not row["closed"] for row in full["rows"])
+    role(db)
+    call(db, {"action": "erase", "visitor_id": starts[0]["visitor_id"], "secret": SECRET})
+    role(db, ADMIN)
+    assert session_report(db, source="kakao")["total"] == 1
+    assert sum(row["sessions"] for row in summary(db)["journey_devices"]) == 2
+    assert call(db, {"action": "summary", "from": "2020-01-01", "to": "2020-01-02"})["journey_daily"] == []
+    db.execute("RESET ROLE")
+    for private_function in [
+        "app_private.sb_prelogin_session_rows(timestamptz,timestamptz)",
+        "app_private.sb_traffic_journeys_v20261126(jsonb)",
+        "app_private.sb_traffic(jsonb)", "app_private.sb_record_prelogin(jsonb)",
+    ]:
+        for database_role in ["anon", "authenticated"]:
+            assert not db.execute("SELECT has_function_privilege(%s,%s,'EXECUTE')",
+                                  (database_role, private_function)).fetchone()[0]
+
+
+def test_prelogin_session_steps_are_bounded_without_losing_total_or_last_step(funnel_db):
+    db = funnel_db
+    role(db)
+    start = prelogin(device="desktop")
+    call(db, start)
+    for seq in range(2, 102):
+        call(db, prelogin(start["visitor_id"], start["session"], seq=seq,
+                         page="features" if seq < 101 else "pricing", device="desktop"))
+    role(db, ADMIN)
+    row = session_report(db)["rows"][0]
+    assert row["events"] == 101 and row["steps_truncated"]
+    assert len(row["steps"]) == 100
+    assert [step["seq"] for step in row["steps"]] == list(range(1, 101))
+    assert row["last_page"] == "pricing" and row["last_step"] == "view"
+
+
+def test_prelogin_measurement_reports_observed_history_not_selected_range(funnel_db):
+    db = funnel_db
+    empty = summary(db)
+    assert empty["measurement"]["first_acquisition_at"] is None
+    assert empty["measurement"]["first_journey_at"] is None
+    assert empty["measurement"]["first_surface_at"] is None
+    assert empty["journey_daily"] == empty["journey_devices"] == []
+    start = prelogin()
+    role(db)
+    call(db, start)
+    landing(db, start["visitor_id"])
+    surface = {"action": "surface", "visitor_id": start["visitor_id"], "secret": SECRET,
+               "id": str(uuid4()), "source": "kakao", "surface": "home", "release": "1234567",
+               "consent_version": "2026-11-26", "active_ms": 0}
+    call(db, surface)
+    db.execute("RESET ROLE")
+    db.execute("UPDATE app_private.prelogin_events SET created_at=now()-interval '2 days'")
+    db.execute("UPDATE app_private.traffic_events SET created_at=now()-interval '3 days'")
+    db.execute("UPDATE app_private.traffic_surface_views SET started_at=now()-interval '1 day'")
+    observed = db.execute("""SELECT
+        (SELECT min(created_at) FROM app_private.prelogin_events),
+        (SELECT min(created_at) FROM app_private.traffic_events),
+        (SELECT min(started_at) FROM app_private.traffic_surface_views)""").fetchone()
+    result = summary(db)
+    from datetime import datetime
+    for key, expected in zip(["first_journey_at", "first_acquisition_at", "first_surface_at"], observed, strict=True):
+        assert datetime.fromisoformat(result["measurement"][key]) == expected
+    # Retained observations stay discoverable when the selected report is empty.
+    remote = call(db, {"action": "summary", "from": "2020-01-01", "to": "2020-01-02"})
+    for key in ["first_journey_at", "first_acquisition_at", "first_surface_at"]:
+        assert remote["measurement"][key] == result["measurement"][key]
+    assert result["measurement"]["retained_from"] is not None
+    role(db)
+    call(db, {"action": "erase", "visitor_id": start["visitor_id"], "secret": SECRET})
+    withdrawn = summary(db)
+    for key in ["first_journey_at", "first_acquisition_at", "first_surface_at"]:
+        assert withdrawn["measurement"][key] is None

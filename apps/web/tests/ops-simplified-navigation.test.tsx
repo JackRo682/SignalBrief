@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup, render, screen, within } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import ResearchShell from '../src/research/shell';
 import UserActivityLogs from '../src/admin-logs/page';
 
@@ -21,21 +21,43 @@ vi.mock('../src/admin-logs/overview', () => ({
   OverviewLoading: () => <p>Loading metrics</p>,
 }));
 vi.mock('../src/admin-logs/operations-client', () => ({ useOperationsData: () => ({
-  resources: { snapshot: { data: null } }, loading: false, accessError: null,
+  resources: {
+    snapshot: { data: null, error: null, loading: false },
+    documents: { data: [], error: null, loading: false },
+    queues: { data: {failed_runs: []}, error: null, loading: false },
+    users: { data: [], error: null, loading: false },
+    audit: { data: [], error: null, loading: false },
+  }, loading: false, accessError: null,
   reload: fixture.reload, deny: vi.fn(),
 }) }));
-vi.mock('../src/admin-logs/operations', () => ({ OperationsPanels: () => <section id="operations-audit" aria-label="Synthetic operation records">Records</section> }));
 
-afterEach(() => { cleanup(); fixture.admin = true; vi.clearAllMocks(); });
+beforeEach(() => vi.stubGlobal('fetch', vi.fn(async () => Response.json({
+  generated_at: '2026-11-27T00:00:00Z',
+  totals: {visitors: 0, pageviews: 0, starts: 0, requests: 0, signups: 0, onboarded: 0},
+  daily: [], sources: [], journeys: [],
+}))));
+afterEach(() => { cleanup(); fixture.admin = true; vi.clearAllMocks(); vi.unstubAllGlobals(); });
 
-describe('one administrator menu with existing logs first', () => {
-  it('renders exactly one operations destination and no secondary menu or tabs', () => {
+describe('one operations destination with analytics-first same-page navigation', () => {
+  it('keeps one operations destination and connects each local jump link to one visible target', async () => {
     render(<ResearchShell><UserActivityLogs unified/></ResearchShell>);
     const menu = screen.getByRole('navigation', { name: '관리자 메뉴' });
     expect(within(menu).getAllByRole('link')).toHaveLength(1);
     expect(within(menu).getByRole('link', { name: '01 운영 현황' })).toHaveAttribute('href', '/ops');
     expect(within(menu).getByRole('link')).toHaveAttribute('aria-current', 'page');
-    expect(screen.queryByRole('navigation', { name: '이 페이지 바로가기' })).toBeNull();
+    await screen.findByRole('region', { name: '세션별 방문 경로' });
+    const jumpLinks = screen.getByRole('navigation', { name: '이 페이지 바로가기' });
+    const targets = [
+      ['방문·행동 분석', 'traffic-analytics'], ['세션별 경로', 'traffic-sessions'],
+      ['로그인 후 이용', 'overview-metrics'], ['상세 활동 기록', 'activity-logs'],
+      ['수집·운영 상태', 'operations-pipeline'],
+    ];
+    expect(within(jumpLinks).getAllByRole('link')).toHaveLength(targets.length);
+    for (const [label, id] of targets) {
+      expect(within(jumpLinks).getByRole('link', { name: label })).toHaveAttribute('href', `#${id}`);
+      expect(document.querySelectorAll(`[id="${id}"]`)).toHaveLength(1);
+      expect(document.getElementById(id)).toBeVisible();
+    }
     expect(screen.queryAllByRole('tab')).toHaveLength(0);
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('운영 현황');
@@ -44,17 +66,23 @@ describe('one administrator menu with existing logs first', () => {
     }
   });
 
-  it('shows activity logs before metrics while retaining filters and a same-page audit link', () => {
+  it('shows analytics then account metrics then logs and operations while retaining filters and audit access', async () => {
     render(<ResearchShell><UserActivityLogs unified/></ResearchShell>);
+    await screen.findByRole('region', { name: '세션별 방문 경로' });
+    const analytics = screen.getByRole('region', { name: '사람들이 어디까지 이용했나요?' });
     const activity = screen.getByRole('region', { name: '상세 활동 로그' });
     const metrics = screen.getByRole('region', { name: 'Synthetic aggregate metrics' });
-    const operations = screen.getByRole('region', { name: 'Synthetic operation records' });
-    expect(activity.compareDocumentPosition(metrics) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(metrics.compareDocumentPosition(operations) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const operations = screen.getByRole('region', { name: '수집·AI 처리 현황' });
+    const audit = screen.getByRole('region', { name: '운영 감사 로그' });
+    expect(analytics.compareDocumentPosition(metrics) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(metrics.compareDocumentPosition(activity) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(activity.compareDocumentPosition(operations) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(operations.compareDocumentPosition(audit) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     for (const name of ['활동 유형', '화면', '기기', '사용자 ID']) expect(within(activity).getByLabelText(name)).toBeVisible();
     expect(screen.getByRole('button', { name: '새로고침' })).toBeEnabled();
     expect(screen.getByRole('button', { name: '기간 적용' })).toBeEnabled();
     expect(within(activity).getByRole('link', { name: '감사 로그' })).toHaveAttribute('href', '#operations-audit');
+    expect(audit).toHaveAttribute('id', 'operations-audit');
   });
 
   it('still denies ordinary accounts without exposing logs or administrator navigation', () => {

@@ -29,7 +29,7 @@ export async function erasePending(){
   if(response.ok){const current=readConsent();if(current?.choice==='no'&&current.erase?.visitor_id===value.erase.visitor_id)save({choice:'no',at:current.at});}
  }catch{}
 }
-export const JOURNEY_CONSENT_VERSION='2026-11-26.prelogin' as const;
+export const JOURNEY_CONSENT_VERSION='2026-11-27.prelogin' as const;
 export const SURFACE_CONSENT_VERSION='2026-11-26' as const;
 type Source=typeof sources[number];
 let firstSource:Source|undefined;

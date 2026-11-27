@@ -18,7 +18,7 @@ export async function POST(req:Request){
   const p=parsed.data,authorization=req.headers.get('authorization');
   if(p.action==='prelogin'&&authorization)return fail(403,'signed_out_only');
   const privateSurface=p.action==='surface'&&(productPages as readonly string[]).includes(p.surface);
-  const required=privateSurface||p.action==='summary'||p.action==='record'&&('product_consent_version' in p||['signup_complete','onboarding_complete'].includes(p.kind));
+  const required=privateSurface||p.action==='summary'||p.action==='sessions'||p.action==='record'&&('product_consent_version' in p||['signup_complete','onboarding_complete'].includes(p.kind));
   if(required&&!authorization)return fail(401,'authentication_required');
   if(authorization&&!/^Bearer [A-Za-z0-9._-]{20,8192}$/.test(authorization))return fail(401,'invalid_session');
   const url=process.env.NEXT_PUBLIC_SUPABASE_URL,key=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
