@@ -90,7 +90,7 @@ test('a denied session lookup clears every protected operations panel',async({pa
  await expect(panel.getByRole('button',{name:'CSV 저장',exact:true})).toBeEnabled();
  control.sessionStatus=403;
  await panel.getByRole('button',{name:'세션별 경로 보기',exact:true}).click();
- await expect(page.getByRole('alert')).toContainText('사용자 로그에 접근할 수 없습니다');
+ await expect(page.getByRole('main').getByRole('alert')).toContainText('사용자 로그에 접근할 수 없습니다');
  await expect(panel).toHaveCount(0);
  await expect(page.getByRole('button',{name:'CSV 저장',exact:true})).toHaveCount(0);
  for(const name of ['핵심 지표','상세 활동 로그','수집·AI 처리 현황','검토·실패 기록','원문·모델 실행','가입 사용자','운영 감사 로그']){

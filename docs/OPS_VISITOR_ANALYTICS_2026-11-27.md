@@ -107,10 +107,21 @@ moderate development-tooling findings are not represented as resolved.
 - Disposable PostgreSQL 17.12: 74 product/prelogin reporting tests passed with zero
   skips, including legacy behavior, access/MFA denial, KST cohorts, device versions,
   ordering, pagination/truncation, redaction and consent erasure.
-- Focused client/route/consent and report component checks passed; final counts and
-  full repository release results are recorded in the release update below.
-- Production migration, deployment and live acceptance are separate gates and are
-  not inferred from local code or tests.
+- Full local release verifier: all eight stages passed on November 27 at 08:02 UTC,
+  including 1,328 backend tests (zero skips), 2,417 frontend tests in 157 files,
+  lint, TypeScript, OpenAPI export and the optimized Next.js 16.4.6 build.
+- The unchanged source-boundary verifier passed for all 131 protected files,
+  17 retained features and both verified customer entry points.
+- Production dependency audit reports zero vulnerabilities; the full development
+  audit retains seven moderate entries from the existing lint dependency tree.
+- Desktop/mobile browser checks: all 16 cases passed against Next.js 16.4.6
+  (12 dashboard/product scenarios and four public-consent/acquisition scenarios).
+  CSV byte order mark and both periods, lazy requests, ordered paths, source
+  filtering, empty states, responsive overflow and whole-page access denial
+  were exercised. Screenshots were visually checked.
+- The denial assertion is scoped to the application main landmark so the
+  framework accessibility announcer does not create an ambiguous alert locator.
+  All protected-panel removal assertions remain intact.
 
 Production database migration `20261127075639_prelogin_analytics_dashboard`
 was applied successfully. The nullable device column and entry index exist;
@@ -118,4 +129,6 @@ private helper execution remains revoked for anonymous and authenticated roles.
 An anonymous session-report request returns `PT401 authentication_required`.
 The before/after database security-advisor findings are identical.
 
-Final client release validation and deployment are pending at this documentation revision.
+Source review and exact-commit CI are available in [pull request 71](https://github.com/JackRo682/SignalBrief/pull/71).
+The production destination is https://signalbrief.online/ops . Vercel deployment
+state and signed-in live acceptance are checked independently of local results.
