@@ -119,6 +119,10 @@ moderate development-tooling findings are not represented as resolved.
   CSV byte order mark and both periods, lazy requests, ordered paths, source
   filtering, empty states, responsive overflow and whole-page access denial
   were exercised. Screenshots were visually checked.
+- The separate CI acquisition-browser group also passed locally: 14 desktop/mobile
+  scenarios with the exact workflow filters and GA fixture enabled. Its retained
+  shared-date test now positively verifies the new report heading, zero browser
+  and verified-signup counts, and the undefined-conversion em dash.
 - The denial assertion is scoped to the application main landmark so the
   framework accessibility announcer does not create an ambiguous alert locator.
   All protected-panel removal assertions remain intact.

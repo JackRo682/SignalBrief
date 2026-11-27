@@ -234,7 +234,12 @@ test('one admin page keeps usage and operations, shared dates, errors, and activ
  expect(overviewQueries.at(-1)?.to).toBe(f.activityCalls.at(-1)?.to);
  await expect.poll(()=>f.trafficCalls.at(-1)?.from).toBe(nextFrom);
  expect(f.trafficCalls.at(-1)?.to).toBe(f.activityCalls.at(-1)?.to);
- await expect(page.getByRole('region',{name:'외부 유입 · 회원가입',exact:true})).toContainText('방문 → 신규 가입 전환율: 측정 대기');
+ const acquisition=page.getByRole('region',{name:'사람들이 어디까지 이용했나요?',exact:true});
+ await expect(acquisition.getByRole('article',{name:'방문 브라우저',exact:true}).locator('strong')).toHaveText('0개');
+ await expect(acquisition.getByRole('article',{name:'인증된 신규 가입',exact:true}).locator('strong')).toHaveText('0브라우저');
+ const signup=acquisition.getByRole('region',{name:'가입 시도와 완료 확인',exact:true});
+ await expect(signup.locator('.traffic-conversion')).toContainText('방문 → 신규 가입 전환율');
+ await expect(signup.locator('.traffic-conversion strong')).toHaveText('—');
  expect(f.operations.periods.at(-1)?.end).toBe(f.activityCalls.at(-1)?.to);
  const beforeFilter=overviewQueries.length;
  const operationsBeforeFilter=f.operations.periods.length;
